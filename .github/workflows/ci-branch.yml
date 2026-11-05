@@ -1,0 +1,41 @@
+name: ci-branch
+
+# Contrôle rapide à chaque push d'une branche de travail : format, lint, audit.
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'fix/**'
+
+concurrency:
+  group: ci-branch-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Format
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Architecture (dépendances)
+        run: npm run deps:check
+
+      # Échoue seulement pour les vulnérabilités high et critical.
+      - name: Audit des dépendances
+        run: npm audit --audit-level=high
