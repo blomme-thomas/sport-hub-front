@@ -1,8 +1,12 @@
 # Fonctionnalités
 
-Aucune fonctionnalité livrée à ce jour.
+## Implémentées
 
-Domaines prévus (source : `CLAUDE.md`, `instructions/11`) :
+| Domaine                       | Fonctionnalité                                                                                                                                                 | Statut                                                 | Parcours                                                              |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------- |
+| Tableau de bord (`dashboard`) | Volume d'entraînement (séances et durée) par semaine ou par mois, répartition par type, variation par rapport à la période précédente, modale d'agrandissement | implémentée (issue #7) ; test e2e du parcours à écrire | [Consulter le tableau de bord](parcours/consulter-tableau-de-bord.md) |
+
+## Domaines prévus (source : `CLAUDE.md`, `instructions/11`) :
 
 | Domaine                   | Description prévue                                   | Statut      |
 | ------------------------- | ---------------------------------------------------- | ----------- |
@@ -11,4 +15,4 @@ Domaines prévus (source : `CLAUDE.md`, `instructions/11`) :
 | Récupération (`recovery`) | Visualisation de la récupération                     | non démarré |
 | Séances (`workouts`)      | Gestion des entraînements planifiés / générés par IA | non démarré |
 
-Écrans : à compléter.
+Écrans : `/` (tableau de bord, voir le parcours). Les autres écrans sont à compléter.
