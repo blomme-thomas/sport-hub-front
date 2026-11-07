@@ -5,7 +5,7 @@ export class HomePage {
   readonly brandLink: Locator;
 
   constructor(private readonly page: Page) {
-    this.heading = page.getByRole('heading', { name: 'Sport Hub' });
+    this.heading = page.getByRole('heading', { name: 'Tableau de bord' });
     this.brandLink = page.getByRole('link', { name: 'Sport Hub' });
   }
 

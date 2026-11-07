@@ -1,0 +1,60 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewContainerRef,
+  computed,
+  inject,
+} from '@angular/core';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { ChartCardComponent } from '../components/chart-card.component';
+import { CHART_KIND } from '../components/chart-config';
+import { ChartModalComponent, type ChartModalData } from '../components/chart-modal.component';
+import { GranularityToggleComponent } from '../components/granularity-toggle.component';
+import { VariationBadgeComponent } from '../components/variation-badge.component';
+import { DashboardState } from '../data-access/dashboard.state';
+import type { ChartKey, Granularity } from '../models/training-stats.model';
+
+const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month: 'mois' };
+
+@Component({
+  selector: 'sh-dashboard-page',
+  imports: [
+    NzButtonComponent,
+    ChartCardComponent,
+    GranularityToggleComponent,
+    VariationBadgeComponent,
+  ],
+  templateUrl: './dashboard.page.html',
+  styleUrl: './dashboard.page.scss',
+  providers: [DashboardState],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class DashboardPage {
+  protected readonly state = inject(DashboardState);
+  protected readonly chartKinds = CHART_KIND;
+
+  private readonly modal = inject(NzModalService);
+  private readonly viewContainer = inject(ViewContainerRef);
+
+  protected readonly statusMessage = computed(() => {
+    if (this.state.isLoading()) {
+      return 'Chargement des statistiques en cours';
+    }
+    return this.state.view()
+      ? `Statistiques affichées par ${GRANULARITY_WORDS[this.state.granularity()]}`
+      : '';
+  });
+
+  protected openChart(chart: ChartKey): void {
+    const title = this.state.view()?.charts[chart].title ?? '';
+    const ref = this.modal.create({
+      nzTitle: title,
+      nzContent: ChartModalComponent,
+      nzData: { chart } satisfies ChartModalData,
+      nzViewContainerRef: this.viewContainer,
+      nzKeyboard: true,
+      nzFooter: [{ label: 'Fermer', onClick: () => ref.close() }],
+    });
+  }
+}

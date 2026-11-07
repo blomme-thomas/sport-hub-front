@@ -1,0 +1,15 @@
+<article class="chart-card">
+  <header class="chart-card__header">
+    <h2 class="chart-card__title">{{ model().title }}</h2>
+    <button
+      type="button"
+      class="chart-card__expand"
+      [attr.aria-label]="expandLabel()"
+      (click)="expand.emit()"
+    >
+      Agrandir
+    </button>
+  </header>
+  <sh-chart type="bar" [data]="data()" [options]="options()" [label]="model().title" />
+  <sh-chart-data-table [model]="model()" />
+</article>

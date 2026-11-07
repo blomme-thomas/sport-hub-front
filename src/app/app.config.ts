@@ -9,6 +9,7 @@ import {
   withPreloading,
 } from '@angular/router';
 import { fr_FR, provideNzI18n } from 'ng-zorro-antd/i18n';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { API_BASE_URL } from './core/config/api-base-url.token';
@@ -22,6 +23,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding(), withPreloading(PreloadAllModules)),
     provideHttpClient(withFetch(), withInterceptors([errorInterceptor])),
     provideNzI18n(fr_FR),
+    NzModalService,
     { provide: API_BASE_URL, useValue: environment.apiBaseUrl },
   ],
 };

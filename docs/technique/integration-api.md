@@ -1,6 +1,6 @@
 # Intégration de l'API sport-hub-back
 
-> Statut : la gestion des erreurs HTTP est livrée (`core/http`). Aucun endpoint n'est encore appelé par une feature (« Endpoints consommés par feature » : à compléter). Ne pas recopier les endpoints : le contrat fait foi côté back (Swagger/OpenAPI).
+> Statut : la gestion des erreurs HTTP est livrée (`core/http`). Une feature consomme l'API : `dashboard`, avec `GET /api/stats` (voir « Endpoints consommés par feature »). Ne pas recopier les endpoints : le contrat fait foi côté back (Swagger/OpenAPI).
 
 ## Principes
 
@@ -63,7 +63,17 @@ Un code absent de `ERROR_MESSAGES` affiche `DEFAULT_ERROR_MESSAGE` sans erreur ;
 
 ## Endpoints consommés par feature
 
-À compléter.
+### `dashboard`
+
+| Méthode | Chemin       | Appelé par                                                                      | Rôle                                          |
+| ------- | ------------ | ------------------------------------------------------------------------------- | --------------------------------------------- |
+| GET     | `/api/stats` | `TrainingStatsApi.get` (`features/dashboard/data-access/training-stats.api.ts`) | Volume d'entraînement par semaine ou par mois |
+
+- Paramètres envoyés : `granularity` (`week` ou `month`), `from` et `to` (`YYYY-MM-DD`, UTC), calculés par `DashboardState` sur une plage glissante de 8 semaines ou 6 mois. Le tableau de bord n'envoie pas `type`.
+- Chargement : une `resource` dans `DashboardState`, relancée à chaque changement de granularité. `toDashboardView` (`training-stats.mapper.ts`) convertit la réponse en vue d'affichage : conversions seulement (secondes en heures, libellés, texte signé, `null` en « n/a »).
+- Erreurs : `AppError` produite par `toAppError` (voir « Gestion des erreurs »). L'intercepteur la notifie, et l'écran affiche le message avec « Réessayer ».
+- Contrat : règles et route dans `sport-hub-back/docs/technique/contextes/training-stats.md` et Swagger du back. Non recopiés ici.
+- Mock MSW : `src/mocks/handlers/training-stats.handlers.ts`.
 
 ## Génération de types depuis l'OpenAPI du back
 
