@@ -1,6 +1,6 @@
 # Intégration de l'API sport-hub-back
 
-> Statut : la gestion des erreurs HTTP est livrée (`core/http`). Une feature consomme l'API : `dashboard`, avec `GET /api/stats` (voir « Endpoints consommés par feature »). Ne pas recopier les endpoints : le contrat fait foi côté back (Swagger/OpenAPI).
+> Statut : la gestion des erreurs HTTP est livrée (`core/http`). Deux features consomment l'API : `dashboard`, avec `GET /api/stats`, et `goals`, avec `GET`, `POST`, `PATCH` et `DELETE /api/goals` (voir « Endpoints consommés par feature »). Ne pas recopier les endpoints : le contrat fait foi côté back (Swagger/OpenAPI).
 
 ## Principes
 
@@ -74,6 +74,23 @@ Un code absent de `ERROR_MESSAGES` affiche `DEFAULT_ERROR_MESSAGE` sans erreur ;
 - Erreurs : `AppError` produite par `toAppError` (voir « Gestion des erreurs »). L'intercepteur la notifie, et l'écran affiche le message avec « Réessayer ».
 - Contrat : règles et route dans `sport-hub-back/docs/technique/contextes/training-stats.md` et Swagger du back. Non recopiés ici.
 - Mock MSW : `src/mocks/handlers/training-stats.handlers.ts`.
+
+### `goals`
+
+- `GET /api/goals` : `GoalsApi.list` (`features/goals/data-access/goals.api.ts`). Liste de tous les objectifs.
+- `POST /api/goals` : `GoalsApi.create`. Création d'un objectif.
+- `PATCH /api/goals/:id` : `GoalsApi.update`. Modification, corps complet envoyé.
+- `DELETE /api/goals/:id` : `GoalsApi.delete`. Suppression.
+
+- Le front n'envoie pas le filtre `upcoming` : une seule liste est chargée, puis répartie dans `goal.mapper.ts` (`partitionGoals`) entre « À venir », « Passés » et « Sans date », sur le jour UTC courant. Le back applique la même règle pour `upcoming=true` (`list-goals.use-case.ts`).
+- Le back expose aussi `GET /api/goals/:id`. Le front ne l'appelle pas.
+- Corps d'écriture : `toCreateRequest` pour la création, `toUpdateRequest` pour la modification (même forme). Le format et le temps cible sont envoyés à `null` si le type n'est pas `evenement`, ce qui évite à la modification un échec `GOAL_INVALID` quand un événement passe à un autre type. Le temps cible est envoyé en secondes totales (`null` si nul ou absent).
+- Mapping : `GoalApi` → `Goal` (`toGoal`), le temps cible devient `{ hours, minutes, seconds }`. Les types API sont dans `goal.api-model.ts`.
+- Chargement : `GoalsState` (fourni au niveau de la page) appelle `list()` à sa création et après chaque écriture réussie. Il convertit les observables en promesses avec `firstValueFrom`, et ne suit pas le principe « `resource` » ci-dessus : écart assumé pour des écritures impératives avec retour du formulaire (à revoir si la feature évolue).
+- Erreurs : `AppError` produite par `toAppError`, comme pour le reste de l'application. Les codes `GOAL_INVALID` (400, sans `errors[]`), `GOAL_NOT_FOUND` (404) et `GOAL_TARGET_TIME_INVALID` (400) ont un message dans `ERROR_MESSAGES`. Côté back, `GOAL_TARGET_TIME_INVALID` n'est pas renvoyé par les routes à ce jour (la validation de transport répond `VALIDATION_FAILED` avant) ; son message n'est donc qu'une garde.
+- Erreurs de champ : `VALIDATION_FAILED` avec `errors[]` sur `title`, `type`, `targetDate`, `eventFormat`, `targetTimeSeconds`. Le groupe `targetTimeSeconds` du formulaire reçoit les erreurs de ce champ, via `applyFieldErrors`. Les erreurs sans champ sont listées en alerte dans le formulaire.
+- Contrat : règles et codes dans `sport-hub-back/docs/technique/contextes/objectifs.md` et `sport-hub-back/docs/technique/erreurs-api.md`. Non recopiés ici.
+- Mock MSW : `src/mocks/handlers/goals.handlers.ts` (état en mémoire, `*/api/goals`). Fixtures : `src/mocks/fixtures/goals.fixtures.ts`.
 
 ## Génération de types depuis l'OpenAPI du back
 
