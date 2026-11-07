@@ -1,0 +1,56 @@
+:host {
+  display: block;
+}
+
+.goal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.goal-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.goal-form__time {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.goal-form__time legend {
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.goal-form__time-parts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 1rem;
+}
+
+.goal-form__error {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--sh-error);
+}
+
+.goal-form__alert {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.goal-form__alert p {
+  margin: 0;
+}
+
+.goal-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

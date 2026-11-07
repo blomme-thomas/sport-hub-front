@@ -19,6 +19,12 @@
   text-decoration: none;
 }
 
+.shell__nav {
+  display: flex;
+  gap: 1rem;
+  margin-left: 1.5rem;
+}
+
 .shell__main {
   flex: 1;
   padding: 1.5rem;

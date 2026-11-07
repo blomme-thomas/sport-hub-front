@@ -1,0 +1,87 @@
+@if (alertMessages().length > 0) {
+  <div class="goal-form__alert" role="alert">
+    @for (message of alertMessages(); track $index) {
+      <p>{{ message }}</p>
+    }
+  </div>
+}
+
+<form class="goal-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="goal-form__field">
+    <label for="goal-title">Titre</label>
+    <input
+      nz-input
+      id="goal-title"
+      formControlName="title"
+      maxlength="200"
+      [attr.aria-describedby]="errorOf('title') ? 'goal-title-error' : null"
+    />
+    @if (errorOf('title'); as message) {
+      <p id="goal-title-error" class="goal-form__error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="goal-form__field">
+    <label for="goal-type">Type</label>
+    <nz-select nzId="goal-type" shSelectCombobox formControlName="type">
+      @for (option of typeOptions; track option.value) {
+        <nz-option [nzValue]="option.value" [nzLabel]="option.label" />
+      }
+    </nz-select>
+    @if (errorOf('type'); as message) {
+      <p id="goal-type-error" class="goal-form__error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="goal-form__field">
+    <label for="goal-date">Date</label>
+    <nz-date-picker
+      nzId="goal-date"
+      formControlName="targetDate"
+      [attr.aria-describedby]="errorOf('targetDate') ? 'goal-date-error' : null"
+    />
+    @if (errorOf('targetDate'); as message) {
+      <p id="goal-date-error" class="goal-form__error">{{ message }}</p>
+    }
+  </div>
+
+  @if (isEvent()) {
+    <div class="goal-form__field">
+      <label for="goal-event-format">Format</label>
+      <nz-select nzId="goal-event-format" shSelectCombobox formControlName="eventFormat">
+        @for (option of formatOptions; track option.value) {
+          <nz-option [nzValue]="option.value" [nzLabel]="option.label" />
+        }
+      </nz-select>
+      @if (errorOf('eventFormat'); as message) {
+        <p id="goal-event-format-error" class="goal-form__error">{{ message }}</p>
+      }
+    </div>
+  }
+
+  <fieldset class="goal-form__time" formGroupName="targetTimeSeconds">
+    <legend>Temps cible</legend>
+    <div class="goal-form__time-parts">
+      <div class="goal-form__field">
+        <label for="goal-hours">Heures</label>
+        <nz-input-number nzId="goal-hours" formControlName="hours" />
+      </div>
+      <div class="goal-form__field">
+        <label for="goal-minutes">Minutes</label>
+        <nz-input-number nzId="goal-minutes" formControlName="minutes" />
+      </div>
+      <div class="goal-form__field">
+        <label for="goal-seconds">Secondes</label>
+        <nz-input-number nzId="goal-seconds" formControlName="seconds" />
+      </div>
+    </div>
+    @if (errorOf('targetTimeSeconds'); as message) {
+      <p id="goal-time-error" class="goal-form__error">{{ message }}</p>
+    }
+  </fieldset>
+
+  <div class="goal-form__actions">
+    <button nz-button type="button" (click)="cancelled.emit()">Annuler</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="submitting()">Enregistrer</button>
+  </div>
+</form>
