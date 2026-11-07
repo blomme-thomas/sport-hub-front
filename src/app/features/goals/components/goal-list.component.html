@@ -1,0 +1,39 @@
+<section class="goal-list" [attr.aria-labelledby]="headingId">
+  <h2 class="goal-list__heading" [id]="headingId">{{ heading() }}</h2>
+
+  @if (rows().length === 0) {
+    <p class="goal-list__empty">{{ emptyMessage() }}</p>
+  } @else {
+    <ul class="goal-list__items">
+      @for (row of rows(); track row.goal.id) {
+        <li class="goal-list__item">
+          <div class="goal-list__details">
+            <span class="goal-list__title">{{ row.goal.title }}</span>
+            @if (row.summary) {
+              <span class="goal-list__summary">{{ row.summary }}</span>
+            }
+          </div>
+          <div class="goal-list__actions">
+            <button
+              nz-button
+              type="button"
+              [attr.aria-label]="'Modifier ' + row.goal.title"
+              (click)="edit.emit(row.goal)"
+            >
+              Modifier
+            </button>
+            <button
+              nz-button
+              nzDanger
+              type="button"
+              [attr.aria-label]="'Supprimer ' + row.goal.title"
+              (click)="delete.emit(row.goal)"
+            >
+              Supprimer
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -20,6 +20,9 @@ export const ERROR_MESSAGES: Readonly<Record<string, string>> = {
   WORKOUT_GENERATION_ACCESS_DENIED:
     "La génération de séance n'est pas autorisée par le service d'IA.",
   WORKOUT_GENERATION_INVALID_OUTPUT: 'La séance générée ne respecte pas le format attendu.',
+  GOAL_INVALID: "L'objectif n'est pas valide. Vérifiez les informations saisies.",
+  GOAL_NOT_FOUND: 'Objectif introuvable. Il a peut-être déjà été supprimé.',
+  GOAL_TARGET_TIME_INVALID: 'Le temps cible doit être un nombre de secondes strictement positif.',
   NETWORK_ERROR: 'Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.',
   TIMEOUT: 'Le serveur met trop de temps à répondre. Réessayez dans quelques instants.',
   INVALID_RESPONSE: 'Le serveur a renvoyé une réponse inattendue. Réessayez plus tard.',

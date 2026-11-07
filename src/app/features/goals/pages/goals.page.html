@@ -1,0 +1,54 @@
+<header class="goals__header">
+  <h1 class="goals__title">Objectifs</h1>
+  <button nz-button nzType="primary" type="button" (click)="openForm('new')">
+    Nouvel objectif
+  </button>
+</header>
+
+@if (state.error(); as error) {
+  <div class="goals__error" role="alert">
+    <p>{{ error.userMessage }}</p>
+    <button nz-button type="button" (click)="state.reload()">Réessayer</button>
+  </div>
+} @else {
+  <div class="goals__content" [attr.aria-busy]="state.isLoading()">
+    @if (state.isEmpty()) {
+      <p class="goals__empty">Aucun objectif pour l’instant. Créez votre premier objectif.</p>
+    }
+    <sh-goal-list
+      heading="À venir"
+      emptyMessage="Aucun objectif à venir."
+      [goals]="state.upcoming()"
+      (edit)="openForm($event)"
+      (delete)="confirmDelete($event)"
+    />
+    <sh-goal-list
+      heading="Passés"
+      emptyMessage="Aucun objectif passé."
+      [goals]="state.past()"
+      (edit)="openForm($event)"
+      (delete)="confirmDelete($event)"
+    />
+    <sh-goal-list
+      heading="Sans date"
+      emptyMessage="Aucun objectif sans date."
+      [goals]="state.undated()"
+      (edit)="openForm($event)"
+      (delete)="confirmDelete($event)"
+    />
+  </div>
+}
+
+@if (editing() !== null) {
+  <nz-modal [nzVisible]="true" [nzTitle]="formTitle()" [nzFooter]="null" (nzOnCancel)="closeForm()">
+    <ng-container *nzModalContent>
+      <sh-goal-form
+        [goal]="formGoal()"
+        [submitting]="state.saving()"
+        [serverError]="formError()"
+        (saved)="onSaved($event)"
+        (cancelled)="closeForm()"
+      />
+    </ng-container>
+  </nz-modal>
+}
