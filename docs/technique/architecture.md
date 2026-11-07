@@ -1,6 +1,6 @@
 # Architecture
 
-> Statut : conventions cibles (`instructions/01` et `11`), aucun code livré. À vérifier contre le code dès le premier `ng new`.
+> Statut : le socle Angular est livré, ainsi que `core/config`, `core/layout`, `core/http` (intercepteur d'erreur et conversion Problem Details en `AppError`, voir `integration-api.md`) et `shared/ui/chart` (`sh-chart`). Aucune feature métier n'est encore créée.
 
 ## Rôle
 
@@ -10,12 +10,12 @@ Dashboard Angular d'un seul utilisateur, usage local, sans authentification. Il 
 
 Angular (dernière stable), TypeScript strict, composants standalone, signals, ng-zorro-antd, Chart.js, Vitest + Testing Library + MSW, Playwright, ESLint + Prettier.
 
-## Organisation cible
+## Organisation
 
 ```
 src/app/
-  core/       config (API_BASE_URL), http (interceptors), layout, erreurs globales
-  shared/     ui, pipes, directives, validators, utils
+  core/       config (API_BASE_URL), http (intercepteur d'erreur, conversion Problem Details en AppError), layout
+  shared/     ui (sh-chart), pipes, directives, validators, utils (seul ui est livré)
   features/<feature>/
     pages/ components/ data-access/ models/ <feature>.routes.ts
 ```
