@@ -1,0 +1,11 @@
+<nz-radio-group
+  role="radiogroup"
+  aria-label="Granularité"
+  nzButtonStyle="solid"
+  [formControl]="control"
+>
+  <!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
+  <label nz-radio-button [nzValue]="'week'">Semaine</label>
+  <label nz-radio-button [nzValue]="'month'">Mois</label>
+  <!-- eslint-enable @angular-eslint/template/label-has-associated-control -->
+</nz-radio-group>

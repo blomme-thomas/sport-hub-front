@@ -1,0 +1,41 @@
+:host {
+  display: block;
+}
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+  padding: 1rem;
+  border: 1px solid var(--sh-chart-grid);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.chart-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.chart-card__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.chart-card__expand {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--sh-chart-grid);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--sh-chart-text);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--sh-chart-series-1);
+    outline-offset: 2px;
+  }
+}

@@ -6,8 +6,8 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    title: 'Accueil',
-    loadComponent: () => import('./core/layout/home.page').then((m) => m.HomePage),
+    loadChildren: () =>
+      import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
   },
   {
     path: '**',

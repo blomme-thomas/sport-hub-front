@@ -1,0 +1,49 @@
+<header class="dashboard__header">
+  <h1 class="dashboard__title">Tableau de bord</h1>
+  <sh-granularity-toggle [value]="state.granularity()" (changed)="state.setGranularity($event)" />
+</header>
+
+<p class="visually-hidden" aria-live="polite">{{ statusMessage() }}</p>
+
+@if (state.error(); as error) {
+  <div class="dashboard__error" role="alert">
+    <p>{{ error.userMessage }}</p>
+    <button nz-button nzType="primary" type="button" (click)="state.reload()">Réessayer</button>
+  </div>
+} @else {
+  <section class="dashboard__content" [attr.aria-busy]="state.isLoading()">
+    @if (state.view(); as view) {
+      @if (state.isEmpty()) {
+        <p class="dashboard__empty">Aucune activité sur cette période</p>
+      } @else {
+        <section class="dashboard__summary" aria-label="Période choisie">
+          <article class="dashboard__figure">
+            <h2 class="dashboard__figure-label">Séances</h2>
+            <p class="dashboard__figure-value">{{ view.currentPeriod.countLabel }}</p>
+            <sh-variation-badge [variation]="view.variation.count" />
+          </article>
+          <article class="dashboard__figure">
+            <h2 class="dashboard__figure-label">Durée</h2>
+            <p class="dashboard__figure-value">{{ view.currentPeriod.durationLabel }}</p>
+            <sh-variation-badge [variation]="view.variation.duration" />
+          </article>
+        </section>
+        <p class="dashboard__note">
+          Variation par rapport à la période précédente complète. La période en cours est comparée à
+          une période complète : une baisse peut donc être mécanique.
+        </p>
+        <div class="dashboard__charts">
+          <sh-chart-card [model]="view.charts.sessions" (expand)="openChart('sessions')" />
+          <sh-chart-card [model]="view.charts.duration" (expand)="openChart('duration')" />
+          <sh-chart-card
+            [model]="view.charts.byType"
+            [kind]="chartKinds.byType"
+            (expand)="openChart('byType')"
+          />
+        </div>
+      }
+    } @else {
+      <p class="dashboard__loading">Chargement…</p>
+    }
+  </section>
+}

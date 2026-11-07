@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+.chart-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chart-modal__toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.chart-modal__chart {
+  --sh-chart-height: 24rem;
+}
