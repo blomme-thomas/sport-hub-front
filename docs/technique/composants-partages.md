@@ -16,12 +16,12 @@ import { ChartComponent } from '@shared/ui/chart/chart.component';
 
 **Inputs**
 
-| Input     | Type                 | Obligatoire | Rôle                                                                  |
-| --------- | -------------------- | ----------- | --------------------------------------------------------------------- |
-| `type`    | `ChartType`          | oui         | Type de graphique Chart.js (`bar`, `line`, ...)                       |
-| `data`    | `ChartData`          | oui         | Labels et jeux de données                                             |
-| `options` | `ChartOptions`       | non (`{}`)  | Options Chart.js, fusionnées après les valeurs par défaut             |
-| `label`   | `string`             | oui         | Nom accessible du graphique (`aria-label` du canvas)                  |
+| Input     | Type           | Obligatoire | Rôle                                                      |
+| --------- | -------------- | ----------- | --------------------------------------------------------- |
+| `type`    | `ChartType`    | oui         | Type de graphique Chart.js (`bar`, `line`, ...)           |
+| `data`    | `ChartData`    | oui         | Labels et jeux de données                                 |
+| `options` | `ChartOptions` | non (`{}`)  | Options Chart.js, fusionnées après les valeurs par défaut |
+| `label`   | `string`       | oui         | Nom accessible du graphique (`aria-label` du canvas)      |
 
 Les types sont les types larges de Chart.js : le wrapper n'est pas générique. Le typage précis se fait côté consommateur.
 
