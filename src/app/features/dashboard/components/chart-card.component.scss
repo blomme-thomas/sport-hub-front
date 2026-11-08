@@ -9,8 +9,9 @@
   height: 100%;
   padding: 1rem;
   border: 1px solid var(--sh-chart-grid);
-  border-radius: 8px;
-  background: #fff;
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
 }
 
 .chart-card__header {
