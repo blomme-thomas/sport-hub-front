@@ -1,10 +1,10 @@
 # Consulter le tableau de bord
 
-> Statut : implémenté (issue #7). Tests unitaires livrés (mapper, état, composants, page). Le test e2e du parcours n'est pas encore écrit.
+> Statut : implémenté (issues #7 et #13). Tests unitaires livrés (mapper, états, composants, page) pour le volume d'entraînement et pour le bloc « Prochain événement ». Le test e2e du parcours n'est pas encore écrit.
 
 ## But
 
-Voir d'un coup d'œil, sur la page d'accueil, le volume d'entraînement (nombre de séances et durée) de la période en cours, sa variation par rapport à la période précédente, et son évolution sur la plage affichée.
+Voir d'un coup d'œil, sur la page d'accueil, le prochain événement à venir et le temps qui reste avant lui, puis le volume d'entraînement (nombre de séances et durée) de la période en cours, sa variation par rapport à la période précédente, et son évolution sur la plage affichée.
 
 ## Point d'entrée
 
@@ -13,12 +13,34 @@ Voir d'un coup d'œil, sur la page d'accueil, le volume d'entraînement (nombre 
 
 ## Étapes
 
-1. Ouvrir `/`. La page affiche le titre, la bascule Semaine / Mois (Semaine par défaut) et le chargement des statistiques.
-2. Lire les chiffres clés de la période en cours : nombre de séances et durée (en heures), chacun avec sa variation.
-3. Lire la note sur la comparaison, puis les trois cartes : séances par période, durée par période, répartition par type (dernière période).
-4. Basculer Semaine / Mois : les statistiques sont rechargées, les chiffres et les graphiques sont mis à jour, et une annonce `aria-live` indique la granularité affichée.
-5. Agrandir une carte avec son bouton « Agrandir » : une modale affiche le graphique en grand, avec son titre, la bascule de granularité et le tableau des valeurs.
-6. Fermer la modale avec le bouton « Fermer » ou la touche Échap.
+1. Ouvrir `/`. La page affiche le titre, la bascule Semaine / Mois (Semaine par défaut), puis le bloc « Prochain événement », et le chargement des statistiques.
+2. Lire le bloc « Prochain événement », en tête de page : nombre de jours restants jusqu'au prochain événement à venir, titre, format et temps cible. Sans événement à venir, le bloc invite à en créer un (voir « Prochain événement » ci-dessous).
+3. Lire les chiffres clés de la période en cours : nombre de séances et durée (en heures), chacun avec sa variation.
+4. Lire la note sur la comparaison, puis les trois cartes : séances par période, durée par période, répartition par type (dernière période).
+5. Basculer Semaine / Mois : les statistiques sont rechargées, les chiffres et les graphiques sont mis à jour, et une annonce `aria-live` indique la granularité affichée. Le bloc « Prochain événement » n'est pas rechargé.
+6. Agrandir une carte avec son bouton « Agrandir » : une modale affiche le graphique en grand, avec son titre, la bascule de granularité et le tableau des valeurs.
+7. Fermer la modale avec le bouton « Fermer » ou la touche Échap.
+
+## Prochain événement
+
+Bloc en tête de page, sous le titre et la bascule, avant les chiffres clés. Il est indépendant du volume d'entraînement : une erreur sur l'un n'empêche pas l'affichage de l'autre.
+
+- **Événement retenu** : parmi les objectifs de type « Événement » dont la date est aujourd'hui ou plus tard (jour UTC), le plus proche. Les objectifs « Volume » ou « Régularité », et ceux sans date, sont ignorés. À date égale, l'ordre renvoyé par l'API est conservé. Voir `docs/technique/integration-api.md`.
+- **Compte à rebours** : le nombre de jours entiers entre aujourd'hui et la date de l'événement. Libellés : « Aujourd'hui » (0), « 1 jour restant » (1), « n jours restants » (n).
+- **Titre, format, temps cible** : le titre de l'objectif, puis le format (« Sprint », « Olympique », « Half (semi-distance) », « Full (distance complète) », « Autre ») et le temps cible au format « H h M min S s ». Si le format ou le temps cible n'est pas renseigné, le bloc affiche « Format non défini » ou « Temps cible non défini ».
+- **Jour de référence** : le jour UTC, figé à l'ouverture de la page. Une page laissée ouverte au-delà de minuit ne recalcule pas le compte à rebours tant qu'elle n'est pas rechargée.
+- **Décalage horaire** : le jour est lu en UTC, comme le reste du tableau de bord. À Paris, entre minuit et 1 h (heure d'hiver) ou entre minuit et 2 h (heure d'été), le jour UTC est encore la veille. Pendant ces heures, le compte à rebours affiche donc un jour de plus que le calendrier local, et un événement de la veille locale peut afficher « Aujourd'hui ». Le formulaire d'objectifs enregistre la date en calendrier local (voir `docs/fonctionnel/parcours/gerer-objectifs-et-evenements.md`, « Limites connues »).
+
+### États du bloc
+
+| État            | Déclencheur                                   | Affichage                                                                                                                                                                      |
+| --------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Chargement      | Premier chargement de `GET /api/goals`        | Texte « Chargement… » dans une zone `aria-busy="true"`.                                                                                                                        |
+| Événement       | Au moins un événement à venir                 | Grand chiffre « N jours restants » (ou « Aujourd'hui »), titre en titre de niveau 3, puis format et temps cible.                                                               |
+| Aucun événement | Aucun événement à venir (liste vide comprise) | Texte « Aucun événement à venir. » suivi d'un lien « Créer un événement » vers `/goals`. Pas d'erreur, pas de `role="alert"`.                                                  |
+| Erreur          | Échec de `GET /api/goals`                     | Bloc `role="alert"` affichant le message utilisateur de l'API, et un bouton « Réessayer » qui relance uniquement le chargement de ce bloc. Les statistiques restent affichées. |
+
+Le bloc n'est pas relancé par la bascule Semaine / Mois. La section porte le titre « Prochain événement » (`h2`), relié à la section par `aria-labelledby`.
 
 ## Plage de dates et requête
 
@@ -67,4 +89,4 @@ Voir d'un coup d'œil, sur la page d'accueil, le volume d'entraînement (nombre 
 
 ## Hors périmètre
 
-Compte à rebours vers un événement, bilan hebdomadaire généré par l'IA, mini-calendrier de la semaine, commentaire IA, calendrier et planning : stories à venir.
+Progression chiffrée vers l'objectif, bilan hebdomadaire généré par l'IA, mini-calendrier de la semaine, commentaire IA, calendrier et planning : stories à venir.

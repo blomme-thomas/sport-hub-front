@@ -1,12 +1,18 @@
+import { provideRouter } from '@angular/router';
 import { render, screen, waitFor } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   emptyStatsResponse,
   normalStatsResponse,
 } from '../../../../mocks/fixtures/training-stats.fixtures';
+import { semiPastApi, volumeUndatedApi } from '../../../../mocks/fixtures/goals.fixtures';
 import { chartJsInstances } from '../../../../mocks/chart-js.fake';
+import {
+  problemResponse as goalsProblemResponse,
+  trackGoalsList,
+} from '../../../../mocks/goals.testing';
 import { server } from '../../../../mocks/server';
 import {
   STATS_URL,
@@ -25,11 +31,15 @@ const SESSIONS_TITLE = view.charts.sessions.title;
 const DURATION_TITLE = view.charts.duration.title;
 const BY_TYPE_TITLE = view.charts.byType.title;
 
+function pageProviders() {
+  return [...statsTestProviders(), provideRouter([])];
+}
+
 describe('DashboardPage', () => {
   it('affiche le titre de la page Tableau de bord', async () => {
     trackStats();
 
-    await render(DashboardPage, { providers: statsTestProviders() });
+    await render(DashboardPage, { providers: pageProviders() });
 
     expect(screen.getByRole('heading', { level: 1, name: 'Tableau de bord' })).toBeInTheDocument();
   });
@@ -44,7 +54,7 @@ describe('DashboardPage', () => {
       return HttpResponse.json(normalStatsResponse);
     });
 
-    const { container } = await render(DashboardPage, { providers: statsTestProviders() });
+    const { container } = await render(DashboardPage, { providers: pageProviders() });
 
     expect(container.querySelector('[aria-busy="true"]')).not.toBeNull();
 
@@ -58,7 +68,7 @@ describe('DashboardPage', () => {
   it('affiche le nombre et la durée des séances de la dernière période', async () => {
     trackStats();
 
-    await render(DashboardPage, { providers: statsTestProviders() });
+    await render(DashboardPage, { providers: pageProviders() });
 
     expect(await screen.findByText(/4 séances?/)).toBeInTheDocument();
     expect(screen.getByText(/2[,.]5\s*h/)).toBeInTheDocument();
@@ -67,7 +77,7 @@ describe('DashboardPage', () => {
   it('affiche la variation signée par rapport à la période précédente', async () => {
     trackStats();
 
-    await render(DashboardPage, { providers: statsTestProviders() });
+    await render(DashboardPage, { providers: pageProviders() });
 
     expect(await screen.findByText(/^\+1\b/)).toBeInTheDocument();
   });
@@ -75,7 +85,7 @@ describe('DashboardPage', () => {
   it('affiche la répartition par type d activité', async () => {
     trackStats();
 
-    await render(DashboardPage, { providers: statsTestProviders() });
+    await render(DashboardPage, { providers: pageProviders() });
 
     expect((await screen.findAllByText('running')).length).toBeGreaterThan(0);
     expect((await screen.findAllByText('cycling')).length).toBeGreaterThan(0);
@@ -84,7 +94,7 @@ describe('DashboardPage', () => {
   it('affiche les graphiques d évolution et de répartition, chacun nommé par son titre', async () => {
     trackStats();
 
-    await render(DashboardPage, { providers: statsTestProviders() });
+    await render(DashboardPage, { providers: pageProviders() });
 
     expect(await screen.findByRole('img', { name: SESSIONS_TITLE })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: DURATION_TITLE })).toBeInTheDocument();
@@ -94,7 +104,7 @@ describe('DashboardPage', () => {
 
   it('relance la requête en granularité mois et coche Mois quand l utilisateur bascule', async () => {
     const requests = trackStats();
-    await render(DashboardPage, { providers: statsTestProviders() });
+    await render(DashboardPage, { providers: pageProviders() });
     await screen.findByRole('img', { name: SESSIONS_TITLE });
 
     await userEvent.click(screen.getByRole('radio', { name: 'Mois' }));
@@ -109,7 +119,7 @@ describe('DashboardPage', () => {
   it('affiche un état vide explicite et aucune carte quand aucune activité n est enregistrée', async () => {
     trackStats(() => HttpResponse.json(emptyStatsResponse));
 
-    await render(DashboardPage, { providers: statsTestProviders() });
+    await render(DashboardPage, { providers: pageProviders() });
 
     expect(await screen.findByText('Aucune activité sur cette période')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Agrandir le graphique/ })).not.toBeInTheDocument();
@@ -123,7 +133,7 @@ describe('DashboardPage', () => {
         ? problemResponse(500, 'INTERNAL_ERROR')
         : HttpResponse.json(normalStatsResponse);
     });
-    await render(DashboardPage, { providers: statsTestProviders() });
+    await render(DashboardPage, { providers: pageProviders() });
 
     const alert = await screen.findByRole('alert');
     expect(alert).toHaveTextContent(ERROR_MESSAGES['INTERNAL_ERROR']);
@@ -136,8 +146,62 @@ describe('DashboardPage', () => {
 
   it('affiche une erreur quand l API répond 500 sans corps problem+json', async () => {
     server.use(http.get(STATS_URL, () => new HttpResponse(null, { status: 500 })));
-    await render(DashboardPage, { providers: statsTestProviders() });
+    await render(DashboardPage, { providers: pageProviders() });
 
     expect(await screen.findByRole('alert')).toHaveTextContent(ERROR_MESSAGES['INVALID_RESPONSE']);
+  });
+
+  describe('bloc Prochain événement', () => {
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-30T10:00:00Z') });
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('affiche le prochain événement en tête de page, avant les chiffres clés', async () => {
+      trackStats();
+      trackGoalsList();
+
+      await render(DashboardPage, { providers: pageProviders() });
+
+      expect(await screen.findByText('6 jours restants')).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { level: 3, name: 'Triathlon de Paris' }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Olympique')).toBeInTheDocument();
+      expect(screen.getByText('2 h 30 min 0 s')).toBeInTheDocument();
+
+      const nextEventHeading = screen.getByRole('heading', { name: 'Prochain événement' });
+      const figureHeading = await screen.findByRole('heading', { name: 'Séances' });
+      expect(
+        nextEventHeading.compareDocumentPosition(figureHeading) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    });
+
+    it('invite à créer un événement sans alerte quand aucun événement n est à venir', async () => {
+      trackStats();
+      trackGoalsList(() => HttpResponse.json({ items: [semiPastApi, volumeUndatedApi] }));
+
+      await render(DashboardPage, { providers: pageProviders() });
+
+      expect(await screen.findByRole('link', { name: 'Créer un événement' })).toHaveAttribute(
+        'href',
+        '/goals',
+      );
+      expect(await screen.findByRole('img', { name: SESSIONS_TITLE })).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('affiche l erreur des objectifs sans masquer les statistiques', async () => {
+      trackStats();
+      trackGoalsList(() => goalsProblemResponse(500, 'INTERNAL_ERROR'));
+
+      await render(DashboardPage, { providers: pageProviders() });
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(ERROR_MESSAGES['INTERNAL_ERROR']);
+      expect(await screen.findByRole('img', { name: SESSIONS_TITLE })).toBeInTheDocument();
+    });
   });
 });
