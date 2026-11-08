@@ -28,7 +28,6 @@ vi.mock('chart.js', async () => (await import('../../../../mocks/chart-js.fake')
 
 const view = toDashboardView(normalStatsResponse);
 const SESSIONS_TITLE = view.charts.sessions.title;
-const DURATION_TITLE = view.charts.duration.title;
 const BY_TYPE_TITLE = view.charts.byType.title;
 
 function pageProviders() {
@@ -98,7 +97,9 @@ describe('DashboardPage', () => {
     await render(DashboardPage, { providers: pageProviders() });
 
     expect(await screen.findByRole('img', { name: SESSIONS_TITLE })).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: DURATION_TITLE })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('img', { name: 'Durée par jour sur la période' }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('img', { name: BY_TYPE_TITLE })).toBeInTheDocument();
     // Trois graphiques nommés, plus les mini-courbes du bandeau (séances, durée, calories).
     expect(chartJsInstances).toHaveLength(6);

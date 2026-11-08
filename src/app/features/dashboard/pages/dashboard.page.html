@@ -53,7 +53,7 @@
         />
         <div class="dashboard__charts">
           <sh-chart-card [model]="view.charts.sessions" (expand)="openChart('sessions')" />
-          <sh-chart-card [model]="view.charts.duration" (expand)="openChart('duration')" />
+          <sh-performance-card />
           <sh-chart-card
             [model]="view.charts.byType"
             [kind]="chartKinds.byType"

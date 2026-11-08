@@ -13,6 +13,7 @@ import { ChartModalComponent, type ChartModalData } from '../components/chart-mo
 import { GranularityToggleComponent } from '../components/granularity-toggle.component';
 import { NextEventCardComponent } from '../components/next-event-card.component';
 import { KpiCardComponent } from '../components/kpi-card.component';
+import { PerformanceCardComponent } from '../components/performance-card.component';
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card.component';
 import { VariationBadgeComponent } from '../components/variation-badge.component';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
@@ -31,6 +32,7 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
     GranularityToggleComponent,
     KpiCardComponent,
     NextEventCardComponent,
+    PerformanceCardComponent,
     RecentActivitiesCardComponent,
     VariationBadgeComponent,
   ],
