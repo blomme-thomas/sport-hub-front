@@ -65,6 +65,21 @@ describe('toRecentActivity', () => {
     });
   });
 
+  it('traduit le vélo virtuel en cyclisme pictogrammé', () => {
+    const item: ActivitySummaryApi = {
+      id: 'act-3',
+      garminActivityId: '3',
+      type: 'virtual_ride',
+      startedAt: new Date(2026, 10, 7, 7, 0).toISOString(),
+      durationSeconds: 2400,
+      distanceMeters: 15000,
+    };
+
+    const activity = toRecentActivity(item, NOW);
+    expect(activity.typeLabel).toBe('Vélo virtuel');
+    expect(activity.typeIcon).toBe('🚴');
+  });
+
   it('garde le type inconnu lisible, sans underscore', () => {
     const item: ActivitySummaryApi = {
       id: 'act-2',

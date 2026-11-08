@@ -11,6 +11,7 @@ const TYPE_LABELS: Record<string, string> = {
   running: 'Course à pied',
   cycling: 'Cyclisme',
   lap_swimming: 'Natation',
+  virtual_ride: 'Vélo virtuel',
   walking: 'Marche',
 };
 
@@ -18,6 +19,7 @@ const TYPE_ICONS: Record<string, string> = {
   running: '🏃',
   cycling: '🚴',
   lap_swimming: '🏊',
+  virtual_ride: '🚴',
   walking: '🚶',
 };
 
