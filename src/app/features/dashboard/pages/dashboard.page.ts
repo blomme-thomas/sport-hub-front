@@ -12,9 +12,11 @@ import { CHART_KIND } from '../components/chart-config';
 import { ChartModalComponent, type ChartModalData } from '../components/chart-modal.component';
 import { GranularityToggleComponent } from '../components/granularity-toggle.component';
 import { NextEventCardComponent } from '../components/next-event-card.component';
+import { RecentActivitiesCardComponent } from '../components/recent-activities-card.component';
 import { VariationBadgeComponent } from '../components/variation-badge.component';
 import { DashboardState } from '../data-access/dashboard.state';
 import { NextEventState } from '../data-access/next-event.state';
+import { RecentActivitiesState } from '../data-access/recent-activities.state';
 import type { ChartKey, Granularity } from '../models/training-stats.model';
 
 const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month: 'mois' };
@@ -26,16 +28,18 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
     ChartCardComponent,
     GranularityToggleComponent,
     NextEventCardComponent,
+    RecentActivitiesCardComponent,
     VariationBadgeComponent,
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
-  providers: [DashboardState, NextEventState],
+  providers: [DashboardState, NextEventState, RecentActivitiesState],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage {
   protected readonly state = inject(DashboardState);
   protected readonly nextEvent = inject(NextEventState);
+  protected readonly recent = inject(RecentActivitiesState);
   protected readonly chartKinds = CHART_KIND;
 
   private readonly modal = inject(NzModalService);

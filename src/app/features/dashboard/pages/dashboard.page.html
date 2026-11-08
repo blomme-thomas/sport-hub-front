@@ -37,10 +37,13 @@
             <sh-variation-badge [variation]="view.variation.duration" />
           </article>
         </section>
-        <p class="dashboard__note">
-          Variation par rapport à la période précédente complète. La période en cours est comparée à
-          une période complète : une baisse peut donc être mécanique.
-        </p>
+        <sh-recent-activities-card
+          class="dashboard__recent"
+          [activities]="recent.activities()"
+          [error]="recent.error()"
+          [loading]="recent.isLoading()"
+          (retry)="recent.reload()"
+        />
         <div class="dashboard__charts">
           <sh-chart-card [model]="view.charts.sessions" (expand)="openChart('sessions')" />
           <sh-chart-card [model]="view.charts.duration" (expand)="openChart('duration')" />

@@ -53,9 +53,14 @@
   font-weight: 600;
 }
 
-.dashboard__note {
-  margin: 0;
-  font-size: 0.875rem;
+.dashboard__recent {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .dashboard__recent {
+    width: calc(50% - 0.5rem);
+  }
 }
 
 .dashboard__charts {
