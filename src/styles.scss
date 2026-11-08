@@ -1,19 +1,12 @@
-/* Styles globaux. Le thème Ant Design (ng-zorro-antd) est chargé via angular.json. */
+/* Styles globaux. Le thème sombre Ant Design (ng-zorro-antd) est chargé via angular.json. */
 
 html,
 body {
   margin: 0;
   min-height: 100%;
-}
-
-:root {
-  --sh-chart-series-1: #1677ff;
-  --sh-chart-series-2: #d46b08;
-  --sh-chart-series-3: #531dab;
-  --sh-chart-series-4: #08979c;
-  --sh-chart-text: #262626;
-  --sh-chart-grid: #e6e6e6;
-  --sh-error: #cf1322;
+  background: var(--sh-bg);
+  color: var(--sh-text);
+  font-family: var(--sh-font-family);
 }
 
 .visually-hidden {
