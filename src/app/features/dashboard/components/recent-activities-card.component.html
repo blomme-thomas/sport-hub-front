@@ -1,0 +1,37 @@
+<section class="recent" aria-labelledby="recent-heading" [attr.aria-busy]="loading()">
+  <h2 id="recent-heading" class="recent__heading">Dernières séances</h2>
+
+  @if (error(); as failure) {
+    <div class="recent__error" role="alert">
+      <p>{{ failure.userMessage }}</p>
+      <button nz-button nzType="primary" type="button" (click)="retry.emit()">Réessayer</button>
+    </div>
+  } @else if (activities() === undefined) {
+    <p class="recent__status">Chargement…</p>
+  } @else if (activities(); as list) {
+    @if (list.length === 0) {
+      <p class="recent__status">Aucune séance récente</p>
+    } @else {
+      <ul class="recent__list">
+        @for (activity of list; track activity.id) {
+          <li class="recent__item">
+            <div class="recent__main">
+              <span class="recent__type">{{ activity.typeLabel }}</span>
+              <span class="recent__date">{{ activity.dateLabel }}</span>
+            </div>
+            <dl class="recent__figures">
+              <div>
+                <dt class="visually-hidden">Durée</dt>
+                <dd>{{ activity.durationLabel }}</dd>
+              </div>
+              <div>
+                <dt class="visually-hidden">Distance</dt>
+                <dd>{{ activity.distanceLabel }}</dd>
+              </div>
+            </dl>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

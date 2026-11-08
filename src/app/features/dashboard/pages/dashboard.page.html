@@ -14,6 +14,14 @@
   (retry)="nextEvent.reload()"
 />
 
+<sh-recent-activities-card
+  class="dashboard__recent"
+  [activities]="recent.activities()"
+  [error]="recent.error()"
+  [loading]="recent.isLoading()"
+  (retry)="recent.reload()"
+/>
+
 @if (state.error(); as error) {
   <div class="dashboard__error" role="alert">
     <p>{{ error.userMessage }}</p>
