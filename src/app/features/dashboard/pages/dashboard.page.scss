@@ -63,11 +63,6 @@
   }
 }
 
-.dashboard__note {
-  margin: 0;
-  font-size: 0.875rem;
-}
-
 .dashboard__charts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));

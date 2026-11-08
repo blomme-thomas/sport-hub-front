@@ -44,10 +44,6 @@
           [loading]="recent.isLoading()"
           (retry)="recent.reload()"
         />
-        <p class="dashboard__note">
-          Variation par rapport à la période précédente complète. La période en cours est comparée à
-          une période complète : une baisse peut donc être mécanique.
-        </p>
         <div class="dashboard__charts">
           <sh-chart-card [model]="view.charts.sessions" (expand)="openChart('sessions')" />
           <sh-chart-card [model]="view.charts.duration" (expand)="openChart('duration')" />
