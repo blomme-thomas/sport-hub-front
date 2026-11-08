@@ -46,8 +46,8 @@ export type IconName =
   styles: `
     :host {
       display: inline-flex;
-      width: 1.1rem;
-      height: 1.1rem;
+      width: 1.5rem;
+      height: 1.5rem;
     }
 
     svg {
@@ -60,8 +60,11 @@ export type IconName =
       stroke-linejoin: round;
     }
   `,
+  host: { '[style.color]': 'color()' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IconComponent {
   readonly name = input.required<IconName>();
+  /** Couleur CSS (ex. `var(--sh-violet)`) ; `null` = couleur héritée du parent. */
+  readonly color = input<string | null>(null);
 }

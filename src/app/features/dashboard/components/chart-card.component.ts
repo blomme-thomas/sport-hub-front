@@ -16,6 +16,7 @@ export class ChartCardComponent {
   readonly model = input.required<ChartModel>();
   readonly kind = input<ChartKind>('bar');
   readonly icon = input<IconName>('bars');
+  readonly iconColor = input<string>('var(--sh-accent-text)');
   readonly expand = output<void>();
 
   protected readonly data = computed(() => chartDataOf(this.model()));

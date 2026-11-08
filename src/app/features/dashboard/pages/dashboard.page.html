@@ -55,6 +55,7 @@
           <sh-chart-card
             [model]="view.charts.sessions"
             [icon]="'calendar'"
+            [iconColor]="'var(--sh-success)'"
             (expand)="openChart('sessions')"
           />
           <sh-performance-card />
@@ -62,6 +63,7 @@
             [model]="view.charts.byType"
             [kind]="chartKinds.byType"
             [icon]="'pie'"
+            [iconColor]="'var(--sh-violet)'"
             (expand)="openChart('byType')"
           />
         </div>
