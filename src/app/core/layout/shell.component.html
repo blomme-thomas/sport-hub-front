@@ -1,9 +1,66 @@
-<header class="shell__header">
-  <a class="shell__brand" routerLink="/">Sport Hub</a>
-  <nav class="shell__nav" aria-label="Principal">
-    <a routerLink="/goals">Objectifs</a>
-  </nav>
-</header>
-<main class="shell__main">
-  <router-outlet />
-</main>
+<a class="shell__skip-link" href="#contenu">Aller au contenu</a>
+
+<div class="shell">
+  <button
+    class="shell__menu-toggle"
+    type="button"
+    aria-controls="navigation-principale"
+    [attr.aria-expanded]="menuOpen()"
+    (click)="toggleMenu()"
+  >
+    <span class="visually-hidden">{{ menuOpen() ? 'Fermer le menu' : 'Ouvrir le menu' }}</span>
+    <span aria-hidden="true">☰</span>
+  </button>
+
+  <aside
+    id="navigation-principale"
+    class="shell__sidebar"
+    [class.shell__sidebar--open]="menuOpen()"
+    aria-label="Navigation principale"
+  >
+    <a class="shell__brand" routerLink="/" (click)="closeMenu()">Sport Hub</a>
+
+    <nav>
+      <ul class="shell__nav">
+        <li>
+          <a
+            class="shell__link"
+            routerLink="/"
+            routerLinkActive="shell__link--active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            ariaCurrentWhenActive="page"
+            (click)="closeMenu()"
+          >
+            Tableau de bord
+          </a>
+        </li>
+        <li>
+          <a
+            class="shell__link"
+            routerLink="/goals"
+            routerLinkActive="shell__link--active"
+            ariaCurrentWhenActive="page"
+            (click)="closeMenu()"
+          >
+            Objectifs
+          </a>
+        </li>
+        @for (label of comingSoon; track label) {
+          <li>
+            <span
+              class="shell__link shell__link--disabled"
+              aria-disabled="true"
+              title="Bientôt disponible"
+            >
+              {{ label }}
+            </span>
+          </li>
+        }
+      </ul>
+    </nav>
+  </aside>
+
+  <main id="contenu" class="shell__main" tabindex="-1">
+    <router-outlet />
+  </main>
+</div>
