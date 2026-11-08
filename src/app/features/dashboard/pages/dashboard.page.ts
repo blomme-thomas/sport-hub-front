@@ -11,8 +11,10 @@ import { ChartCardComponent } from '../components/chart-card.component';
 import { CHART_KIND } from '../components/chart-config';
 import { ChartModalComponent, type ChartModalData } from '../components/chart-modal.component';
 import { GranularityToggleComponent } from '../components/granularity-toggle.component';
+import { NextEventCardComponent } from '../components/next-event-card.component';
 import { VariationBadgeComponent } from '../components/variation-badge.component';
 import { DashboardState } from '../data-access/dashboard.state';
+import { NextEventState } from '../data-access/next-event.state';
 import type { ChartKey, Granularity } from '../models/training-stats.model';
 
 const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month: 'mois' };
@@ -23,15 +25,17 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
     NzButtonComponent,
     ChartCardComponent,
     GranularityToggleComponent,
+    NextEventCardComponent,
     VariationBadgeComponent,
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
-  providers: [DashboardState],
+  providers: [DashboardState, NextEventState],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage {
   protected readonly state = inject(DashboardState);
+  protected readonly nextEvent = inject(NextEventState);
   protected readonly chartKinds = CHART_KIND;
 
   private readonly modal = inject(NzModalService);

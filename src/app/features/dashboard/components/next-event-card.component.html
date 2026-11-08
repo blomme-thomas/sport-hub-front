@@ -1,0 +1,31 @@
+<section class="next-event" aria-labelledby="next-event-heading" [attr.aria-busy]="loading()">
+  <h2 id="next-event-heading" class="next-event__heading">Prochain événement</h2>
+
+  @if (error(); as failure) {
+    <div class="next-event__error" role="alert">
+      <p>{{ failure.userMessage }}</p>
+      <button nz-button nzType="primary" type="button" (click)="retry.emit()">Réessayer</button>
+    </div>
+  } @else if (event() === undefined) {
+    <p class="next-event__status">Chargement…</p>
+  } @else {
+    @if (event(); as nextEvent) {
+      <p class="next-event__countdown">{{ daysLabel() }}</p>
+      <h3 class="next-event__title">{{ nextEvent.title }}</h3>
+      <dl class="next-event__details">
+        <div class="next-event__detail">
+          <dt>Format</dt>
+          <dd>{{ nextEvent.formatLabel ?? 'Format non défini' }}</dd>
+        </div>
+        <div class="next-event__detail">
+          <dt>Temps cible</dt>
+          <dd>{{ nextEvent.targetTimeLabel ?? 'Temps cible non défini' }}</dd>
+        </div>
+      </dl>
+    } @else {
+      <p class="next-event__status">
+        Aucun événement à venir. <a routerLink="/goals">Créer un événement</a>
+      </p>
+    }
+  }
+</section>

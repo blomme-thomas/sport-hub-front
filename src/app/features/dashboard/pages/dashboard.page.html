@@ -5,6 +5,15 @@
 
 <p class="visually-hidden" aria-live="polite">{{ statusMessage() }}</p>
 
+<sh-next-event-card
+  class="dashboard__next-event"
+  [event]="nextEvent.event()"
+  [today]="nextEvent.today()"
+  [error]="nextEvent.error()"
+  [loading]="nextEvent.isLoading()"
+  (retry)="nextEvent.reload()"
+/>
+
 @if (state.error(); as error) {
   <div class="dashboard__error" role="alert">
     <p>{{ error.userMessage }}</p>
