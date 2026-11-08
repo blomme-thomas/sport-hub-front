@@ -14,14 +14,6 @@
   (retry)="nextEvent.reload()"
 />
 
-<sh-recent-activities-card
-  class="dashboard__recent"
-  [activities]="recent.activities()"
-  [error]="recent.error()"
-  [loading]="recent.isLoading()"
-  (retry)="recent.reload()"
-/>
-
 @if (state.error(); as error) {
   <div class="dashboard__error" role="alert">
     <p>{{ error.userMessage }}</p>
@@ -45,6 +37,13 @@
             <sh-variation-badge [variation]="view.variation.duration" />
           </article>
         </section>
+        <sh-recent-activities-card
+          class="dashboard__recent"
+          [activities]="recent.activities()"
+          [error]="recent.error()"
+          [loading]="recent.isLoading()"
+          (retry)="recent.reload()"
+        />
         <p class="dashboard__note">
           Variation par rapport à la période précédente complète. La période en cours est comparée à
           une période complète : une baisse peut donc être mécanique.
