@@ -1,0 +1,89 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.kpi {
+  --kpi-color: var(--sh-accent-text);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-2);
+  height: 100%;
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+  overflow: hidden;
+}
+
+.kpi--success {
+  --kpi-color: var(--sh-success);
+}
+
+.kpi--orange {
+  --kpi-color: var(--sh-orange);
+}
+
+.kpi--violet {
+  --kpi-color: var(--sh-violet);
+}
+
+.kpi--danger {
+  --kpi-color: var(--sh-danger);
+}
+
+.kpi__header {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+}
+
+.kpi__icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  color: var(--kpi-color);
+  background: color-mix(in srgb, var(--kpi-color) 18%, transparent);
+
+  svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+.kpi__label {
+  margin: 0;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.kpi__value {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi__unit {
+  margin-left: var(--sh-space-1);
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.kpi__spark {
+  height: 3rem;
+  margin-top: auto;
+}

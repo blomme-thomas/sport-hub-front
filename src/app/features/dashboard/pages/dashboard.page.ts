@@ -12,8 +12,10 @@ import { CHART_KIND } from '../components/chart-config';
 import { ChartModalComponent, type ChartModalData } from '../components/chart-modal.component';
 import { GranularityToggleComponent } from '../components/granularity-toggle.component';
 import { NextEventCardComponent } from '../components/next-event-card.component';
+import { KpiCardComponent } from '../components/kpi-card.component';
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card.component';
 import { VariationBadgeComponent } from '../components/variation-badge.component';
+import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
 import { NextEventState } from '../data-access/next-event.state';
 import { RecentActivitiesState } from '../data-access/recent-activities.state';
@@ -27,17 +29,19 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
     NzButtonComponent,
     ChartCardComponent,
     GranularityToggleComponent,
+    KpiCardComponent,
     NextEventCardComponent,
     RecentActivitiesCardComponent,
     VariationBadgeComponent,
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
-  providers: [DashboardState, NextEventState, RecentActivitiesState],
+  providers: [DashboardState, DashboardKpisState, NextEventState, RecentActivitiesState],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage {
   protected readonly state = inject(DashboardState);
+  protected readonly kpis = inject(DashboardKpisState);
   protected readonly nextEvent = inject(NextEventState);
   protected readonly recent = inject(RecentActivitiesState);
   protected readonly chartKinds = CHART_KIND;

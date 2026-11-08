@@ -14,6 +14,25 @@
   (retry)="nextEvent.reload()"
 />
 
+<section
+  class="dashboard__kpis"
+  aria-label="Indicateurs de la période"
+  [attr.aria-busy]="kpis.isLoading()"
+>
+  @if (kpis.error(); as failure) {
+    <div class="dashboard__error" role="alert">
+      <p>{{ failure.userMessage }}</p>
+      <button nz-button nzType="primary" type="button" (click)="kpis.reload()">Réessayer</button>
+    </div>
+  } @else if (kpis.kpis(); as list) {
+    @for (kpi of list; track kpi.id) {
+      <sh-kpi-card [kpi]="kpi" />
+    }
+  } @else {
+    <p class="dashboard__loading">Chargement…</p>
+  }
+</section>
+
 @if (state.error(); as error) {
   <div class="dashboard__error" role="alert">
     <p>{{ error.userMessage }}</p>
@@ -25,18 +44,6 @@
       @if (state.isEmpty()) {
         <p class="dashboard__empty">Aucune activité sur cette période</p>
       } @else {
-        <section class="dashboard__summary" aria-label="Période choisie">
-          <article class="dashboard__figure">
-            <h2 class="dashboard__figure-label">Séances</h2>
-            <p class="dashboard__figure-value">{{ view.currentPeriod.countLabel }}</p>
-            <sh-variation-badge [variation]="view.variation.count" />
-          </article>
-          <article class="dashboard__figure">
-            <h2 class="dashboard__figure-label">Durée</h2>
-            <p class="dashboard__figure-value">{{ view.currentPeriod.durationLabel }}</p>
-            <sh-variation-badge [variation]="view.variation.duration" />
-          </article>
-        </section>
         <sh-recent-activities-card
           class="dashboard__recent"
           [activities]="recent.activities()"

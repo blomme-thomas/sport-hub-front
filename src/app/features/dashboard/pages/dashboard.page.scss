@@ -26,31 +26,11 @@
   gap: 1.5rem;
 }
 
-.dashboard__summary {
+.dashboard__kpis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
   gap: 1rem;
-}
-
-.dashboard__figure {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1rem;
-  border: 1px solid var(--sh-chart-grid);
-  border-radius: 8px;
-}
-
-.dashboard__figure-label {
-  margin: 0;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.dashboard__figure-value {
-  margin: 0;
-  font-size: 1.75rem;
-  font-weight: 600;
+  margin-bottom: 1.5rem;
 }
 
 .dashboard__recent {
