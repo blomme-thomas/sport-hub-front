@@ -14,12 +14,22 @@ const TYPE_LABELS: Record<string, string> = {
   walking: 'Marche',
 };
 
+const TYPE_ICONS: Record<string, string> = {
+  running: '🏃',
+  cycling: '🚴',
+  lap_swimming: '🏊',
+  walking: '🚶',
+};
+
+const DEFAULT_TYPE_ICON = '🏅';
+
 /** Convertit une activité de l'API en séance d'affichage, relative à `now`. */
 export function toRecentActivity(item: ActivitySummaryApi, now: Date): RecentActivity {
   const startedAt = new Date(item.startedAt);
   return {
     id: item.id,
     typeLabel: TYPE_LABELS[item.type] ?? item.type.replaceAll('_', ' '),
+    typeIcon: TYPE_ICONS[item.type] ?? DEFAULT_TYPE_ICON,
     dateLabel: toRelativeDateLabel(startedAt, now),
     durationLabel: formatDuration(item.durationSeconds),
     distanceLabel: formatDistance(item.distanceMeters),

@@ -15,6 +15,7 @@
       <ul class="recent__list">
         @for (activity of list; track activity.id) {
           <li class="recent__item">
+            <span class="recent__icon" aria-hidden="true">{{ activity.typeIcon }}</span>
             <div class="recent__main">
               <span class="recent__type">{{ activity.typeLabel }}</span>
               <span class="recent__date">{{ activity.dateLabel }}</span>

@@ -58,6 +58,7 @@ describe('toRecentActivity', () => {
     expect(toRecentActivity(item, NOW)).toEqual({
       id: 'act-1',
       typeLabel: 'Natation',
+      typeIcon: '🏊',
       dateLabel: "Aujourd'hui",
       durationLabel: '1h 0 min',
       distanceLabel: '—',
@@ -75,5 +76,6 @@ describe('toRecentActivity', () => {
     };
 
     expect(toRecentActivity(item, NOW).typeLabel).toBe('trail running');
+    expect(toRecentActivity(item, NOW).typeIcon).toBe('🏅');
   });
 });

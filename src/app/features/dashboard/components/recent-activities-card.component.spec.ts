@@ -10,6 +10,7 @@ import { RecentActivitiesCardComponent } from './recent-activities-card.componen
 const course: RecentActivity = {
   id: 'act-4',
   typeLabel: 'Course à pied',
+  typeIcon: '🏃',
   dateLabel: "Aujourd'hui",
   durationLabel: '45 min',
   distanceLabel: '7,8 km',
@@ -18,6 +19,7 @@ const course: RecentActivity = {
 const natation: RecentActivity = {
   id: 'act-2',
   typeLabel: 'Natation',
+  typeIcon: '🏊',
   dateLabel: 'Lundi',
   durationLabel: '1h 0 min',
   distanceLabel: '—',
