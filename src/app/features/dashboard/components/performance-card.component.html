@@ -1,0 +1,40 @@
+<article class="perf" aria-labelledby="perf-heading" [attr.aria-busy]="state.isLoading()">
+  <header class="perf__header">
+    <h2 id="perf-heading" class="perf__title">
+      <sh-icon name="bars" color="var(--sh-accent-text)" />
+      <span>Performances</span>
+    </h2>
+    <nz-select
+      class="perf__period"
+      aria-label="Période des performances"
+      [ngModel]="state.period()"
+      (ngModelChange)="state.setPeriod($event)"
+    >
+      @for (option of periodOptions; track option.value) {
+        <nz-option [nzValue]="option.value" [nzLabel]="option.label" />
+      }
+    </nz-select>
+  </header>
+
+  @if (state.error(); as failure) {
+    <div class="perf__error" role="alert">
+      <p>{{ failure.userMessage }}</p>
+      <button nz-button nzType="primary" type="button" (click)="state.reload()">Réessayer</button>
+    </div>
+  } @else if (state.series(); as series) {
+    @if (series.totalSeconds === 0) {
+      <p class="perf__status">Aucune séance sur cette période</p>
+    } @else {
+      <div class="perf__chart">
+        <sh-chart
+          type="line"
+          [data]="chartData()"
+          [options]="chartOptions"
+          label="Durée par jour sur la période"
+        />
+      </div>
+    }
+  } @else {
+    <p class="perf__status">Chargement…</p>
+  }
+</article>

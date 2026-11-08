@@ -60,3 +60,14 @@
   align-items: flex-start;
   gap: 1rem;
 }
+
+.next-event__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+}
+
+.next-event__heading sh-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}

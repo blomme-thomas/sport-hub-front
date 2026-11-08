@@ -52,11 +52,18 @@
           (retry)="recent.reload()"
         />
         <div class="dashboard__charts">
-          <sh-chart-card [model]="view.charts.sessions" (expand)="openChart('sessions')" />
-          <sh-chart-card [model]="view.charts.duration" (expand)="openChart('duration')" />
+          <sh-chart-card
+            [model]="view.charts.sessions"
+            [icon]="'calendar'"
+            [iconColor]="'var(--sh-success)'"
+            (expand)="openChart('sessions')"
+          />
+          <sh-performance-card />
           <sh-chart-card
             [model]="view.charts.byType"
             [kind]="chartKinds.byType"
+            [icon]="'pie'"
+            [iconColor]="'var(--sh-violet)'"
             (expand)="openChart('byType')"
           />
         </div>

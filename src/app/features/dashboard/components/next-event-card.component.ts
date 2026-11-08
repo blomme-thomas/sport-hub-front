@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { IconComponent } from '@shared/ui/icon/icon.component';
 import type { AppError } from '../../../core/http/app-error';
 import { daysUntil } from '../data-access/next-event.mapper';
 import type { NextEvent } from '../models/next-event.model';
 
 @Component({
   selector: 'sh-next-event-card',
-  imports: [RouterLink, NzButtonComponent],
+  imports: [RouterLink, NzButtonComponent, IconComponent],
   templateUrl: './next-event-card.component.html',
   styleUrl: './next-event-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

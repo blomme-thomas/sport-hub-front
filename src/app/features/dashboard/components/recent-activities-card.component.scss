@@ -91,3 +91,14 @@
     font-variant-numeric: tabular-nums;
   }
 }
+
+.recent__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+}
+
+.recent__heading sh-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
