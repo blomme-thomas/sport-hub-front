@@ -1,5 +1,30 @@
-<article class="kpi">
-  <h2 class="kpi__label">{{ kpi().label }}</h2>
+<article class="kpi" [class]="'kpi kpi--' + kpi().tone">
+  <div class="kpi__header">
+    <span class="kpi__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" focusable="false">
+        @switch (kpi().id) {
+          @case ('sessions') {
+            <rect x="3" y="4" width="18" height="17" rx="2" />
+            <path d="M3 9h18M8 2v4M16 2v4" />
+          }
+          @case ('duration') {
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" />
+          }
+          @case ('calories') {
+            <path d="M12 3c1 3 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 0-8z" />
+          }
+          @case ('elevation') {
+            <path d="M3 20l6-10 4 6 3-4 5 8z" />
+          }
+          @case ('heartRate') {
+            <path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z" />
+          }
+        }
+      </svg>
+    </span>
+    <h2 class="kpi__label">{{ kpi().label }}</h2>
+  </div>
   <p class="kpi__value">
     {{ kpi().value }}
     @if (kpi().unit; as unit) {

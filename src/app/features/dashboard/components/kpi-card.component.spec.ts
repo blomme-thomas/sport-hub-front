@@ -36,6 +36,7 @@ describe('KpiCardComponent', () => {
   it('n affiche ni variation ni mini-courbe sans données correspondantes', async () => {
     const { container } = await render(KpiCardComponent, { inputs: { kpi: elevation } });
 
+    expect(container.querySelector('.kpi__icon svg')).not.toBeNull();
     expect(screen.getByText('435')).toBeInTheDocument();
     expect(screen.getByText('m')).toBeInTheDocument();
     expect(container.querySelector('sh-variation-badge')).toBeNull();

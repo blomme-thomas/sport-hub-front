@@ -4,6 +4,8 @@
 }
 
 .kpi {
+  --kpi-color: var(--sh-accent-text);
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -15,6 +17,49 @@
   background: var(--sh-surface);
   box-shadow: var(--sh-shadow);
   overflow: hidden;
+}
+
+.kpi--success {
+  --kpi-color: var(--sh-success);
+}
+
+.kpi--orange {
+  --kpi-color: var(--sh-orange);
+}
+
+.kpi--violet {
+  --kpi-color: var(--sh-violet);
+}
+
+.kpi--danger {
+  --kpi-color: var(--sh-danger);
+}
+
+.kpi__header {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+}
+
+.kpi__icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  color: var(--kpi-color);
+  background: color-mix(in srgb, var(--kpi-color) 18%, transparent);
+
+  svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 }
 
 .kpi__label {
