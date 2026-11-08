@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { ChartComponent } from '@shared/ui/chart/chart.component';
+import { IconComponent, type IconName } from '@shared/ui/icon/icon.component';
 import type { ChartModel } from '../models/training-stats.model';
 import { ChartDataTableComponent } from './chart-data-table.component';
 import { ChartKind, chartDataOf, chartOptionsOf } from './chart-config';
 
 @Component({
   selector: 'sh-chart-card',
-  imports: [ChartComponent, ChartDataTableComponent],
+  imports: [ChartComponent, ChartDataTableComponent, IconComponent],
   templateUrl: './chart-card.component.html',
   styleUrl: './chart-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,6 +15,7 @@ import { ChartKind, chartDataOf, chartOptionsOf } from './chart-config';
 export class ChartCardComponent {
   readonly model = input.required<ChartModel>();
   readonly kind = input<ChartKind>('bar');
+  readonly icon = input<IconName>('bars');
   readonly expand = output<void>();
 
   protected readonly data = computed(() => chartDataOf(this.model()));

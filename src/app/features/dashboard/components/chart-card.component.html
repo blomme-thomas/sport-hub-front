@@ -1,6 +1,9 @@
 <article class="chart-card">
   <header class="chart-card__header">
-    <h2 class="chart-card__title">{{ model().title }}</h2>
+    <h2 class="chart-card__title">
+      <sh-icon [name]="icon()" />
+      <span>{{ model().title }}</span>
+    </h2>
     <button
       type="button"
       class="chart-card__expand"

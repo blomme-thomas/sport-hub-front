@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { ChartComponent } from '@shared/ui/chart/chart.component';
+import { IconComponent, type IconName } from '@shared/ui/icon/icon.component';
 import { readCssVar } from '@shared/utils/css-var';
 import type { ChartData, ChartOptions } from 'chart.js';
 import type { DashboardKpi, KpiTone } from '../models/dashboard-kpi.model';
@@ -13,6 +14,14 @@ const TONE_VARIABLES: Record<KpiTone, string> = {
   danger: '--sh-danger',
 };
 
+const ICON_BY_ID: Record<DashboardKpi['id'], IconName> = {
+  sessions: 'calendar',
+  duration: 'clock',
+  calories: 'flame',
+  elevation: 'mountain',
+  heartRate: 'heart',
+};
+
 const SPARKLINE_OPTIONS: ChartOptions<'line'> = {
   responsive: true,
   maintainAspectRatio: false,
@@ -24,7 +33,7 @@ const SPARKLINE_OPTIONS: ChartOptions<'line'> = {
 
 @Component({
   selector: 'sh-kpi-card',
-  imports: [ChartComponent, VariationBadgeComponent],
+  imports: [ChartComponent, VariationBadgeComponent, IconComponent],
   templateUrl: './kpi-card.component.html',
   styleUrl: './kpi-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,4 +59,5 @@ export class KpiCardComponent {
   });
 
   protected readonly sparkOptions = SPARKLINE_OPTIONS;
+  protected readonly iconName = computed(() => ICON_BY_ID[this.kpi().id]);
 }

@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChartComponent } from '@shared/ui/chart/chart.component';
+import { IconComponent } from '@shared/ui/icon/icon.component';
 import { readCssVar } from '@shared/utils/css-var';
 import type { ChartData, ChartOptions } from 'chart.js';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzOptionComponent, NzSelectComponent } from 'ng-zorro-antd/select';
-import { PERFORMANCE_SERIES_LABEL, toPerformanceTable } from '../data-access/performance.mapper';
+import { PERFORMANCE_SERIES_LABEL } from '../data-access/performance.mapper';
 import {
   PERFORMANCE_PERIODS,
   PerformanceState,
   type PerformancePeriod,
 } from '../data-access/performance.state';
-import { ChartDataTableComponent } from './chart-data-table.component';
 
 const PERIOD_LABELS: Record<PerformancePeriod, string> = {
   '7d': 'Cette semaine',
@@ -35,9 +35,9 @@ const POINT_RADIUS = 3;
 @Component({
   selector: 'sh-performance-card',
   imports: [
+    IconComponent,
     FormsModule,
     ChartComponent,
-    ChartDataTableComponent,
     NzButtonComponent,
     NzOptionComponent,
     NzSelectComponent,
@@ -76,10 +76,5 @@ export class PerformanceCardComponent {
         },
       ],
     };
-  });
-
-  protected readonly table = computed(() => {
-    const series = this.state.series();
-    return series ? toPerformanceTable(series) : null;
   });
 }

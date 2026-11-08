@@ -1,5 +1,8 @@
 <section class="next-event" aria-labelledby="next-event-heading" [attr.aria-busy]="loading()">
-  <h2 id="next-event-heading" class="next-event__heading">Prochain événement</h2>
+  <h2 id="next-event-heading" class="next-event__heading">
+    <sh-icon name="flag" />
+    <span>Prochain événement</span>
+  </h2>
 
   @if (error(); as failure) {
     <div class="next-event__error" role="alert">

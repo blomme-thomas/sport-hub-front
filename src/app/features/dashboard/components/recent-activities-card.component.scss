@@ -91,3 +91,9 @@
     font-variant-numeric: tabular-nums;
   }
 }
+
+.recent__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+}

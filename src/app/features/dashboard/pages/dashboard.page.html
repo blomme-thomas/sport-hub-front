@@ -52,11 +52,16 @@
           (retry)="recent.reload()"
         />
         <div class="dashboard__charts">
-          <sh-chart-card [model]="view.charts.sessions" (expand)="openChart('sessions')" />
+          <sh-chart-card
+            [model]="view.charts.sessions"
+            [icon]="'calendar'"
+            (expand)="openChart('sessions')"
+          />
           <sh-performance-card />
           <sh-chart-card
             [model]="view.charts.byType"
             [kind]="chartKinds.byType"
+            [icon]="'pie'"
             (expand)="openChart('byType')"
           />
         </div>
