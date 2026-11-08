@@ -1,0 +1,22 @@
+<article class="kpi">
+  <h2 class="kpi__label">{{ kpi().label }}</h2>
+  <p class="kpi__value">
+    {{ kpi().value }}
+    @if (kpi().unit; as unit) {
+      <span class="kpi__unit">{{ unit }}</span>
+    }
+  </p>
+  @if (kpi().variation; as variation) {
+    <sh-variation-badge [variation]="variation" />
+  }
+  @if (sparkData(); as data) {
+    <div class="kpi__spark">
+      <sh-chart
+        type="line"
+        [data]="data"
+        [options]="sparkOptions"
+        [label]="kpi().label + ' sur la période'"
+      />
+    </div>
+  }
+</article>

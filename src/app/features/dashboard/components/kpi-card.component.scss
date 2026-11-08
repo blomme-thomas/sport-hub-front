@@ -1,0 +1,44 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.kpi {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-2);
+  height: 100%;
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+  overflow: hidden;
+}
+
+.kpi__label {
+  margin: 0;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.kpi__value {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi__unit {
+  margin-left: var(--sh-space-1);
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.kpi__spark {
+  height: 3rem;
+  margin-top: auto;
+}

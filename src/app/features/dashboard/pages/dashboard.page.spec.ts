@@ -1,5 +1,5 @@
 import { provideRouter } from '@angular/router';
-import { render, screen, waitFor } from '@testing-library/angular';
+import { render, screen, waitFor, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -70,8 +70,9 @@ describe('DashboardPage', () => {
 
     await render(DashboardPage, { providers: pageProviders() });
 
-    expect(await screen.findByText(/4 séances?/)).toBeInTheDocument();
-    expect(screen.getByText(/2[,.]5\s*h/)).toBeInTheDocument();
+    const heading = await screen.findByRole('heading', { name: 'Séances' });
+    expect(within(heading.closest('article') as HTMLElement).getByText('5')).toBeInTheDocument();
+    expect(screen.getByText('6h 42')).toBeInTheDocument();
   });
 
   it('affiche la variation signée par rapport à la période précédente', async () => {
@@ -79,7 +80,7 @@ describe('DashboardPage', () => {
 
     await render(DashboardPage, { providers: pageProviders() });
 
-    expect(await screen.findByText(/^\+1\b/)).toBeInTheDocument();
+    expect(await screen.findByText('+12,5 %')).toBeInTheDocument();
   });
 
   it('affiche la répartition par type d activité', async () => {
@@ -99,7 +100,8 @@ describe('DashboardPage', () => {
     expect(await screen.findByRole('img', { name: SESSIONS_TITLE })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: DURATION_TITLE })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: BY_TYPE_TITLE })).toBeInTheDocument();
-    expect(chartJsInstances).toHaveLength(3);
+    // Trois graphiques nommés, plus les mini-courbes du bandeau (séances, durée, calories).
+    expect(chartJsInstances).toHaveLength(6);
   });
 
   it('relance la requête en granularité mois et coche Mois quand l utilisateur bascule', async () => {
