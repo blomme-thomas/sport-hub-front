@@ -31,7 +31,27 @@ export function typeVolume(
   durationSeconds: number,
   distanceMeters: number,
 ): TypeVolumeApi {
-  return { type, count, durationSeconds, distanceMeters };
+  return { type, family: familyFixtureOf(type), count, durationSeconds, distanceMeters };
+}
+
+/** Famille calculée par le back, reproduite pour les fixtures (course, vélo, natation, autre). */
+function familyFixtureOf(type: string): TypeVolumeApi['family'] {
+  if (['running', 'trail_running', 'treadmill_running', 'track_running'].includes(type))
+    return 'running';
+  if (
+    [
+      'cycling',
+      'indoor_cycling',
+      'road_biking',
+      'virtual_ride',
+      'gravel_cycling',
+      'mountain_biking',
+      'e_bike_fitness',
+    ].includes(type)
+  )
+    return 'cycling';
+  if (['swimming', 'lap_swimming', 'open_water_swimming'].includes(type)) return 'swimming';
+  return 'other';
 }
 
 function metric(current: number, previous: number): MetricVariationApi {

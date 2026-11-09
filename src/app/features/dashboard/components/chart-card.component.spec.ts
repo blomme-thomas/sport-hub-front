@@ -1,3 +1,4 @@
+import { TestBed } from '@angular/core/testing';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -48,7 +49,10 @@ describe('ChartCardComponent', () => {
     await render(ChartCardComponent, { inputs: { model: chartModel } });
 
     // Chart.js est créé de façon asynchrone après le rendu : on attend l'instance avant de la lire.
-    await vi.waitFor(() => expect(chartJsInstances).toHaveLength(1));
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(chartJsInstances).toHaveLength(1);
+    });
     const [chart] = chartJsInstances;
     expect(chart?.config.data.labels).toEqual(['S43', 'S44']);
     expect(chart?.config.data.datasets).toEqual([
@@ -67,7 +71,10 @@ describe('ChartCardComponent', () => {
       inputs: { model: chartModel, kind: 'horizontal-bar' },
     });
 
-    await vi.waitFor(() => expect(chartJsInstances).toHaveLength(1));
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(chartJsInstances).toHaveLength(1);
+    });
     expect(chartJsInstances[0]?.config.type).toBe('bar');
     expect(chartJsInstances[0]?.config.options).toMatchObject({ indexAxis: 'y' });
   });

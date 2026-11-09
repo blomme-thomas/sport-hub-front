@@ -17,25 +17,6 @@ const FAMILY_COLORS: Record<SportFamily, string> = {
   other: '--sh-violet',
 };
 
-const RUNNING_TYPES = ['running', 'trail_running', 'treadmill_running'];
-const CYCLING_TYPES = [
-  'cycling',
-  'road_biking',
-  'indoor_cycling',
-  'virtual_ride',
-  'gravel_cycling',
-  'mountain_biking',
-];
-const SWIMMING_TYPES = ['lap_swimming', 'swimming', 'open_water_swimming'];
-
-/** Famille d'un type d'activité Garmin ; tout type non listé est « autres ». */
-export function familyOf(type: string): SportFamily {
-  if (RUNNING_TYPES.includes(type)) return 'running';
-  if (CYCLING_TYPES.includes(type)) return 'cycling';
-  if (SWIMMING_TYPES.includes(type)) return 'swimming';
-  return 'other';
-}
-
 /**
  * Répartition par famille de sport, à partir des durées par type de la période.
  * Les pourcentages sont entiers et totalisent 100 (méthode des plus grands restes). Une famille sans durée
@@ -47,8 +28,7 @@ export function toSportSplit(
 ): SportSplitView {
   const seconds = new Map<SportFamily, number>();
   for (const item of byType) {
-    const family = familyOf(item.type);
-    seconds.set(family, (seconds.get(family) ?? 0) + item.durationSeconds);
+    seconds.set(item.family, (seconds.get(item.family) ?? 0) + item.durationSeconds);
   }
   const present = FAMILY_ORDER.filter((family) => (seconds.get(family) ?? 0) > 0);
   const total = present.reduce((sum, family) => sum + (seconds.get(family) ?? 0), 0);
