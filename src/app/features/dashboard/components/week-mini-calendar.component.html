@@ -1,24 +1,18 @@
 <section class="week-mini" aria-labelledby="week-mini-title">
   <header class="week-mini__header">
-    <h2 id="week-mini-title" class="week-mini__title">Cette semaine</h2>
-    <div class="week-mini__nav" role="group" aria-label="Choisir la semaine">
+    <h2 id="week-mini-title" class="week-mini__title">{{ title() }}</h2>
+    <div class="week-mini__nav" role="group" aria-label="Choisir la période">
       <button
         nz-button
         nzSize="small"
         type="button"
-        aria-label="Semaine précédente"
+        aria-label="Précédent"
         (click)="previous.emit()"
       >
         ‹
       </button>
       <button nz-button nzSize="small" type="button" (click)="current.emit()">Aujourd’hui</button>
-      <button
-        nz-button
-        nzSize="small"
-        type="button"
-        aria-label="Semaine suivante"
-        (click)="next.emit()"
-      >
+      <button nz-button nzSize="small" type="button" aria-label="Suivant" (click)="next.emit()">
         ›
       </button>
     </div>
@@ -33,12 +27,24 @@
     <p class="week-mini__status" role="status">Chargement des séances…</p>
   } @else {
     @if (empty()) {
-      <p class="week-mini__status">Aucune séance planifiée cette semaine.</p>
+      <p class="week-mini__status">Aucune séance planifiée sur cette période.</p>
     }
 
-    <ol class="week-mini__grid" aria-label="Séances de la semaine">
+    @if (view() === 'month') {
+      <ul class="week-mini__weekdays" aria-hidden="true">
+        @for (name of weekdayNames; track name) {
+          <li>{{ name }}</li>
+        }
+      </ul>
+    }
+
+    <ol
+      class="week-mini__grid"
+      [class.week-mini__grid--month]="view() === 'month'"
+      [attr.aria-label]="view() === 'month' ? 'Séances du mois' : 'Séances de la semaine'"
+    >
       @for (day of days(); track day.date) {
-        <li class="week-mini__day">
+        <li class="week-mini__day" [class.week-mini__day--outside]="!day.inPeriod">
           <span class="week-mini__day-label">{{ dayLabel(day.date) }}</span>
           <ul class="week-mini__sessions">
             @for (session of day.sessions; track session.id) {

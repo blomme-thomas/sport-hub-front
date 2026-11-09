@@ -3,7 +3,7 @@ import { IconComponent } from '@shared/ui/icon/icon.component';
 import { disciplineStyleOf, type DisciplineStyle } from '@shared/ui/discipline/discipline-style';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { AppError } from '../../../core/http/app-error';
-import type { WeekMiniDay } from '../data-access/week-mini-calendar.state';
+import type { MiniCalendarView, WeekMiniDay } from '../data-access/week-mini-calendar.state';
 import type { WeekMiniLegendEntry, WeekMiniSession } from '../models/week-mini-calendar.model';
 
 /**
@@ -19,6 +19,9 @@ import type { WeekMiniLegendEntry, WeekMiniSession } from '../models/week-mini-c
 })
 export class WeekMiniCalendarComponent {
   readonly days = input.required<readonly WeekMiniDay[]>();
+  /** Semaine (7 cases) ou mois (grille complète avec en-têtes des jours). */
+  readonly view = input<MiniCalendarView>('week');
+  readonly title = input('Cette semaine');
   readonly legend = input<readonly WeekMiniLegendEntry[]>([]);
   readonly loading = input(false);
   readonly empty = input(false);
@@ -47,7 +50,13 @@ export class WeekMiniCalendarComponent {
     return this.legend().find((entry) => entry.typeKey === typeKey)?.label ?? typeKey;
   }
 
+  protected readonly weekdayNames = ['Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.'];
+
+  /** Libellé d'une case : le jour et le mois en vue semaine, le numéro du jour en vue mois. */
   protected dayLabel(iso: string): string {
+    if (this.view() === 'month') {
+      return String(Number(iso.slice(8, 10)));
+    }
     return new Intl.DateTimeFormat('fr-FR', {
       weekday: 'short',
       day: 'numeric',

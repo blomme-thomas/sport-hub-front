@@ -13,7 +13,7 @@ function days(sessionsByDate: Record<string, WeekMiniDay['sessions']>): WeekMini
     const date = new Date(Date.parse(`${MONDAY}T00:00:00Z`) + index * 86_400_000)
       .toISOString()
       .slice(0, 10);
-    return { date, sessions: sessionsByDate[date] ?? [] };
+    return { date, sessions: sessionsByDate[date] ?? [], inPeriod: true };
   });
 }
 
@@ -100,7 +100,7 @@ describe('WeekMiniCalendarComponent', () => {
       },
     });
 
-    expect(screen.getByText('Aucune séance planifiée cette semaine.')).toBeTruthy();
+    expect(screen.getByText('Aucune séance planifiée sur cette période.')).toBeTruthy();
   });
 
   it('affiche l’erreur avec un bouton Réessayer qui émet retry', async () => {

@@ -15,7 +15,7 @@
     @if (list.length === 0) {
       <p class="recent__status">Aucune séance récente</p>
     } @else {
-      <ul class="recent__list">
+      <ul class="recent__list" tabindex="0" aria-label="Séances récentes, défilables">
         @for (activity of list; track activity.id) {
           <li>
             <sh-recent-activity-row [activity]="activity" (opened)="opened.emit($event)" />

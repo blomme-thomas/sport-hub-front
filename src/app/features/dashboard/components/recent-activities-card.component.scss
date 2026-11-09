@@ -38,6 +38,20 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  /* Quatre lignes visibles ; au-delà, la liste défile. */
+  max-height: var(--recent-list-max-height, 22rem);
+  overflow-y: auto;
+  /* Défilement conservé (molette, tactile, clavier), barre masquée pour un rendu plus sobre. */
+  scrollbar-width: none;
+}
+
+.recent__list::-webkit-scrollbar {
+  display: none;
+}
+
+.recent__list:focus-visible {
+  outline: var(--sh-focus-ring);
+  outline-offset: 2px;
 }
 
 .recent__item {

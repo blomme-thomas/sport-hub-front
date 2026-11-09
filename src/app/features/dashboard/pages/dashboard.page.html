@@ -61,13 +61,15 @@
       <sh-week-mini-calendar
         class="dashboard__week"
         [days]="miniCalendar.days()"
+        [view]="miniCalendar.view()"
+        [title]="miniCalendar.title()"
         [legend]="miniCalendar.legend()"
         [loading]="miniCalendar.isLoading()"
         [empty]="miniCalendar.isEmpty()"
         [error]="miniCalendar.error()"
-        (previous)="miniCalendar.previousWeek()"
-        (next)="miniCalendar.nextWeek()"
-        (current)="miniCalendar.currentWeek()"
+        (previous)="miniCalendar.previous()"
+        (next)="miniCalendar.next()"
+        (current)="miniCalendar.today()"
         (retry)="miniCalendar.reload()"
         (sessionSelected)="openSession($event)"
       />
