@@ -103,3 +103,9 @@
   margin: 0 0 var(--sh-space-3);
   color: var(--sh-text-muted);
 }
+
+/* Génération de planning en cours : la grille ne reçoit plus de clic ni de glisser. */
+.creneaux__content--locked {
+  pointer-events: none;
+  opacity: 0.6;
+}
