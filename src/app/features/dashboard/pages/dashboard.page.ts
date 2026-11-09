@@ -39,7 +39,6 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
   '7d': '7 derniers jours',
   '30d': '30 derniers jours',
   '3m': '3 derniers mois',
-  '1y': 'la dernière année',
 };
 
 @Component({

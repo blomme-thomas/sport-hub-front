@@ -74,10 +74,10 @@ describe('DashboardState', () => {
     const state = setup();
     await settle(() => expect(state.view()).toBeDefined());
 
-    state.setPeriod('1y');
+    state.setPeriod('3m');
 
     expect(state.granularity()).toBe('month');
-    await settle(() => expect(state.view()?.period).toBe('1y'));
+    await settle(() => expect(state.view()?.period).toBe('3m'));
   });
 
   it('ne recharge pas les statistiques quand la période change sans changer de granularité', async () => {
