@@ -108,7 +108,7 @@ describe('WeekGridComponent : déplacement', () => {
     });
   });
 
-  it('ne déplace pas une séance récurrente par glisser-déposer', async () => {
+  it('signale le déplacement d’une séance récurrente, à confirmer par la page (cette semaine ou la série)', async () => {
     const moved = vi.fn();
     await render(WeekGridComponent, {
       inputs: { days: days([], [seanceRecurrente]) },
@@ -120,7 +120,12 @@ describe('WeekGridComponent : déplacement', () => {
     fireEvent.pointerMove(block, { clientX: 10, clientY: 148, pointerId: 1 });
     fireEvent.pointerUp(block, { clientX: 10, clientY: 148, pointerId: 1 });
 
-    expect(moved).not.toHaveBeenCalled();
+    expect(moved).toHaveBeenCalledWith({
+      kind: 'session',
+      session: seanceRecurrente,
+      date: TUESDAY,
+      startTime: '19:00',
+    });
   });
 
   it('un simple clic ouvre l’élément sans le déplacer', async () => {

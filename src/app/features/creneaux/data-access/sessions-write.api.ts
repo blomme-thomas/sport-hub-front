@@ -26,7 +26,34 @@ export class SessionsWriteApi {
     return this.http.post<{ id: string }>(`${this.baseUrl}/sessions`, body);
   }
 
-  /** Déplace une séance ponctuelle (nouveau jour et heure de début). */
+  /** Déplace une seule occurrence d'une série. `date` est la date de programmation de l'occurrence. */
+  moveOccurrence(
+    id: string,
+    date: string,
+    body: { date: string; startTime: string },
+  ): Observable<unknown> {
+    return this.http.put(
+      `${this.baseUrl}/sessions/${encodeURIComponent(id)}/occurrences/${date}`,
+      body,
+    );
+  }
+
+  /** Annule une seule occurrence (elle reste listée, avec le statut annulée). */
+  cancelOccurrence(id: string, date: string): Observable<unknown> {
+    return this.http.post(
+      `${this.baseUrl}/sessions/${encodeURIComponent(id)}/occurrences/${date}/cancel`,
+      null,
+    );
+  }
+
+  /** Restaure une occurrence à sa programmation initiale. */
+  restoreOccurrence(id: string, date: string): Observable<unknown> {
+    return this.http.delete(
+      `${this.baseUrl}/sessions/${encodeURIComponent(id)}/occurrences/${date}/exception`,
+    );
+  }
+
+  /** Déplace une séance (nouveau jour et heure de début) ; pour une série, déplace toute la série. */
   move(id: string, body: { date: string; startTime: string }): Observable<unknown> {
     return this.http.patch(`${this.baseUrl}/sessions/${encodeURIComponent(id)}`, body);
   }

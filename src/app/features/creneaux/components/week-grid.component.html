@@ -30,6 +30,7 @@
               type="button"
               class="week-grid__slot"
               [class.week-grid__slot--occupe]="block.slot?.type === 'occupe'"
+              [class.week-grid__slot--cancelled]="block.cancelled"
               [class.week-grid__slot--session]="block.kind === 'session'"
               [style.top.px]="block.top"
               [style.height.px]="block.height"
