@@ -8,6 +8,7 @@ import { statsTestProviders } from '../../../../mocks/training-stats.testing';
 import { AppError } from '../../../core/http/app-error';
 import { DEFAULT_ERROR_MESSAGE } from '../../../core/http/error-messages';
 import type { RecentActivity } from '../models/recent-activity.model';
+import { HeartRateZonesState } from '../data-access/heart-rate-zones.state';
 import { RecentActivitiesCardComponent } from './recent-activities-card.component';
 
 const course: RecentActivity = {
@@ -40,7 +41,7 @@ function renderCard(inputs: Partial<Record<string, unknown>>, on?: Record<string
   return render(RecentActivitiesCardComponent, {
     inputs: { activities: undefined, ...inputs },
     on,
-    providers: [provideRouter([]), ...statsTestProviders()],
+    providers: [provideRouter([]), ...statsTestProviders(), HeartRateZonesState],
   });
 }
 

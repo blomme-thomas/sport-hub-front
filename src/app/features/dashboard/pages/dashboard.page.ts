@@ -23,6 +23,7 @@ import { WeeklyReviewCardComponent } from '../components/weekly-review-card.comp
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
 import { NextEventState } from '../data-access/next-event.state';
+import { HeartRateZonesState } from '../data-access/heart-rate-zones.state';
 import { PerformanceState } from '../data-access/performance.state';
 import { WeeklyReviewState } from '../data-access/weekly-review.state';
 import { RecentActivitiesState } from '../data-access/recent-activities.state';
@@ -51,6 +52,7 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
     RecentActivitiesState,
     PerformanceState,
     WeeklyReviewState,
+    HeartRateZonesState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
