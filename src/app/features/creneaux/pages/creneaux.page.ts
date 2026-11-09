@@ -7,8 +7,10 @@ import { NzModalComponent, NzModalContentDirective, NzModalService } from 'ng-zo
 import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import { addIsoDays, localIsoDate } from '../../../shared/utils/iso-date';
+import { SessionFormComponent, type SessionDefaults } from '../components/session-form.component';
 import { SlotFormComponent } from '../components/slot-form.component';
 import { WeekGridComponent } from '../components/week-grid.component';
+import { SessionsWriteApi, type CreateSessionRequestApi } from '../data-access/sessions-write.api';
 import { SlotsState } from '../data-access/slots.state';
 import type { SessionOccurrence } from '../models/session-occurrence.model';
 import type { Slot, SlotDefaults, SlotInput } from '../models/slot.model';
@@ -17,7 +19,7 @@ const DEFAULT_START = '09:00';
 const DEFAULT_END = '10:00';
 const WEEK_LAST_OFFSET_DAYS = 6;
 
-/** Écran des disponibilités : grille de la semaine, création par sélection, modification et suppression d'un créneau. */
+/** Calendrier de la semaine : créneaux et séances, création par clic ou formulaire, modification d'un créneau. */
 @Component({
   selector: 'sh-creneaux-page',
   imports: [
@@ -25,6 +27,7 @@ const WEEK_LAST_OFFSET_DAYS = 6;
     NzButtonComponent,
     NzModalComponent,
     NzModalContentDirective,
+    SessionFormComponent,
     SlotFormComponent,
     WeekGridComponent,
   ],
@@ -39,6 +42,7 @@ export class CreneauxPage {
   private readonly modal = inject(NzModalService);
   private readonly messages = inject(NzMessageService);
   private readonly router = inject(Router);
+  private readonly sessionsWrite = inject(SessionsWriteApi);
 
   /** Créneau en cours de modification, `'new'` pour une création, `null` quand le formulaire est fermé. */
   protected readonly editing = signal<Slot | 'new' | null>(null);
@@ -51,15 +55,77 @@ export class CreneauxPage {
   );
   protected readonly formDefaults = signal<SlotDefaults>(defaultsFor(this.state.weekStart()));
   protected readonly formError = signal<AppError | null>(null);
+
+  /** Plage choisie dans la grille, le temps de demander s'il faut créer un créneau ou une séance. */
+  protected readonly chosenRange = signal<SlotDefaults | null>(null);
+  /** Valeurs du formulaire de séance, `null` quand il est fermé. */
+  protected readonly sessionDraft = signal<SessionDefaults | null>(null);
+  protected readonly sessionError = signal<AppError | null>(null);
+  protected readonly sessionSaving = signal(false);
+  protected readonly disciplines = computed(() =>
+    [...this.state.labels()].map(([typeKey, label]) => ({ typeKey, label })),
+  );
+
   protected readonly weekLabel = computed(() =>
     formatWeek(this.state.weekStart(), this.state.weekEnd()),
   );
 
-  /** Ouvre une création, pré-remplie avec la plage choisie dans la grille si elle est fournie. */
+  /** Une plage est choisie dans la grille : on demande ce qu'il faut créer. */
+  protected chooseRange(range: SlotDefaults): void {
+    this.chosenRange.set(range);
+  }
+
+  protected cancelChoice(): void {
+    this.chosenRange.set(null);
+  }
+
+  protected createSlotFromChoice(): void {
+    const range = this.chosenRange();
+    this.chosenRange.set(null);
+    this.openCreate(range ?? undefined);
+  }
+
+  protected createSessionFromChoice(): void {
+    const range = this.chosenRange();
+    this.chosenRange.set(null);
+    this.openSessionCreate(range ?? undefined);
+  }
+
+  /** Ouvre une création de créneau, pré-remplie avec la plage choisie si elle est fournie. */
   protected openCreate(range?: SlotDefaults): void {
     this.formError.set(null);
     this.formDefaults.set(range ?? defaultsFor(this.state.weekStart()));
     this.editing.set('new');
+  }
+
+  /** Ouvre le formulaire de création d'une séance, pré-rempli avec la plage choisie si elle est fournie. */
+  protected openSessionCreate(range?: SlotDefaults): void {
+    const defaults = range ?? defaultsFor(this.state.weekStart());
+    this.sessionError.set(null);
+    this.sessionDraft.set({ date: defaults.date, startTime: defaults.startTime });
+  }
+
+  protected closeSessionForm(): void {
+    this.sessionDraft.set(null);
+    this.sessionError.set(null);
+  }
+
+  /** Crée la séance puis ouvre sa fiche (story #10). */
+  protected async onSessionSaved(body: CreateSessionRequestApi): Promise<void> {
+    this.sessionError.set(null);
+    this.sessionSaving.set(true);
+    try {
+      const created = await new Promise<{ id: string }>((resolve, reject) =>
+        this.sessionsWrite.create(body).subscribe({ next: resolve, error: reject }),
+      );
+      this.sessionDraft.set(null);
+      this.messages.success('Séance créée.');
+      void this.router.navigate(['/seances', created.id]);
+    } catch (error) {
+      this.sessionError.set(error instanceof AppError ? error : toAppError(error));
+    } finally {
+      this.sessionSaving.set(false);
+    }
   }
 
   /** Ouvre la fiche de la séance (story #10). */

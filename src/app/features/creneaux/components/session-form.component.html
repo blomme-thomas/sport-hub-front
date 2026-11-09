@@ -1,0 +1,82 @@
+@if (serverError(); as failure) {
+  <div class="session-form__alert" role="alert">
+    <p>{{ failure.userMessage }}</p>
+  </div>
+}
+
+@if (disciplines().length === 0) {
+  <p class="session-form__hint">
+    Aucune discipline dans le référentiel. Il se remplit avec la synchronisation Garmin.
+  </p>
+}
+
+<form class="session-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="session-form__row">
+    <div class="session-form__field">
+      <label for="session-date">Date</label>
+      <input id="session-date" type="date" formControlName="date" />
+    </div>
+    <div class="session-form__field">
+      <label for="session-start">Heure de début</label>
+      <input id="session-start" type="time" step="1800" formControlName="startTime" />
+    </div>
+  </div>
+
+  <div class="session-form__field">
+    <label for="session-discipline">Discipline</label>
+    <select id="session-discipline" formControlName="disciplineTypeKey">
+      <option value="" disabled>Choisir une discipline</option>
+      @for (option of disciplines(); track option.typeKey) {
+        <option [value]="option.typeKey">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="session-form__row">
+    <div class="session-form__field">
+      <label for="session-duration">Durée (min)</label>
+      <input
+        id="session-duration"
+        type="number"
+        min="1"
+        [attr.max]="maxDuration"
+        step="1"
+        formControlName="durationMinutes"
+      />
+    </div>
+    <div class="session-form__field">
+      <label for="session-recurrence">Récurrence</label>
+      <select id="session-recurrence" formControlName="recurrence">
+        <option value="aucune">Aucune (ponctuelle)</option>
+        <option value="hebdomadaire">Chaque semaine</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="session-form__field">
+    <label for="session-equipment">Matériel</label>
+    <input id="session-equipment" type="text" formControlName="equipment" />
+  </div>
+
+  <div class="session-form__field">
+    <label for="session-attention">Points d’attention</label>
+    <input id="session-attention" type="text" formControlName="attentionPoints" />
+  </div>
+
+  <div class="session-form__field">
+    <label for="session-description">Description</label>
+    <input id="session-description" type="text" formControlName="description" />
+  </div>
+
+  <div class="session-form__actions">
+    <button nz-button type="button" (click)="cancelled.emit()">Annuler</button>
+    <button
+      nz-button
+      nzType="primary"
+      type="submit"
+      [disabled]="submitting() || disciplines().length === 0"
+    >
+      Créer la séance
+    </button>
+  </div>
+</form>
