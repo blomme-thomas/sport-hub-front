@@ -53,6 +53,11 @@ export class SessionsWriteApi {
     );
   }
 
+  /** Supprime la séance ; pour une série, supprime toute la série. */
+  delete(id: string): Observable<unknown> {
+    return this.http.delete(`${this.baseUrl}/sessions/${encodeURIComponent(id)}`);
+  }
+
   /** Déplace une séance (nouveau jour et heure de début) ; pour une série, déplace toute la série. */
   move(id: string, body: { date: string; startTime: string }): Observable<unknown> {
     return this.http.patch(`${this.baseUrl}/sessions/${encodeURIComponent(id)}`, body);
