@@ -12,7 +12,8 @@ const review = {
   generatedAt: '2026-11-09T18:30:00.000Z',
 };
 
-test.describe('Bilan de la semaine', () => {
+// Carte masquée tant que le token IA n'est pas disponible (drapeau weeklyReviewEnabled du tableau de bord).
+test.describe.skip('Bilan de la semaine', () => {
   test('affiche les trois parties du bilan de la semaine', async ({ page }) => {
     await page.route(REVIEW_URL, (route) => route.fulfill({ json: review }));
 

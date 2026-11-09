@@ -53,6 +53,8 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage {
+  /** Bilan de la semaine masqué tant que le token IA n'est pas disponible (story #16). */
+  protected readonly weeklyReviewEnabled = false;
   protected readonly state = inject(DashboardState);
   protected readonly kpis = inject(DashboardKpisState);
   protected readonly nextEvent = inject(NextEventState);

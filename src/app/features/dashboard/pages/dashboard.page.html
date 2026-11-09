@@ -74,4 +74,6 @@
   </section>
 }
 
-<sh-weekly-review-card class="dashboard__review" />
+@if (weeklyReviewEnabled) {
+  <sh-weekly-review-card class="dashboard__review" />
+}
