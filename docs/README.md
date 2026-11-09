@@ -1,6 +1,6 @@
 # Documentation sport-hub-front
 
-État : socle Angular, gestion des erreurs HTTP, tableau de bord (volume d'entraînement, issue #7), gestion des objectifs (issue #9) et disponibilités (issue #8) implémentés. Cette doc ne décrit que ce qui existe ; le reste est marqué « à compléter ».
+État : socle Angular, gestion des erreurs HTTP, tableau de bord (volume d'entraînement, issue #7), gestion des objectifs (issue #9) disponibilités (issue #8) et fiche de séance (issue #10) implémentés. Cette doc ne décrit que ce qui existe ; le reste est marqué « à compléter ».
 
 ## Technique
 
@@ -14,7 +14,7 @@
 ## Fonctionnel
 
 - [Fonctionnalités](fonctionnel/fonctionnalites.md)
-- [Parcours](fonctionnel/parcours/) : [Consulter le tableau de bord](fonctionnel/parcours/consulter-tableau-de-bord.md), [Gérer les objectifs et événements](fonctionnel/parcours/gerer-objectifs-et-evenements.md), [Gérer les créneaux de disponibilité](fonctionnel/parcours/gerer-creneaux-disponibilite.md)
+- [Parcours](fonctionnel/parcours/) : [Consulter le tableau de bord](fonctionnel/parcours/consulter-tableau-de-bord.md), [Gérer les objectifs et événements](fonctionnel/parcours/gerer-objectifs-et-evenements.md), [Gérer les créneaux de disponibilité](fonctionnel/parcours/gerer-creneaux-disponibilite.md), [Consulter et modifier une séance](fonctionnel/parcours/consulter-et-modifier-une-seance.md)
 - [Glossaire](fonctionnel/glossaire.md)
 
 Les règles de code font foi dans `instructions/`.
