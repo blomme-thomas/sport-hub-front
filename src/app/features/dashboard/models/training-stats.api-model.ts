@@ -4,8 +4,12 @@ export interface VolumeApi {
   distanceMeters: number;
 }
 
+/** Famille de sport calculée par le back : course, vélo, natation, ou autre. */
+export type SportFamilyApi = 'running' | 'cycling' | 'swimming' | 'other';
+
 export interface TypeVolumeApi extends VolumeApi {
   type: string;
+  family: SportFamilyApi;
 }
 
 export interface MetricVariationApi {
