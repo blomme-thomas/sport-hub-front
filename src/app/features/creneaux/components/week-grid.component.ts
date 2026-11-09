@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { IconComponent, type IconName } from '@shared/ui/icon/icon.component';
 import { layoutDaySlots, minutesToTime, timeToMinutes } from '../data-access/slot.mapper';
-import { disciplineStyleOf } from '../models/discipline-style';
+import { disciplineStyleOf } from '@shared/ui/discipline/discipline-style';
 import { slotTypeLabel } from '../models/slot-options';
 import type { SessionOccurrence } from '../models/session-occurrence.model';
 import type { Slot, SlotDefaults } from '../models/slot.model';

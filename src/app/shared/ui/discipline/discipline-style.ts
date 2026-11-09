@@ -1,4 +1,4 @@
-import type { IconName } from '../../../shared/ui/icon/icon.component';
+import type { IconName } from '../icon/icon.component';
 
 /** Pictogramme et couleur d'une discipline. Une clé absente de la correspondance reçoit le style neutre. */
 export interface DisciplineStyle {

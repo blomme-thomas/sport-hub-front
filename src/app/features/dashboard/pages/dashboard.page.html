@@ -69,6 +69,20 @@
   </section>
 }
 
+<sh-week-mini-calendar
+  class="dashboard__week"
+  [days]="miniCalendar.days()"
+  [legend]="miniCalendar.legend()"
+  [loading]="miniCalendar.isLoading()"
+  [empty]="miniCalendar.isEmpty()"
+  [error]="miniCalendar.error()"
+  (previous)="miniCalendar.previousWeek()"
+  (next)="miniCalendar.nextWeek()"
+  (current)="miniCalendar.currentWeek()"
+  (retry)="miniCalendar.reload()"
+  (sessionSelected)="openSession($event)"
+/>
+
 @if (weeklyReviewEnabled) {
   <sh-weekly-review-card class="dashboard__review" />
 }
