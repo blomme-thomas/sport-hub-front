@@ -15,10 +15,7 @@
     @if (series.totalSeconds === 0) {
       <p class="perf__status">Aucune séance sur cette période</p>
     } @else {
-      <div class="perf__chart" [class.perf__chart--busy]="state.isLoading()">
-        @if (state.isLoading()) {
-          <span class="perf__spinner" role="status" aria-label="Chargement des performances"></span>
-        }
+      <div class="perf__chart">
         <sh-chart
           type="line"
           [data]="chartData()"
