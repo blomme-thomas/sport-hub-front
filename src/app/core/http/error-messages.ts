@@ -33,6 +33,11 @@ export const ERROR_MESSAGES: Readonly<Record<string, string>> = {
   SESSION_DISCIPLINE_UNKNOWN: 'La discipline de la séance n’existe pas dans le référentiel.',
   SESSION_NOT_FOUND: 'Séance introuvable. Elle a peut-être été supprimée.',
   SESSION_ALREADY_COMPLETED: 'Cette séance est réalisée : elle ne peut plus être modifiée.',
+  WEEKLY_REVIEW_INVALID_WEEK: 'La semaine demandée n’est pas valide.',
+  WEEKLY_REVIEW_INVALID_OUTPUT: 'Le bilan généré est incomplet. Réessayez la génération.',
+  WEEKLY_REVIEW_UNAVAILABLE:
+    'Le bilan ne peut pas être généré pour le moment. Réessayez plus tard.',
+  WEEKLY_REVIEW_ACCESS_DENIED: 'La génération du bilan n’est pas autorisée par le service d’IA.',
   NETWORK_ERROR: 'Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.',
   TIMEOUT: 'Le serveur met trop de temps à répondre. Réessayez dans quelques instants.',
   INVALID_RESPONSE: 'Le serveur a renvoyé une réponse inattendue. Réessayez plus tard.',

@@ -14,7 +14,7 @@
 ## Fonctionnel
 
 - [Fonctionnalités](fonctionnel/fonctionnalites.md)
-- [Parcours](fonctionnel/parcours/) : [Consulter le tableau de bord](fonctionnel/parcours/consulter-tableau-de-bord.md), [Gérer les objectifs et événements](fonctionnel/parcours/gerer-objectifs-et-evenements.md), [Gérer les créneaux de disponibilité](fonctionnel/parcours/gerer-creneaux-disponibilite.md), [Consulter et modifier une séance](fonctionnel/parcours/consulter-et-modifier-une-seance.md)
+- [Parcours](fonctionnel/parcours/) : [Consulter le tableau de bord](fonctionnel/parcours/consulter-tableau-de-bord.md), [Gérer les objectifs et événements](fonctionnel/parcours/gerer-objectifs-et-evenements.md), [Gérer les créneaux de disponibilité](fonctionnel/parcours/gerer-creneaux-disponibilite.md), [Consulter et modifier une séance](fonctionnel/parcours/consulter-et-modifier-une-seance.md), [Consulter le bilan hebdomadaire](fonctionnel/parcours/consulter-bilan-hebdomadaire.md)
 - [Glossaire](fonctionnel/glossaire.md)
 
 Les règles de code font foi dans `instructions/`.

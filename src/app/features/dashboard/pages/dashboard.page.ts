@@ -15,11 +15,13 @@ import { NextEventCardComponent } from '../components/next-event-card.component'
 import { KpiCardComponent } from '../components/kpi-card.component';
 import { PerformanceCardComponent } from '../components/performance-card.component';
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card.component';
+import { WeeklyReviewCardComponent } from '../components/weekly-review-card.component';
 import { VariationBadgeComponent } from '../components/variation-badge.component';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
 import { NextEventState } from '../data-access/next-event.state';
 import { PerformanceState } from '../data-access/performance.state';
+import { WeeklyReviewState } from '../data-access/weekly-review.state';
 import { RecentActivitiesState } from '../data-access/recent-activities.state';
 import type { ChartKey, Granularity } from '../models/training-stats.model';
 
@@ -36,6 +38,7 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
     PerformanceCardComponent,
     RecentActivitiesCardComponent,
     VariationBadgeComponent,
+    WeeklyReviewCardComponent,
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
@@ -45,10 +48,13 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
     NextEventState,
     RecentActivitiesState,
     PerformanceState,
+    WeeklyReviewState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage {
+  /** Bilan de la semaine masqué tant que le token IA n'est pas disponible (story #16). */
+  protected readonly weeklyReviewEnabled = false;
   protected readonly state = inject(DashboardState);
   protected readonly kpis = inject(DashboardKpisState);
   protected readonly nextEvent = inject(NextEventState);
