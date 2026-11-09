@@ -35,7 +35,6 @@ const CHART_OPTIONS: ChartOptions<'line'> = {
 
 /** Courbe lissée ; le mode monotone évite les dépassements sous zéro. */
 const CURVE_TENSION = 0.4;
-const MAX_POINT_RADIUS = 6;
 const POINT_RADIUS = 3;
 
 /** Carte « Vos performances » : durée par jour sur la période choisie localement. */
@@ -79,9 +78,7 @@ export class PerformanceCardComponent {
           pointBackgroundColor: color,
           tension: CURVE_TENSION,
           cubicInterpolationMode: 'monotone',
-          pointRadius: series.hours.map((_, index) =>
-            index === series.maxIndex ? MAX_POINT_RADIUS : POINT_RADIUS,
-          ),
+          pointRadius: POINT_RADIUS,
         },
       ],
     };
