@@ -1,13 +1,14 @@
 import { render, screen } from '@testing-library/angular';
 import { describe, expect, it } from 'vitest';
 import { statsTestProviders } from '../../../../mocks/training-stats.testing';
+import { DashboardState } from '../data-access/dashboard.state';
 import { PerformanceState } from '../data-access/performance.state';
 import { PerformanceCardComponent } from './performance-card.component';
 
 describe('PerformanceCardComponent', () => {
   it('affiche le titre et le graphique nommé', async () => {
     await render(PerformanceCardComponent, {
-      providers: [...statsTestProviders(), PerformanceState],
+      providers: [...statsTestProviders(), DashboardState, PerformanceState],
     });
 
     expect(await screen.findByRole('heading', { name: 'Performances' })).toBeInTheDocument();
@@ -18,7 +19,7 @@ describe('PerformanceCardComponent', () => {
 
   it('n’affiche pas de sélecteur de période dans la carte', async () => {
     await render(PerformanceCardComponent, {
-      providers: [...statsTestProviders(), PerformanceState],
+      providers: [...statsTestProviders(), DashboardState, PerformanceState],
     });
 
     expect(await screen.findByRole('heading', { name: 'Performances' })).toBeInTheDocument();
