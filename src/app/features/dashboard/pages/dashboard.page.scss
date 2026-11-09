@@ -31,7 +31,6 @@
 }
 
 .dashboard__kpis {
-  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
   gap: var(--dashboard-gap);
@@ -65,7 +64,6 @@
 }
 
 .dashboard__charts {
-  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
   gap: var(--dashboard-gap);
