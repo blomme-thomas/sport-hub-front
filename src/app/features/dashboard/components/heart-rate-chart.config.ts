@@ -26,8 +26,9 @@ export const SPARKLINE_OPTIONS: ChartOptions<'line'> = {
   animation: false,
   layout: { padding: { top: 3, bottom: 3, left: 2, right: 2 } },
   plugins: { legend: { display: false }, tooltip: { enabled: false } },
-  elements: { point: { radius: 0 }, line: { borderWidth: 2 } },
-  scales: { x: { display: false }, y: { display: false } },
+  elements: { point: { radius: 0 }, line: { borderWidth: 2.5 } },
+  // Marge verticale : la courbe occupe toute la hauteur sans toucher les bords.
+  scales: { x: { display: false }, y: { display: false, grace: '10%' } },
 };
 
 /** Courbe détaillée de la modale : axe des bpm lisible, sans étiquettes de temps. */
