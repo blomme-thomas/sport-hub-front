@@ -1,0 +1,72 @@
+<article
+  class="review"
+  aria-labelledby="weekly-review-heading"
+  [attr.aria-busy]="state.isLoading() || state.generating()"
+>
+  <header class="review__header">
+    <h2 id="weekly-review-heading" class="review__title">
+      <sh-icon name="flag" color="var(--sh-accent-text)" />
+      <span>Bilan de la semaine</span>
+    </h2>
+    <div class="review__nav" role="group" aria-label="Choisir la semaine">
+      <button
+        nz-button
+        type="button"
+        aria-label="Semaine précédente"
+        (click)="state.previousWeek()"
+      >
+        ‹
+      </button>
+      <button nz-button type="button" (click)="state.currentWeek()">Cette semaine</button>
+      <button nz-button type="button" aria-label="Semaine suivante" (click)="state.nextWeek()">
+        ›
+      </button>
+    </div>
+  </header>
+
+  <p class="review__week" aria-live="polite">{{ state.weekLabel() }}</p>
+
+  @if (state.error(); as failure) {
+    <div class="review__error" role="alert">
+      <p>{{ failure.userMessage }}</p>
+      <button nz-button type="button" (click)="state.reload()">Réessayer</button>
+    </div>
+  } @else if (state.review(); as review) {
+    @if (review.generic) {
+      <p class="review__generic">Semaine sans séance prévue : bilan générique.</p>
+    }
+    <dl class="review__parts">
+      <dt>Suivi</dt>
+      <dd>{{ review.suivi }}</dd>
+      <dt>Point d’attention</dt>
+      <dd>{{ review.pointAttention }}</dd>
+      <dt>Conseil</dt>
+      <dd>{{ review.conseil }}</dd>
+    </dl>
+    <footer class="review__footer">
+      <span class="review__meta">Généré le {{ generatedLabel() }}</span>
+      <button nz-button type="button" [disabled]="state.generating()" (click)="confirmRegenerate()">
+        Régénérer
+      </button>
+    </footer>
+  } @else if (state.missing()) {
+    <div class="review__empty">
+      <p>Aucun bilan pour cette semaine.</p>
+      <button
+        nz-button
+        nzType="primary"
+        type="button"
+        [disabled]="state.generating()"
+        (click)="state.generate()"
+      >
+        Générer le bilan
+      </button>
+    </div>
+  } @else {
+    <p class="review__status">Chargement…</p>
+  }
+
+  @if (state.generating()) {
+    <p class="review__status" role="status">Génération en cours…</p>
+  }
+</article>

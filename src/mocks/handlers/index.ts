@@ -5,6 +5,7 @@ import { healthHandlers } from './health.handlers';
 import { sessionsHandlers } from './sessions.handlers';
 import { slotsHandlers } from './slots.handlers';
 import { trainingStatsHandlers } from './training-stats.handlers';
+import { weeklyReviewsHandlers } from './weekly-reviews.handlers';
 
 export const handlers = [
   ...healthHandlers,
@@ -12,6 +13,7 @@ export const handlers = [
   ...goalsHandlers,
   ...slotsHandlers,
   ...sessionsHandlers,
+  ...weeklyReviewsHandlers,
   ...activitiesHandlers,
   ...dashboardKpisHandlers,
 ];
