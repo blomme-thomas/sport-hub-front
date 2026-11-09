@@ -62,4 +62,11 @@ export class SessionsWriteApi {
   move(id: string, body: { date: string; startTime: string }): Observable<unknown> {
     return this.http.patch(`${this.baseUrl}/sessions/${encodeURIComponent(id)}`, body);
   }
+
+  /** Change la durée d'une séance ; pour une série, change la durée de toute la série. */
+  updateDuration(id: string, durationMinutes: number): Observable<unknown> {
+    return this.http.patch(`${this.baseUrl}/sessions/${encodeURIComponent(id)}`, {
+      durationMinutes,
+    });
+  }
 }

@@ -26,34 +26,53 @@
           (pointercancel)="onColumnPointerCancel()"
         >
           @for (block of column.blocks; track block.key) {
-            <button
-              type="button"
-              class="week-grid__slot"
-              [class.week-grid__slot--occupe]="block.slot?.type === 'occupe'"
-              [class.week-grid__slot--cancelled]="block.cancelled"
-              [class.week-grid__slot--session]="block.kind === 'session'"
+            <div
+              class="week-grid__item"
               [style.top.px]="block.top"
               [style.height.px]="block.height"
               [style.left.%]="block.left"
               [style.width.%]="block.width"
-              [style.border-left-color]="block.kind === 'session' ? block.color : null"
-              [attr.aria-label]="block.label"
-              (click)="onBlockClick(block)"
-              (pointerdown)="onBlockPointerDown($event, block)"
-              (pointermove)="onBlockPointerMove($event)"
-              (pointerup)="onBlockPointerUp($event)"
-              (pointercancel)="onBlockPointerUp($event)"
             >
-              @if (block.kind === 'session' && block.icon) {
-                <span class="week-grid__slot-head">
-                  <sh-icon [name]="block.icon" [color]="block.color" />
-                </span>
+              <button
+                type="button"
+                class="week-grid__slot"
+                [class.week-grid__slot--occupe]="block.slot?.type === 'occupe'"
+                [class.week-grid__slot--cancelled]="block.cancelled"
+                [class.week-grid__slot--done]="block.done"
+                [class.week-grid__slot--session]="block.kind === 'session'"
+                [class.week-grid__slot--locked]="block.kind === 'session' && !block.movable"
+                [style.border-left-color]="block.kind === 'session' ? block.color : null"
+                [attr.aria-label]="block.label"
+                (click)="onBlockClick(block)"
+                (pointerdown)="onBlockPointerDown($event, block)"
+                (pointermove)="onBlockPointerMove($event)"
+                (pointerup)="onBlockPointerUp($event)"
+                (pointercancel)="onBlockPointerUp($event)"
+              >
+                @if (block.kind === 'session' && block.icon) {
+                  <span class="week-grid__slot-head">
+                    <sh-icon [name]="block.icon" [color]="block.color" />
+                  </span>
+                }
+                <span class="week-grid__slot-time">{{ block.timeRange }}</span>
+                @if (block.slot?.recurrence === 'hebdomadaire') {
+                  <span class="week-grid__slot-tag">Chaque semaine</span>
+                }
+                @if (block.done) {
+                  <span class="week-grid__slot-tag">Réalisée, déplacement impossible</span>
+                }
+              </button>
+              @if (block.editable) {
+                <button
+                  type="button"
+                  class="week-grid__duration"
+                  [attr.aria-label]="'Modifier la durée de la séance ' + block.timeRange"
+                  (click)="onDurationClick(block)"
+                >
+                  Durée
+                </button>
               }
-              <span class="week-grid__slot-time">{{ block.timeRange }}</span>
-              @if (block.slot?.recurrence === 'hebdomadaire') {
-                <span class="week-grid__slot-tag">Chaque semaine</span>
-              }
-            </button>
+            </div>
           }
 
           @if (preview(); as draft) {
