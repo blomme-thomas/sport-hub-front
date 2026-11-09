@@ -47,6 +47,8 @@ describe('ChartCardComponent', () => {
   it('transmet les libellés et les valeurs du modèle à Chart.js', async () => {
     await render(ChartCardComponent, { inputs: { model: chartModel } });
 
+    // Chart.js est créé de façon asynchrone après le rendu : on attend l'instance avant de la lire.
+    await vi.waitFor(() => expect(chartJsInstances).toHaveLength(1));
     const [chart] = chartJsInstances;
     expect(chart?.config.data.labels).toEqual(['S43', 'S44']);
     expect(chart?.config.data.datasets).toEqual([
@@ -65,6 +67,7 @@ describe('ChartCardComponent', () => {
       inputs: { model: chartModel, kind: 'horizontal-bar' },
     });
 
+    await vi.waitFor(() => expect(chartJsInstances).toHaveLength(1));
     expect(chartJsInstances[0]?.config.type).toBe('bar');
     expect(chartJsInstances[0]?.config.options).toMatchObject({ indexAxis: 'y' });
   });
