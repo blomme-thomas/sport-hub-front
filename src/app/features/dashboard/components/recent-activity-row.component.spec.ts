@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { statsTestProviders } from '../../../../mocks/training-stats.testing';
 import { server } from '../../../../mocks/server';
 import type { RecentActivity } from '../models/recent-activity.model';
+import { HeartRateZonesState } from '../data-access/heart-rate-zones.state';
 import { RecentActivityRowComponent } from './recent-activity-row.component';
 
 const course: RecentActivity = {
@@ -22,7 +23,7 @@ function renderRow(detail: object) {
   return render(RecentActivityRowComponent, {
     inputs: { activity: course },
     on: { opened: vi.fn() },
-    providers: statsTestProviders(),
+    providers: [...statsTestProviders(), HeartRateZonesState],
   });
 }
 
@@ -64,7 +65,7 @@ describe('RecentActivityRowComponent', () => {
     await render(RecentActivityRowComponent, {
       inputs: { activity: course },
       on: { opened },
-      providers: statsTestProviders(),
+      providers: [...statsTestProviders(), HeartRateZonesState],
     });
 
     await user.click(screen.getByRole('button', { name: /Détail de la séance Course à pied/ }));

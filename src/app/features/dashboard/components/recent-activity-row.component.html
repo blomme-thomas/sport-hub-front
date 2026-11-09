@@ -15,7 +15,7 @@
   </span>
 
   <span class="row__heart">
-    <span class="row__average">{{ activity().heartRateLabel }}</span>
+    <span class="row__average" [style.color]="averageColor()">{{ activity().heartRateLabel }}</span>
     @if (samples().length > 1) {
       <span class="row__spark">
         <sh-chart

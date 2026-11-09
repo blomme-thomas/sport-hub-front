@@ -3,6 +3,7 @@ import { ChartComponent } from '@shared/ui/chart/chart.component';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { firstValueFrom } from 'rxjs';
 import { toAppError } from '../../../core/http/problem-details.mapper';
+import { HeartRateZonesState } from '../data-access/heart-rate-zones.state';
 import { RecentActivitiesApi } from '../data-access/recent-activities.api';
 import {
   formatDistance,
@@ -33,6 +34,7 @@ const SECONDS_PER_MINUTE = 60;
 export class ActivityDetailModalComponent {
   private readonly data = inject<ActivityDetailModalData>(NZ_MODAL_DATA);
   private readonly api = inject(RecentActivitiesApi);
+  private readonly heartZones = inject(HeartRateZonesState);
 
   protected readonly detail = resource<ActivityDetailApi, string>({
     params: () => this.data.id,
@@ -48,7 +50,9 @@ export class ActivityDetailModalComponent {
   protected readonly samples = computed<readonly HeartRateSampleApi[]>(() =>
     this.detail.hasValue() ? (this.detail.value().heartRateSeries ?? []) : [],
   );
-  protected readonly chartData = computed(() => heartRateChartData(this.samples()));
+  protected readonly chartData = computed(() =>
+    heartRateChartData(this.samples(), this.heartZones.floors()),
+  );
   protected readonly chartOptions = detailChartOptions();
 
   /** Lignes des métriques, déjà formatées. Une valeur absente s'affiche « — ». */
