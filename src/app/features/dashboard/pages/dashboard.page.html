@@ -31,6 +31,7 @@
   } @else {
     <p class="dashboard__loading">Chargement…</p>
   }
+  <sh-spinner [busy]="kpis.isLoading()" />
 </section>
 
 @if (state.error(); as error) {
@@ -66,6 +67,7 @@
         [legend]="miniCalendar.legend()"
         [loading]="miniCalendar.isLoading()"
         [empty]="miniCalendar.isEmpty()"
+        [busy]="miniCalendar.isBusy()"
         [error]="miniCalendar.error()"
         (previous)="miniCalendar.previous()"
         (next)="miniCalendar.next()"
@@ -78,6 +80,7 @@
     @if (state.view(); as view) {
       @if (!state.isEmpty()) {
         <div class="dashboard__charts">
+          <sh-spinner [busy]="state.isLoading()" />
           <sh-chart-card
             [model]="view.charts.sessions"
             [icon]="'calendar'"

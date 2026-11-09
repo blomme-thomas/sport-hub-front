@@ -22,6 +22,7 @@ import { PerformanceCardComponent } from '../components/performance-card.compone
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card.component';
 import { SportSplitCardComponent } from '../components/sport-split-card.component';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card.component';
+import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { WeekMiniCalendarComponent } from '../components/week-mini-calendar.component';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
@@ -46,6 +47,7 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
     PerformanceCardComponent,
     RecentActivitiesCardComponent,
     SportSplitCardComponent,
+    SpinnerComponent,
     WeekMiniCalendarComponent,
     WeeklyReviewCardComponent,
   ],

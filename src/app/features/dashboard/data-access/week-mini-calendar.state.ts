@@ -35,6 +35,7 @@ export class WeekMiniCalendarState {
   private readonly sessionsValue = signal<readonly WeekMiniSession[]>([]);
   private readonly labelsValue = signal<ReadonlyMap<string, string>>(new Map());
   private readonly loadingValue = signal(true);
+  private readonly busyValue = signal(false);
   private readonly errorValue = signal<AppError | null>(null);
   private latestRequest = 0;
   private loaded = false;
@@ -50,6 +51,8 @@ export class WeekMiniCalendarState {
   private readonly range = computed(() => gridRangeOf(this.period()));
 
   readonly isLoading = this.loadingValue.asReadonly();
+  /** Vrai pendant tout rechargement (y compris un changement de période) : la carte affiche sa roue. */
+  readonly isBusy = this.busyValue.asReadonly();
   readonly error = this.errorValue.asReadonly();
   readonly isEmpty = computed(() => !this.loadingValue() && this.sessionsValue().length === 0);
 
@@ -117,6 +120,7 @@ export class WeekMiniCalendarState {
     if (!this.loaded) {
       this.loadingValue.set(true);
     }
+    this.busyValue.set(true);
     this.errorValue.set(null);
     // Les libellés du référentiel ne changent pas d'une période à l'autre : on ne les demande qu'une fois.
     const needLabels = this.labelsValue().size === 0;
@@ -141,6 +145,7 @@ export class WeekMiniCalendarState {
     } finally {
       if (request === this.latestRequest) {
         this.loadingValue.set(false);
+        this.busyValue.set(false);
       }
     }
   }

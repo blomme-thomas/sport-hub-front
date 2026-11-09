@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ChartComponent } from '@shared/ui/chart/chart.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
+import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { readCssVar } from '@shared/utils/css-var';
 import type { ChartData, ChartOptions } from 'chart.js';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
@@ -42,7 +43,7 @@ const POINT_RADIUS = 3;
 /** Carte « Vos performances » : durée par jour en vue semaine, par semaine ISO en vue mois (même type de graphique). */
 @Component({
   selector: 'sh-performance-card',
-  imports: [IconComponent, ChartComponent, NzButtonComponent],
+  imports: [IconComponent, ChartComponent, NzButtonComponent, SpinnerComponent],
   templateUrl: './performance-card.component.html',
   styleUrl: './performance-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

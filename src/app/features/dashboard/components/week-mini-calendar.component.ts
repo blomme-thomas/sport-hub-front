@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IconComponent } from '@shared/ui/icon/icon.component';
+import { SpinnerComponent } from '@shared/ui/spinner/spinner.component';
 import { disciplineStyleOf, type DisciplineStyle } from '@shared/ui/discipline/discipline-style';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { AppError } from '../../../core/http/app-error';
@@ -12,7 +13,7 @@ import type { WeekMiniLegendEntry, WeekMiniSession } from '../models/week-mini-c
  */
 @Component({
   selector: 'sh-week-mini-calendar',
-  imports: [IconComponent, NzButtonComponent],
+  imports: [IconComponent, NzButtonComponent, SpinnerComponent],
   templateUrl: './week-mini-calendar.component.html',
   styleUrl: './week-mini-calendar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,6 +25,7 @@ export class WeekMiniCalendarComponent {
   readonly title = input('Cette semaine');
   readonly legend = input<readonly WeekMiniLegendEntry[]>([]);
   readonly loading = input(false);
+  readonly busy = input(false);
   readonly empty = input(false);
   readonly error = input<AppError | null>(null);
 
