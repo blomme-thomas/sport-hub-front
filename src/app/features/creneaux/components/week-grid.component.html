@@ -7,9 +7,9 @@
       }
     </div>
 
-    <div class="week-grid__body" [style.height.px]="gridHeight">
+    <div class="week-grid__body" [style.height.px]="gridHeight()">
       <div class="week-grid__hours" aria-hidden="true">
-        @for (hour of hours; track hour.top) {
+        @for (hour of hours(); track hour.top) {
           <span class="week-grid__hour" [style.top.px]="hour.top">{{ hour.label }}</span>
         }
       </div>

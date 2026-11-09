@@ -105,19 +105,19 @@ describe('WeekGridComponent', () => {
     expect(slotSelected).toHaveBeenCalledWith(libre);
   });
 
-  it('émet une plage de 30 minutes au pas, de 02:00 à 03:00 selon le glisser', async () => {
+  it('émet une plage de 30 minutes au pas, de 08:00 à 09:00 selon le glisser (la grille commence à 06:00)', async () => {
     const { rangeSelected } = await renderGrid([]);
     const column = screen.getByRole('group', { name: 'mardi 10 novembre 2026' });
 
-    // Hauteur d'une heure = 48 px : 96 px = 02:00, 144 px = 03:00.
+    // Hauteur d'une heure = 48 px ; la grille commence à 06:00 : 96 px = 08:00, 144 px = 09:00.
     fireEvent.pointerDown(column, { clientY: 96, button: 0, pointerId: 1 });
     fireEvent.pointerMove(column, { clientY: 144, pointerId: 1 });
     fireEvent.pointerUp(column, { clientY: 144, pointerId: 1 });
 
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,
-      startTime: '02:00',
-      endTime: '03:00',
+      startTime: '08:00',
+      endTime: '09:00',
     });
   });
 
@@ -130,8 +130,8 @@ describe('WeekGridComponent', () => {
 
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,
-      startTime: '02:00',
-      endTime: '03:00',
+      startTime: '08:00',
+      endTime: '09:00',
     });
   });
 

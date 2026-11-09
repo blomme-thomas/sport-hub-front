@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { IconComponent, type IconName } from '@shared/ui/icon/icon.component';
-import { layoutDaySlots, minutesToTime } from '../data-access/slot.mapper';
+import { layoutDaySlots, minutesToTime, timeToMinutes } from '../data-access/slot.mapper';
 import { disciplineStyleOf } from '../models/discipline-style';
 import { slotTypeLabel } from '../models/slot-options';
 import type { SessionOccurrence } from '../models/session-occurrence.model';
@@ -28,6 +28,8 @@ const DEFAULT_DURATION_MINUTES = 60;
 /** Hauteur minimale d'un bloc, pour que son libellé reste lisible. */
 const MIN_BLOCK_HEIGHT_PX = 20;
 const BLOCK_GAP_PX = 2;
+/** Première heure affichée par défaut : pas d'intérêt à montrer minuit à 6 h. */
+const DEFAULT_FIRST_HOUR = 6;
 /** Distance à partir de laquelle un appui devient un déplacement (et non un clic). */
 const MOVE_THRESHOLD_PX = 5;
 
@@ -113,11 +115,17 @@ export class WeekGridComponent {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   protected readonly hourHeight = PX_PER_HOUR;
-  protected readonly gridHeight = HOURS * PX_PER_HOUR;
-  protected readonly hours = Array.from({ length: HOURS }, (_, hour) => ({
-    top: hour * PX_PER_HOUR,
-    label: `${String(hour).padStart(2, '0')}:00`,
-  }));
+  /** Première heure affichée : 06:00, ou plus tôt si une séance commence avant. */
+  protected readonly firstHour = computed(() => firstHourOf(this.days()));
+  /** Décalage de la grille en minutes depuis minuit (la première heure affichée). */
+  private readonly offsetMinutes = computed(() => this.firstHour() * MINUTES_PER_HOUR);
+  protected readonly gridHeight = computed(() => (HOURS - this.firstHour()) * PX_PER_HOUR);
+  protected readonly hours = computed(() =>
+    Array.from({ length: HOURS - this.firstHour() }, (_, index) => ({
+      top: index * PX_PER_HOUR,
+      label: `${String(this.firstHour() + index).padStart(2, '0')}:00`,
+    })),
+  );
 
   private readonly drag = signal<DragState | null>(null);
   private move: MoveState | null = null;
@@ -132,7 +140,7 @@ export class WeekGridComponent {
         const item = positioned.slot;
         const timeRange = `${minutesToTime(positioned.startMinutes)} – ${minutesToTime(positioned.endMinutes)}`;
         const geometry = {
-          top: (positioned.startMinutes * PX_PER_HOUR) / MINUTES_PER_HOUR,
+          top: ((positioned.startMinutes - this.offsetMinutes()) * PX_PER_HOUR) / MINUTES_PER_HOUR,
           height: Math.max(
             ((positioned.endMinutes - positioned.startMinutes) * PX_PER_HOUR) / MINUTES_PER_HOUR -
               BLOCK_GAP_PX,
@@ -189,7 +197,7 @@ export class WeekGridComponent {
     const { start, end } = rangeOf(current);
     return {
       date: current.date,
-      top: (start * PX_PER_HOUR) / MINUTES_PER_HOUR,
+      top: ((start - this.offsetMinutes()) * PX_PER_HOUR) / MINUTES_PER_HOUR,
       height: ((end - start) * PX_PER_HOUR) / MINUTES_PER_HOUR,
       label: `${minutesToTime(start)} – ${minutesToTime(end)}`,
     };
@@ -283,7 +291,7 @@ export class WeekGridComponent {
     }
     const column = event.currentTarget as HTMLElement;
     column.setPointerCapture(event.pointerId);
-    const minutes = minutesAt(event, column);
+    const minutes = minutesAt(event, column, this.offsetMinutes());
     this.drag.set({
       date,
       pointerId: event.pointerId,
@@ -297,7 +305,7 @@ export class WeekGridComponent {
     if (current === null || current.pointerId !== event.pointerId) {
       return;
     }
-    const minutes = minutesAt(event, event.currentTarget as HTMLElement);
+    const minutes = minutesAt(event, event.currentTarget as HTMLElement, this.offsetMinutes());
     this.drag.set({ ...current, currentMinutes: minutes });
   }
 
@@ -369,9 +377,9 @@ function rangeOf(drag: DragState): { start: number; end: number } {
 }
 
 /** Minutes depuis minuit sous le pointeur, arrondies au pas et bornées à la journée. */
-function minutesAt(event: PointerEvent, column: HTMLElement): number {
+function minutesAt(event: PointerEvent, column: HTMLElement, offset: number): number {
   const rect = column.getBoundingClientRect();
-  const minutes = ((event.clientY - rect.top) * MINUTES_PER_HOUR) / PX_PER_HOUR;
+  const minutes = ((event.clientY - rect.top) * MINUTES_PER_HOUR) / PX_PER_HOUR + offset;
   const snapped = Math.round(minutes / SNAP_MINUTES) * SNAP_MINUTES;
   return Math.min(Math.max(snapped, 0), DAY_MINUTES);
 }
@@ -402,4 +410,17 @@ function formatLongDay(iso: string): string {
     year: 'numeric',
     timeZone: 'UTC',
   }).format(new Date(`${iso}T00:00:00Z`));
+}
+
+/** Première heure affichée : 06:00, ou plus tôt si un élément de la semaine commence avant. */
+function firstHourOf(days: readonly WeekDay[]): number {
+  const earliest = days.flatMap((day) => [
+    ...day.sessions.map((session) => timeToMinutes(session.startTime)),
+    ...day.slots.map((slot) => timeToMinutes(slot.startTime)),
+  ]);
+  const firstHour = Math.min(
+    DEFAULT_FIRST_HOUR,
+    ...earliest.map((minutes) => Math.floor(minutes / MINUTES_PER_HOUR)),
+  );
+  return Math.max(0, firstHour);
 }

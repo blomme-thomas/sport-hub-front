@@ -1,8 +1,9 @@
 <header class="creneaux__header">
   <h1 class="creneaux__title">Calendrier</h1>
   <div class="creneaux__actions">
-    <button nz-button type="button" (click)="openSessionCreate()">Nouvelle séance</button>
-    <button nz-button nzType="primary" type="button" (click)="openCreate()">Nouveau créneau</button>
+    <button nz-button nzType="primary" type="button" (click)="openSessionCreate()">
+      Nouvelle séance
+    </button>
   </div>
 </header>
 
@@ -20,10 +21,6 @@
   <p class="creneaux__week" aria-live="polite">{{ weekLabel() }}</p>
 
   <ul class="creneaux__legend" aria-label="Légende">
-    <li><span class="creneaux__swatch creneaux__swatch--libre" aria-hidden="true"></span>Libre</li>
-    <li>
-      <span class="creneaux__swatch creneaux__swatch--occupe" aria-hidden="true"></span>Occupé
-    </li>
     @for (entry of state.legend(); track entry.typeKey) {
       <li><sh-icon [name]="entry.style.icon" [color]="entry.style.color" />{{ entry.label }}</li>
     }
@@ -39,56 +36,18 @@
   <div class="creneaux__content" [attr.aria-busy]="state.isLoading()">
     @if (state.isEmpty()) {
       <p class="creneaux__empty">
-        Aucun créneau ni séance cette semaine. Sélectionnez une plage dans la grille ou cliquez sur
-        « Nouveau créneau ».
+        Aucune séance cette semaine. Sélectionnez une plage dans la grille ou cliquez sur « Nouvelle
+        séance ».
       </p>
     }
     <sh-week-grid
       [days]="state.days()"
       [labels]="state.labels()"
-      (slotSelected)="openEdit($event)"
       (sessionSelected)="openSession($event)"
       (rangeSelected)="chooseRange($event)"
       (moved)="onMoved($event)"
     />
   </div>
-}
-
-@if (editing() !== null) {
-  <nz-modal [nzVisible]="true" [nzTitle]="formTitle()" [nzFooter]="null" (nzOnCancel)="closeForm()">
-    <ng-container *nzModalContent>
-      <sh-slot-form
-        [slot]="formSlot()"
-        [defaults]="formDefaults()"
-        [submitting]="state.saving()"
-        [serverError]="formError()"
-        (saved)="onSaved($event)"
-        (deleted)="confirmDelete()"
-        (cancelled)="closeForm()"
-      />
-    </ng-container>
-  </nz-modal>
-}
-
-@if (chosenRange(); as range) {
-  <nz-modal
-    [nzVisible]="true"
-    nzTitle="Que voulez-vous créer ?"
-    [nzFooter]="null"
-    (nzOnCancel)="cancelChoice()"
-  >
-    <ng-container *nzModalContent>
-      <p class="creneaux__choice-text">
-        Du {{ range.date }} à {{ range.startTime }} au {{ range.endTime }}
-      </p>
-      <div class="creneaux__choice">
-        <button nz-button type="button" (click)="createSlotFromChoice()">Créneau</button>
-        <button nz-button nzType="primary" type="button" (click)="createSessionFromChoice()">
-          Séance
-        </button>
-      </div>
-    </ng-container>
-  </nz-modal>
 }
 
 @if (sessionDraft(); as draft) {
@@ -143,15 +102,18 @@
     <ng-container *nzModalContent>
       <p class="creneaux__choice-text">Séance du {{ session.date }} à {{ session.startTime }}.</p>
       <div class="creneaux__choice">
-        @if (session.status === 'annulee') {
-          <button nz-button type="button" (click)="restoreThisOccurrence()">
-            Restaurer cette semaine
-          </button>
-        } @else {
-          <button nz-button type="button" (click)="cancelThisOccurrence()">
-            Annuler cette semaine
-          </button>
+        @if (session.recurrence === 'hebdomadaire') {
+          @if (session.status === 'annulee') {
+            <button nz-button type="button" (click)="restoreThisOccurrence()">
+              Restaurer cette semaine
+            </button>
+          } @else {
+            <button nz-button type="button" (click)="cancelThisOccurrence()">
+              Annuler cette semaine
+            </button>
+          }
         }
+        <button nz-button nzDanger type="button" (click)="confirmDeleteSession()">Supprimer</button>
         <button nz-button nzType="primary" type="button" (click)="openSessionFromChoice()">
           Ouvrir la fiche
         </button>

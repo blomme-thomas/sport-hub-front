@@ -40,6 +40,7 @@ test.describe('Calendrier : séances', () => {
     const seance = page.getByRole('button', { name: /^Séance Course à pied, 18:00/ });
     await expect(seance).toBeVisible();
     await seance.click();
+    await page.getByRole('button', { name: 'Ouvrir la fiche', exact: true }).click();
 
     await expect(page).toHaveURL(/\/seances\/session-course$/);
   });

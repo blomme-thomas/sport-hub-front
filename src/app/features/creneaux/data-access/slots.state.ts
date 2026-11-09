@@ -44,17 +44,16 @@ export class SlotsState {
   readonly weekStart = this.weekStartValue.asReadonly();
   readonly weekEnd = computed(() => addIsoDays(this.weekStartValue(), WEEK_LAST_OFFSET_DAYS));
   readonly days = computed<WeekDay[]>(() => {
-    const slotsByDate = groupByDate(this.slotsValue());
     const sessionsByDate = groupByDate(this.sessionsValue());
     return weekDates(this.weekStartValue()).map((date) => ({
       date,
-      slots: slotsByDate.get(date) ?? [],
+      slots: [],
       sessions: sessionsByDate.get(date) ?? [],
     }));
   });
   readonly legend = computed<LegendEntry[]>(() => {
     const labels = this.labelsValue();
-    const keys = new Set(this.sessionsValue().map((session) => session.disciplineTypeKey));
+    const keys = new Set([...this.sessionsValue().map((session) => session.disciplineTypeKey)]);
     return [...keys].map((typeKey) => ({
       typeKey,
       label: labels.get(typeKey) ?? typeKey,
@@ -131,17 +130,12 @@ export class SlotsState {
     this.loadingValue.set(true);
     this.errorValue.set(null);
     try {
-      const [slots, sessions] = await Promise.all([
-        firstValueFrom(this.api.list(from, to)),
-        firstValueFrom(this.sessionsApi.list(from, to)),
-      ]);
+      const sessions = await firstValueFrom(this.sessionsApi.list(from, to));
       if (request === this.latestRequest) {
-        this.slotsValue.set(slots);
         this.sessionsValue.set(sessions);
       }
     } catch (error) {
       if (request === this.latestRequest) {
-        this.slotsValue.set([]);
         this.sessionsValue.set([]);
         this.errorValue.set(asAppError(error));
       }
