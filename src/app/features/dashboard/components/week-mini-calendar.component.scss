@@ -59,6 +59,20 @@
   list-style: none;
 }
 
+/* En-têtes des jours (vue mois) : une case par colonne, alignée sur la grille. */
+.week-mini__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--sh-space-2);
+  margin: 0 0 var(--sh-space-2);
+  padding: 0;
+  list-style: none;
+  color: var(--sh-text-muted);
+  font-size: 0.75rem;
+  text-align: center;
+  text-transform: capitalize;
+}
+
 .week-mini__day {
   display: flex;
   flex-direction: column;
