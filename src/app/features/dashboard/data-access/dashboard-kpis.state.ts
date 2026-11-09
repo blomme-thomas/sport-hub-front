@@ -6,6 +6,7 @@ import type { DashboardKpisResponseApi } from '../models/dashboard-kpis.api-mode
 import type { DashboardKpi } from '../models/dashboard-kpi.model';
 import { DashboardKpisApi } from './dashboard-kpis.api';
 import { DashboardState } from './dashboard.state';
+import { keepLast } from './hold-last';
 import { type MetricsPeriod, metricsPeriodFor } from './metrics-period';
 import { toDashboardKpis } from './dashboard-kpis.mapper';
 
@@ -24,8 +25,16 @@ export class DashboardKpisState {
     loader: ({ params }) => firstValueFrom(this.api.get(params)),
   });
 
-  readonly kpis: Signal<DashboardKpi[] | undefined> = computed(() =>
-    this.response.hasValue() ? toDashboardKpis(this.response.value()) : undefined,
+  /** Réponse brute, partagée avec « Vos performances » pour ne pas la demander deux fois. */
+  readonly raw: Signal<DashboardKpisResponseApi | undefined> = keepLast(
+    () => (this.response.hasValue() ? this.response.value() : undefined),
+    (response) => response,
+  );
+
+  /** Indicateurs ; gardés pendant un rechargement pour éviter un affichage vide. */
+  readonly kpis: Signal<DashboardKpi[] | undefined> = keepLast(
+    () => (this.response.hasValue() ? this.response.value() : undefined),
+    toDashboardKpis,
   );
 
   readonly isLoading = computed(() => this.response.isLoading());

@@ -37,6 +37,7 @@ export class WeekMiniCalendarState {
   private readonly loadingValue = signal(true);
   private readonly errorValue = signal<AppError | null>(null);
   private latestRequest = 0;
+  private loaded = false;
 
   readonly view = computed<MiniCalendarView>(() =>
     this.dashboard.granularity() === 'month' ? 'month' : 'week',
@@ -112,18 +113,26 @@ export class WeekMiniCalendarState {
 
   private async load(from: string, to: string): Promise<void> {
     const request = ++this.latestRequest;
-    this.loadingValue.set(true);
+    // Le chargement initial affiche « Chargement » ; un changement de période garde la grille en place.
+    if (!this.loaded) {
+      this.loadingValue.set(true);
+    }
     this.errorValue.set(null);
+    // Les libellés du référentiel ne changent pas d'une période à l'autre : on ne les demande qu'une fois.
+    const needLabels = this.labelsValue().size === 0;
     try {
       const [sessions, labels] = await Promise.all([
         firstValueFrom(this.api.list(from, to)),
-        firstValueFrom(this.api.disciplineLabels()),
+        needLabels ? firstValueFrom(this.api.disciplineLabels()) : Promise.resolve(null),
       ]);
       if (request !== this.latestRequest) {
         return;
       }
       this.sessionsValue.set(sessions);
-      this.labelsValue.set(labels);
+      if (labels !== null) {
+        this.labelsValue.set(labels);
+      }
+      this.loaded = true;
     } catch (error) {
       if (request === this.latestRequest) {
         this.sessionsValue.set([]);
