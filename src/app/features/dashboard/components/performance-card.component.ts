@@ -1,59 +1,56 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { ChartComponent } from '@shared/ui/chart/chart.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { readCssVar } from '@shared/utils/css-var';
 import type { ChartData, ChartOptions } from 'chart.js';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
-import { NzOptionComponent, NzSelectComponent } from 'ng-zorro-antd/select';
 import { PERFORMANCE_SERIES_LABEL } from '../data-access/performance.mapper';
-import {
-  PERFORMANCE_PERIODS,
-  PerformanceState,
-  type PerformancePeriod,
-} from '../data-access/performance.state';
+import { PerformanceState } from '../data-access/performance.state';
 
-const PERIOD_LABELS: Record<PerformancePeriod, string> = {
-  '7d': 'Cette semaine',
-  '30d': '30 derniers jours',
-  '3m': '3 derniers mois',
-  '1y': '1 an',
-};
+/**
+ * Options du graphique aux couleurs du thème : grille et graduations discrètes, sans bordure d'axe,
+ * pour que la courbe reste le seul élément qui attire le regard.
+ */
+function performanceChartOptions(): ChartOptions<'line'> {
+  const text = readCssVar('--sh-chart-text');
+  const grid = readCssVar('--sh-chart-grid');
+  const gridLine = { color: grid, lineWidth: 1 };
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: {
+        border: { display: false },
+        grid: gridLine,
+        ticks: { color: text },
+      },
+      y: {
+        beginAtZero: true,
+        border: { display: false },
+        grid: gridLine,
+        ticks: { color: text, callback: (value) => `${value} h` },
+      },
+    },
+  };
+}
 
-const CHART_OPTIONS: ChartOptions<'line'> = {
-  responsive: true,
-  maintainAspectRatio: false,
-  animation: false,
-  plugins: { legend: { display: false } },
-  scales: { y: { beginAtZero: true } },
-};
-
-const MAX_POINT_RADIUS = 6;
+/** Courbe lissée ; le mode monotone évite les dépassements sous zéro. */
+const CURVE_TENSION = 0.4;
 const POINT_RADIUS = 3;
 
 /** Carte « Vos performances » : durée par jour sur la période choisie localement. */
 @Component({
   selector: 'sh-performance-card',
-  imports: [
-    IconComponent,
-    FormsModule,
-    ChartComponent,
-    NzButtonComponent,
-    NzOptionComponent,
-    NzSelectComponent,
-  ],
+  imports: [IconComponent, ChartComponent, NzButtonComponent],
   templateUrl: './performance-card.component.html',
   styleUrl: './performance-card.component.scss',
-  providers: [PerformanceState],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PerformanceCardComponent {
   protected readonly state = inject(PerformanceState);
-  protected readonly periodOptions = PERFORMANCE_PERIODS.map((value) => ({
-    value,
-    label: PERIOD_LABELS[value],
-  }));
-  protected readonly chartOptions = CHART_OPTIONS;
+  protected readonly chartOptions = performanceChartOptions();
 
   protected readonly chartData = computed<ChartData<'line'>>(() => {
     const series = this.state.series();
@@ -70,9 +67,9 @@ export class PerformanceCardComponent {
           borderColor: color,
           backgroundColor: color,
           pointBackgroundColor: color,
-          pointRadius: series.hours.map((_, index) =>
-            index === series.maxIndex ? MAX_POINT_RADIUS : POINT_RADIUS,
-          ),
+          tension: CURVE_TENSION,
+          cubicInterpolationMode: 'monotone',
+          pointRadius: POINT_RADIUS,
         },
       ],
     };

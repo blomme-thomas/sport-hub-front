@@ -1,0 +1,62 @@
+<div class="week-grid" role="region" aria-label="Grille de la semaine">
+  <div class="week-grid__inner">
+    <div class="week-grid__head" aria-hidden="true">
+      <span class="week-grid__corner"></span>
+      @for (column of columns(); track column.date) {
+        <span class="week-grid__day-title">{{ column.shortLabel }}</span>
+      }
+    </div>
+
+    <div class="week-grid__body" [style.height.px]="gridHeight">
+      <div class="week-grid__hours" aria-hidden="true">
+        @for (hour of hours; track hour.top) {
+          <span class="week-grid__hour" [style.top.px]="hour.top">{{ hour.label }}</span>
+        }
+      </div>
+
+      @for (column of columns(); track column.date) {
+        <div
+          class="week-grid__column"
+          role="group"
+          [attr.aria-label]="column.longLabel"
+          (pointerdown)="onColumnPointerDown($event, column.date)"
+          (pointermove)="onColumnPointerMove($event)"
+          (pointerup)="onColumnPointerUp($event)"
+          (pointercancel)="onColumnPointerCancel()"
+        >
+          @for (block of column.blocks; track block.slot.id + block.slot.date + block.timeRange) {
+            <button
+              type="button"
+              class="week-grid__slot"
+              [class.week-grid__slot--occupe]="block.slot.type === 'occupe'"
+              [style.top.px]="block.top"
+              [style.height.px]="block.height"
+              [style.left.%]="block.left"
+              [style.width.%]="block.width"
+              [attr.aria-label]="block.label"
+              (click)="slotSelected.emit(block.slot)"
+            >
+              <span class="week-grid__slot-time">{{ block.timeRange }}</span>
+              @if (block.slot.recurrence === 'hebdomadaire') {
+                <span class="week-grid__slot-tag">Chaque semaine</span>
+              }
+            </button>
+          }
+
+          @if (preview(); as draft) {
+            @if (draft.date === column.date) {
+              <div
+                class="week-grid__preview"
+                aria-hidden="true"
+                [style.top.px]="draft.top"
+                [style.height.px]="draft.height"
+              >
+                {{ draft.label }}
+              </div>
+            }
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -14,6 +14,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/goals/goals.routes').then((m) => m.GOALS_ROUTES),
   },
   {
+    path: 'creneaux',
+    loadChildren: () =>
+      import('./features/creneaux/creneaux.routes').then((m) => m.CRENEAUX_ROUTES),
+  },
+  {
     path: '**',
     title: 'Page introuvable',
     loadComponent: () => import('./core/layout/not-found.page').then((m) => m.NotFoundPage),

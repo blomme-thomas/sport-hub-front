@@ -10,7 +10,7 @@
       [attr.aria-label]="expandLabel()"
       (click)="expand.emit()"
     >
-      Agrandir
+      <sh-icon name="expand" />
     </button>
   </header>
   <sh-chart type="bar" [data]="data()" [options]="options()" [label]="model().title" />

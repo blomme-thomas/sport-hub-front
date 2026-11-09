@@ -93,6 +93,20 @@ Un code absent de `ERROR_MESSAGES` affiche `DEFAULT_ERROR_MESSAGE` sans erreur ;
 - Contrat : règles et codes dans `sport-hub-back/docs/technique/contextes/objectifs.md` et `sport-hub-back/docs/technique/erreurs-api.md`. Non recopiés ici.
 - Mock MSW : `src/mocks/handlers/goals.handlers.ts` (état en mémoire, `*/api/goals`). Fixtures : `src/mocks/fixtures/goals.fixtures.ts`.
 
+### `creneaux`
+
+- `GET /api/slots?from=&to=` : `SlotsApi.list` (`features/creneaux/data-access/slots.api.ts`). Occurrences de la semaine affichée, `from` (lundi) et `to` (dimanche) inclus. Le back développe les séries hebdomadaires ; le front ne calcule aucune récurrence.
+- `POST /api/slots` : `SlotsApi.create`. Création, avec le fuseau du navigateur (`timeZone`).
+- `PATCH /api/slots/:id` : `SlotsApi.update`. Modification, corps complet envoyé (type, date, heures, récurrence), sans fuseau.
+- `DELETE /api/slots/:id` : `SlotsApi.delete`. Suppression de toute la série.
+- Mapping : une occurrence est convertie par `toSlot` avec `slotId` comme `id`. Les réponses d'écriture (`SlotApi`, champ `id`) passent par `toSavedSlot`. Les types API sont dans `slot.api-model.ts`.
+- Répartition par jour : `SlotsState.days` regroupe les créneaux par date pour les sept jours de la semaine. La disposition des chevauchements est calculée par `layoutDaySlots` (`slot.mapper.ts`), fonction pure et testée.
+- Chargement : `SlotsState` (fourni au niveau de la page) charge la semaine à sa création, à chaque changement de semaine et après chaque écriture réussie. Une réponse dont la semaine a été quittée est ignorée. Conversion par `firstValueFrom`, comme pour `goals`.
+- Dates : `shared/utils/iso-date.ts` calcule le jour local (`localIsoDate`) et ajoute des jours calendaires sans décalage (`addIsoDays`). Le jour UTC n'est pas utilisé ici.
+- Erreurs : `AppError` produite par `toAppError`. Codes `SLOT_END_NOT_AFTER_START`, `SLOT_NOT_FOUND`, `SLOT_INVALID`, `SLOT_PERIOD_*` ont un message dans `ERROR_MESSAGES`. Les erreurs de champ (`VALIDATION_FAILED`, `errors[]`) sont rattachées à `type`, `date`, `startTime`, `endTime`, `recurrence` dans le formulaire ; `timeZone` n'a pas de champ et s'affiche en alerte.
+- Contrat : règles et routes dans `sport-hub-back/docs/technique/contextes/creneaux.md`. Non recopiés ici.
+- Mock MSW : `src/mocks/handlers/slots.handlers.ts` (état en mémoire, `*/api/slots`, occurrences calculées comme le back). Fixtures : `src/mocks/fixtures/slots.fixtures.ts`. Helper de test : `src/mocks/slots.testing.ts`.
+
 ## Génération de types depuis l'OpenAPI du back
 
 À compléter (non décidé).

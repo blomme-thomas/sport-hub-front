@@ -14,6 +14,10 @@ describe('ShellComponent', () => {
 
     expect(screen.getByRole('link', { name: 'Tableau de bord' })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: 'Objectifs' })).toHaveAttribute('href', '/goals');
+    expect(screen.getByRole('link', { name: 'Disponibilités' })).toHaveAttribute(
+      'href',
+      '/creneaux',
+    );
   });
 
   it('affiche les entrées à venir désactivées, sans lien', async () => {

@@ -8,7 +8,7 @@ describe('toPerformanceSeries', () => {
     const series = toPerformanceSeries(dashboardKpisResponse);
 
     expect(series.labels).toHaveLength(7);
-    expect(series.labels[0]).toBe('1 nov.');
+    expect(series.labels[0]).toBe('Dim');
     expect(series.hours.slice(0, 4)).toEqual([0, 0.75, 0, 1.33]);
   });
 

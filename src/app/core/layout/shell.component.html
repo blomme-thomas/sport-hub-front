@@ -45,6 +45,17 @@
             Objectifs
           </a>
         </li>
+        <li>
+          <a
+            class="shell__link"
+            routerLink="/creneaux"
+            routerLinkActive="shell__link--active"
+            ariaCurrentWhenActive="page"
+            (click)="closeMenu()"
+          >
+            Disponibilités
+          </a>
+        </li>
         @for (label of comingSoon; track label) {
           <li>
             <span

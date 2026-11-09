@@ -33,10 +33,12 @@ function indexOfMax(values: number[]): number | null {
   return best;
 }
 
+/** Jour de la semaine abrégé, avec une majuscule et sans point (« Lun »), comme la maquette. */
 function formatDay(isoDate: string): string {
-  return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
+  const weekday = new Date(`${isoDate}T00:00:00Z`).toLocaleDateString('fr-FR', {
+    weekday: 'short',
     timeZone: 'UTC',
   });
+  const clean = weekday.replace('.', '');
+  return clean.charAt(0).toUpperCase() + clean.slice(1);
 }
