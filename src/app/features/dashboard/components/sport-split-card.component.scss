@@ -36,9 +36,10 @@
 
 .split__body {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: var(--sh-space-4);
+  justify-content: center;
+  gap: var(--sh-space-5, 1.25rem);
 }
 
 .split__chart {
@@ -70,10 +71,10 @@
 
 .split__legend {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  gap: var(--sh-space-2);
-  min-width: 10rem;
+  gap: var(--sh-space-3);
+  width: 12rem;
+  flex-shrink: 1;
   margin: 0;
   padding: 0;
   list-style: none;
