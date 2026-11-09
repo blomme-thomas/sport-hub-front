@@ -40,18 +40,41 @@
   </div>
 } @else {
   <section class="dashboard__content" [attr.aria-busy]="state.isLoading()">
-    @if (state.view(); as view) {
-      @if (state.isEmpty()) {
-        <p class="dashboard__empty">Aucune activité sur cette période</p>
+    <div class="dashboard__row">
+      @if (state.view(); as view) {
+        @if (state.isEmpty()) {
+          <p class="dashboard__empty">Aucune activité sur cette période</p>
+        } @else {
+          <sh-recent-activities-card
+            class="dashboard__recent"
+            [activities]="recent.activities()"
+            [error]="recent.error()"
+            [loading]="recent.isLoading()"
+            (retry)="recent.reload()"
+            (opened)="openActivity($event)"
+          />
+        }
       } @else {
-        <sh-recent-activities-card
-          class="dashboard__recent"
-          [activities]="recent.activities()"
-          [error]="recent.error()"
-          [loading]="recent.isLoading()"
-          (retry)="recent.reload()"
-          (opened)="openActivity($event)"
-        />
+        <p class="dashboard__loading">Chargement…</p>
+      }
+
+      <sh-week-mini-calendar
+        class="dashboard__week"
+        [days]="miniCalendar.days()"
+        [legend]="miniCalendar.legend()"
+        [loading]="miniCalendar.isLoading()"
+        [empty]="miniCalendar.isEmpty()"
+        [error]="miniCalendar.error()"
+        (previous)="miniCalendar.previousWeek()"
+        (next)="miniCalendar.nextWeek()"
+        (current)="miniCalendar.currentWeek()"
+        (retry)="miniCalendar.reload()"
+        (sessionSelected)="openSession($event)"
+      />
+    </div>
+
+    @if (state.view(); as view) {
+      @if (!state.isEmpty()) {
         <div class="dashboard__charts">
           <sh-chart-card
             [model]="view.charts.sessions"
@@ -63,25 +86,9 @@
           <sh-sport-split-card [split]="view.sportSplit" />
         </div>
       }
-    } @else {
-      <p class="dashboard__loading">Chargement…</p>
     }
   </section>
 }
-
-<sh-week-mini-calendar
-  class="dashboard__week"
-  [days]="miniCalendar.days()"
-  [legend]="miniCalendar.legend()"
-  [loading]="miniCalendar.isLoading()"
-  [empty]="miniCalendar.isEmpty()"
-  [error]="miniCalendar.error()"
-  (previous)="miniCalendar.previousWeek()"
-  (next)="miniCalendar.nextWeek()"
-  (current)="miniCalendar.currentWeek()"
-  (retry)="miniCalendar.reload()"
-  (sessionSelected)="openSession($event)"
-/>
 
 @if (weeklyReviewEnabled) {
   <sh-weekly-review-card class="dashboard__review" />
