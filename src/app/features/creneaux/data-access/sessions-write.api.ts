@@ -25,4 +25,9 @@ export class SessionsWriteApi {
   create(body: CreateSessionRequestApi): Observable<{ id: string }> {
     return this.http.post<{ id: string }>(`${this.baseUrl}/sessions`, body);
   }
+
+  /** Déplace une séance ponctuelle (nouveau jour et heure de début). */
+  move(id: string, body: { date: string; startTime: string }): Observable<unknown> {
+    return this.http.patch(`${this.baseUrl}/sessions/${encodeURIComponent(id)}`, body);
+  }
 }

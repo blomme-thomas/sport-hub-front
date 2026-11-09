@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { IconComponent, type IconName } from '@shared/ui/icon/icon.component';
 import { layoutDaySlots, minutesToTime } from '../data-access/slot.mapper';
 import { disciplineStyleOf } from '../models/discipline-style';
@@ -12,18 +21,25 @@ const PX_PER_HOUR = 48;
 const HOURS = 24;
 const MINUTES_PER_HOUR = 60;
 const DAY_MINUTES = HOURS * MINUTES_PER_HOUR;
-/** Pas de la sélection à la souris, en minutes. */
+/** Pas de la sélection et du déplacement à la souris, en minutes. */
 const SNAP_MINUTES = 30;
 /** Durée proposée par un simple clic sur une colonne. */
 const DEFAULT_DURATION_MINUTES = 60;
 /** Hauteur minimale d'un bloc, pour que son libellé reste lisible. */
 const MIN_BLOCK_HEIGHT_PX = 20;
 const BLOCK_GAP_PX = 2;
+/** Distance à partir de laquelle un appui devient un déplacement (et non un clic). */
+const MOVE_THRESHOLD_PX = 5;
 
-/** Élément placé sur la grille : un créneau ou une séance. `id` sert au tri et au suivi. */
+/** Élément placé sur la grille : un créneau ou une séance. */
 type GridItem =
   | { id: string; startTime: string; endTime: string; kind: 'slot'; slot: Slot }
   | { id: string; startTime: string; endTime: string; kind: 'session'; session: SessionOccurrence };
+
+/** Déplacement d'un élément sur la grille, à enregistrer par la page. */
+export type GridMove =
+  | { kind: 'slot'; slot: Slot; date: string; startTime: string; endTime: string }
+  | { kind: 'session'; session: SessionOccurrence; date: string; startTime: string };
 
 interface DragState {
   date: string;
@@ -32,13 +48,27 @@ interface DragState {
   currentMinutes: number;
 }
 
+interface MoveState {
+  block: PositionedBlock;
+  element: HTMLElement;
+  pointerId: number;
+  startX: number;
+  startY: number;
+  moved: boolean;
+  deltaY: number;
+}
+
 interface PositionedBlock {
   key: string;
   kind: 'slot' | 'session';
+  date: string;
   slot: Slot | null;
   session: SessionOccurrence | null;
   label: string;
   timeRange: string;
+  startMinutes: number;
+  endMinutes: number;
+  movable: boolean;
   top: number;
   height: number;
   left: number;
@@ -58,6 +88,8 @@ interface GridColumn {
  * Grille d'une semaine : une colonne par jour, de 00:00 à 24:00. Affiche les créneaux (libres ou occupés) et les
  * séances (icône et couleur de leur discipline). Cliquer sur un créneau émet ce créneau, cliquer sur une séance
  * émet la séance ; glisser sur une colonne émet la plage choisie (pas de 30 min, un clic seul propose une heure).
+ * Un élément déplaçable (créneau, ou séance ponctuelle) se glisse vers un autre jour ou une autre heure
+ * (`moved`). Une séance récurrente ne se déplace pas ici (story #49).
  * Présentationnel : ne charge rien et ne modifie rien.
  */
 @Component({
@@ -75,6 +107,9 @@ export class WeekGridComponent {
   readonly slotSelected = output<Slot>();
   readonly sessionSelected = output<SessionOccurrence>();
   readonly rangeSelected = output<SlotDefaults>();
+  readonly moved = output<GridMove>();
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   protected readonly hourHeight = PX_PER_HOUR;
   protected readonly gridHeight = HOURS * PX_PER_HOUR;
@@ -84,6 +119,8 @@ export class WeekGridComponent {
   }));
 
   private readonly drag = signal<DragState | null>(null);
+  private move: MoveState | null = null;
+  private suppressClick = false;
 
   protected readonly columns = computed<GridColumn[]>(() =>
     this.days().map((day) => ({
@@ -102,15 +139,19 @@ export class WeekGridComponent {
           ),
           left: (positioned.lane * 100) / positioned.laneCount,
           width: 100 / positioned.laneCount,
+          startMinutes: positioned.startMinutes,
+          endMinutes: positioned.endMinutes,
         };
         if (item.kind === 'slot') {
           return {
             key: item.id,
             kind: 'slot' as const,
+            date: day.date,
             slot: item.slot,
             session: null,
             label: describeSlot(item.slot, timeRange),
             timeRange,
+            movable: true,
             icon: null,
             color: '',
             ...geometry,
@@ -122,10 +163,12 @@ export class WeekGridComponent {
         return {
           key: item.id,
           kind: 'session' as const,
+          date: day.date,
           slot: null,
           session: item.session,
           label: `Séance ${disciplineLabel}, ${timeRange}. Ouvrir la séance`,
           timeRange,
+          movable: item.session.recurrence === 'aucune',
           icon: style.icon,
           color: style.color,
           ...geometry,
@@ -150,10 +193,84 @@ export class WeekGridComponent {
   });
 
   protected onBlockClick(block: PositionedBlock): void {
+    if (this.suppressClick) {
+      this.suppressClick = false;
+      return;
+    }
     if (block.kind === 'slot' && block.slot !== null) {
       this.slotSelected.emit(block.slot);
     } else if (block.session !== null) {
       this.sessionSelected.emit(block.session);
+    }
+  }
+
+  protected onBlockPointerDown(event: PointerEvent, block: PositionedBlock): void {
+    this.suppressClick = false;
+    if (event.button !== 0 || !block.movable) {
+      return;
+    }
+    const element = event.currentTarget as HTMLElement;
+    element.setPointerCapture(event.pointerId);
+    this.move = {
+      block,
+      element,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      moved: false,
+      deltaY: 0,
+    };
+  }
+
+  protected onBlockPointerMove(event: PointerEvent): void {
+    const move = this.move;
+    if (move === null || move.pointerId !== event.pointerId) {
+      return;
+    }
+    const deltaX = event.clientX - move.startX;
+    const deltaY = event.clientY - move.startY;
+    if (!move.moved && Math.hypot(deltaX, deltaY) < MOVE_THRESHOLD_PX) {
+      return;
+    }
+    move.moved = true;
+    move.deltaY = deltaY;
+    move.element.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+    move.element.style.zIndex = '2';
+  }
+
+  protected onBlockPointerUp(event: PointerEvent): void {
+    const move = this.move;
+    if (move === null || move.pointerId !== event.pointerId) {
+      return;
+    }
+    this.move = null;
+    move.element.style.transform = '';
+    move.element.style.zIndex = '';
+    if (!move.moved) {
+      return;
+    }
+    this.suppressClick = true;
+
+    const block = move.block;
+    const date = this.columnAt(event.clientX) ?? block.date;
+    const duration = block.endMinutes - block.startMinutes;
+    const deltaMinutes =
+      Math.round((move.deltaY * MINUTES_PER_HOUR) / PX_PER_HOUR / SNAP_MINUTES) * SNAP_MINUTES;
+    const start = Math.min(Math.max(block.startMinutes + deltaMinutes, 0), DAY_MINUTES - duration);
+    if (date === block.date && start === block.startMinutes) {
+      return;
+    }
+    const startTime = minutesToTime(start);
+    if (block.kind === 'slot' && block.slot !== null) {
+      this.moved.emit({
+        kind: 'slot',
+        slot: block.slot,
+        date,
+        startTime,
+        endTime: minutesToTime(start + duration),
+      });
+    } else if (block.session !== null) {
+      this.moved.emit({ kind: 'session', session: block.session, date, startTime });
     }
   }
 
@@ -197,6 +314,18 @@ export class WeekGridComponent {
 
   protected onColumnPointerCancel(): void {
     this.drag.set(null);
+  }
+
+  /** Date de la colonne située sous l'abscisse donnée, ou `null` hors de la grille. */
+  private columnAt(clientX: number): string | null {
+    const columns = this.host.nativeElement.querySelectorAll<HTMLElement>('.week-grid__column');
+    for (const column of Array.from(columns)) {
+      const rect = column.getBoundingClientRect();
+      if (clientX >= rect.left && clientX < rect.right) {
+        return column.dataset['date'] ?? null;
+      }
+    }
+    return null;
   }
 }
 

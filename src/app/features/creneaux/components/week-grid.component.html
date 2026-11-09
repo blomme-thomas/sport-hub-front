@@ -18,6 +18,7 @@
         <div
           class="week-grid__column"
           role="group"
+          [attr.data-date]="column.date"
           [attr.aria-label]="column.longLabel"
           (pointerdown)="onColumnPointerDown($event, column.date)"
           (pointermove)="onColumnPointerMove($event)"
@@ -37,6 +38,10 @@
               [style.border-left-color]="block.kind === 'session' ? block.color : null"
               [attr.aria-label]="block.label"
               (click)="onBlockClick(block)"
+              (pointerdown)="onBlockPointerDown($event, block)"
+              (pointermove)="onBlockPointerMove($event)"
+              (pointerup)="onBlockPointerUp($event)"
+              (pointercancel)="onBlockPointerUp($event)"
             >
               @if (block.kind === 'session' && block.icon) {
                 <span class="week-grid__slot-head">

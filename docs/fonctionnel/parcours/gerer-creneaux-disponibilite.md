@@ -84,3 +84,12 @@ La page `/creneaux`, intitulée « Calendrier », affiche aussi les séances de 
 - Le bouton « Nouvelle séance » ouvre directement le formulaire de séance, à la date du jour.
 - Sans discipline dans le référentiel, le formulaire l'indique et bloque la création : le référentiel se remplit avec la synchronisation Garmin.
 - Déplacer ou modifier une séance au clic relève des stories #48 et #49.
+
+## Déplacer un créneau ou une séance (issue #48)
+
+- Glisser un créneau ou une séance ponctuelle sur la grille le déplace dans le temps : vers un autre jour (la colonne sous le pointeur) et vers une autre heure, par pas de 30 minutes. La durée est conservée.
+- Un créneau se déplace pour toute sa série, comme dans le reste de l'application.
+- Une séance récurrente ne se déplace pas par glisser-déposer : le déplacement d'une seule occurrence relève de la story #49.
+- Un simple clic ouvre l'élément : un créneau ouvre son formulaire, une séance ouvre sa fiche. La modification des champs d'une séance (date, heure, durée) passe par la fiche ou par le déplacement ; une modale d'édition dédiée n'est pas encore livrée.
+- En cas d'erreur du back, le message s'affiche et le calendrier est rechargé.
+- Le déplacement au clavier (flèches) n'est pas encore livré.

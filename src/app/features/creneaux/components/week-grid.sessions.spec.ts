@@ -5,6 +5,9 @@ import type { SessionOccurrence } from '../models/session-occurrence.model';
 import type { WeekDay } from '../models/week-day.model';
 import { WeekGridComponent } from './week-grid.component';
 
+// jsdom n'implémente pas la capture du pointeur, utilisée lors d'un appui sur un bloc.
+Element.prototype.setPointerCapture = vi.fn();
+
 const TUESDAY = '2026-11-10';
 
 const seance: SessionOccurrence = {
