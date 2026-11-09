@@ -19,6 +19,10 @@ export const routes: Routes = [
       import('./features/creneaux/creneaux.routes').then((m) => m.CRENEAUX_ROUTES),
   },
   {
+    path: 'seances',
+    loadChildren: () => import('./features/seances/seances.routes').then((m) => m.SEANCES_ROUTES),
+  },
+  {
     path: '**',
     title: 'Page introuvable',
     loadComponent: () => import('./core/layout/not-found.page').then((m) => m.NotFoundPage),
