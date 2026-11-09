@@ -46,9 +46,10 @@ export function formatDuration(totalSeconds: number): string {
   return hours === 0 ? `${minutes} min` : `${hours}h ${String(minutes).padStart(2, '0')}`;
 }
 
-/** « 142 bpm », ou « — » si la fréquence cardiaque moyenne est absente. */
+/** « 142 bpm », ou « — » si la fréquence cardiaque moyenne est absente ou nulle. */
 export function formatHeartRate(bpm: number | null): string {
-  return bpm === null ? ABSENT : `${Math.round(bpm)} bpm`;
+  // Zéro : aucune mesure de FC (par exemple un vélo virtuel), donc absente.
+  return bpm === null || bpm <= 0 ? ABSENT : `${Math.round(bpm)} bpm`;
 }
 
 /** « 7,8 km », ou « — » si la distance est absente. */

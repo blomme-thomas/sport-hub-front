@@ -3,6 +3,7 @@ import type { ActivitySummaryApi } from '../models/recent-activity.api-model';
 import {
   formatDistance,
   formatDuration,
+  formatHeartRate,
   toRecentActivity,
   toRelativeDateLabel,
 } from './recent-activities.mapper';
@@ -96,5 +97,13 @@ describe('toRecentActivity', () => {
 
     expect(toRecentActivity(item, NOW).typeLabel).toBe('trail running');
     expect(toRecentActivity(item, NOW).typeIcon).toBe('🏅');
+  });
+});
+
+describe('formatHeartRate', () => {
+  it('affiche « — » pour une FC absente ou nulle, et la valeur sinon', () => {
+    expect(formatHeartRate(null)).toBe('—');
+    expect(formatHeartRate(0)).toBe('—');
+    expect(formatHeartRate(142.4)).toBe('142 bpm');
   });
 });
