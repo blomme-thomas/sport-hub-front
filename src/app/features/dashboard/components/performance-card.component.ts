@@ -7,9 +7,6 @@ import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { PERFORMANCE_SERIES_LABEL } from '../data-access/performance.mapper';
 import { PerformanceState } from '../data-access/performance.state';
 
-/** Durée de la transition quand les données changent (jour ↔ semaine), sans recréer le graphique. */
-const UPDATE_ANIMATION_MS = 350;
-
 /**
  * Options du graphique aux couleurs du thème. Pas de grille verticale ni de bordure d'axe ; les graduations
  * horizontales sont fines et pointillées, pour que la donnée reste le seul élément qui attire le regard.
@@ -20,7 +17,7 @@ function performanceChartOptions(): ChartOptions<'line'> {
   return {
     responsive: true,
     maintainAspectRatio: false,
-    animation: { duration: UPDATE_ANIMATION_MS },
+    animation: false,
     plugins: { legend: { display: false } },
     scales: {
       x: {
