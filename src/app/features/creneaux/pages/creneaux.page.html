@@ -1,7 +1,16 @@
 <header class="creneaux__header">
   <h1 class="creneaux__title">Calendrier</h1>
   <div class="creneaux__actions">
-    <button nz-button nzType="primary" type="button" (click)="openSessionCreate()">
+    <button nz-button type="button" [disabled]="planningBusy()" (click)="openPlanning()">
+      Générer le planning
+    </button>
+    <button
+      nz-button
+      nzType="primary"
+      type="button"
+      [disabled]="planningBusy()"
+      (click)="openSessionCreate()"
+    >
       Nouvelle séance
     </button>
   </div>
@@ -33,7 +42,11 @@
     <button nz-button type="button" (click)="state.reload()">Réessayer</button>
   </div>
 } @else {
-  <div class="creneaux__content" [attr.aria-busy]="state.isLoading()">
+  <div
+    class="creneaux__content"
+    [class.creneaux__content--locked]="planningBusy()"
+    [attr.aria-busy]="state.isLoading() || planningBusy()"
+  >
     @if (state.isEmpty()) {
       <p class="creneaux__empty">
         Aucune séance cette semaine. Sélectionnez une plage dans la grille ou cliquez sur « Nouvelle
@@ -87,6 +100,94 @@
         <button nz-button type="button" (click)="moveWholeSeries()">Toute la série</button>
         <button nz-button nzType="primary" type="button" (click)="moveThisOccurrence()">
           Cette semaine seulement
+        </button>
+      </div>
+    </ng-container>
+  </nz-modal>
+}
+
+@if (planningOpen()) {
+  <nz-modal
+    [nzVisible]="true"
+    nzTitle="Générer le planning"
+    [nzFooter]="null"
+    (nzOnCancel)="closePlanning()"
+  >
+    <ng-container *nzModalContent>
+      <fieldset class="creneaux__choice-text" [disabled]="planningBusy()">
+        <legend>Période à planifier</legend>
+        <label
+          ><input
+            type="radio"
+            name="planning-period"
+            value="semaine"
+            [checked]="planningPeriod() === 'semaine'"
+            (change)="planningPeriod.set('semaine')"
+          />
+          Cette semaine</label
+        >
+        <label
+          ><input
+            type="radio"
+            name="planning-period"
+            value="mois"
+            [checked]="planningPeriod() === 'mois'"
+            (change)="planningPeriod.set('mois')"
+          />
+          Jusqu’à la fin du mois</label
+        >
+        <label
+          ><input
+            type="radio"
+            name="planning-period"
+            value="evenement"
+            [checked]="planningPeriod() === 'evenement'"
+            (change)="planningPeriod.set('evenement')"
+          />
+          Jusqu’à un événement</label
+        >
+      </fieldset>
+
+      @if (planningPeriod() === 'evenement') {
+        @if (eventsError(); as message) {
+          <p class="creneaux__error" role="alert">{{ message }}</p>
+        } @else if (events().length === 0) {
+          <p class="creneaux__choice-text">Aucun événement avec une date cible.</p>
+        } @else {
+          <label class="creneaux__choice-text" for="planning-goal">Événement</label>
+          <select
+            id="planning-goal"
+            [disabled]="planningBusy()"
+            [value]="planningGoalId() ?? ''"
+            (change)="planningGoalId.set($any($event.target).value || null)"
+          >
+            <option value="">Choisir un événement</option>
+            @for (event of events(); track event.id) {
+              <option [value]="event.id">{{ event.title }} ({{ event.targetDate }})</option>
+            }
+          </select>
+        }
+      }
+
+      @if (planningError(); as message) {
+        <p class="creneaux__error" role="alert">{{ message }}</p>
+      }
+
+      <div class="creneaux__choice">
+        <button nz-button type="button" [disabled]="planningBusy()" (click)="closePlanning()">
+          Annuler
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          type="button"
+          [disabled]="
+            planningBusy() || (planningPeriod() === 'evenement' && planningGoalId() === null)
+          "
+          [nzLoading]="planningBusy()"
+          (click)="generatePlanning()"
+        >
+          Générer
         </button>
       </div>
     </ng-container>

@@ -12,6 +12,7 @@ import { toAppError } from '../../../core/http/problem-details.mapper';
 import { addIsoDays, localIsoDate } from '../../../shared/utils/iso-date';
 import { SessionFormComponent, type SessionDefaults } from '../components/session-form.component';
 import { type GridMove, WeekGridComponent } from '../components/week-grid.component';
+import { PlanningApi, type EventGoal } from '../data-access/planning.api';
 import { SessionsWriteApi, type CreateSessionRequestApi } from '../data-access/sessions-write.api';
 import { SlotsState } from '../data-access/slots.state';
 import type { SessionOccurrence } from '../models/session-occurrence.model';
@@ -54,6 +55,18 @@ export class CreneauxPage {
   private readonly messages = inject(NzMessageService);
   private readonly router = inject(Router);
   private readonly sessionsWrite = inject(SessionsWriteApi);
+  private readonly planningApi = inject(PlanningApi);
+
+  /** Modale de génération de planning ouverte. */
+  protected readonly planningOpen = signal(false);
+  /** Période choisie : la semaine affichée, le mois de cette semaine, ou jusqu'à un événement. */
+  protected readonly planningPeriod = signal<PlanningPeriod>('semaine');
+  protected readonly planningGoalId = signal<string | null>(null);
+  protected readonly events = signal<readonly EventGoal[]>([]);
+  protected readonly eventsError = signal<string | null>(null);
+  /** Génération en cours : le calendrier est figé jusqu'à la réponse du back. */
+  protected readonly planningBusy = signal(false);
+  protected readonly planningError = signal<string | null>(null);
 
   /** Valeurs du formulaire de séance, `null` quand il est fermé. */
   protected readonly sessionDraft = signal<SessionDefaults | null>(null);
@@ -222,6 +235,73 @@ export class CreneauxPage {
     });
   }
 
+  /** Ouvre la modale de génération et charge les événements proposés pour la fin du planning. */
+  protected async openPlanning(): Promise<void> {
+    this.planningError.set(null);
+    this.planningOpen.set(true);
+    this.eventsError.set(null);
+    try {
+      this.events.set(await firstValueFrom(this.planningApi.listEvents()));
+    } catch (error) {
+      this.eventsError.set(errorMessage(error));
+    }
+  }
+
+  protected closePlanning(): void {
+    if (!this.planningBusy()) {
+      this.planningOpen.set(false);
+    }
+  }
+
+  /**
+   * Lance la génération sur la période choisie. Une période entièrement passée est refusée sans appel au back.
+   * Pendant l'appel, le calendrier est figé. En cas d'erreur, la modale affiche le message et la semaine n'est
+   * pas rechargée : l'état du calendrier reste tel quel.
+   */
+  protected async generatePlanning(): Promise<void> {
+    const body = this.planningRequest();
+    if (body === null) {
+      return;
+    }
+    const end = body.to ?? this.events().find((event) => event.id === body.goalId)?.targetDate;
+    if (end !== undefined && end < localIsoDate()) {
+      this.planningError.set('Impossible de générer un planning sur une période passée.');
+      return;
+    }
+    this.planningError.set(null);
+    this.planningBusy.set(true);
+    try {
+      const planning = await firstValueFrom(this.planningApi.generate(body));
+      this.planningOpen.set(false);
+      this.messages.success(
+        planning.items.length === 0
+          ? 'Aucune séance générée : pas de créneau libre sur la période.'
+          : `${planning.items.length} séance(s) générée(s).`,
+      );
+      this.state.reload();
+    } catch (error) {
+      this.planningError.set(errorMessage(error));
+    } finally {
+      this.planningBusy.set(false);
+    }
+  }
+
+  /** Corps de la requête selon la période choisie, `null` si « jusqu'à un événement » n'a pas d'événement choisi. */
+  private planningRequest(): { from: string; to?: string; goalId?: string } | null {
+    const from = this.state.weekStart();
+    switch (this.planningPeriod()) {
+      case 'semaine':
+        return { from, to: addIsoDays(from, WEEK_LAST_OFFSET_DAYS) };
+      case 'mois':
+        return { from, to: lastDayOfMonth(from) };
+      case 'evenement': {
+        const goalId = this.planningGoalId();
+        const event = this.events().find((candidate) => candidate.id === goalId);
+        return event === undefined ? null : { from, goalId: event.id };
+      }
+    }
+  }
+
   /** Ouvre la modale de durée, pré-remplie avec la durée actuelle de la séance. */
   protected openDuration(session: SessionOccurrence): void {
     this.durationValue.set(session.durationMinutes);
@@ -277,6 +357,20 @@ export class CreneauxPage {
       this.state.reload();
     }
   }
+}
+
+type PlanningPeriod = 'semaine' | 'mois' | 'evenement';
+
+/** Dernier jour du mois de la date `YYYY-MM-DD` donnée. */
+function lastDayOfMonth(iso: string): string {
+  const year = Number(iso.slice(0, 4));
+  const monthIndex = Number(iso.slice(5, 7));
+  return new Date(Date.UTC(year, monthIndex, 0)).toISOString().slice(0, 10);
+}
+
+/** Message affiché à l'utilisateur pour une erreur : celui de l'`AppError`, ou un message générique. */
+function errorMessage(error: unknown): string {
+  return error instanceof AppError ? error.userMessage : toAppError(error).userMessage;
 }
 
 /** Valeurs par défaut : aujourd'hui si la semaine affichée le contient, sinon son premier jour. */
