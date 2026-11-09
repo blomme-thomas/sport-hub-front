@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IconComponent } from '@shared/ui/icon/icon.component';
@@ -10,12 +17,16 @@ import { firstValueFrom } from 'rxjs';
 import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import { addIsoDays, localIsoDate } from '../../../shared/utils/iso-date';
+import { PauseBannersComponent } from '../components/pause-banners.component';
+import { PauseFormComponent, type PauseDraft } from '../components/pause-form.component';
 import { SessionFormComponent, type SessionDefaults } from '../components/session-form.component';
 import { type GridMove, WeekGridComponent } from '../components/week-grid.component';
+import { PausesState } from '../data-access/pauses.state';
 import { PlanningApi, type EventGoal } from '../data-access/planning.api';
 import { SessionsWriteApi, type CreateSessionRequestApi } from '../data-access/sessions-write.api';
 import { SlotsState } from '../data-access/slots.state';
 import type { SessionOccurrence } from '../models/session-occurrence.model';
+import type { Pause, PauseInput } from '../models/pause.model';
 import type { SlotDefaults } from '../models/slot.model';
 
 const DEFAULT_START = '09:00';
@@ -40,16 +51,33 @@ const QUICK_DURATION_STEP = 5;
     NzInputNumberComponent,
     NzModalComponent,
     NzModalContentDirective,
+    PauseBannersComponent,
+    PauseFormComponent,
     SessionFormComponent,
     WeekGridComponent,
   ],
   templateUrl: './creneaux.page.html',
   styleUrl: './creneaux.page.scss',
-  providers: [SlotsState],
+  providers: [SlotsState, PausesState],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreneauxPage {
   protected readonly state = inject(SlotsState);
+  protected readonly pausesState = inject(PausesState);
+
+  constructor() {
+    // Les pauses suivent la semaine affichée : chaque changement de semaine recharge leur liste.
+    effect(() => {
+      const from = this.state.weekStart();
+      void this.pausesState.load(from, addIsoDays(from, WEEK_LAST_OFFSET_DAYS));
+    });
+  }
+
+  /** Pause en cours de création (`pauseDraft`) ou de modification (`pauseEditing`), `null` quand la modale est fermée. */
+  protected readonly pauseDraft = signal<PauseDraft | null>(null);
+  protected readonly pauseEditing = signal<Pause | null>(null);
+  protected readonly pauseError = signal<string | null>(null);
+  protected readonly pauseSaving = signal(false);
 
   private readonly modal = inject(NzModalService);
   private readonly messages = inject(NzMessageService);
@@ -232,6 +260,74 @@ export class CreneauxPage {
           () => firstValueFrom(this.sessionsWrite.delete(session.id)),
           'Séance supprimée.',
         ),
+    });
+  }
+
+  /** Ouvre la modale de création d'une pause, avec la semaine affichée comme période par défaut. */
+  protected openPauseCreate(): void {
+    const from = this.state.weekStart();
+    this.pauseEditing.set(null);
+    this.pauseError.set(null);
+    this.pauseDraft.set({
+      startDate: from,
+      endDate: addIsoDays(from, WEEK_LAST_OFFSET_DAYS),
+      reason: 'vacances',
+    });
+  }
+
+  protected openPauseEdit(pause: Pause): void {
+    this.pauseEditing.set(pause);
+    this.pauseError.set(null);
+    this.pauseDraft.set({
+      startDate: pause.startDate,
+      endDate: pause.endDate,
+      reason: pause.reason,
+    });
+  }
+
+  protected closePauseForm(): void {
+    this.pauseDraft.set(null);
+    this.pauseEditing.set(null);
+    this.pauseError.set(null);
+  }
+
+  /** Crée ou modifie la pause, puis ferme la modale. En cas d'erreur, la modale reste ouverte avec le message. */
+  protected async savePause(body: PauseInput): Promise<void> {
+    const editing = this.pauseEditing();
+    this.pauseError.set(null);
+    this.pauseSaving.set(true);
+    try {
+      if (editing === null) {
+        await this.pausesState.create(body);
+        this.messages.success('Pause créée.');
+      } else {
+        await this.pausesState.update(editing.id, body);
+        this.messages.success('Pause modifiée.');
+      }
+      this.closePauseForm();
+    } catch (error) {
+      this.pauseError.set(errorMessage(error));
+    } finally {
+      this.pauseSaving.set(false);
+    }
+  }
+
+  /** Demande confirmation avant de supprimer une pause. Les séances existantes sont conservées. */
+  protected confirmDeletePause(pause: Pause): void {
+    this.modal.confirm({
+      nzTitle: 'Supprimer cette pause ?',
+      nzContent: 'Les séances existantes sont conservées.',
+      nzOkText: 'Supprimer',
+      nzOkDanger: true,
+      nzCancelText: 'Annuler',
+      nzOnOk: async () => {
+        try {
+          await this.pausesState.remove(pause.id);
+          this.messages.success('Pause supprimée.');
+        } catch {
+          // Message déjà affiché par l'intercepteur d'erreurs.
+        }
+      },
     });
   }
 

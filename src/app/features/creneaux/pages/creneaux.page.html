@@ -1,6 +1,9 @@
 <header class="creneaux__header">
   <h1 class="creneaux__title">Calendrier</h1>
   <div class="creneaux__actions">
+    <button nz-button type="button" [disabled]="planningBusy()" (click)="openPauseCreate()">
+      Nouvelle pause
+    </button>
     <button nz-button type="button" [disabled]="planningBusy()" (click)="openPlanning()">
       Générer le planning
     </button>
@@ -35,6 +38,12 @@
     }
   </ul>
 </div>
+
+<sh-pause-banners
+  [pauses]="pausesState.pauses()"
+  (edited)="openPauseEdit($event)"
+  (removed)="confirmDeletePause($event)"
+/>
 
 @if (state.error(); as error) {
   <div class="creneaux__error" role="alert">
@@ -102,6 +111,25 @@
           Cette semaine seulement
         </button>
       </div>
+    </ng-container>
+  </nz-modal>
+}
+
+@if (pauseDraft(); as draft) {
+  <nz-modal
+    [nzVisible]="true"
+    [nzTitle]="pauseEditing() ? 'Modifier la pause' : 'Nouvelle pause'"
+    [nzFooter]="null"
+    (nzOnCancel)="closePauseForm()"
+  >
+    <ng-container *nzModalContent>
+      <sh-pause-form
+        [draft]="draft"
+        [submitting]="pauseSaving()"
+        [serverError]="pauseError()"
+        (saved)="savePause($event)"
+        (cancelled)="closePauseForm()"
+      />
     </ng-container>
   </nz-modal>
 }
