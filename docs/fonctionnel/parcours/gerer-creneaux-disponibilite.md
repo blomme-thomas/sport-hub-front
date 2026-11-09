@@ -75,3 +75,12 @@ La page `/creneaux`, intitulée « Calendrier », affiche aussi les séances de 
 - La légende liste les disciplines présentes sur la semaine, avec leur libellé.
 - Un clic sur une séance ouvre sa fiche (`/seances/:id`). La création, le déplacement et la modification au clic des séances viennent avec les stories #47 à #49.
 - Les données viennent de `GET /api/sessions?from&to` (occurrences) et de `GET /api/disciplines`.
+
+## Créer une séance ou un créneau depuis le calendrier (issue #47)
+
+- Une sélection sur la grille (glisser, ou un clic) ouvre le choix « Créneau » ou « Séance », avec la plage choisie affichée.
+- « Créneau » ouvre le formulaire de créneau pré-rempli avec la plage.
+- « Séance » ouvre le formulaire de séance : date, heure de début, discipline (liste du référentiel), durée (1 à 1440 min), récurrence (aucune ou chaque semaine), matériel, points d'attention et description. Après création, la fiche de la séance s'ouvre.
+- Le bouton « Nouvelle séance » ouvre directement le formulaire de séance, à la date du jour.
+- Sans discipline dans le référentiel, le formulaire l'indique et bloque la création : le référentiel se remplit avec la synchronisation Garmin.
+- Déplacer ou modifier une séance au clic relève des stories #48 et #49.

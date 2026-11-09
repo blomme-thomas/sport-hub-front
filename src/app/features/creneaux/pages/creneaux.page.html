@@ -1,6 +1,9 @@
 <header class="creneaux__header">
   <h1 class="creneaux__title">Calendrier</h1>
-  <button nz-button nzType="primary" type="button" (click)="openCreate()">Nouveau créneau</button>
+  <div class="creneaux__actions">
+    <button nz-button type="button" (click)="openSessionCreate()">Nouvelle séance</button>
+    <button nz-button nzType="primary" type="button" (click)="openCreate()">Nouveau créneau</button>
+  </div>
 </header>
 
 <div class="creneaux__toolbar">
@@ -45,7 +48,7 @@
       [labels]="state.labels()"
       (slotSelected)="openEdit($event)"
       (sessionSelected)="openSession($event)"
-      (rangeSelected)="openCreate($event)"
+      (rangeSelected)="chooseRange($event)"
     />
   </div>
 }
@@ -61,6 +64,47 @@
         (saved)="onSaved($event)"
         (deleted)="confirmDelete()"
         (cancelled)="closeForm()"
+      />
+    </ng-container>
+  </nz-modal>
+}
+
+@if (chosenRange(); as range) {
+  <nz-modal
+    [nzVisible]="true"
+    nzTitle="Que voulez-vous créer ?"
+    [nzFooter]="null"
+    (nzOnCancel)="cancelChoice()"
+  >
+    <ng-container *nzModalContent>
+      <p class="creneaux__choice-text">
+        Du {{ range.date }} à {{ range.startTime }} au {{ range.endTime }}
+      </p>
+      <div class="creneaux__choice">
+        <button nz-button type="button" (click)="createSlotFromChoice()">Créneau</button>
+        <button nz-button nzType="primary" type="button" (click)="createSessionFromChoice()">
+          Séance
+        </button>
+      </div>
+    </ng-container>
+  </nz-modal>
+}
+
+@if (sessionDraft(); as draft) {
+  <nz-modal
+    [nzVisible]="true"
+    nzTitle="Nouvelle séance"
+    [nzFooter]="null"
+    (nzOnCancel)="closeSessionForm()"
+  >
+    <ng-container *nzModalContent>
+      <sh-session-form
+        [defaults]="draft"
+        [disciplines]="disciplines()"
+        [submitting]="sessionSaving()"
+        [serverError]="sessionError()"
+        (saved)="onSessionSaved($event)"
+        (cancelled)="closeSessionForm()"
       />
     </ng-container>
   </nz-modal>

@@ -87,3 +87,19 @@
   opacity: 0.6;
   transition: opacity 150ms ease;
 }
+
+.creneaux__actions {
+  display: flex;
+  gap: var(--sh-space-2);
+}
+
+.creneaux__choice {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sh-space-2);
+}
+
+.creneaux__choice-text {
+  margin: 0 0 var(--sh-space-3);
+  color: var(--sh-text-muted);
+}
