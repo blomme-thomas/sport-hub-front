@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -9,7 +10,7 @@ import { toAppError } from '../../../core/http/problem-details.mapper';
 import { addIsoDays, localIsoDate } from '../../../shared/utils/iso-date';
 import { SessionFormComponent, type SessionDefaults } from '../components/session-form.component';
 import { SlotFormComponent } from '../components/slot-form.component';
-import { WeekGridComponent } from '../components/week-grid.component';
+import { type GridMove, WeekGridComponent } from '../components/week-grid.component';
 import { SessionsWriteApi, type CreateSessionRequestApi } from '../data-access/sessions-write.api';
 import { SlotsState } from '../data-access/slots.state';
 import type { SessionOccurrence } from '../models/session-occurrence.model';
@@ -125,6 +126,32 @@ export class CreneauxPage {
       this.sessionError.set(error instanceof AppError ? error : toAppError(error));
     } finally {
       this.sessionSaving.set(false);
+    }
+  }
+
+  /**
+   * Enregistre un déplacement fait à la souris. Un créneau se déplace pour toute sa série, une séance ponctuelle
+   * avec sa date et son heure. En cas d'erreur, le back a déjà notifié l'erreur ; la semaine est rechargée.
+   */
+  protected async onMoved(move: GridMove): Promise<void> {
+    try {
+      if (move.kind === 'slot') {
+        await this.state.update(move.slot.id, {
+          type: move.slot.type,
+          date: move.date,
+          startTime: move.startTime,
+          endTime: move.endTime,
+          recurrence: move.slot.recurrence,
+        });
+      } else {
+        await firstValueFrom(
+          this.sessionsWrite.move(move.session.id, { date: move.date, startTime: move.startTime }),
+        );
+        this.state.reload();
+      }
+      this.messages.success('Élément déplacé.');
+    } catch {
+      this.state.reload();
     }
   }
 
