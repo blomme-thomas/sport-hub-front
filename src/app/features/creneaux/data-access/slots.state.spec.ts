@@ -23,6 +23,10 @@ const newSlot: SlotInput = {
 };
 
 function setup(): SlotsState {
+  server.use(
+    http.get('*/api/sessions', () => HttpResponse.json({ items: [] })),
+    http.get('*/api/disciplines', () => HttpResponse.json({ items: [] })),
+  );
   TestBed.configureTestingModule({
     providers: [...slotsTestProviders(), SlotsState],
   });

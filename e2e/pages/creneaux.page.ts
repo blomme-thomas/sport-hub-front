@@ -6,7 +6,7 @@ export class CreneauxPage {
   readonly dialog: Locator;
 
   constructor(private readonly page: Page) {
-    this.heading = page.getByRole('heading', { name: 'Disponibilités', level: 1 });
+    this.heading = page.getByRole('heading', { name: 'Calendrier', level: 1 });
     this.newSlotButton = page.getByRole('button', { name: 'Nouveau créneau', exact: true });
     this.dialog = page.getByRole('dialog');
   }

@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { IconComponent, type IconName } from '@shared/ui/icon/icon.component';
 import { layoutDaySlots, minutesToTime } from '../data-access/slot.mapper';
+import { disciplineStyleOf } from '../models/discipline-style';
 import { slotTypeLabel } from '../models/slot-options';
+import type { SessionOccurrence } from '../models/session-occurrence.model';
 import type { Slot, SlotDefaults } from '../models/slot.model';
 import type { WeekDay } from '../models/week-day.model';
 
@@ -13,9 +16,14 @@ const DAY_MINUTES = HOURS * MINUTES_PER_HOUR;
 const SNAP_MINUTES = 30;
 /** Durée proposée par un simple clic sur une colonne. */
 const DEFAULT_DURATION_MINUTES = 60;
-/** Hauteur minimale d'un créneau, pour que son libellé reste lisible. */
-const MIN_SLOT_HEIGHT_PX = 20;
-const SLOT_GAP_PX = 2;
+/** Hauteur minimale d'un bloc, pour que son libellé reste lisible. */
+const MIN_BLOCK_HEIGHT_PX = 20;
+const BLOCK_GAP_PX = 2;
+
+/** Élément placé sur la grille : un créneau ou une séance. `id` sert au tri et au suivi. */
+type GridItem =
+  | { id: string; startTime: string; endTime: string; kind: 'slot'; slot: Slot }
+  | { id: string; startTime: string; endTime: string; kind: 'session'; session: SessionOccurrence };
 
 interface DragState {
   date: string;
@@ -25,13 +33,18 @@ interface DragState {
 }
 
 interface PositionedBlock {
-  slot: Slot;
+  key: string;
+  kind: 'slot' | 'session';
+  slot: Slot | null;
+  session: SessionOccurrence | null;
   label: string;
   timeRange: string;
   top: number;
   height: number;
   left: number;
   width: number;
+  icon: IconName | null;
+  color: string;
 }
 
 interface GridColumn {
@@ -42,21 +55,25 @@ interface GridColumn {
 }
 
 /**
- * Grille d'une semaine : une colonne par jour, de 00:00 à 24:00. Cliquer sur un créneau émet ce créneau ;
- * glisser sur une colonne émet la plage choisie (pas de 30 min, un clic seul propose une heure).
+ * Grille d'une semaine : une colonne par jour, de 00:00 à 24:00. Affiche les créneaux (libres ou occupés) et les
+ * séances (icône et couleur de leur discipline). Cliquer sur un créneau émet ce créneau, cliquer sur une séance
+ * émet la séance ; glisser sur une colonne émet la plage choisie (pas de 30 min, un clic seul propose une heure).
  * Présentationnel : ne charge rien et ne modifie rien.
  */
 @Component({
   selector: 'sh-week-grid',
-  imports: [],
+  imports: [IconComponent],
   templateUrl: './week-grid.component.html',
   styleUrl: './week-grid.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeekGridComponent {
   readonly days = input.required<readonly WeekDay[]>();
+  /** Libellés des disciplines, par clé. Une clé absente s'affiche telle quelle. */
+  readonly labels = input<ReadonlyMap<string, string>>(new Map());
 
   readonly slotSelected = output<Slot>();
+  readonly sessionSelected = output<SessionOccurrence>();
   readonly rangeSelected = output<SlotDefaults>();
 
   protected readonly hourHeight = PX_PER_HOUR;
@@ -73,20 +90,45 @@ export class WeekGridComponent {
       date: day.date,
       shortLabel: formatShortDay(day.date),
       longLabel: formatLongDay(day.date),
-      blocks: layoutDaySlots(day.slots).map((positioned) => {
+      blocks: layoutDaySlots(itemsOf(day)).map((positioned) => {
+        const item = positioned.slot;
         const timeRange = `${minutesToTime(positioned.startMinutes)} – ${minutesToTime(positioned.endMinutes)}`;
-        return {
-          slot: positioned.slot,
-          label: describeSlot(positioned.slot, timeRange),
-          timeRange,
+        const geometry = {
           top: (positioned.startMinutes * PX_PER_HOUR) / MINUTES_PER_HOUR,
           height: Math.max(
             ((positioned.endMinutes - positioned.startMinutes) * PX_PER_HOUR) / MINUTES_PER_HOUR -
-              SLOT_GAP_PX,
-            MIN_SLOT_HEIGHT_PX,
+              BLOCK_GAP_PX,
+            MIN_BLOCK_HEIGHT_PX,
           ),
           left: (positioned.lane * 100) / positioned.laneCount,
           width: 100 / positioned.laneCount,
+        };
+        if (item.kind === 'slot') {
+          return {
+            key: item.id,
+            kind: 'slot' as const,
+            slot: item.slot,
+            session: null,
+            label: describeSlot(item.slot, timeRange),
+            timeRange,
+            icon: null,
+            color: '',
+            ...geometry,
+          };
+        }
+        const style = disciplineStyleOf(item.session.disciplineTypeKey);
+        const disciplineLabel =
+          this.labels().get(item.session.disciplineTypeKey) ?? item.session.disciplineTypeKey;
+        return {
+          key: item.id,
+          kind: 'session' as const,
+          slot: null,
+          session: item.session,
+          label: `Séance ${disciplineLabel}, ${timeRange}. Ouvrir la séance`,
+          timeRange,
+          icon: style.icon,
+          color: style.color,
+          ...geometry,
         };
       }),
     })),
@@ -107,8 +149,16 @@ export class WeekGridComponent {
     };
   });
 
+  protected onBlockClick(block: PositionedBlock): void {
+    if (block.kind === 'slot' && block.slot !== null) {
+      this.slotSelected.emit(block.slot);
+    } else if (block.session !== null) {
+      this.sessionSelected.emit(block.session);
+    }
+  }
+
   protected onColumnPointerDown(event: PointerEvent, date: string): void {
-    if (event.button !== 0 || isOnSlot(event)) {
+    if (event.button !== 0 || isOnBlock(event)) {
       return;
     }
     const column = event.currentTarget as HTMLElement;
@@ -150,6 +200,31 @@ export class WeekGridComponent {
   }
 }
 
+/** Créneaux et séances d'une journée, sous une forme commune à la mise en colonnes. */
+function itemsOf(day: WeekDay): GridItem[] {
+  const slots: GridItem[] = day.slots.map((slot) => ({
+    id: slot.id,
+    startTime: slot.startTime,
+    endTime: slot.endTime,
+    kind: 'slot',
+    slot,
+  }));
+  const sessions: GridItem[] = day.sessions.map((session) => ({
+    id: `${session.id}@${session.date}`,
+    startTime: session.startTime,
+    endTime: endOf(session),
+    kind: 'session',
+    session,
+  }));
+  return [...slots, ...sessions];
+}
+
+/** Fin d'une séance : début plus durée, bornée à 23:59. */
+function endOf(session: SessionOccurrence): string {
+  const [hours = 0, minutes = 0] = session.startTime.split(':').map(Number);
+  return minutesToTime(hours * MINUTES_PER_HOUR + minutes + session.durationMinutes);
+}
+
 /** Plage de la sélection : bornes triées et alignées sur le pas, ou une heure à partir du clic. */
 function rangeOf(drag: DragState): { start: number; end: number } {
   const low = Math.min(drag.anchorMinutes, drag.currentMinutes);
@@ -169,7 +244,7 @@ function minutesAt(event: PointerEvent, column: HTMLElement): number {
   return Math.min(Math.max(snapped, 0), DAY_MINUTES);
 }
 
-function isOnSlot(event: PointerEvent): boolean {
+function isOnBlock(event: PointerEvent): boolean {
   return event.target instanceof Element && event.target.closest('.week-grid__slot') !== null;
 }
 

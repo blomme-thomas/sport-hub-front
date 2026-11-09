@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalComponent, NzModalContentDirective, NzModalService } from 'ng-zorro-antd/modal';
@@ -8,6 +10,7 @@ import { addIsoDays, localIsoDate } from '../../../shared/utils/iso-date';
 import { SlotFormComponent } from '../components/slot-form.component';
 import { WeekGridComponent } from '../components/week-grid.component';
 import { SlotsState } from '../data-access/slots.state';
+import type { SessionOccurrence } from '../models/session-occurrence.model';
 import type { Slot, SlotDefaults, SlotInput } from '../models/slot.model';
 
 const DEFAULT_START = '09:00';
@@ -18,6 +21,7 @@ const WEEK_LAST_OFFSET_DAYS = 6;
 @Component({
   selector: 'sh-creneaux-page',
   imports: [
+    IconComponent,
     NzButtonComponent,
     NzModalComponent,
     NzModalContentDirective,
@@ -34,6 +38,7 @@ export class CreneauxPage {
 
   private readonly modal = inject(NzModalService);
   private readonly messages = inject(NzMessageService);
+  private readonly router = inject(Router);
 
   /** Créneau en cours de modification, `'new'` pour une création, `null` quand le formulaire est fermé. */
   protected readonly editing = signal<Slot | 'new' | null>(null);
@@ -55,6 +60,11 @@ export class CreneauxPage {
     this.formError.set(null);
     this.formDefaults.set(range ?? defaultsFor(this.state.weekStart()));
     this.editing.set('new');
+  }
+
+  /** Ouvre la fiche de la séance (story #10). */
+  protected openSession(session: SessionOccurrence): void {
+    void this.router.navigate(['/seances', session.id]);
   }
 
   protected openEdit(slot: Slot): void {

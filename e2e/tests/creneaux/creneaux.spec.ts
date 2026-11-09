@@ -4,7 +4,7 @@ import { CreneauxPage } from '../../pages/creneaux.page';
 const SLOTS_URL = /\/api\/slots(\?.*)?$/;
 const POST_SLOTS_URL = /\/api\/slots$/;
 
-test.describe('Disponibilités', () => {
+test.describe('Calendrier', () => {
   test('crée un créneau libre ponctuel sur la semaine affichée', async ({ page }) => {
     const slots: Record<string, unknown>[] = [];
     await page.route(SLOTS_URL, (route) => {
@@ -24,6 +24,9 @@ test.describe('Disponibilités', () => {
       }
       return route.fulfill({ json: { from: '', to: '', items: slots } });
     });
+
+    await page.route(/\/api\/sessions(\?.*)?$/, (route) => route.fulfill({ json: { items: [] } }));
+    await page.route(/\/api\/disciplines$/, (route) => route.fulfill({ json: { items: [] } }));
 
     const creneaux = new CreneauxPage(page);
     await creneaux.goto();
