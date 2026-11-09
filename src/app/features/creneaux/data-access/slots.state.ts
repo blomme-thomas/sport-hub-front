@@ -3,7 +3,7 @@ import { firstValueFrom } from 'rxjs';
 import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import { addIsoDays, localIsoDate } from '../../../shared/utils/iso-date';
-import { disciplineStyleOf, type DisciplineStyle } from '../models/discipline-style';
+import { disciplineStyleOf, type DisciplineStyle } from '@shared/ui/discipline/discipline-style';
 import type { SessionOccurrence } from '../models/session-occurrence.model';
 import type { Slot, SlotInput } from '../models/slot.model';
 import type { WeekDay } from '../models/week-day.model';

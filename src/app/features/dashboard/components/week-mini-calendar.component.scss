@@ -1,0 +1,131 @@
+:host {
+  display: block;
+}
+
+.week-mini {
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+  color: var(--sh-text);
+}
+
+.week-mini__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sh-space-2) var(--sh-space-3);
+  margin-bottom: var(--sh-space-3);
+}
+
+.week-mini__title {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.week-mini__nav {
+  display: flex;
+  gap: var(--sh-space-2);
+}
+
+.week-mini__status {
+  margin: 0 0 var(--sh-space-3);
+  color: var(--sh-text-muted);
+}
+
+.week-mini__error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sh-space-3);
+  color: var(--sh-error);
+}
+
+.week-mini__error p {
+  margin: 0;
+}
+
+.week-mini__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--sh-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.week-mini__day {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-2);
+  min-width: 0;
+}
+
+.week-mini__day-label {
+  color: var(--sh-text-muted);
+  font-size: 0.75rem;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.week-mini__sessions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sh-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-height: 2.5rem;
+}
+
+.week-mini__session {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 2px solid var(--sh-border);
+  border-radius: 50%;
+  background: var(--sh-surface-raised);
+  cursor: pointer;
+
+  sh-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  &:hover {
+    filter: brightness(1.15);
+  }
+
+  &:focus-visible {
+    outline: var(--sh-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.week-mini__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sh-space-3) var(--sh-space-4);
+  margin: var(--sh-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sh-space-2);
+  }
+
+  sh-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}

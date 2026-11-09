@@ -1,0 +1,76 @@
+<section class="week-mini" aria-labelledby="week-mini-title">
+  <header class="week-mini__header">
+    <h2 id="week-mini-title" class="week-mini__title">Cette semaine</h2>
+    <div class="week-mini__nav" role="group" aria-label="Choisir la semaine">
+      <button
+        nz-button
+        nzSize="small"
+        type="button"
+        aria-label="Semaine précédente"
+        (click)="previous.emit()"
+      >
+        ‹
+      </button>
+      <button nz-button nzSize="small" type="button" (click)="current.emit()">Aujourd’hui</button>
+      <button
+        nz-button
+        nzSize="small"
+        type="button"
+        aria-label="Semaine suivante"
+        (click)="next.emit()"
+      >
+        ›
+      </button>
+    </div>
+  </header>
+
+  @if (error(); as err) {
+    <div class="week-mini__error" role="alert">
+      <p>{{ err.userMessage }}</p>
+      <button nz-button nzSize="small" type="button" (click)="retry.emit()">Réessayer</button>
+    </div>
+  } @else if (loading()) {
+    <p class="week-mini__status" role="status">Chargement des séances…</p>
+  } @else {
+    @if (empty()) {
+      <p class="week-mini__status">Aucune séance planifiée cette semaine.</p>
+    }
+
+    <ol class="week-mini__grid" aria-label="Séances de la semaine">
+      @for (day of days(); track day.date) {
+        <li class="week-mini__day">
+          <span class="week-mini__day-label">{{ dayLabel(day.date) }}</span>
+          <ul class="week-mini__sessions">
+            @for (session of day.sessions; track session.id) {
+              <li>
+                <button
+                  type="button"
+                  class="week-mini__session"
+                  [style.border-color]="styleOf(session.disciplineTypeKey).color"
+                  [attr.aria-label]="labelOf(session)"
+                  (click)="sessionSelected.emit(session.id)"
+                >
+                  <sh-icon
+                    [name]="styleOf(session.disciplineTypeKey).icon"
+                    [color]="styleOf(session.disciplineTypeKey).color"
+                  />
+                </button>
+              </li>
+            }
+          </ul>
+        </li>
+      }
+    </ol>
+
+    @if (legend().length > 0) {
+      <ul class="week-mini__legend" aria-label="Légende">
+        @for (entry of legend(); track entry.typeKey) {
+          <li>
+            <sh-icon [name]="styleOf(entry.typeKey).icon" [color]="styleOf(entry.typeKey).color" />
+            {{ entry.label }}
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

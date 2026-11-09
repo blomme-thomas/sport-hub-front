@@ -6,6 +6,7 @@ import {
   inject,
 } from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { ChartCardComponent } from '../components/chart-card.component';
 import { CHART_KIND } from '../components/chart-config';
@@ -21,6 +22,7 @@ import { PerformanceCardComponent } from '../components/performance-card.compone
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card.component';
 import { SportSplitCardComponent } from '../components/sport-split-card.component';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card.component';
+import { WeekMiniCalendarComponent } from '../components/week-mini-calendar.component';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
 import { NextEventState } from '../data-access/next-event.state';
@@ -28,6 +30,7 @@ import { HeartRateZonesState } from '../data-access/heart-rate-zones.state';
 import { PerformanceState } from '../data-access/performance.state';
 import { WeeklyReviewState } from '../data-access/weekly-review.state';
 import { RecentActivitiesState } from '../data-access/recent-activities.state';
+import { WeekMiniCalendarState } from '../data-access/week-mini-calendar.state';
 import type { ChartKey, Granularity } from '../models/training-stats.model';
 
 const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month: 'mois' };
@@ -43,6 +46,7 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
     PerformanceCardComponent,
     RecentActivitiesCardComponent,
     SportSplitCardComponent,
+    WeekMiniCalendarComponent,
     WeeklyReviewCardComponent,
   ],
   templateUrl: './dashboard.page.html',
@@ -55,6 +59,7 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
     PerformanceState,
     WeeklyReviewState,
     HeartRateZonesState,
+    WeekMiniCalendarState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -66,6 +71,9 @@ export class DashboardPage {
   protected readonly nextEvent = inject(NextEventState);
   protected readonly recent = inject(RecentActivitiesState);
   protected readonly chartKinds = CHART_KIND;
+  protected readonly miniCalendar = inject(WeekMiniCalendarState);
+
+  private readonly router = inject(Router);
 
   private readonly modal = inject(NzModalService);
   private readonly viewContainer = inject(ViewContainerRef);
@@ -89,6 +97,11 @@ export class DashboardPage {
       nzKeyboard: true,
       nzFooter: [{ label: 'Fermer', onClick: () => ref.close() }],
     });
+  }
+
+  /** Ouvre la fiche d'une séance depuis le mini-calendrier (lecture seule ailleurs). */
+  protected openSession(id: string): void {
+    void this.router.navigate(['/seances', id]);
   }
 
   protected openChart(chart: ChartKey): void {
