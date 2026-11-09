@@ -2,9 +2,11 @@ import type { ComponentFixture } from '@angular/core/testing';
 import { render, screen } from '@testing-library/angular';
 import type { ChartData, ChartOptions, ChartType } from 'chart.js';
 import {
+  ArcElement,
   BarController,
   BarElement,
   CategoryScale,
+  DoughnutController,
   Legend,
   LinearScale,
   LineController,
@@ -64,6 +66,8 @@ const chartJs = vi.hoisted(() => {
 
 vi.mock('chart.js', () => ({
   Chart: chartJs.FakeChart,
+  ArcElement: 'ArcElement',
+  DoughnutController: 'DoughnutController',
   BarController: 'BarController',
   LineController: 'LineController',
   BarElement: 'BarElement',
@@ -288,7 +292,9 @@ describe('chart-registry', () => {
   it('enregistre uniquement les contrôleurs, éléments, échelles et plugins utilisés', () => {
     expect(chartJs.registrations).toEqual([
       [
+        ArcElement,
         BarController,
+        DoughnutController,
         LineController,
         BarElement,
         LineElement,
