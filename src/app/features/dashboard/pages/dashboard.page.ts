@@ -19,6 +19,7 @@ import { NextEventCardComponent } from '../components/next-event-card.component'
 import { KpiCardComponent } from '../components/kpi-card.component';
 import { PerformanceCardComponent } from '../components/performance-card.component';
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card.component';
+import { SportSplitCardComponent } from '../components/sport-split-card.component';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card.component';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
@@ -41,6 +42,7 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
     NextEventCardComponent,
     PerformanceCardComponent,
     RecentActivitiesCardComponent,
+    SportSplitCardComponent,
     WeeklyReviewCardComponent,
   ],
   templateUrl: './dashboard.page.html',

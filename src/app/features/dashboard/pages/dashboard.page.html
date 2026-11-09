@@ -60,13 +60,7 @@
             (expand)="openChart('sessions')"
           />
           <sh-performance-card />
-          <sh-chart-card
-            [model]="view.charts.byType"
-            [kind]="chartKinds.byType"
-            [icon]="'pie'"
-            [iconColor]="'var(--sh-violet)'"
-            (expand)="openChart('byType')"
-          />
+          <sh-sport-split-card [split]="view.sportSplit" />
         </div>
       }
     } @else {
