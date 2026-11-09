@@ -65,3 +65,13 @@ Indiquer ses plages libres et occupées dans un calendrier semaine : créer un c
 ## Hors périmètre
 
 Génération de séances à partir des créneaux (story à venir), déplacement de séances planifiées, modification d'une seule occurrence d'une série, fin de récurrence, vue mois.
+
+## Séances sur le calendrier (issue #46)
+
+La page `/creneaux`, intitulée « Calendrier », affiche aussi les séances de la semaine :
+
+- Chaque séance avec une heure apparaît dans la case de son jour, à son heure de début, sur la durée prévue. Les séances sans heure ne sont pas placées sur la grille.
+- Une séance porte l'icône et la couleur de sa discipline (correspondance dans `models/discipline-style.ts`). Une discipline absente de la correspondance s'affiche avec une icône neutre. Les clés correspondent au référentiel alimenté par Garmin ; à confirmer sur les données réelles.
+- La légende liste les disciplines présentes sur la semaine, avec leur libellé.
+- Un clic sur une séance ouvre sa fiche (`/seances/:id`). La création, le déplacement et la modification au clic des séances viennent avec les stories #47 à #49.
+- Les données viennent de `GET /api/sessions?from&to` (occurrences) et de `GET /api/disciplines`.
