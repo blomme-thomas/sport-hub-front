@@ -2,22 +2,25 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { ChartComponent } from '@shared/ui/chart/chart.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { readCssVar } from '@shared/utils/css-var';
-import type { ChartData, ChartOptions, ChartType } from 'chart.js';
+import type { ChartData, ChartOptions } from 'chart.js';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { PERFORMANCE_SERIES_LABEL } from '../data-access/performance.mapper';
 import { PerformanceState } from '../data-access/performance.state';
+
+/** Durée de la transition quand les données changent (jour ↔ semaine), sans recréer le graphique. */
+const UPDATE_ANIMATION_MS = 350;
 
 /**
  * Options du graphique aux couleurs du thème. Pas de grille verticale ni de bordure d'axe ; les graduations
  * horizontales sont fines et pointillées, pour que la donnée reste le seul élément qui attire le regard.
  */
-function performanceChartOptions(): ChartOptions {
+function performanceChartOptions(): ChartOptions<'line'> {
   const text = readCssVar('--sh-chart-text');
   const grid = readCssVar('--sh-chart-grid');
   return {
     responsive: true,
     maintainAspectRatio: false,
-    animation: false,
+    animation: { duration: UPDATE_ANIMATION_MS },
     plugins: { legend: { display: false } },
     scales: {
       x: {
@@ -38,11 +41,8 @@ function performanceChartOptions(): ChartOptions {
 /** Courbe lissée ; le mode monotone évite les dépassements sous zéro. */
 const CURVE_TENSION = 0.4;
 const POINT_RADIUS = 3;
-/** Barres arrondies et fines, pour la vue par semaine. */
-const BAR_RADIUS = 6;
-const BAR_MAX_THICKNESS = 40;
 
-/** Carte « Vos performances » : durée par jour en vue semaine, par semaine ISO en vue mois. */
+/** Carte « Vos performances » : durée par jour en vue semaine, par semaine ISO en vue mois (même type de graphique). */
 @Component({
   selector: 'sh-performance-card',
   imports: [IconComponent, ChartComponent, NzButtonComponent],
@@ -54,32 +54,12 @@ export class PerformanceCardComponent {
   protected readonly state = inject(PerformanceState);
   protected readonly chartOptions = performanceChartOptions();
 
-  /** Barres par semaine en vue mois, courbe par jour en vue semaine. */
-  protected readonly chartType = computed<ChartType>(() =>
-    this.state.grouping() === 'week' ? 'bar' : 'line',
-  );
-
-  protected readonly chartData = computed<ChartData>(() => {
+  protected readonly chartData = computed<ChartData<'line'>>(() => {
     const series = this.state.series();
     if (!series) {
       return { labels: [], datasets: [] };
     }
     const color = readCssVar('--sh-chart-series-1');
-    if (this.state.grouping() === 'week') {
-      return {
-        labels: series.labels,
-        datasets: [
-          {
-            label: PERFORMANCE_SERIES_LABEL,
-            data: series.hours,
-            backgroundColor: color,
-            borderRadius: BAR_RADIUS,
-            borderSkipped: false,
-            maxBarThickness: BAR_MAX_THICKNESS,
-          },
-        ],
-      };
-    }
     return {
       labels: series.labels,
       datasets: [
