@@ -28,7 +28,6 @@ vi.mock('chart.js', async () => (await import('../../../../mocks/chart-js.fake')
 
 const view = toDashboardView(normalStatsResponse);
 const SESSIONS_TITLE = view.charts.sessions.title;
-const BY_TYPE_TITLE = view.charts.byType.title;
 
 function pageProviders() {
   return [...statsTestProviders(), provideRouter([])];
@@ -82,13 +81,17 @@ describe('DashboardPage', () => {
     expect(await screen.findByText('+12,5 %')).toBeInTheDocument();
   });
 
-  it('affiche la répartition par type d activité', async () => {
+  it('affiche la répartition par sport avec les pourcentages de la période', async () => {
     trackStats();
 
     await render(DashboardPage, { providers: pageProviders() });
 
-    expect((await screen.findAllByText('running')).length).toBeGreaterThan(0);
-    expect((await screen.findAllByText('cycling')).length).toBeGreaterThan(0);
+    expect(
+      await screen.findByRole('heading', { name: 'Répartition par sport' }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole('list', { name: 'Légende de la répartition' }),
+    ).toBeInTheDocument();
   });
 
   it('affiche les graphiques d évolution et de répartition, chacun nommé par son titre', async () => {
@@ -100,8 +103,7 @@ describe('DashboardPage', () => {
     expect(
       await screen.findByRole('img', { name: 'Durée par jour sur la période' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: BY_TYPE_TITLE })).toBeInTheDocument();
-    // Trois graphiques nommés, plus les mini-courbes du bandeau (séances, durée, calories).
+    // Deux graphiques d'évolution nommés, le donut de répartition, plus les mini-courbes du bandeau.
     expect(chartJsInstances).toHaveLength(6);
   });
 

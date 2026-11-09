@@ -42,7 +42,9 @@ export class FakeChart {
 
 export const chartJsModule = {
   Chart: FakeChart,
+  ArcElement: 'ArcElement',
   BarController: 'BarController',
+  DoughnutController: 'DoughnutController',
   LineController: 'LineController',
   BarElement: 'BarElement',
   LineElement: 'LineElement',

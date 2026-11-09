@@ -3,6 +3,7 @@ import type {
   PeriodStatsApi,
   TrainingStatsResponseApi,
 } from '../models/training-stats.api-model';
+import { toSportSplit } from './sport-split.mapper';
 import type {
   ChartModel,
   ChartSeries,
@@ -58,6 +59,7 @@ export function toDashboardView(api: TrainingStatsResponseApi): DashboardView {
       duration: durationChart(granularity, periods),
       byType: byTypeChart(current),
     },
+    sportSplit: toSportSplit(current?.byType ?? [], formatHours),
   };
 }
 
