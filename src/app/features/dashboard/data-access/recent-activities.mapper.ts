@@ -35,14 +35,20 @@ export function toRecentActivity(item: ActivitySummaryApi, now: Date): RecentAct
     dateLabel: toRelativeDateLabel(startedAt, now),
     durationLabel: formatDuration(item.durationSeconds),
     distanceLabel: formatDistance(item.distanceMeters),
+    heartRateLabel: formatHeartRate(item.averageHeartRate),
   };
 }
 
-/** « 45 min » ou « 1h 20 min ». */
+/** « 45 min » sous une heure, sinon « 1h 05 » (heure et minutes sur deux chiffres). */
 export function formatDuration(totalSeconds: number): string {
   const hours = Math.floor(totalSeconds / SECONDS_PER_HOUR);
   const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
-  return hours === 0 ? `${minutes} min` : `${hours}h ${minutes} min`;
+  return hours === 0 ? `${minutes} min` : `${hours}h ${String(minutes).padStart(2, '0')}`;
+}
+
+/** « 142 bpm », ou « — » si la fréquence cardiaque moyenne est absente. */
+export function formatHeartRate(bpm: number | null): string {
+  return bpm === null ? ABSENT : `${Math.round(bpm)} bpm`;
 }
 
 /** « 7,8 km », ou « — » si la distance est absente. */

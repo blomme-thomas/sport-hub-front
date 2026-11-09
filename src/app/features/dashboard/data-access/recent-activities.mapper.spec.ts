@@ -16,8 +16,8 @@ describe('formatDuration', () => {
   });
 
   it('affiche heures et minutes à partir d une heure', () => {
-    expect(formatDuration(4800)).toBe('1h 20 min');
-    expect(formatDuration(3600)).toBe('1h 0 min');
+    expect(formatDuration(4800)).toBe('1h 20');
+    expect(formatDuration(3600)).toBe('1h 00');
   });
 });
 
@@ -53,6 +53,7 @@ describe('toRecentActivity', () => {
       startedAt: new Date(2026, 10, 7, 9, 0).toISOString(),
       durationSeconds: 3600,
       distanceMeters: null,
+      averageHeartRate: 142,
     };
 
     expect(toRecentActivity(item, NOW)).toEqual({
@@ -60,7 +61,8 @@ describe('toRecentActivity', () => {
       typeLabel: 'Natation',
       typeIcon: '🏊',
       dateLabel: "Aujourd'hui",
-      durationLabel: '1h 0 min',
+      durationLabel: '1h 00',
+      heartRateLabel: '142 bpm',
       distanceLabel: '—',
     });
   });
@@ -73,6 +75,7 @@ describe('toRecentActivity', () => {
       startedAt: new Date(2026, 10, 7, 7, 0).toISOString(),
       durationSeconds: 2400,
       distanceMeters: 15000,
+      averageHeartRate: 142,
     };
 
     const activity = toRecentActivity(item, NOW);
@@ -88,6 +91,7 @@ describe('toRecentActivity', () => {
       startedAt: new Date(2026, 10, 6, 9, 0).toISOString(),
       durationSeconds: 60,
       distanceMeters: 1000,
+      averageHeartRate: 142,
     };
 
     expect(toRecentActivity(item, NOW).typeLabel).toBe('trail running');

@@ -9,6 +9,10 @@ import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { ChartCardComponent } from '../components/chart-card.component';
 import { CHART_KIND } from '../components/chart-config';
+import {
+  ActivityDetailModalComponent,
+  type ActivityDetailModalData,
+} from '../components/activity-detail-modal.component';
 import { ChartModalComponent, type ChartModalData } from '../components/chart-modal.component';
 import { GranularityToggleComponent } from '../components/granularity-toggle.component';
 import { NextEventCardComponent } from '../components/next-event-card.component';
@@ -70,6 +74,18 @@ export class DashboardPage {
       ? `Statistiques affichées par ${GRANULARITY_WORDS[this.state.granularity()]}`
       : '';
   });
+
+  /** Ouvre le détail complet d'une séance réalisée (toutes les métriques, zones et courbe de FC). */
+  protected openActivity(id: string): void {
+    const ref = this.modal.create({
+      nzTitle: 'Détail de la séance',
+      nzContent: ActivityDetailModalComponent,
+      nzData: { id } satisfies ActivityDetailModalData,
+      nzViewContainerRef: this.viewContainer,
+      nzKeyboard: true,
+      nzFooter: [{ label: 'Fermer', onClick: () => ref.close() }],
+    });
+  }
 
   protected openChart(chart: ChartKey): void {
     const title = this.state.view()?.charts[chart].title ?? '';

@@ -1,7 +1,10 @@
 import { provideRouter } from '@angular/router';
+import { HttpResponse, http } from 'msw';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { server } from '../../../../mocks/server';
+import { statsTestProviders } from '../../../../mocks/training-stats.testing';
 import { AppError } from '../../../core/http/app-error';
 import { DEFAULT_ERROR_MESSAGE } from '../../../core/http/error-messages';
 import type { RecentActivity } from '../models/recent-activity.model';
@@ -14,6 +17,7 @@ const course: RecentActivity = {
   dateLabel: "Aujourd'hui",
   durationLabel: '45 min',
   distanceLabel: '7,8 km',
+  heartRateLabel: '142 bpm',
 };
 
 const natation: RecentActivity = {
@@ -23,13 +27,20 @@ const natation: RecentActivity = {
   dateLabel: 'Lundi',
   durationLabel: '1h 0 min',
   distanceLabel: '—',
+  heartRateLabel: '142 bpm',
 };
 
 function renderCard(inputs: Partial<Record<string, unknown>>, on?: Record<string, unknown>) {
+  // Chaque ligne charge le détail de son activité pour tracer la courbe de FC.
+  server.use(
+    http.get('*/api/activities/:id', () =>
+      HttpResponse.json({ id: 'act', heartRateSeries: null, hrTimeInZone: [] }),
+    ),
+  );
   return render(RecentActivitiesCardComponent, {
     inputs: { activities: undefined, ...inputs },
     on,
-    providers: [provideRouter([])],
+    providers: [provideRouter([]), ...statsTestProviders()],
   });
 }
 
