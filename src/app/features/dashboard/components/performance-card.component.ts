@@ -46,7 +46,6 @@ const POINT_RADIUS = 3;
   imports: [IconComponent, ChartComponent, NzButtonComponent],
   templateUrl: './performance-card.component.html',
   styleUrl: './performance-card.component.scss',
-  providers: [PerformanceState],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PerformanceCardComponent {

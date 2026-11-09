@@ -19,6 +19,7 @@ import { VariationBadgeComponent } from '../components/variation-badge.component
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
 import { NextEventState } from '../data-access/next-event.state';
+import { PerformanceState } from '../data-access/performance.state';
 import { RecentActivitiesState } from '../data-access/recent-activities.state';
 import type { ChartKey, Granularity } from '../models/training-stats.model';
 
@@ -38,7 +39,13 @@ const GRANULARITY_WORDS: Record<Granularity, string> = { week: 'semaine', month:
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
-  providers: [DashboardState, DashboardKpisState, NextEventState, RecentActivitiesState],
+  providers: [
+    DashboardState,
+    DashboardKpisState,
+    NextEventState,
+    RecentActivitiesState,
+    PerformanceState,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage {
