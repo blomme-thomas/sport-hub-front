@@ -1,0 +1,32 @@
+<button
+  type="button"
+  class="row"
+  [attr.aria-label]="'Détail de la séance ' + activity().typeLabel + ', ' + activity().dateLabel"
+  (click)="opened.emit(activity().id)"
+>
+  <span class="row__icon" aria-hidden="true">{{ activity().typeIcon }}</span>
+
+  <span class="row__main">
+    <span class="row__type">{{ activity().typeLabel }}</span>
+    <span class="row__date">{{ activity().dateLabel }}</span>
+    <span class="row__figures"
+      >{{ activity().durationLabel }} · {{ activity().distanceLabel }}</span
+    >
+  </span>
+
+  <span class="row__heart">
+    <span class="row__average">{{ activity().heartRateLabel }}</span>
+    @if (samples().length > 1) {
+      <span class="row__spark">
+        <sh-chart
+          type="line"
+          [data]="chartData()"
+          [options]="sparkOptions"
+          [label]="'Fréquence cardiaque, ' + activity().typeLabel"
+        />
+      </span>
+    } @else {
+      <span class="row__none" aria-hidden="true">—</span>
+    }
+  </span>
+</button>

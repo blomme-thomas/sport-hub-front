@@ -50,6 +50,7 @@
           [error]="recent.error()"
           [loading]="recent.isLoading()"
           (retry)="recent.reload()"
+          (opened)="openActivity($event)"
         />
         <div class="dashboard__charts">
           <sh-chart-card

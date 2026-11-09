@@ -9,4 +9,6 @@ export interface RecentActivity {
   durationLabel: string;
   /** « — » si Garmin ne fournit pas la distance. */
   distanceLabel: string;
+  /** Fréquence cardiaque moyenne, « — » si absente. */
+  heartRateLabel: string;
 }

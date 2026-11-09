@@ -1,7 +1,7 @@
 <section class="recent" aria-labelledby="recent-heading" [attr.aria-busy]="loading()">
   <h2 id="recent-heading" class="recent__heading">
     <sh-icon name="list" color="var(--sh-success)" />
-    <span>Dernières séances</span>
+    <span>Détails par séance</span>
   </h2>
 
   @if (error(); as failure) {
@@ -17,22 +17,8 @@
     } @else {
       <ul class="recent__list">
         @for (activity of list; track activity.id) {
-          <li class="recent__item">
-            <span class="recent__icon" aria-hidden="true">{{ activity.typeIcon }}</span>
-            <div class="recent__main">
-              <span class="recent__type">{{ activity.typeLabel }}</span>
-              <span class="recent__date">{{ activity.dateLabel }}</span>
-            </div>
-            <dl class="recent__figures">
-              <div>
-                <dt class="visually-hidden">Durée</dt>
-                <dd>{{ activity.durationLabel }}</dd>
-              </div>
-              <div>
-                <dt class="visually-hidden">Distance</dt>
-                <dd>{{ activity.distanceLabel }}</dd>
-              </div>
-            </dl>
+          <li>
+            <sh-recent-activity-row [activity]="activity" (opened)="opened.emit($event)" />
           </li>
         }
       </ul>

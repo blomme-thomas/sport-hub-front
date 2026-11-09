@@ -10,6 +10,7 @@ export const recentActivitiesResponse: ActivityListApi = {
       startedAt: '2026-11-07T06:30:00.000Z',
       durationSeconds: 2700,
       distanceMeters: 7800,
+      averageHeartRate: 142,
     },
     {
       id: 'act-3',
@@ -18,6 +19,7 @@ export const recentActivitiesResponse: ActivityListApi = {
       startedAt: '2026-11-04T08:00:00.000Z',
       durationSeconds: 4800,
       distanceMeters: 32500,
+      averageHeartRate: 142,
     },
     {
       id: 'act-2',
@@ -26,6 +28,7 @@ export const recentActivitiesResponse: ActivityListApi = {
       startedAt: '2026-10-30T17:15:00.000Z',
       durationSeconds: 3600,
       distanceMeters: null,
+      averageHeartRate: 142,
     },
     {
       id: 'act-1',
@@ -34,6 +37,7 @@ export const recentActivitiesResponse: ActivityListApi = {
       startedAt: '2026-10-20T06:45:00.000Z',
       durationSeconds: 1800,
       distanceMeters: 5000,
+      averageHeartRate: 142,
     },
   ],
   page: 1,

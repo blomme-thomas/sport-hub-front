@@ -1,0 +1,44 @@
+@if (errorMessage(); as message) {
+  <div class="detail__error" role="alert">
+    <p>{{ message }}</p>
+    <button nz-button nzType="primary" type="button" (click)="detail.reload()">Réessayer</button>
+  </div>
+} @else if (!detail.hasValue()) {
+  <p class="detail__status" aria-busy="true">Chargement…</p>
+} @else {
+  <dl class="detail__metrics">
+    @for (row of rows(); track row.label) {
+      <div class="detail__row">
+        <dt>{{ row.label }}</dt>
+        <dd>{{ row.value }}</dd>
+      </div>
+    }
+  </dl>
+
+  @if (zones().length > 0) {
+    <section class="detail__section" aria-label="Temps par zone de fréquence cardiaque">
+      <h3>Temps par zone de FC</h3>
+      <ul class="detail__zones">
+        @for (zone of zones(); track zone.label) {
+          <li>
+            <span>{{ zone.label }}</span> <strong>{{ zone.value }}</strong>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (samples().length > 1) {
+    <section class="detail__section" aria-label="Courbe de fréquence cardiaque">
+      <h3>Fréquence cardiaque</h3>
+      <div class="detail__chart">
+        <sh-chart
+          type="line"
+          [data]="chartData()"
+          [options]="chartOptions"
+          label="Fréquence cardiaque pendant l’activité"
+        />
+      </div>
+    </section>
+  }
+}
