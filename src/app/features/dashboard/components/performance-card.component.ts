@@ -20,18 +20,34 @@ const PERIOD_LABELS: Record<PerformancePeriod, string> = {
   '1y': '1 an',
 };
 
-const CHART_OPTIONS: ChartOptions<'line'> = {
-  responsive: true,
-  maintainAspectRatio: false,
-  animation: false,
-  plugins: { legend: { display: false } },
-  scales: {
-    y: {
-      beginAtZero: true,
-      ticks: { callback: (value) => `${value} h` },
+/**
+ * Options du graphique aux couleurs du thème : grille et graduations discrètes, sans bordure d'axe,
+ * pour que la courbe reste le seul élément qui attire le regard.
+ */
+function performanceChartOptions(): ChartOptions<'line'> {
+  const text = readCssVar('--sh-chart-text');
+  const grid = readCssVar('--sh-chart-grid');
+  const gridLine = { color: grid, lineWidth: 1 };
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: {
+        border: { display: false },
+        grid: gridLine,
+        ticks: { color: text },
+      },
+      y: {
+        beginAtZero: true,
+        border: { display: false },
+        grid: gridLine,
+        ticks: { color: text, callback: (value) => `${value} h` },
+      },
     },
-  },
-};
+  };
+}
 
 /** Courbe lissée ; le mode monotone évite les dépassements sous zéro. */
 const CURVE_TENSION = 0.4;
@@ -59,7 +75,7 @@ export class PerformanceCardComponent {
     value,
     label: PERIOD_LABELS[value],
   }));
-  protected readonly chartOptions = CHART_OPTIONS;
+  protected readonly chartOptions = performanceChartOptions();
 
   protected readonly chartData = computed<ChartData<'line'>>(() => {
     const series = this.state.series();
