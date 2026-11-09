@@ -1,8 +1,11 @@
 :host {
   display: block;
+  height: 100%;
 }
 
 .week-mini {
+  box-sizing: border-box;
+  height: 100%;
   padding: var(--sh-space-4);
   border: 1px solid var(--sh-border);
   border-radius: var(--sh-radius);
