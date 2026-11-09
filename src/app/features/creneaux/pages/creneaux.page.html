@@ -1,0 +1,62 @@
+<header class="creneaux__header">
+  <h1 class="creneaux__title">Disponibilités</h1>
+  <button nz-button nzType="primary" type="button" (click)="openCreate()">Nouveau créneau</button>
+</header>
+
+<div class="creneaux__toolbar">
+  <div class="creneaux__nav" role="group" aria-label="Choisir la semaine">
+    <button nz-button type="button" aria-label="Semaine précédente" (click)="state.previousWeek()">
+      ‹
+    </button>
+    <button nz-button type="button" (click)="state.currentWeek()">Aujourd’hui</button>
+    <button nz-button type="button" aria-label="Semaine suivante" (click)="state.nextWeek()">
+      ›
+    </button>
+  </div>
+
+  <p class="creneaux__week" aria-live="polite">{{ weekLabel() }}</p>
+
+  <ul class="creneaux__legend" aria-label="Légende">
+    <li><span class="creneaux__swatch creneaux__swatch--libre" aria-hidden="true"></span>Libre</li>
+    <li>
+      <span class="creneaux__swatch creneaux__swatch--occupe" aria-hidden="true"></span>Occupé
+    </li>
+  </ul>
+</div>
+
+@if (state.error(); as error) {
+  <div class="creneaux__error" role="alert">
+    <p>{{ error.userMessage }}</p>
+    <button nz-button type="button" (click)="state.reload()">Réessayer</button>
+  </div>
+} @else {
+  <div class="creneaux__content" [attr.aria-busy]="state.isLoading()">
+    @if (state.isEmpty()) {
+      <p class="creneaux__empty">
+        Aucun créneau cette semaine. Sélectionnez une plage dans la grille ou cliquez sur « Nouveau
+        créneau ».
+      </p>
+    }
+    <sh-week-grid
+      [days]="state.days()"
+      (slotSelected)="openEdit($event)"
+      (rangeSelected)="openCreate($event)"
+    />
+  </div>
+}
+
+@if (editing() !== null) {
+  <nz-modal [nzVisible]="true" [nzTitle]="formTitle()" [nzFooter]="null" (nzOnCancel)="closeForm()">
+    <ng-container *nzModalContent>
+      <sh-slot-form
+        [slot]="formSlot()"
+        [defaults]="formDefaults()"
+        [submitting]="state.saving()"
+        [serverError]="formError()"
+        (saved)="onSaved($event)"
+        (deleted)="confirmDelete()"
+        (cancelled)="closeForm()"
+      />
+    </ng-container>
+  </nz-modal>
+}

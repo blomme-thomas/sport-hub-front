@@ -1,0 +1,90 @@
+@if (alertMessages().length > 0) {
+  <div class="slot-form__alert" role="alert">
+    @for (message of alertMessages(); track $index) {
+      <p>{{ message }}</p>
+    }
+  </div>
+}
+
+<form class="slot-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="slot-form__field">
+    <label for="slot-type">Type</label>
+    <nz-select nzId="slot-type" shSelectCombobox formControlName="type">
+      @for (option of typeOptions; track option.value) {
+        <nz-option [nzValue]="option.value" [nzLabel]="option.label" />
+      }
+    </nz-select>
+    @if (errorOf('type'); as message) {
+      <p id="slot-type-error" class="slot-form__error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="slot-form__field">
+    <label for="slot-date">Date</label>
+    <nz-date-picker nzId="slot-date" formControlName="date" />
+    @if (errorOf('date'); as message) {
+      <p id="slot-date-error" class="slot-form__error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="slot-form__times">
+    <div class="slot-form__field">
+      <label for="slot-start">Début</label>
+      <input
+        nz-input
+        type="time"
+        id="slot-start"
+        step="1800"
+        formControlName="startTime"
+        [attr.aria-describedby]="errorOf('startTime') ? 'slot-start-error' : null"
+      />
+      @if (errorOf('startTime'); as message) {
+        <p id="slot-start-error" class="slot-form__error">{{ message }}</p>
+      }
+    </div>
+
+    <div class="slot-form__field">
+      <label for="slot-end">Fin</label>
+      <input
+        nz-input
+        type="time"
+        id="slot-end"
+        step="1800"
+        formControlName="endTime"
+        [attr.aria-describedby]="errorOf('endTime') ? 'slot-end-error' : null"
+      />
+      @if (errorOf('endTime'); as message) {
+        <p id="slot-end-error" class="slot-form__error">{{ message }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="slot-form__field">
+    <label for="slot-recurrence">Récurrence</label>
+    <nz-select nzId="slot-recurrence" shSelectCombobox formControlName="recurrence">
+      @for (option of recurrenceOptions; track option.value) {
+        <nz-option [nzValue]="option.value" [nzLabel]="option.label" />
+      }
+    </nz-select>
+    @if (errorOf('recurrence'); as message) {
+      <p id="slot-recurrence-error" class="slot-form__error">{{ message }}</p>
+    }
+    @if (isWeekly()) {
+      <p class="slot-form__hint">
+        Le créneau se répète chaque semaine, à partir de cette date, sans date de fin.
+      </p>
+    }
+    @if (editsSeries()) {
+      <p class="slot-form__hint">Toute modification ou suppression vaut pour toute la série.</p>
+    }
+  </div>
+
+  <div class="slot-form__actions">
+    @if (isEditing()) {
+      <button nz-button nzDanger type="button" (click)="deleted.emit()">Supprimer</button>
+    }
+    <span class="slot-form__spacer"></span>
+    <button nz-button type="button" (click)="cancelled.emit()">Annuler</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="submitting()">Enregistrer</button>
+  </div>
+</form>
