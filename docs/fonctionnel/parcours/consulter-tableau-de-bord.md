@@ -95,6 +95,8 @@ En bas du tableau de bord, le bloc « Cette semaine » affiche les séances plan
 - **Légende** : les disciplines présentes sur la semaine, avec leur libellé du référentiel.
 - **Clic sur une icône** : ouvre la fiche de la séance (`/seances/:id`).
 - **Lecture seule** : rien ne se modifie depuis ce bloc. Les séances réalisées, manquées ou annulées ne sont pas affichées.
+- **Vue mois** : le sélecteur Semaine/Mois en haut à droite pilote aussi ce bloc. En vue mois, la grille couvre le mois entier (lundi à dimanche), avec les en-têtes des jours ; « ‹ » et « › » passent au mois précédent ou suivant.
+- **Détails par séance** : la liste affiche quatre lignes et défile au-delà ; la barre de défilement est masquée, le défilement reste possible à la molette, au tactile et au clavier.
 - **États** : chargement, « Aucune séance planifiée cette semaine. », et erreur avec « Réessayer ».
 
 Hors scope de ce bloc : détail de la séance (fiche #10), création ou déplacement (calendrier, #46), regroupement des disciplines en familles.
