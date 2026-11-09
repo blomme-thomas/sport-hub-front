@@ -1,13 +1,14 @@
 :host {
   display: block;
   min-width: 0;
+  /* Hauteur selon le contenu (en-tête + graphique), sans suivre la plus haute carte de la rangée. */
+  align-self: start;
 }
 
 .perf {
   display: flex;
   flex-direction: column;
   gap: var(--sh-space-3);
-  height: 100%;
   padding: var(--sh-space-4);
   border: 1px solid var(--sh-border);
   border-radius: var(--sh-radius);

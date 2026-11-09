@@ -25,7 +25,12 @@ const CHART_OPTIONS: ChartOptions<'line'> = {
   maintainAspectRatio: false,
   animation: false,
   plugins: { legend: { display: false } },
-  scales: { y: { beginAtZero: true } },
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: { callback: (value) => `${value} h` },
+    },
+  },
 };
 
 /** Courbe lissée ; le mode monotone évite les dépassements sous zéro. */
