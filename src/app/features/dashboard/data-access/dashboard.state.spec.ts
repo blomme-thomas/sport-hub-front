@@ -38,9 +38,10 @@ describe('DashboardState', () => {
     vi.useRealTimers();
   });
 
-  it('démarre en granularité semaine', async () => {
+  it('démarre sur la période 7 jours, en granularité semaine', async () => {
     const state = setup();
 
+    expect(state.period()).toBe('7d');
     expect(state.granularity()).toBe('week');
     await settle(() => expect(state.view()).toBeDefined());
   });
@@ -56,27 +57,38 @@ describe('DashboardState', () => {
     expect(requests[0]?.searchParams.get('to')).toBe('2026-11-08');
   });
 
-  it('demande les 6 derniers mois en UTC, jusqu à la fin du mois courant, pour la granularité mois', async () => {
+  it('demande les 6 derniers mois en UTC, jusqu à la fin du mois courant, pour la période 3 mois', async () => {
     const requests = trackStats();
     const state = setup();
     await settle(() => expect(state.view()).toBeDefined());
 
-    state.setGranularity('month');
+    state.setPeriod('3m');
 
     await settle(() => expect(requests.at(-1)?.searchParams.get('granularity')).toBe('month'));
     expect(requests.at(-1)?.searchParams.get('from')).toBe('2026-06-01');
     expect(requests.at(-1)?.searchParams.get('to')).toBe('2026-11-30');
   });
 
-  it('recharge la vue avec la nouvelle granularité au changement de granularité', async () => {
+  it('expose la période choisie dans la vue et la granularité qui en découle', async () => {
     trackStats();
     const state = setup();
     await settle(() => expect(state.view()).toBeDefined());
 
-    state.setGranularity('month');
+    state.setPeriod('3m');
 
     expect(state.granularity()).toBe('month');
-    await settle(() => expect(state.view()?.granularity).toBe('month'));
+    await settle(() => expect(state.view()?.period).toBe('3m'));
+  });
+
+  it('ne recharge pas les statistiques quand la période change sans changer de granularité', async () => {
+    const requests = trackStats();
+    const state = setup();
+    await settle(() => expect(state.view()).toBeDefined());
+
+    state.setPeriod('30d');
+
+    await settle(() => expect(state.view()?.period).toBe('30d'));
+    expect(requests).toHaveLength(1);
   });
 
   it('expose l état de chargement pendant la requête puis le termine', async () => {

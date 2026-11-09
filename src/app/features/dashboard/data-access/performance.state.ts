@@ -23,9 +23,9 @@ export class PerformanceState {
   private readonly kpis = inject(DashboardKpisState);
   private readonly dashboard = inject(DashboardState);
 
-  /** Regroupement attendu pour la temporalité choisie, sans attendre les données. */
+  /** Regroupement attendu pour la période choisie (7 jours par jour, sinon par semaine), sans attendre les données. */
   private readonly requestedGrouping = computed<PerformanceGrouping>(() =>
-    this.dashboard.granularity() === 'month' ? 'week' : 'day',
+    this.dashboard.period() === '7d' ? 'day' : 'week',
   );
 
   private readonly held: Signal<HeldPerformance | undefined> = keepLast(

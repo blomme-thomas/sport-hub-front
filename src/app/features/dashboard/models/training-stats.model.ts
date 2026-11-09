@@ -1,5 +1,14 @@
 export type Granularity = 'week' | 'month';
 
+/** Période du tableau de bord, choisie dans le sélecteur de l'en-tête. */
+export const DASHBOARD_PERIODS = ['7d', '30d', '3m'] as const;
+export type DashboardPeriod = (typeof DASHBOARD_PERIODS)[number];
+
+/** Granularité des statistiques (graphiques) pour une période : semaines pour 7 et 30 jours, mois pour 3 mois. */
+export function granularityOf(period: DashboardPeriod): Granularity {
+  return period === '3m' ? 'month' : 'week';
+}
+
 export type ChartKey = 'sessions' | 'duration' | 'byType';
 
 export interface ChartSeries {
@@ -33,7 +42,7 @@ export interface PeriodSummaryView {
 import type { SportSplitView } from './sport-split.model';
 
 export interface DashboardView {
-  granularity: Granularity;
+  period: DashboardPeriod;
   currentPeriod: PeriodSummaryView;
   variation: {
     count: VariationView;

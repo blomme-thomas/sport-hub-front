@@ -4,15 +4,13 @@ const BYTYPE_TITLE = 'Répartition par type (dernière période)';
 
 export class DashboardPage {
   readonly heading: Locator;
-  readonly weekToggle: Locator;
+  /** Bouton du sélecteur de période correspondant au mois (3 mois). */
   readonly monthToggle: Locator;
   readonly byTypeCard: Locator;
 
   constructor(private readonly page: Page) {
     this.heading = page.getByRole('heading', { name: 'Tableau de bord', level: 1 });
-    const granularity = page.getByRole('radiogroup', { name: 'Granularité' });
-    this.weekToggle = granularity.getByRole('radio', { name: 'Semaine', exact: true });
-    this.monthToggle = granularity.getByRole('radio', { name: 'Mois', exact: true });
+    this.monthToggle = page.getByRole('button', { name: '3 derniers mois' });
     this.byTypeCard = this.card(BYTYPE_TITLE);
   }
 
@@ -21,11 +19,7 @@ export class DashboardPage {
   }
 
   async selectMonth(): Promise<void> {
-    // L'input natif de nz-radio-button est masqué : on clique le libellé visible.
-    await this.page
-      .getByRole('radiogroup', { name: 'Granularité' })
-      .getByText('Mois', { exact: true })
-      .click();
+    await this.page.getByRole('button', { name: '3 derniers mois' }).click();
   }
 
   figure(label: string): Locator {

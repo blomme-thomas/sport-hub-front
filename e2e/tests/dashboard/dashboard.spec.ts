@@ -50,7 +50,7 @@ test.describe('Tableau de bord', () => {
     ).toBeVisible();
   });
 
-  test('bascule de Semaine à Mois et recharge les statistiques par mois', async ({ page }) => {
+  test('choisir 3 mois recharge les statistiques par mois', async ({ page }) => {
     const dashboard = new DashboardPage(page);
     await dashboard.goto();
     await expect(dashboard.card(SESSIONS_WEEK_TITLE)).toBeVisible();
@@ -61,10 +61,10 @@ test.describe('Tableau de bord', () => {
     await dashboard.selectMonth();
     await monthRequest;
 
-    await expect(dashboard.monthToggle).toBeChecked();
+    await expect(dashboard.monthToggle).toHaveAttribute('aria-pressed', 'true');
     await expect(dashboard.card(SESSIONS_MONTH_TITLE)).toBeVisible();
     // Les indicateurs suivent la temporalité : la vue mois les demande sur 30 jours.
-    await expect.poll(() => kpiPeriods.at(-1)).toBe('30d');
+    await expect.poll(() => kpiPeriods.at(-1)).toBe('3m');
   });
 
   test('ouvre le graphique agrandi sans nouvel appel au back', async ({ page }) => {

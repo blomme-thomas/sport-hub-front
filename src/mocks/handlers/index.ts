@@ -1,6 +1,7 @@
 import { activitiesHandlers } from './activities.handlers';
 import { dashboardKpisHandlers } from './dashboard-kpis.handlers';
 import { goalsHandlers } from './goals.handlers';
+import { profileHandlers } from './profile.handlers';
 import { healthHandlers } from './health.handlers';
 import { heartRateZonesHandlers } from './heart-rate-zones.handlers';
 import { sessionsHandlers } from './sessions.handlers';
@@ -18,4 +19,5 @@ export const handlers = [
   ...weeklyReviewsHandlers,
   ...activitiesHandlers,
   ...dashboardKpisHandlers,
+  ...profileHandlers,
 ];

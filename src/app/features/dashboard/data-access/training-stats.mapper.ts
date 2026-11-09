@@ -39,12 +39,11 @@ const DIRECTION_LABELS: Record<VariationDirection, string> = {
  * n'est recalculée : les totaux et variations viennent du back. La dernière période de la réponse est la
  * période choisie ; les graphiques d'évolution couvrent toutes les périodes.
  */
-export function toDashboardView(api: TrainingStatsResponseApi): DashboardView {
+export function toDashboardView(api: TrainingStatsResponseApi): Omit<DashboardView, 'period'> {
   const { granularity, periods } = api;
   const current = periods.at(-1);
 
   return {
-    granularity,
     currentPeriod: summaryOf(current?.totals.count ?? 0, current?.totals.durationSeconds ?? 0),
     variation: {
       count: current

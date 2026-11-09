@@ -8,8 +8,8 @@ import { toDashboardView } from './training-stats.mapper';
 const HEX_COLOR = /#[0-9a-fA-F]{3,8}\b/;
 
 describe('toDashboardView', () => {
-  it('reprend la granularité de la réponse', () => {
-    expect(toDashboardView(normalStatsResponse).granularity).toBe('week');
+  it('ne porte pas la granularité : la période est ajoutée par l état du tableau de bord', () => {
+    expect(toDashboardView(normalStatsResponse)).not.toHaveProperty('granularity');
   });
 
   it('expose le nombre de séances de la dernière période', () => {
