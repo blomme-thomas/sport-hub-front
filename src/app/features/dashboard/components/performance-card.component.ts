@@ -1,24 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { ChartComponent } from '@shared/ui/chart/chart.component';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { readCssVar } from '@shared/utils/css-var';
 import type { ChartData, ChartOptions } from 'chart.js';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
-import { NzOptionComponent, NzSelectComponent } from 'ng-zorro-antd/select';
 import { PERFORMANCE_SERIES_LABEL } from '../data-access/performance.mapper';
-import {
-  PERFORMANCE_PERIODS,
-  PerformanceState,
-  type PerformancePeriod,
-} from '../data-access/performance.state';
-
-const PERIOD_LABELS: Record<PerformancePeriod, string> = {
-  '7d': 'Cette semaine',
-  '30d': '30 derniers jours',
-  '3m': '3 derniers mois',
-  '1y': '1 an',
-};
+import { PerformanceState } from '../data-access/performance.state';
 
 /**
  * Options du graphique aux couleurs du thème : grille et graduations discrètes, sans bordure d'axe,
@@ -56,14 +43,7 @@ const POINT_RADIUS = 3;
 /** Carte « Vos performances » : durée par jour sur la période choisie localement. */
 @Component({
   selector: 'sh-performance-card',
-  imports: [
-    IconComponent,
-    FormsModule,
-    ChartComponent,
-    NzButtonComponent,
-    NzOptionComponent,
-    NzSelectComponent,
-  ],
+  imports: [IconComponent, ChartComponent, NzButtonComponent],
   templateUrl: './performance-card.component.html',
   styleUrl: './performance-card.component.scss',
   providers: [PerformanceState],
@@ -71,10 +51,6 @@ const POINT_RADIUS = 3;
 })
 export class PerformanceCardComponent {
   protected readonly state = inject(PerformanceState);
-  protected readonly periodOptions = PERFORMANCE_PERIODS.map((value) => ({
-    value,
-    label: PERIOD_LABELS[value],
-  }));
   protected readonly chartOptions = performanceChartOptions();
 
   protected readonly chartData = computed<ChartData<'line'>>(() => {

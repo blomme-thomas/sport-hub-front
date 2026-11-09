@@ -28,12 +28,18 @@
 }
 
 .chart-card__expand {
-  padding: 0.25rem 0.75rem;
+  display: inline-flex;
+  padding: 0.25rem;
   border: 1px solid var(--sh-chart-grid);
   border-radius: 6px;
   background: transparent;
   color: var(--sh-chart-text);
   cursor: pointer;
+
+  sh-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
 
   &:focus-visible {
     outline: 2px solid var(--sh-chart-series-1);

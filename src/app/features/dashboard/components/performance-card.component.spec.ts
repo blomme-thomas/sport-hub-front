@@ -13,10 +13,10 @@ describe('PerformanceCardComponent', () => {
     ).toBeInTheDocument();
   });
 
-  it('propose les quatre périodes dans le sélecteur local', async () => {
+  it('n’affiche pas de sélecteur de période dans la carte', async () => {
     await render(PerformanceCardComponent, { providers: statsTestProviders() });
 
     expect(await screen.findByRole('heading', { name: 'Performances' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Période des performances')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Période des performances')).not.toBeInTheDocument();
   });
 });

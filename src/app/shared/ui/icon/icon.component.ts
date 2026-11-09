@@ -2,7 +2,16 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /** Pictogrammes du tableau de bord, dessinés en SVG (trait, couleur héritée du parent). */
 export type IconName =
-  'calendar' | 'clock' | 'flame' | 'mountain' | 'heart' | 'bars' | 'pie' | 'list' | 'flag';
+  | 'calendar'
+  | 'clock'
+  | 'flame'
+  | 'mountain'
+  | 'heart'
+  | 'bars'
+  | 'pie'
+  | 'list'
+  | 'flag'
+  | 'expand';
 
 /** Icône décorative : le libellé qui l'accompagne porte l'information, donc elle est masquée aux lecteurs d'écran. */
 @Component({
@@ -39,6 +48,9 @@ export type IconName =
         }
         @case ('flag') {
           <path d="M5 21V4M5 4h12l-2 4 2 4H5" />
+        }
+        @case ('expand') {
+          <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
         }
       }
     </svg>

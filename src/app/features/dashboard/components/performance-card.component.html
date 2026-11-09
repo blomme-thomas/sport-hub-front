@@ -4,16 +4,6 @@
       <sh-icon name="bars" color="var(--sh-accent-text)" />
       <span>Performances</span>
     </h2>
-    <nz-select
-      class="perf__period"
-      aria-label="Période des performances"
-      [ngModel]="state.period()"
-      (ngModelChange)="state.setPeriod($event)"
-    >
-      @for (option of periodOptions; track option.value) {
-        <nz-option [nzValue]="option.value" [nzLabel]="option.label" />
-      }
-    </nz-select>
   </header>
 
   @if (state.error(); as failure) {
