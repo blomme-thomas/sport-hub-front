@@ -1,0 +1,37 @@
+@if (pauses().length > 0) {
+  <ul class="pause-banners" aria-label="Pauses de la semaine">
+    @for (pause of pauses(); track pause.id) {
+      <li class="pause-banners__item">
+        <span class="pause-banners__label">
+          <strong>{{ reasonLabels[pause.reason] }}</strong>
+          <span class="pause-banners__range">{{ rangeLabel(pause) }}</span>
+        </span>
+        <span class="pause-banners__actions">
+          <button
+            nz-button
+            nzSize="small"
+            type="button"
+            [attr.aria-label]="
+              'Modifier la pause ' + reasonLabels[pause.reason] + ' ' + rangeLabel(pause)
+            "
+            (click)="edited.emit(pause)"
+          >
+            Modifier
+          </button>
+          <button
+            nz-button
+            nzSize="small"
+            nzDanger
+            type="button"
+            [attr.aria-label]="
+              'Supprimer la pause ' + reasonLabels[pause.reason] + ' ' + rangeLabel(pause)
+            "
+            (click)="removed.emit(pause)"
+          >
+            Supprimer
+          </button>
+        </span>
+      </li>
+    }
+  </ul>
+}

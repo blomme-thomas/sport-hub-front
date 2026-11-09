@@ -1,0 +1,45 @@
+<form class="pause-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="pause-form__dates">
+    <label class="pause-form__field">
+      <span>Début</span>
+      <input type="date" formControlName="startDate" [attr.aria-invalid]="endsBeforeStart" />
+    </label>
+    <label class="pause-form__field">
+      <span>Fin</span>
+      <input type="date" formControlName="endDate" [attr.aria-invalid]="endsBeforeStart" />
+    </label>
+  </div>
+
+  @if (endsBeforeStart) {
+    <p class="pause-form__error" role="alert">La date de fin ne peut pas précéder le début.</p>
+  }
+
+  <fieldset class="pause-form__reasons">
+    <legend>Motif</legend>
+    @for (reason of reasons; track reason) {
+      <label class="pause-form__reason">
+        <input type="radio" formControlName="reason" [value]="reason" />
+        {{ reasonLabels[reason] }}
+      </label>
+    }
+  </fieldset>
+
+  @if (serverError(); as message) {
+    <p class="pause-form__error" role="alert">{{ message }}</p>
+  }
+
+  <div class="pause-form__actions">
+    <button nz-button type="button" [disabled]="submitting()" (click)="cancelled.emit()">
+      Annuler
+    </button>
+    <button
+      nz-button
+      nzType="primary"
+      type="submit"
+      [disabled]="submitting() || endsBeforeStart"
+      [nzLoading]="submitting()"
+    >
+      Enregistrer
+    </button>
+  </div>
+</form>
