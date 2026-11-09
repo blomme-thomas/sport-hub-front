@@ -1,5 +1,5 @@
 <header class="creneaux__header">
-  <h1 class="creneaux__title">Disponibilités</h1>
+  <h1 class="creneaux__title">Calendrier</h1>
   <button nz-button nzType="primary" type="button" (click)="openCreate()">Nouveau créneau</button>
 </header>
 
@@ -21,6 +21,9 @@
     <li>
       <span class="creneaux__swatch creneaux__swatch--occupe" aria-hidden="true"></span>Occupé
     </li>
+    @for (entry of state.legend(); track entry.typeKey) {
+      <li><sh-icon [name]="entry.style.icon" [color]="entry.style.color" />{{ entry.label }}</li>
+    }
   </ul>
 </div>
 
@@ -33,13 +36,15 @@
   <div class="creneaux__content" [attr.aria-busy]="state.isLoading()">
     @if (state.isEmpty()) {
       <p class="creneaux__empty">
-        Aucun créneau cette semaine. Sélectionnez une plage dans la grille ou cliquez sur « Nouveau
-        créneau ».
+        Aucun créneau ni séance cette semaine. Sélectionnez une plage dans la grille ou cliquez sur
+        « Nouveau créneau ».
       </p>
     }
     <sh-week-grid
       [days]="state.days()"
+      [labels]="state.labels()"
       (slotSelected)="openEdit($event)"
+      (sessionSelected)="openSession($event)"
       (rangeSelected)="openCreate($event)"
     />
   </div>

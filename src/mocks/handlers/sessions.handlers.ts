@@ -72,5 +72,23 @@ export const sessionsHandlers = [
     sessions = sessions.map((item) => (item.id === id ? updated : item));
     return HttpResponse.json(updated);
   }),
+  http.get('*/api/sessions', ({ request }) => {
+    const url = new URL(request.url);
+    const from = url.searchParams.get('from') ?? '';
+    const to = url.searchParams.get('to') ?? '';
+    // Occurrences des séances ponctuelles de la période (le mock ne calcule pas la récurrence).
+    const items = sessions
+      .filter((session) => session.date >= from && session.date <= to)
+      .map((session) => ({
+        sessionId: session.id,
+        date: session.date,
+        startTime: session.startTime,
+        durationMinutes: session.durationMinutes,
+        disciplineTypeKey: session.disciplineTypeKey,
+        recurrence: 'aucune',
+        status: session.status,
+      }));
+    return HttpResponse.json({ items });
+  }),
   http.get('*/api/disciplines', () => HttpResponse.json({ items: disciplinesFixtures })),
 ];

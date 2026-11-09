@@ -125,3 +125,17 @@ $day-min-width: 7.5rem;
   font-variant-numeric: tabular-nums;
   pointer-events: none;
 }
+
+.week-grid__slot--session {
+  background: var(--sh-surface-raised);
+  border-left-width: 4px;
+}
+
+.week-grid__slot-head {
+  display: inline-flex;
+
+  sh-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+}

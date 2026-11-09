@@ -29,13 +29,13 @@ const chevauche: Slot = { ...libre, id: 'slot-chevauche', startTime: '10:00', en
 
 function week(slotsOfTuesday: Slot[]): WeekDay[] {
   return [
-    { date: '2026-11-09', slots: [] },
-    { date: TUESDAY, slots: slotsOfTuesday },
-    { date: '2026-11-11', slots: [] },
-    { date: '2026-11-12', slots: [] },
-    { date: '2026-11-13', slots: [] },
-    { date: '2026-11-14', slots: [] },
-    { date: '2026-11-15', slots: [] },
+    { date: '2026-11-09', slots: [], sessions: [] },
+    { date: TUESDAY, slots: slotsOfTuesday, sessions: [] },
+    { date: '2026-11-11', slots: [], sessions: [] },
+    { date: '2026-11-12', slots: [], sessions: [] },
+    { date: '2026-11-13', slots: [], sessions: [] },
+    { date: '2026-11-14', slots: [], sessions: [] },
+    { date: '2026-11-15', slots: [], sessions: [] },
   ];
 }
 

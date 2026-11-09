@@ -12,8 +12,8 @@ const MINUTES_PER_HOUR = 60;
 const LAST_MINUTE_OF_DAY = 23 * MINUTES_PER_HOUR + 59;
 
 /** Position d'un créneau dans sa journée : minutes depuis minuit, colonne (`lane`) parmi `laneCount` en cas de chevauchement. */
-export interface PositionedSlot {
-  slot: Slot;
+export interface PositionedSlot<T = Slot> {
+  slot: T;
   startMinutes: number;
   endMinutes: number;
   lane: number;
@@ -99,7 +99,9 @@ export function minutesToTime(totalMinutes: number): string {
  * Répartit les créneaux d'une journée en colonnes : deux créneaux qui se chevauchent sont côte à côte,
  * sans en masquer aucun. Chaque groupe de créneaux liés partage le même nombre de colonnes.
  */
-export function layoutDaySlots(slots: readonly Slot[]): PositionedSlot[] {
+export function layoutDaySlots<T extends { id: string; startTime: string; endTime: string }>(
+  slots: readonly T[],
+): PositionedSlot<T>[] {
   const sorted = slots
     .map((slot) => ({
       slot,
@@ -113,8 +115,8 @@ export function layoutDaySlots(slots: readonly Slot[]): PositionedSlot[] {
         a.slot.id.localeCompare(b.slot.id),
     );
 
-  const result: PositionedSlot[] = [];
-  let group: PositionedSlot[] = [];
+  const result: PositionedSlot<T>[] = [];
+  let group: PositionedSlot<T>[] = [];
   let groupEnd = 0;
   let laneEnds: number[] = [];
 

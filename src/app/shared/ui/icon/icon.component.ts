@@ -11,7 +11,11 @@ export type IconName =
   | 'pie'
   | 'list'
   | 'flag'
-  | 'expand';
+  | 'expand'
+  | 'run'
+  | 'bike'
+  | 'swim'
+  | 'strength';
 
 /** Icône décorative : le libellé qui l'accompagne porte l'information, donc elle est masquée aux lecteurs d'écran. */
 @Component({
@@ -48,6 +52,25 @@ export type IconName =
         }
         @case ('flag') {
           <path d="M5 21V4M5 4h12l-2 4 2 4H5" />
+        }
+        @case ('run') {
+          <circle cx="14" cy="4" r="2" />
+          <path d="M7 21l3-6 3 2 2-4 4 3M9 15l-2-4 4-2 3 2" />
+        }
+        @case ('bike') {
+          <circle cx="6" cy="16" r="4" />
+          <circle cx="18" cy="16" r="4" />
+          <path d="M6 16l4-7h6l2 7M10 9l3 7h5" />
+        }
+        @case ('swim') {
+          <path
+            d="M2 16c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2M2 20c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2"
+          />
+          <circle cx="16" cy="6" r="2" />
+          <path d="M8 11l4-3 4 2" />
+        }
+        @case ('strength') {
+          <path d="M3 10v4M6 8v8M18 8v8M21 10v4M6 12h12" />
         }
         @case ('expand') {
           <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
