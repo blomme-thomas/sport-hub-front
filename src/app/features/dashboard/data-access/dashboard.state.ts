@@ -1,5 +1,6 @@
 import { Injectable, computed, inject, resource, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { keepLast } from './hold-last';
 import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import type { TrainingStatsResponseApi } from '../models/training-stats.api-model';
@@ -34,12 +35,14 @@ export class DashboardState {
 
   readonly granularity = this.granularityValue.asReadonly();
 
-  readonly view = computed<DashboardView | undefined>(() => {
-    if (!this.stats.hasValue()) {
-      return undefined;
-    }
-    return { ...toDashboardView(this.stats.value()), granularity: this.granularityValue() };
-  });
+  /** Vue du tableau de bord ; garde la précédente pendant un rechargement pour éviter un affichage vide. */
+  readonly view = keepLast(
+    () => (this.stats.hasValue() ? this.stats.value() : undefined),
+    (response): DashboardView => ({
+      ...toDashboardView(response),
+      granularity: this.granularityValue(),
+    }),
+  );
 
   readonly isLoading = computed(() => this.stats.isLoading());
 

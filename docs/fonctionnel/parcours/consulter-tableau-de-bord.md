@@ -95,9 +95,21 @@ En bas du tableau de bord, le bloc « Cette semaine » affiche les séances plan
 - **Légende** : les disciplines présentes sur la semaine, avec leur libellé du référentiel.
 - **Clic sur une icône** : ouvre la fiche de la séance (`/seances/:id`).
 - **Lecture seule** : rien ne se modifie depuis ce bloc. Les séances réalisées, manquées ou annulées ne sont pas affichées.
+- **Vue mois** : le sélecteur Semaine/Mois en haut à droite pilote aussi ce bloc. En vue mois, la grille couvre le mois entier (lundi à dimanche), avec les en-têtes des jours ; « ‹ » et « › » passent au mois précédent ou suivant.
+- **Taille commune** : sur ordinateur, « Détails par séance » et le mini-calendrier ont la même hauteur fixe, quelle que soit la vue (semaine ou mois). Le mini-calendrier remplit cette hauteur ; en vue mois, les six semaines y tiennent.
+- **Détails par séance** : la liste affiche quatre lignes et défile au-delà ; la barre de défilement est masquée, le défilement reste possible à la molette, au tactile et au clavier.
 - **États** : chargement, « Aucune séance planifiée cette semaine. », et erreur avec « Réessayer ».
 
 Hors scope de ce bloc : détail de la séance (fiche #10), création ou déplacement (calendrier, #46), regroupement des disciplines en familles.
+
+## Métriques liées à la temporalité
+
+Le sélecteur Semaine/Mois en haut à droite pilote les métriques du tableau de bord :
+
+- **Semaine** : bandeau d’indicateurs et « Vos performances » sur 7 jours (`period=7d`), graphiques et répartition par sport sur les 8 dernières semaines ISO.
+- **Mois** : bandeau d’indicateurs et « Vos performances » sur 30 jours (`period=30d`), graphiques et répartition par sport sur les 6 derniers mois.
+- **« Vos performances »** : en vue semaine, une courbe par jour. En vue mois, un point par semaine ISO (libellés « S45 », etc.), pour éviter une trentaine de libellés de jours redondants. Le graphique reste une courbe dans les deux vues : seules les données changent, animées, sans recréer le graphique. La grille est horizontale, fine et pointillée.
+- **Hors sélecteur** : « Détails par séance », le mini-calendrier (qui a son propre sélecteur de semaine ou de mois) et la zone de FC, qui ne dépendent pas de cette période.
 
 ## Hors périmètre
 

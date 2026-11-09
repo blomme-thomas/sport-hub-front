@@ -73,6 +73,29 @@ test.describe('Tableau de bord : mini-calendrier de la semaine', () => {
     await icons.click();
     await expect(page).toHaveURL(/\/seances\/session-course$/);
   });
+  test('la bascule Mois affiche une grille du mois, et Semaine revient à sept cases', async ({
+    page,
+  }) => {
+    await page.route(SESSIONS_URL, (route) => route.fulfill({ json: { items: [] } }));
+
+    await page.goto('/');
+    const miniCalendar = page.locator('sh-week-mini-calendar');
+    await expect(miniCalendar.locator('.week-mini__day')).toHaveCount(7);
+
+    await page
+      .getByRole('radiogroup', { name: 'Granularité' })
+      .getByText('Mois', { exact: true })
+      .click();
+    await expect(miniCalendar.getByRole('heading', { level: 2 })).toHaveText(/^\S+ \d{4}$/);
+    const monthCells = await miniCalendar.locator('.week-mini__day').count();
+    expect([28, 35, 42]).toContain(monthCells);
+
+    await page
+      .getByRole('radiogroup', { name: 'Granularité' })
+      .getByText('Semaine', { exact: true })
+      .click();
+    await expect(miniCalendar.locator('.week-mini__day')).toHaveCount(7);
+  });
 });
 
 /** Ajoute `days` jours à une date `YYYY-MM-DD`, en UTC. */

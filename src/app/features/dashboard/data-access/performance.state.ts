@@ -1,43 +1,54 @@
-import { Injectable, Signal, computed, inject, resource, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
-import { AppError } from '../../../core/http/app-error';
-import { toAppError } from '../../../core/http/problem-details.mapper';
-import { DashboardKpisApi } from './dashboard-kpis.api';
-import { type PerformanceSeries, toPerformanceSeries } from './performance.mapper';
+import { Injectable, Signal, computed, inject } from '@angular/core';
+import { DashboardKpisState } from './dashboard-kpis.state';
+import { DashboardState } from './dashboard.state';
+import { keepLast } from './hold-last';
+import { type PerformanceSeries, toPerformanceSeries, toWeeklySeries } from './performance.mapper';
 
-export const PERFORMANCE_PERIODS = ['7d', '30d', '3m', '1y'] as const;
-export type PerformancePeriod = (typeof PERFORMANCE_PERIODS)[number];
+/** Regroupement de la série : par jour (vue semaine) ou par semaine ISO (vue mois). */
+export type PerformanceGrouping = 'day' | 'week';
 
-/** État de la carte « Vos performances » : période locale à la carte, indépendante du reste du tableau de bord. */
+/** Série et regroupement, décidés ensemble : le type de graphique ne change qu'avec les données correspondantes. */
+interface HeldPerformance {
+  grouping: PerformanceGrouping;
+  series: PerformanceSeries;
+}
+
+/**
+ * État de la carte « Vos performances ». Elle partage la réponse `/stats/dashboard` du bandeau d'indicateurs
+ * (une seule requête par période). Le regroupement et la série sont gardés ensemble pendant un rechargement :
+ * la carte ne change de forme (courbe ou barres) qu'à l'arrivée des données de la nouvelle temporalité.
+ */
 @Injectable()
 export class PerformanceState {
-  private readonly api = inject(DashboardKpisApi);
-  readonly period = signal<PerformancePeriod>('7d');
+  private readonly kpis = inject(DashboardKpisState);
+  private readonly dashboard = inject(DashboardState);
 
-  private readonly response = resource({
-    params: () => this.period(),
-    loader: ({ params }) => firstValueFrom(this.api.get(params)),
-  });
-
-  readonly series: Signal<PerformanceSeries | undefined> = computed(() =>
-    this.response.hasValue() ? toPerformanceSeries(this.response.value()) : undefined,
+  /** Regroupement attendu pour la temporalité choisie, sans attendre les données. */
+  private readonly requestedGrouping = computed<PerformanceGrouping>(() =>
+    this.dashboard.granularity() === 'month' ? 'week' : 'day',
   );
 
-  readonly isLoading = computed(() => this.response.isLoading());
+  private readonly held: Signal<HeldPerformance | undefined> = keepLast(
+    () => this.kpis.raw(),
+    (api) => {
+      const grouping = this.requestedGrouping();
+      return {
+        grouping,
+        series: grouping === 'week' ? toWeeklySeries(api) : toPerformanceSeries(api),
+      };
+    },
+  );
 
-  readonly error = computed<AppError | null>(() => {
-    const error = this.response.error();
-    if (error === undefined) {
-      return null;
-    }
-    return error instanceof AppError ? error : toAppError(error);
-  });
+  /** Regroupement affiché (celui des données à l'écran). */
+  readonly grouping = computed<PerformanceGrouping>(() => this.held()?.grouping ?? 'day');
 
-  setPeriod(period: PerformancePeriod): void {
-    this.period.set(period);
-  }
+  readonly series = computed<PerformanceSeries | undefined>(() => this.held()?.series);
+
+  readonly isLoading = computed(() => this.kpis.isLoading());
+
+  readonly error = computed(() => this.kpis.error());
 
   reload(): void {
-    this.response.reload();
+    this.kpis.reload();
   }
 }

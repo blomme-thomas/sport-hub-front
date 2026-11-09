@@ -1,8 +1,14 @@
 :host {
   display: block;
+  height: 100%;
 }
 
 .week-mini {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
   padding: var(--sh-space-4);
   border: 1px solid var(--sh-border);
   border-radius: var(--sh-radius);
@@ -49,6 +55,9 @@
 
 .week-mini__grid {
   display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-auto-rows: minmax(0, 1fr);
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: var(--sh-space-2);
   margin: 0;
@@ -56,7 +65,23 @@
   list-style: none;
 }
 
+/* En-têtes des jours (vue mois) : une case par colonne, alignée sur la grille. */
+.week-mini__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--sh-space-2);
+  margin: 0 0 var(--sh-space-2);
+  padding: 0;
+  list-style: none;
+  color: var(--sh-text-muted);
+  font-size: 0.75rem;
+  text-align: center;
+  text-transform: capitalize;
+}
+
 .week-mini__day {
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: var(--sh-space-2);
@@ -127,5 +152,16 @@
   sh-icon {
     width: 1rem;
     height: 1rem;
+  }
+}
+
+/* Vue mois : six semaines dans la hauteur commune, icônes un peu plus petites. */
+.week-mini__grid--month .week-mini__session {
+  width: 1.75rem;
+  height: 1.75rem;
+
+  sh-icon {
+    width: 0.95rem;
+    height: 0.95rem;
   }
 }

@@ -30,3 +30,21 @@ describe('toPerformanceSeries', () => {
     expect(series.totalSeconds).toBe(0);
   });
 });
+
+describe('toWeeklySeries', () => {
+  it('regroupe les jours par semaine ISO sans perdre de durée', async () => {
+    const { toWeeklySeries, toPerformanceSeries } = await import('./performance.mapper');
+
+    const weekly = toWeeklySeries(dashboardKpisResponse);
+    const daily = toPerformanceSeries(dashboardKpisResponse);
+
+    expect(weekly.labels.length).toBeGreaterThan(0);
+    expect(weekly.labels.length).toBeLessThanOrEqual(daily.labels.length);
+    expect(weekly.labels.every((label) => /^S\d{2}$/.test(label))).toBe(true);
+    expect(weekly.totalSeconds).toBe(daily.totalSeconds);
+    expect(weekly.hours.reduce((sum, hours) => sum + hours, 0)).toBeCloseTo(
+      daily.hours.reduce((sum, hours) => sum + hours, 0),
+      1,
+    );
+  });
+});

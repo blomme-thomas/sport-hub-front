@@ -7,30 +7,32 @@ import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { PERFORMANCE_SERIES_LABEL } from '../data-access/performance.mapper';
 import { PerformanceState } from '../data-access/performance.state';
 
+/** Durée de la transition quand les données changent (jour ↔ semaine), sans recréer le graphique. */
+const UPDATE_ANIMATION_MS = 350;
+
 /**
- * Options du graphique aux couleurs du thème : grille et graduations discrètes, sans bordure d'axe,
- * pour que la courbe reste le seul élément qui attire le regard.
+ * Options du graphique aux couleurs du thème. Pas de grille verticale ni de bordure d'axe ; les graduations
+ * horizontales sont fines et pointillées, pour que la donnée reste le seul élément qui attire le regard.
  */
 function performanceChartOptions(): ChartOptions<'line'> {
   const text = readCssVar('--sh-chart-text');
   const grid = readCssVar('--sh-chart-grid');
-  const gridLine = { color: grid, lineWidth: 1 };
   return {
     responsive: true,
     maintainAspectRatio: false,
-    animation: false,
+    animation: { duration: UPDATE_ANIMATION_MS },
     plugins: { legend: { display: false } },
     scales: {
       x: {
         border: { display: false },
-        grid: gridLine,
-        ticks: { color: text },
+        grid: { display: false },
+        ticks: { color: text, padding: 8 },
       },
       y: {
         beginAtZero: true,
         border: { display: false },
-        grid: gridLine,
-        ticks: { color: text, callback: (value) => `${value} h` },
+        grid: { color: grid, lineWidth: 1, drawTicks: false, tickBorderDash: [4, 4] },
+        ticks: { color: text, padding: 8, callback: (value) => `${value} h` },
       },
     },
   };
@@ -40,7 +42,7 @@ function performanceChartOptions(): ChartOptions<'line'> {
 const CURVE_TENSION = 0.4;
 const POINT_RADIUS = 3;
 
-/** Carte « Vos performances » : durée par jour sur la période choisie localement. */
+/** Carte « Vos performances » : durée par jour en vue semaine, par semaine ISO en vue mois (même type de graphique). */
 @Component({
   selector: 'sh-performance-card',
   imports: [IconComponent, ChartComponent, NzButtonComponent],
