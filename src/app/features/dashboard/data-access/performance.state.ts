@@ -5,7 +5,7 @@ import { toAppError } from '../../../core/http/problem-details.mapper';
 import { DashboardKpisApi } from './dashboard-kpis.api';
 import { DashboardState } from './dashboard.state';
 import { metricsPeriodFor } from './metrics-period';
-import { type PerformanceSeries, toPerformanceSeries } from './performance.mapper';
+import { type PerformanceSeries, toPerformanceSeries, toWeeklySeries } from './performance.mapper';
 
 export const PERFORMANCE_PERIODS = ['7d', '30d', '3m', '1y'] as const;
 export type PerformancePeriod = (typeof PERFORMANCE_PERIODS)[number];
@@ -24,9 +24,18 @@ export class PerformanceState {
     loader: ({ params }) => firstValueFrom(this.api.get(params)),
   });
 
-  readonly series: Signal<PerformanceSeries | undefined> = computed(() =>
-    this.response.hasValue() ? toPerformanceSeries(this.response.value()) : undefined,
+  /** Regroupement de la série : par jour en vue semaine, par semaine ISO en vue mois. */
+  readonly grouping = computed<'day' | 'week'>(() =>
+    this.dashboard.granularity() === 'month' ? 'week' : 'day',
   );
+
+  readonly series: Signal<PerformanceSeries | undefined> = computed(() => {
+    if (!this.response.hasValue()) {
+      return undefined;
+    }
+    const api = this.response.value();
+    return this.grouping() === 'week' ? toWeeklySeries(api) : toPerformanceSeries(api);
+  });
 
   readonly isLoading = computed(() => this.response.isLoading());
 

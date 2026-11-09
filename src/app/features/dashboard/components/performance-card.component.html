@@ -17,10 +17,14 @@
     } @else {
       <div class="perf__chart">
         <sh-chart
-          type="line"
+          [type]="chartType()"
           [data]="chartData()"
           [options]="chartOptions"
-          label="Durée par jour sur la période"
+          [label]="
+            state.grouping() === 'week'
+              ? 'Durée par semaine sur la période'
+              : 'Durée par jour sur la période'
+          "
         />
       </div>
     }

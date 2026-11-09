@@ -108,6 +108,7 @@ Le sélecteur Semaine/Mois en haut à droite pilote les métriques du tableau de
 
 - **Semaine** : bandeau d’indicateurs et « Vos performances » sur 7 jours (`period=7d`), graphiques et répartition par sport sur les 8 dernières semaines ISO.
 - **Mois** : bandeau d’indicateurs et « Vos performances » sur 30 jours (`period=30d`), graphiques et répartition par sport sur les 6 derniers mois.
+- **« Vos performances »** : en vue semaine, une courbe par jour. En vue mois, une barre par semaine ISO (libellés « S45 », etc.), pour éviter une trentaine de libellés de jours redondants. La grille est horizontale, fine et pointillée.
 - **Hors sélecteur** : « Détails par séance », le mini-calendrier (qui a son propre sélecteur de semaine ou de mois) et la zone de FC, qui ne dépendent pas de cette période.
 
 ## Hors périmètre
