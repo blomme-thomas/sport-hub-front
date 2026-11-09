@@ -69,6 +69,7 @@ interface PositionedBlock {
   startMinutes: number;
   endMinutes: number;
   movable: boolean;
+  cancelled: boolean;
   top: number;
   height: number;
   left: number;
@@ -152,6 +153,7 @@ export class WeekGridComponent {
             label: describeSlot(item.slot, timeRange),
             timeRange,
             movable: true,
+            cancelled: false,
             icon: null,
             color: '',
             ...geometry,
@@ -168,7 +170,8 @@ export class WeekGridComponent {
           session: item.session,
           label: `Séance ${disciplineLabel}, ${timeRange}. Ouvrir la séance`,
           timeRange,
-          movable: item.session.recurrence === 'aucune',
+          movable: item.session.status !== 'annulee',
+          cancelled: item.session.status === 'annulee',
           icon: style.icon,
           color: style.color,
           ...geometry,

@@ -93,3 +93,11 @@ La page `/creneaux`, intitulée « Calendrier », affiche aussi les séances de 
 - Un simple clic ouvre l'élément : un créneau ouvre son formulaire, une séance ouvre sa fiche. La modification des champs d'une séance (date, heure, durée) passe par la fiche ou par le déplacement ; une modale d'édition dédiée n'est pas encore livrée.
 - En cas d'erreur du back, le message s'affiche et le calendrier est rechargé.
 - Le déplacement au clavier (flèches) n'est pas encore livré.
+
+## Déplacer ou annuler une seule occurrence d'une séance hebdomadaire (issue #49)
+
+- Glisser une séance hebdomadaire propose : « Cette semaine seulement » (déplacement de cette occurrence, les autres semaines ne bougent pas), « Toute la série » (déplacement de la date d'ancrage et de l'heure) ou « Annuler ».
+- Un clic sur une séance hebdomadaire ouvre un choix : « Ouvrir la fiche », « Annuler cette semaine », ou « Restaurer cette semaine » si elle est déjà annulée.
+- Une occurrence annulée reste affichée, barrée et en pointillés.
+- Limite : les routes du back s'adressent à la date de programmation de l'occurrence. La liste ne renvoie que la date courante. Une occurrence déjà déplacée ne peut donc pas être annulée, restaurée ni redéplacée tant que la liste n'exposera pas cette date (champ à ajouter côté back).
+- Limite : l'affichage « Déplacée » n'est pas encore présent, faute d'information dans la liste.

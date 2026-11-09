@@ -139,3 +139,9 @@ $day-min-width: 7.5rem;
     height: 1.1rem;
   }
 }
+
+.week-grid__slot--cancelled {
+  opacity: 0.55;
+  text-decoration: line-through;
+  border-style: dashed;
+}

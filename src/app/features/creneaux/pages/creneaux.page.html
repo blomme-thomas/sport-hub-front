@@ -110,3 +110,52 @@
     </ng-container>
   </nz-modal>
 }
+
+@if (pendingMove(); as move) {
+  <nz-modal
+    [nzVisible]="true"
+    nzTitle="Déplacer la séance"
+    [nzFooter]="null"
+    (nzOnCancel)="cancelPendingMove()"
+  >
+    <ng-container *nzModalContent>
+      <p class="creneaux__choice-text">
+        Cette séance se répète chaque semaine. Déplacer au {{ move.date }} à {{ move.startTime }} :
+      </p>
+      <div class="creneaux__choice">
+        <button nz-button type="button" (click)="cancelPendingMove()">Annuler</button>
+        <button nz-button type="button" (click)="moveWholeSeries()">Toute la série</button>
+        <button nz-button nzType="primary" type="button" (click)="moveThisOccurrence()">
+          Cette semaine seulement
+        </button>
+      </div>
+    </ng-container>
+  </nz-modal>
+}
+
+@if (occurrenceChoice(); as session) {
+  <nz-modal
+    [nzVisible]="true"
+    [nzTitle]="session.disciplineTypeKey"
+    [nzFooter]="null"
+    (nzOnCancel)="occurrenceChoice.set(null)"
+  >
+    <ng-container *nzModalContent>
+      <p class="creneaux__choice-text">Séance du {{ session.date }} à {{ session.startTime }}.</p>
+      <div class="creneaux__choice">
+        @if (session.status === 'annulee') {
+          <button nz-button type="button" (click)="restoreThisOccurrence()">
+            Restaurer cette semaine
+          </button>
+        } @else {
+          <button nz-button type="button" (click)="cancelThisOccurrence()">
+            Annuler cette semaine
+          </button>
+        }
+        <button nz-button nzType="primary" type="button" (click)="openSessionFromChoice()">
+          Ouvrir la fiche
+        </button>
+      </div>
+    </ng-container>
+  </nz-modal>
+}

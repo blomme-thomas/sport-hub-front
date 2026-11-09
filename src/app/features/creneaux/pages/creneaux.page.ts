@@ -63,6 +63,10 @@ export class CreneauxPage {
   protected readonly sessionDraft = signal<SessionDefaults | null>(null);
   protected readonly sessionError = signal<AppError | null>(null);
   protected readonly sessionSaving = signal(false);
+  /** Déplacement d'une séance hebdomadaire en attente : cette occurrence seulement, ou toute la série. */
+  protected readonly pendingMove = signal<(GridMove & { kind: 'session' }) | null>(null);
+  /** Séance hebdomadaire dont une occurrence a été cliquée : fiche, annulation ou restauration. */
+  protected readonly occurrenceChoice = signal<SessionOccurrence | null>(null);
   protected readonly disciplines = computed(() =>
     [...this.state.labels()].map(([typeKey, label]) => ({ typeKey, label })),
   );
@@ -134,6 +138,11 @@ export class CreneauxPage {
    * avec sa date et son heure. En cas d'erreur, le back a déjà notifié l'erreur ; la semaine est rechargée.
    */
   protected async onMoved(move: GridMove): Promise<void> {
+    if (move.kind === 'session' && move.session.recurrence === 'hebdomadaire') {
+      // Une séance hebdomadaire : demander s'il faut déplacer cette semaine seulement ou toute la série.
+      this.pendingMove.set(move);
+      return;
+    }
     try {
       if (move.kind === 'slot') {
         await this.state.update(move.slot.id, {
@@ -155,9 +164,106 @@ export class CreneauxPage {
     }
   }
 
-  /** Ouvre la fiche de la séance (story #10). */
+  /** Déplace cette occurrence seulement (les autres semaines ne bougent pas). */
+  protected async moveThisOccurrence(): Promise<void> {
+    const move = this.pendingMove();
+    this.pendingMove.set(null);
+    if (move === null) {
+      return;
+    }
+    await this.runOccurrenceAction(
+      () =>
+        firstValueFrom(
+          this.sessionsWrite.moveOccurrence(move.session.id, move.session.date, {
+            date: move.date,
+            startTime: move.startTime,
+          }),
+        ),
+      'Cette occurrence a été déplacée.',
+    );
+  }
+
+  /** Déplace toute la série (sa date d'ancrage et son heure). */
+  protected async moveWholeSeries(): Promise<void> {
+    const move = this.pendingMove();
+    this.pendingMove.set(null);
+    if (move === null) {
+      return;
+    }
+    await this.runOccurrenceAction(
+      () =>
+        firstValueFrom(
+          this.sessionsWrite.move(move.session.id, { date: move.date, startTime: move.startTime }),
+        ),
+      'La série a été déplacée.',
+    );
+  }
+
+  protected cancelPendingMove(): void {
+    this.pendingMove.set(null);
+    this.state.reload();
+  }
+
+  /** Annule cette occurrence seulement. */
+  protected async cancelThisOccurrence(): Promise<void> {
+    const session = this.occurrenceChoice();
+    this.occurrenceChoice.set(null);
+    if (session === null) {
+      return;
+    }
+    await this.runOccurrenceAction(
+      () => firstValueFrom(this.sessionsWrite.cancelOccurrence(session.id, session.date)),
+      'Cette occurrence est annulée.',
+    );
+  }
+
+  /** Restaure cette occurrence à sa programmation initiale. */
+  protected async restoreThisOccurrence(): Promise<void> {
+    const session = this.occurrenceChoice();
+    this.occurrenceChoice.set(null);
+    if (session === null) {
+      return;
+    }
+    await this.runOccurrenceAction(
+      () => firstValueFrom(this.sessionsWrite.restoreOccurrence(session.id, session.date)),
+      'Cette occurrence est restaurée.',
+    );
+  }
+
+  /** Ouvre la fiche de la séance depuis le choix d'une occurrence. */
+  protected openSessionFromChoice(): void {
+    const session = this.occurrenceChoice();
+    this.occurrenceChoice.set(null);
+    if (session !== null) {
+      void this.router.navigate(['/seances', session.id]);
+    }
+  }
+
+  /**
+   * Ouvre la fiche de la séance (story #10). Une séance hebdomadaire ouvre d'abord le choix : fiche,
+   * annulation ou restauration de cette semaine.
+   */
   protected openSession(session: SessionOccurrence): void {
+    if (session.recurrence === 'hebdomadaire') {
+      this.occurrenceChoice.set(session);
+      return;
+    }
     void this.router.navigate(['/seances', session.id]);
+  }
+
+  /** Exécute une action sur une occurrence, puis recharge la semaine. L'erreur est notifiée par l'intercepteur. */
+  private async runOccurrenceAction(
+    action: () => Promise<unknown>,
+    success: string,
+  ): Promise<void> {
+    try {
+      await action();
+      this.messages.success(success);
+    } catch {
+      // Message déjà affiché par l'intercepteur d'erreurs.
+    } finally {
+      this.state.reload();
+    }
   }
 
   protected openEdit(slot: Slot): void {
