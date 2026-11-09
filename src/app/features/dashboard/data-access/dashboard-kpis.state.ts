@@ -7,11 +7,11 @@ import type { DashboardKpi } from '../models/dashboard-kpi.model';
 import { DashboardKpisApi } from './dashboard-kpis.api';
 import { DashboardState } from './dashboard.state';
 import { keepLast } from './hold-last';
-import { type MetricsPeriod, metricsPeriodFor } from './metrics-period';
+import type { DashboardPeriod } from '../models/training-stats.model';
 import { toDashboardKpis } from './dashboard-kpis.mapper';
 
 /**
- * État du bandeau d'indicateurs. Sa période suit la temporalité choisie en haut à droite (voir `metricsPeriodFor`).
+ * État du bandeau d'indicateurs. Sa période suit la temporalité choisie en haut à droite.
  * `kpis` vaut `undefined` tant que la réponse n'est pas reçue.
  * Fourni au niveau de la page, séparément de `DashboardState` pour que les erreurs restent indépendantes.
  */
@@ -20,8 +20,8 @@ export class DashboardKpisState {
   private readonly api = inject(DashboardKpisApi);
   private readonly dashboard = inject(DashboardState);
 
-  private readonly response = resource<DashboardKpisResponseApi, MetricsPeriod>({
-    params: () => metricsPeriodFor(this.dashboard.granularity()),
+  private readonly response = resource<DashboardKpisResponseApi, DashboardPeriod>({
+    params: () => this.dashboard.period(),
     loader: ({ params }) => firstValueFrom(this.api.get(params)),
   });
 

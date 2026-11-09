@@ -28,16 +28,10 @@ test.describe('Tableau de bord : métriques liées à la temporalité', () => {
     await page.goto('/');
     await expect.poll(() => periods.at(-1)).toBe('7d');
 
-    await page
-      .getByRole('radiogroup', { name: 'Granularité' })
-      .getByText('Mois', { exact: true })
-      .click();
+    await page.getByRole('button', { name: '30 derniers jours' }).click();
     await expect.poll(() => periods.at(-1)).toBe('30d');
 
-    await page
-      .getByRole('radiogroup', { name: 'Granularité' })
-      .getByText('Semaine', { exact: true })
-      .click();
+    await page.getByRole('button', { name: '7 derniers jours' }).click();
     await expect.poll(() => periods.at(-1)).toBe('7d');
   });
 });

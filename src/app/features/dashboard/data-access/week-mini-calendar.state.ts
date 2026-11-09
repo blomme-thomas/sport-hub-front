@@ -39,8 +39,9 @@ export class WeekMiniCalendarState {
   private latestRequest = 0;
   private loaded = false;
 
+  /** Semaine pour la période de 7 jours, mois sinon. */
   readonly view = computed<MiniCalendarView>(() =>
-    this.dashboard.granularity() === 'month' ? 'month' : 'week',
+    this.dashboard.period() === '7d' ? 'week' : 'month',
   );
 
   /** Période affichée : la semaine ou le mois qui contient la date de référence. */

@@ -107,18 +107,21 @@ describe('DashboardPage', () => {
     expect(chartJsInstances).toHaveLength(6);
   });
 
-  it('relance la requête en granularité mois et coche Mois quand l utilisateur bascule', async () => {
+  it('relance la requête en granularité mois et marque la période 3 mois quand l utilisateur la choisit', async () => {
     const requests = trackStats();
     await render(DashboardPage, { providers: pageProviders() });
     await screen.findByRole('img', { name: SESSIONS_TITLE });
 
-    await userEvent.click(screen.getByRole('radio', { name: 'Mois' }));
+    await userEvent.click(screen.getByRole('button', { name: '3 derniers mois' }));
 
     await waitFor(() => {
       expect(requests.at(-1)?.searchParams.get('granularity')).toBe('month');
     });
     expect(requests[0]?.searchParams.get('granularity')).toBe('week');
-    expect(screen.getByRole('radio', { name: 'Mois' })).toBeChecked();
+    expect(screen.getByRole('button', { name: '3 derniers mois' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
   });
 
   it('affiche un état vide explicite et aucune carte quand aucune activité n est enregistrée', async () => {
