@@ -87,6 +87,18 @@ Le bloc n'est pas relancé par la bascule Semaine / Mois. La section porte le ti
 - La légende n'apparaît que pour un graphique à plusieurs séries. Aujourd'hui, chaque graphique n'en a qu'une : les libellés et le tableau portent l'information.
 - La bascule est un groupe de boutons radio « Granularité », libellés « Semaine » et « Mois ».
 
+## Mini-calendrier de la semaine (story #18)
+
+En bas du tableau de bord, le bloc « Cette semaine » affiche les séances planifiées de la semaine affichée, une icône par séance, placée dans la case de son jour. L'icône et la couleur viennent de la discipline (correspondance unique dans `shared/ui/discipline`). Une discipline absente de la correspondance s'affiche en neutre, avec sa clé comme libellé, sans erreur.
+
+- **Navigation** : « ‹ » et « › » changent de semaine, « Aujourd’hui » revient à la semaine courante. Le bloc se recharge à chaque changement.
+- **Légende** : les disciplines présentes sur la semaine, avec leur libellé du référentiel.
+- **Clic sur une icône** : ouvre la fiche de la séance (`/seances/:id`).
+- **Lecture seule** : rien ne se modifie depuis ce bloc. Les séances réalisées, manquées ou annulées ne sont pas affichées.
+- **États** : chargement, « Aucune séance planifiée cette semaine. », et erreur avec « Réessayer ».
+
+Hors scope de ce bloc : détail de la séance (fiche #10), création ou déplacement (calendrier, #46), regroupement des disciplines en familles.
+
 ## Hors périmètre
 
 Progression chiffrée vers l'objectif, bilan hebdomadaire généré par l'IA, mini-calendrier de la semaine, commentaire IA, calendrier et planning : stories à venir.
