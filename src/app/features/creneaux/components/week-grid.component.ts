@@ -72,6 +72,10 @@ interface PositionedBlock {
   endMinutes: number;
   movable: boolean;
   cancelled: boolean;
+  /** Séance réalisée : ni déplacement, ni modification de la durée depuis la vignette. */
+  done: boolean;
+  /** Séance planifiée : la durée se modifie depuis la vignette. */
+  editable: boolean;
   top: number;
   height: number;
   left: number;
@@ -111,6 +115,8 @@ export class WeekGridComponent {
   readonly sessionSelected = output<SessionOccurrence>();
   readonly rangeSelected = output<SlotDefaults>();
   readonly moved = output<GridMove>();
+  /** Demande de modification rapide de la durée, depuis la vignette d'une séance planifiée. */
+  readonly durationRequested = output<SessionOccurrence>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -162,6 +168,8 @@ export class WeekGridComponent {
             timeRange,
             movable: true,
             cancelled: false,
+            done: false,
+            editable: false,
             icon: null,
             color: '',
             ...geometry,
@@ -170,16 +178,21 @@ export class WeekGridComponent {
         const style = disciplineStyleOf(item.session.disciplineTypeKey);
         const disciplineLabel =
           this.labels().get(item.session.disciplineTypeKey) ?? item.session.disciplineTypeKey;
+        const done = item.session.status === 'realisee';
         return {
           key: item.id,
           kind: 'session' as const,
           date: day.date,
           slot: null,
           session: item.session,
-          label: `Séance ${disciplineLabel}, ${timeRange}. Ouvrir la séance`,
+          label: done
+            ? `Séance ${disciplineLabel}, ${timeRange}, réalisée. Ouvrir la séance`
+            : `Séance ${disciplineLabel}, ${timeRange}. Ouvrir la séance`,
           timeRange,
-          movable: item.session.status !== 'annulee',
+          movable: item.session.status !== 'annulee' && !done,
           cancelled: item.session.status === 'annulee',
+          done,
+          editable: item.session.status === 'planifiee',
           icon: style.icon,
           color: style.color,
           ...geometry,
@@ -285,6 +298,12 @@ export class WeekGridComponent {
     }
   }
 
+  protected onDurationClick(block: PositionedBlock): void {
+    if (block.session !== null && block.editable) {
+      this.durationRequested.emit(block.session);
+    }
+  }
+
   protected onColumnPointerDown(event: PointerEvent, date: string): void {
     if (event.button !== 0 || isOnBlock(event)) {
       return;
@@ -385,7 +404,7 @@ function minutesAt(event: PointerEvent, column: HTMLElement, offset: number): nu
 }
 
 function isOnBlock(event: PointerEvent): boolean {
-  return event.target instanceof Element && event.target.closest('.week-grid__slot') !== null;
+  return event.target instanceof Element && event.target.closest('.week-grid__item') !== null;
 }
 
 function describeSlot(slot: Slot, timeRange: string): string {

@@ -66,8 +66,14 @@ $day-min-width: 7.5rem;
   );
 }
 
+/* Conteneur de la vignette : porte la position, pour que le bouton « Durée » reste un frère du bouton de la vignette. */
+.week-grid__item {
+  position: absolute;
+}
+
 .week-grid__slot {
   position: absolute;
+  inset: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -144,4 +150,32 @@ $day-min-width: 7.5rem;
   opacity: 0.55;
   text-decoration: line-through;
   border-style: dashed;
+}
+
+.week-grid__slot--locked {
+  cursor: not-allowed;
+}
+
+.week-grid__slot--done {
+  opacity: 0.8;
+}
+
+.week-grid__duration {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  z-index: 1;
+  padding: 0 var(--sh-space-1);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface);
+  color: var(--sh-text);
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--sh-focus-ring);
+    outline-offset: 2px;
+  }
 }

@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalComponent, NzModalContentDirective, NzModalService } from 'ng-zorro-antd/modal';
 import { firstValueFrom } from 'rxjs';
@@ -18,6 +20,10 @@ import type { SlotDefaults } from '../models/slot.model';
 const DEFAULT_START = '09:00';
 const DEFAULT_END = '10:00';
 const WEEK_LAST_OFFSET_DAYS = 6;
+/** Bornes de la durée proposée à la modification rapide, en minutes (le back accepte 1 à 1440). */
+const QUICK_DURATION_MIN = 1;
+const QUICK_DURATION_MAX = 1440;
+const QUICK_DURATION_STEP = 5;
 
 /**
  * Calendrier de la semaine : séances créées à la main. Un clic ou une sélection sur
@@ -27,8 +33,10 @@ const WEEK_LAST_OFFSET_DAYS = 6;
 @Component({
   selector: 'sh-creneaux-page',
   imports: [
+    FormsModule,
     IconComponent,
     NzButtonComponent,
+    NzInputNumberComponent,
     NzModalComponent,
     NzModalContentDirective,
     SessionFormComponent,
@@ -55,6 +63,13 @@ export class CreneauxPage {
   protected readonly pendingMove = signal<(GridMove & { kind: 'session' }) | null>(null);
   /** Séance dont le choix est ouvert : fiche, suppression, et annulation ou restauration pour une récurrente. */
   protected readonly occurrenceChoice = signal<SessionOccurrence | null>(null);
+  /** Séance dont la durée est modifiée depuis sa vignette, `null` quand la modale est fermée. */
+  protected readonly durationTarget = signal<SessionOccurrence | null>(null);
+  /** Durée saisie dans la modale de modification rapide, en minutes. */
+  protected readonly durationValue = signal(0);
+  protected readonly durationStep = QUICK_DURATION_STEP;
+  protected readonly durationMin = QUICK_DURATION_MIN;
+  protected readonly durationMax = QUICK_DURATION_MAX;
   protected readonly disciplines = computed(() =>
     [...this.state.labels()].map(([typeKey, label]) => ({ typeKey, label })),
   );
@@ -205,6 +220,33 @@ export class CreneauxPage {
           'Séance supprimée.',
         ),
     });
+  }
+
+  /** Ouvre la modale de durée, pré-remplie avec la durée actuelle de la séance. */
+  protected openDuration(session: SessionOccurrence): void {
+    this.durationValue.set(session.durationMinutes);
+    this.durationTarget.set(session);
+  }
+
+  protected closeDuration(): void {
+    this.durationTarget.set(null);
+  }
+
+  /**
+   * Enregistre la nouvelle durée (pour une série, celle de toute la série). En cas d'erreur, l'intercepteur notifie
+   * le message et la semaine est rechargée : la durée d'origine revient à l'écran.
+   */
+  protected async saveDuration(): Promise<void> {
+    const session = this.durationTarget();
+    const minutes = this.durationValue();
+    this.durationTarget.set(null);
+    if (session === null || minutes === session.durationMinutes) {
+      return;
+    }
+    await this.runOccurrenceAction(
+      () => firstValueFrom(this.sessionsWrite.updateDuration(session.id, minutes)),
+      'Durée modifiée.',
+    );
   }
 
   /** Ouvre la fiche de la séance depuis le choix. */

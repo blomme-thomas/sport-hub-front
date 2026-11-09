@@ -46,6 +46,7 @@
       (sessionSelected)="openSession($event)"
       (rangeSelected)="chooseRange($event)"
       (moved)="onMoved($event)"
+      (durationRequested)="openDuration($event)"
     />
   </div>
 }
@@ -86,6 +87,40 @@
         <button nz-button type="button" (click)="moveWholeSeries()">Toute la série</button>
         <button nz-button nzType="primary" type="button" (click)="moveThisOccurrence()">
           Cette semaine seulement
+        </button>
+      </div>
+    </ng-container>
+  </nz-modal>
+}
+
+@if (durationTarget(); as session) {
+  <nz-modal
+    [nzVisible]="true"
+    nzTitle="Modifier la durée"
+    [nzFooter]="null"
+    (nzOnCancel)="closeDuration()"
+  >
+    <ng-container *nzModalContent>
+      <p class="creneaux__choice-text">
+        {{ session.disciplineTypeKey }}, {{ session.date }} à {{ session.startTime }}.
+        @if (session.recurrence === 'hebdomadaire') {
+          La nouvelle durée s’applique à toute la série.
+        }
+      </p>
+      <label class="creneaux__choice-text" for="duration-minutes">Durée en minutes</label>
+      <nz-input-number
+        nzId="duration-minutes"
+        [ngModel]="durationValue()"
+        (ngModelChange)="durationValue.set($event)"
+        [nzMin]="durationMin"
+        [nzMax]="durationMax"
+        [nzStep]="durationStep"
+        [nzPrecision]="0"
+      />
+      <div class="creneaux__choice">
+        <button nz-button type="button" (click)="closeDuration()">Annuler</button>
+        <button nz-button nzType="primary" type="button" (click)="saveDuration()">
+          Enregistrer
         </button>
       </div>
     </ng-container>
