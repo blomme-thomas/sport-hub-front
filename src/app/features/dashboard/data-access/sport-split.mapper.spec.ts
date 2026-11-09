@@ -16,6 +16,19 @@ describe('sport-split mapper', () => {
     expect(familyOf('strength_training')).toBe('other');
   });
 
+  it('classe les variantes de course, vélo et natation dans leur sport', () => {
+    expect(familyOf('track_running')).toBe('running');
+    expect(familyOf('road_biking')).toBe('cycling');
+    expect(familyOf('e_bike_fitness')).toBe('cycling');
+    expect(familyOf('open_water_swimming')).toBe('swimming');
+  });
+
+  it('range tout type inconnu dans « autres »', () => {
+    expect(familyOf('hiking')).toBe('other');
+    expect(familyOf('walking')).toBe('other');
+    expect(familyOf('yoga')).toBe('other');
+  });
+
   it('calcule des pourcentages entiers dont la somme vaut 100', () => {
     const split = toSportSplit(
       [volume('running', 100), volume('cycling', 100), volume('lap_swimming', 100)],

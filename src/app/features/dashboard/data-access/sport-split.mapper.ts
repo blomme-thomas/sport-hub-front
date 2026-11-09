@@ -17,7 +17,7 @@ const FAMILY_COLORS: Record<SportFamily, string> = {
   other: '--sh-violet',
 };
 
-const RUNNING_TYPES = ['running', 'trail_running', 'treadmill_running'];
+const RUNNING_TYPES = ['running', 'trail_running', 'treadmill_running', 'track_running'];
 const CYCLING_TYPES = [
   'cycling',
   'road_biking',
@@ -25,10 +25,14 @@ const CYCLING_TYPES = [
   'virtual_ride',
   'gravel_cycling',
   'mountain_biking',
+  'e_bike_fitness',
 ];
 const SWIMMING_TYPES = ['lap_swimming', 'swimming', 'open_water_swimming'];
 
-/** Famille d'un type d'activité Garmin ; tout type non listé est « autres ». */
+/**
+ * Famille d'un type d'activité Garmin. Course, vélo et natation regroupent leurs variantes ; tout type non listé
+ * (musculation, randonnée, marche…) va dans « autres ».
+ */
 export function familyOf(type: string): SportFamily {
   if (RUNNING_TYPES.includes(type)) return 'running';
   if (CYCLING_TYPES.includes(type)) return 'cycling';
