@@ -1,0 +1,98 @@
+@if (state.isLoading() && state.session() === null) {
+  <p class="session__status" aria-busy="true">Chargement…</p>
+} @else if (state.error(); as failure) {
+  <div class="session__error" role="alert">
+    <p>{{ failure.userMessage }}</p>
+    <button nz-button nzType="primary" type="button" (click)="state.load(id())">Réessayer</button>
+  </div>
+} @else if (state.session(); as session) {
+  <header class="session__header">
+    <p class="session__date">
+      {{ dateLabel() }}
+      @if (session.startTime) {
+        · {{ session.startTime }}
+      }
+    </p>
+    <h1 class="session__title">{{ session.disciplineLabel }}</h1>
+    <div class="session__badges">
+      <span class="session__badge">{{ statusLabel() }}</span>
+      @if (session.modifiedManually) {
+        <span class="session__badge session__badge--modified">Modifiée</span>
+      }
+    </div>
+  </header>
+
+  @if (state.readOnly()) {
+    <p class="session__readonly" role="status">
+      Séance réalisée : elle est affichée en lecture seule.
+    </p>
+  }
+
+  <section class="session__section" aria-labelledby="session-info-heading">
+    <h2 id="session-info-heading" class="session__heading">Informations</h2>
+    <dl class="session__info">
+      <dt>Durée prévue</dt>
+      <dd>{{ session.durationMinutes }} min</dd>
+      <dt>Matériel</dt>
+      <dd>{{ session.equipment ?? '—' }}</dd>
+      <dt>Points d’attention</dt>
+      <dd>{{ session.attentionPoints ?? '—' }}</dd>
+      @if (session.description) {
+        <dt>Description</dt>
+        <dd>{{ session.description }}</dd>
+      }
+    </dl>
+  </section>
+
+  <section class="session__section" aria-labelledby="session-modules-heading">
+    <div class="session__section-header">
+      <h2 id="session-modules-heading" class="session__heading">
+        Modules ({{ state.draft().length }}) · {{ state.totalMinutes() }} min
+      </h2>
+      @if (!state.readOnly()) {
+        <button nz-button type="button" [disabled]="!state.canAddModule()" (click)="state.add()">
+          Ajouter un module
+        </button>
+      }
+    </div>
+
+    <sh-session-modules
+      [modules]="state.draft()"
+      [invalidKeys]="state.invalidKeys()"
+      [readOnly]="state.readOnly()"
+      (typeChanged)="setType($event)"
+      (durationChanged)="setDuration($event)"
+      (instructionChanged)="setInstruction($event)"
+      (moved)="move($event)"
+      (removed)="state.remove($event)"
+    />
+  </section>
+
+  @if (!state.readOnly()) {
+    @if (state.saveError(); as failure) {
+      <div class="session__error" role="alert">
+        <p>{{ failure.userMessage }}</p>
+      </div>
+    }
+    <footer class="session__actions">
+      <button
+        nz-button
+        type="button"
+        [disabled]="!state.dirty() || state.saving()"
+        (click)="state.revert()"
+      >
+        Annuler les modifications
+      </button>
+      <button
+        nz-button
+        nzType="primary"
+        type="button"
+        [disabled]="!state.canSave()"
+        [attr.aria-busy]="state.saving()"
+        (click)="save()"
+      >
+        Enregistrer les modifications
+      </button>
+    </footer>
+  }
+}

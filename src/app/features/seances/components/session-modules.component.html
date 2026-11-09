@@ -1,0 +1,116 @@
+<ol class="modules" aria-label="Modules de la séance">
+  @for (row of rows(); track row.module.key; let index = $index) {
+    <li class="module" [class.module--invalid]="row.invalid">
+      <span class="module__position" aria-hidden="true">{{ index + 1 }}</span>
+
+      @if (readOnly()) {
+        <div class="module__body">
+          <p class="module__title">
+            <strong>{{ row.typeLabel }}</strong>
+            <span>{{ row.module.durationMinutes }} min</span>
+          </p>
+          <p class="module__instruction">{{ row.module.instruction }}</p>
+          @if (row.zones) {
+            <p class="module__meta">Zones cibles : {{ row.zones }}</p>
+          }
+          @if (row.module.perceivedEffort !== null) {
+            <p class="module__meta">Effort visé : {{ row.module.perceivedEffort }}/10</p>
+          }
+        </div>
+      } @else {
+        <div class="module__body">
+          <div class="module__fields">
+            <div class="module__field">
+              <label [attr.for]="'module-type-' + row.module.key">Type</label>
+              <select
+                nz-input
+                [id]="'module-type-' + row.module.key"
+                [value]="row.module.type"
+                (change)="typeChanged.emit({ key: row.module.key, type: typeOf($event) })"
+              >
+                @for (option of typeOptions; track option.value) {
+                  <option [value]="option.value" [selected]="option.value === row.module.type">
+                    {{ option.label }}
+                  </option>
+                }
+              </select>
+            </div>
+
+            <div class="module__field">
+              <label [attr.for]="'module-duration-' + row.module.key">Durée (min)</label>
+              <input
+                nz-input
+                type="number"
+                min="1"
+                max="1440"
+                step="1"
+                [id]="'module-duration-' + row.module.key"
+                [value]="row.module.durationMinutes"
+                (input)="durationChanged.emit({ key: row.module.key, minutes: +valueOf($event) })"
+              />
+            </div>
+          </div>
+
+          <div class="module__field">
+            <label [attr.for]="'module-instruction-' + row.module.key">Consigne</label>
+            <input
+              nz-input
+              type="text"
+              [maxLength]="maxInstructionLength"
+              [id]="'module-instruction-' + row.module.key"
+              [value]="row.module.instruction"
+              (input)="
+                instructionChanged.emit({ key: row.module.key, instruction: valueOf($event) })
+              "
+            />
+          </div>
+
+          @if (row.zones) {
+            <p class="module__meta">Zones cibles : {{ row.zones }}</p>
+          }
+          @if (row.module.perceivedEffort !== null) {
+            <p class="module__meta">Effort visé : {{ row.module.perceivedEffort }}/10</p>
+          }
+          @if (row.invalid) {
+            <p class="module__error" role="alert">
+              La durée doit être comprise entre 1 et 1440 minutes, et la consigne ne peut pas être
+              vide.
+            </p>
+          }
+
+          <div class="module__actions">
+            <button
+              nz-button
+              type="button"
+              [disabled]="row.first"
+              [attr.aria-label]="'Monter le module ' + (index + 1)"
+              (click)="moved.emit({ key: row.module.key, delta: -1 })"
+            >
+              Monter
+            </button>
+            <button
+              nz-button
+              type="button"
+              [disabled]="row.last"
+              [attr.aria-label]="'Descendre le module ' + (index + 1)"
+              (click)="moved.emit({ key: row.module.key, delta: 1 })"
+            >
+              Descendre
+            </button>
+            <button
+              nz-button
+              nzDanger
+              type="button"
+              [attr.aria-label]="'Supprimer le module ' + (index + 1)"
+              (click)="removed.emit(row.module.key)"
+            >
+              Supprimer
+            </button>
+          </div>
+        </div>
+      }
+    </li>
+  } @empty {
+    <li class="modules__empty">Aucun module pour cette séance.</li>
+  }
+</ol>

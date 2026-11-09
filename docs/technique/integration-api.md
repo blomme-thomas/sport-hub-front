@@ -107,6 +107,17 @@ Un code absent de `ERROR_MESSAGES` affiche `DEFAULT_ERROR_MESSAGE` sans erreur ;
 - Contrat : règles et routes dans `sport-hub-back/docs/technique/contextes/creneaux.md`. Non recopiés ici.
 - Mock MSW : `src/mocks/handlers/slots.handlers.ts` (état en mémoire, `*/api/slots`, occurrences calculées comme le back). Fixtures : `src/mocks/fixtures/slots.fixtures.ts`. Helper de test : `src/mocks/slots.testing.ts`.
 
+### `seances`
+
+- `GET /api/sessions/:id` : `SessionsApi.get` (`features/seances/data-access/sessions.api.ts`). Séance avec ses modules ordonnés.
+- `PUT /api/sessions/:id/modules` : `SessionsApi.replaceModules`. Remplace la liste complète des modules ; le corps n’envoie pas de position, l’ordre du brouillon la donne.
+- `GET /api/disciplines` : `DisciplinesApi.list` (`features/seances/data-access/disciplines.api.ts`). Libellés par clé de discipline, pour la fiche.
+- Mapping : `SessionApi` → `Session` (`toSession`, libellé de discipline résolu, clé brute si inconnue). Le brouillon des modules est une liste `EditableModule` avec une clé locale stable (`toEditable`) ; `isDirty` compare le brouillon à la séance enregistrée.
+- Chargement : `SessionState` (fourni au niveau de la page) charge la séance et les libellés en parallèle, et ignore une réponse périmée. L’enregistrement remplace la séance par la réponse de `PUT`.
+- Erreurs : `AppError` ; `SESSION_ALREADY_COMPLETED` (409) et `SESSION_NOT_FOUND` (404) ont un message dans `ERROR_MESSAGES`.
+- Contrat : règles dans `sport-hub-back/docs/technique/contextes/seances.md`. Non recopiées ici.
+- Mock MSW : `src/mocks/handlers/sessions.handlers.ts` (état en mémoire). Fixtures : `src/mocks/fixtures/sessions.fixtures.ts`. Helper de test : `src/mocks/sessions.testing.ts`.
+
 ## Génération de types depuis l'OpenAPI du back
 
 À compléter (non décidé).
