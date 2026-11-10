@@ -9,6 +9,7 @@ import { ChartCardComponent } from './chart-card.component';
 vi.mock('chart.js', async () => (await import('../../../../mocks/chart-js.fake')).chartJsModule);
 
 const TITLE = 'Séances par semaine';
+const CHART_TIMEOUT_MS = 5000;
 
 const chartModel: ChartModel = {
   title: TITLE,
@@ -49,10 +50,14 @@ describe('ChartCardComponent', () => {
     await render(ChartCardComponent, { inputs: { model: chartModel } });
 
     // Chart.js est créé de façon asynchrone après le rendu : on attend l'instance avant de la lire.
-    await vi.waitFor(() => {
-      TestBed.tick();
-      expect(chartJsInstances).toHaveLength(1);
-    });
+    // Délai allongé : sur un runner CI chargé, la création dépasse le délai par défaut d'une seconde.
+    await vi.waitFor(
+      () => {
+        TestBed.tick();
+        expect(chartJsInstances).toHaveLength(1);
+      },
+      { timeout: CHART_TIMEOUT_MS },
+    );
     const [chart] = chartJsInstances;
     expect(chart?.config.data.labels).toEqual(['S43', 'S44']);
     expect(chart?.config.data.datasets).toEqual([
@@ -71,10 +76,13 @@ describe('ChartCardComponent', () => {
       inputs: { model: chartModel, kind: 'horizontal-bar' },
     });
 
-    await vi.waitFor(() => {
-      TestBed.tick();
-      expect(chartJsInstances).toHaveLength(1);
-    });
+    await vi.waitFor(
+      () => {
+        TestBed.tick();
+        expect(chartJsInstances).toHaveLength(1);
+      },
+      { timeout: CHART_TIMEOUT_MS },
+    );
     expect(chartJsInstances[0]?.config.type).toBe('bar');
     expect(chartJsInstances[0]?.config.options).toMatchObject({ indexAxis: 'y' });
   });
