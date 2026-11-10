@@ -29,6 +29,16 @@ test.describe('Calendrier : créer une séance', () => {
     const dialog = page.getByRole('dialog');
     await dialog.getByLabel('Discipline').selectOption('running');
     await dialog.getByLabel('Durée (min)').fill('45');
+    // La répartition cible par zone est obligatoire et doit totaliser 100 %.
+    for (const [label, value] of [
+      ['Z1 (%)', '10'],
+      ['Z2 (%)', '20'],
+      ['Z3 (%)', '40'],
+      ['Z4 (%)', '20'],
+      ['Z5 (%)', '10'],
+    ] as const) {
+      await dialog.getByLabel(label).fill(value);
+    }
 
     const createRequest = page.waitForRequest(
       (request) => request.method() === 'POST' && POST_SESSIONS_URL.test(request.url()),
@@ -40,6 +50,7 @@ test.describe('Calendrier : créer une séance', () => {
       disciplineTypeKey: 'running',
       durationMinutes: 45,
       recurrence: 'aucune',
+      targetHrZonePercentages: [10, 20, 40, 20, 10],
     });
     await expect(page).toHaveURL(/\/seances\/session-nouvelle$/);
   });
