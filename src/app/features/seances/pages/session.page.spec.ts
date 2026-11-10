@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { HttpResponse, http } from 'msw';
 import { describe, expect, it } from 'vitest';
@@ -38,7 +38,10 @@ describe('SessionPage', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Planifiée')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Modules (3) · 45 min' })).toBeInTheDocument();
-    expect(screen.getAllByRole('listitem')).toHaveLength(3);
+    const modulesSection = screen
+      .getByRole('heading', { name: 'Modules (3) · 45 min' })
+      .closest('section') as HTMLElement;
+    expect(within(modulesSection).getAllByRole('listitem')).toHaveLength(3);
     expect(screen.getByText('Montre GPS')).toBeInTheDocument();
   });
 

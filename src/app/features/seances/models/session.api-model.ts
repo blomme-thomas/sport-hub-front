@@ -43,6 +43,28 @@ export interface SessionApi {
   attentionPoints: string | null;
   modules: SessionModuleApi[];
   changeLog: ChangeLogEntryApi[];
+  /** Distance cible en mètres ; `null` si non renseignée. */
+  targetDistanceMeters: number | null;
+  /** Répartition cible du temps par zone de FC, Z1 à Z5 ; `null` si absente. */
+  targetHrZonePercentages: number[] | null;
+  /** Taux de réalisation et écarts par zone ; `null` tant qu'aucune activité n'est liée. */
+  achievement: SessionAchievementApi | null;
+  /** Activité liée (identifiant, origine et date du lien) ; `null` si aucune. */
+  activity: SessionActivityLinkApi | null;
+}
+
+/** Taux de réalisation (`SessionAchievementResponseDto`) ; les écarts sont signés, en points, pour Z1 à Z5. */
+export interface SessionAchievementApi {
+  distanceRate: number | null;
+  durationRate: number | null;
+  zoneGapsPoints: number[] | null;
+}
+
+/** Lien à une activité Garmin (`SessionActivityResponseDto`). */
+export interface SessionActivityLinkApi {
+  id: string;
+  origin: 'automatique' | 'manuel';
+  linkedAt: string;
 }
 
 /** Module envoyé au back : sans position, qui est donnée par l'ordre de la liste. */

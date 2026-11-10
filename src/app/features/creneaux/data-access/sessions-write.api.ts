@@ -10,6 +10,10 @@ export interface CreateSessionRequestApi {
   disciplineTypeKey: string;
   durationMinutes: number;
   recurrence: 'aucune' | 'hebdomadaire';
+  /** Distance cible en mètres, facultative. */
+  targetDistanceMeters?: number;
+  /** Répartition cible du temps par zone de FC, Z1 à Z5, totalisant 100. Obligatoire côté back. */
+  targetHrZonePercentages: number[];
   description?: string;
   equipment?: string;
   attentionPoints?: string;

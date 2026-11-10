@@ -21,6 +21,15 @@ async function renderForm(
   return { saved, cancelled };
 }
 
+async function fillZones(user: ReturnType<typeof userEvent.setup>, values: number[]) {
+  const labels = ['Z1 (%)', 'Z2 (%)', 'Z3 (%)', 'Z4 (%)', 'Z5 (%)'];
+  for (const [index, label] of labels.entries()) {
+    const input = screen.getByLabelText(label);
+    await user.clear(input);
+    await user.type(input, String(values[index]));
+  }
+}
+
 describe('SessionFormComponent', () => {
   it('pré-remplit la date et l’heure de la case cliquée', async () => {
     await renderForm();
@@ -29,7 +38,7 @@ describe('SessionFormComponent', () => {
     expect(screen.getByLabelText('Heure de début')).toHaveValue('18:00');
   });
 
-  it('émet le corps de création avec la discipline, la durée et la récurrence choisies', async () => {
+  it('émet le corps de création avec la discipline, la durée, la récurrence et les objectifs', async () => {
     const user = userEvent.setup();
     const { saved } = await renderForm();
 
@@ -37,6 +46,8 @@ describe('SessionFormComponent', () => {
     await user.clear(screen.getByLabelText('Durée (min)'));
     await user.type(screen.getByLabelText('Durée (min)'), '45');
     await user.selectOptions(screen.getByLabelText('Récurrence'), 'hebdomadaire');
+    await user.type(screen.getByLabelText('Distance cible (km)'), '8');
+    await fillZones(user, [10, 20, 40, 20, 10]);
     await user.click(screen.getByRole('button', { name: 'Créer la séance' }));
 
     expect(saved).toHaveBeenCalledWith({
@@ -45,7 +56,28 @@ describe('SessionFormComponent', () => {
       disciplineTypeKey: 'running',
       durationMinutes: 45,
       recurrence: 'hebdomadaire',
+      targetDistanceMeters: 8000,
+      targetHrZonePercentages: [10, 20, 40, 20, 10],
     });
+  });
+
+  it('bloque la création tant que la répartition par zone ne totalise pas 100 %', async () => {
+    const user = userEvent.setup();
+    const { saved } = await renderForm();
+
+    await user.selectOptions(screen.getByLabelText('Discipline'), 'running');
+    await fillZones(user, [10, 20, 40, 20, 5]);
+    await user.click(screen.getByRole('button', { name: 'Créer la séance' }));
+
+    expect(saved).not.toHaveBeenCalled();
+    expect(screen.getByText('Total des zones : 95 %')).toBeInTheDocument();
+    expect(screen.getByText(/totaliser 100 % \(actuellement 95 %\)/)).toBeInTheDocument();
+  });
+
+  it('n’affiche pas d’erreur d’objectif avant la première tentative de création', async () => {
+    await renderForm();
+
+    expect(screen.queryByText(/totaliser 100 %/)).not.toBeInTheDocument();
   });
 
   it('n’émet rien sans discipline', async () => {

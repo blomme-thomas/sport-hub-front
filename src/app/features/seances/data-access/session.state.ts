@@ -5,6 +5,8 @@ import { toAppError } from '../../../core/http/problem-details.mapper';
 import { MAX_DURATION_MINUTES, MAX_MODULES, MIN_DURATION_MINUTES } from '../models/session-options';
 import type { EditableModule, ModuleType, Session } from '../models/session.model';
 import { DisciplinesApi } from './disciplines.api';
+import { SessionActivitiesApi } from './session-activities.api';
+import type { SessionActivityApi } from '../models/session-activity.api-model';
 import {
   NEW_MODULE_DEFAULTS,
   isDirty,
@@ -23,8 +25,14 @@ import { SessionsApi } from './sessions.api';
 export class SessionState {
   private readonly sessionsApi = inject(SessionsApi);
   private readonly disciplinesApi = inject(DisciplinesApi);
+  private readonly activitiesApi = inject(SessionActivitiesApi);
 
   private readonly sessionValue = signal<Session | null>(null);
+  private readonly candidatesValue = signal<SessionActivityApi[]>([]);
+  private readonly linkedDetailValue = signal<SessionActivityApi | null>(null);
+  private readonly activityBusyValue = signal(false);
+  private readonly activityErrorValue = signal<AppError | null>(null);
+  private activityRequest = 0;
   private readonly draftValue = signal<EditableModule[]>([]);
   private readonly loadingValue = signal(false);
   private readonly errorValue = signal<AppError | null>(null);
@@ -40,6 +48,15 @@ export class SessionState {
   readonly error = this.errorValue.asReadonly();
   readonly saving = this.savingValue.asReadonly();
   readonly saveError = this.saveErrorValue.asReadonly();
+  /** Activités du même jour et de la même discipline, hors activité déjà liée. */
+  readonly activityCandidates = computed(() => {
+    const linkedId = this.sessionValue()?.linkedActivity?.id;
+    return this.candidatesValue().filter((activity) => activity.id !== linkedId);
+  });
+  /** Détail de l'activité liée (distance, durée, FC) ; `null` sans lien ou tant qu'il n'est pas chargé. */
+  readonly linkedActivityDetail = this.linkedDetailValue.asReadonly();
+  readonly activityBusy = this.activityBusyValue.asReadonly();
+  readonly activityError = this.activityErrorValue.asReadonly();
 
   readonly readOnly = computed(() => this.sessionValue()?.status === 'realisee');
   readonly dirty = computed(() => {
@@ -159,9 +176,75 @@ export class SessionState {
     }
   }
 
+  /** Associe une activité du même jour ; la séance passe à réalisée côté back. Renvoie `false` en cas d'erreur. */
+  async linkActivity(activityId: string): Promise<boolean> {
+    const session = this.sessionValue();
+    if (session === null) {
+      return false;
+    }
+    return this.runActivityWrite(async () => {
+      const api = await firstValueFrom(this.sessionsApi.linkActivity(session.id, activityId));
+      this.apply(toSession(api, (key) => this.labels.get(key) ?? key));
+    });
+  }
+
+  /** Dissocie l'activité liée. Le statut est conservé côté back, la séance est relue pour afficher le nouvel état. */
+  async unlinkActivity(): Promise<boolean> {
+    const session = this.sessionValue();
+    if (session === null) {
+      return false;
+    }
+    return this.runActivityWrite(async () => {
+      await firstValueFrom(this.sessionsApi.unlinkActivity(session.id));
+      const api = await firstValueFrom(this.sessionsApi.get(session.id));
+      this.apply(toSession(api, (key) => this.labels.get(key) ?? key));
+    });
+  }
+
+  private async runActivityWrite(write: () => Promise<void>): Promise<boolean> {
+    this.activityBusyValue.set(true);
+    this.activityErrorValue.set(null);
+    try {
+      await write();
+      return true;
+    } catch (error) {
+      this.activityErrorValue.set(asAppError(error));
+      return false;
+    } finally {
+      this.activityBusyValue.set(false);
+    }
+  }
+
   private apply(session: Session): void {
     this.sessionValue.set(session);
     this.draftValue.set(toEditable(session.modules, () => ++this.keySequence));
+    void this.loadActivities(session);
+  }
+
+  /** Charge les activités du jour (candidates) et le détail de l'activité liée. Une réponse périmée est ignorée. */
+  private async loadActivities(session: Session): Promise<void> {
+    const request = ++this.activityRequest;
+    try {
+      const [candidates, linked] = await Promise.all([
+        firstValueFrom(this.activitiesApi.listForDay(session.date)),
+        session.linkedActivity
+          ? firstValueFrom(this.activitiesApi.detail(session.linkedActivity.id))
+          : Promise.resolve(null),
+      ]);
+      if (request !== this.activityRequest) {
+        return;
+      }
+      this.candidatesValue.set(
+        candidates.filter((activity) => activity.type === session.disciplineTypeKey),
+      );
+      this.linkedDetailValue.set(linked);
+    } catch (error) {
+      if (request === this.activityRequest) {
+        this.candidatesValue.set([]);
+        this.linkedDetailValue.set(null);
+        this.activityErrorValue.set(asAppError(error));
+      }
+    }
   }
 
   private updateModule(key: number, changes: Partial<EditableModule>): void {

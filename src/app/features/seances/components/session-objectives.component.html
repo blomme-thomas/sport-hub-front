@@ -1,0 +1,44 @@
+<dl class="objectives">
+  <dt>Distance cible</dt>
+  <dd>{{ distanceLabel() }}</dd>
+  <dt>Répartition cible</dt>
+  <dd>
+    <ul class="objectives__zones" aria-label="Répartition cible par zone de FC">
+      @for (zone of zones; track zone.label; let i = $index) {
+        <li>
+          <span
+            class="objectives__swatch"
+            [style.background]="'var(' + zone.colorVariable + ')'"
+            aria-hidden="true"
+          ></span>
+          {{ zone.label }} · {{ objectives().zonePercentages?.[i] ?? '—' }} %
+        </li>
+      }
+    </ul>
+  </dd>
+</dl>
+
+@if (achievement(); as data) {
+  <dl class="objectives objectives--achieved">
+    <dt>Taux distance</dt>
+    <dd>{{ formatRate(distanceRate()) }}</dd>
+    <dt>Taux durée</dt>
+    <dd>{{ formatRate(durationRate()) }}</dd>
+  </dl>
+
+  @if (zoneGaps(); as gaps) {
+    <ul class="objectives__gaps" aria-label="Écart par zone, en points de pourcentage">
+      @for (gap of gaps; track gap.label) {
+        <li>
+          <span
+            class="objectives__swatch"
+            [style.background]="'var(' + gap.colorVariable + ')'"
+            aria-hidden="true"
+          ></span>
+          <span>{{ gap.label }}</span>
+          <strong>{{ gap.text }}</strong>
+        </li>
+      }
+    </ul>
+  }
+}

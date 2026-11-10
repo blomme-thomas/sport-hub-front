@@ -44,6 +44,24 @@
     </dl>
   </section>
 
+  <section class="session__section" aria-labelledby="session-objectives-heading">
+    <h2 id="session-objectives-heading" class="session__heading">Objectifs</h2>
+    <sh-session-objectives [objectives]="session.objectives" [achievement]="session.achievement" />
+  </section>
+
+  <section class="session__section" aria-labelledby="session-activity-heading">
+    <h2 id="session-activity-heading" class="session__heading">Activité réalisée</h2>
+    <sh-session-activity
+      [linked]="session.linkedActivity"
+      [linkedDetail]="state.linkedActivityDetail()"
+      [candidates]="state.activityCandidates()"
+      [busy]="state.activityBusy()"
+      [error]="state.activityError()"
+      (link)="linkActivity($event)"
+      (unlink)="unlinkActivity()"
+    />
+  </section>
+
   <section class="session__section" aria-labelledby="session-modules-heading">
     <div class="session__section-header">
       <h2 id="session-modules-heading" class="session__heading">

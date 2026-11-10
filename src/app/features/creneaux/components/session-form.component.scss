@@ -52,3 +52,45 @@
   justify-content: flex-end;
   gap: var(--sh-space-2);
 }
+
+.session-form__objectives {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-3);
+  margin: 0;
+  padding: var(--sh-space-3);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+
+  legend {
+    padding: 0 var(--sh-space-1);
+    font-weight: 600;
+    color: var(--sh-text);
+  }
+}
+
+.session-form__zones {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--sh-space-2);
+
+  input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.session-form__total {
+  margin: 0;
+  color: var(--sh-text-muted);
+  font-variant-numeric: tabular-nums;
+
+  &--error {
+    color: var(--sh-error);
+  }
+}
+
+.session-form__error {
+  margin: 0;
+  color: var(--sh-error);
+}
