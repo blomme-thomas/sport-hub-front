@@ -53,6 +53,52 @@
     </div>
   </div>
 
+  <fieldset class="session-form__objectives">
+    <legend>Objectifs</legend>
+    <div class="session-form__field">
+      <label for="session-distance">Distance cible (km)</label>
+      <input
+        id="session-distance"
+        type="number"
+        min="0"
+        step="0.1"
+        formControlName="distanceKm"
+        [attr.aria-invalid]="!!objectiveErrors.distance"
+      />
+      @if (objectiveErrors.distance; as message) {
+        <p class="session-form__error" role="alert">{{ message }}</p>
+      }
+    </div>
+
+    <div class="session-form__zones" formGroupName="zones">
+      @for (zone of zoneFields; track zone.key) {
+        <div class="session-form__field">
+          <label [for]="'session-zone-' + zone.key">{{ zone.label }} (%)</label>
+          <input
+            [id]="'session-zone-' + zone.key"
+            type="number"
+            min="0"
+            max="100"
+            step="1"
+            [formControlName]="zone.key"
+          />
+        </div>
+      }
+    </div>
+    <p
+      class="session-form__total"
+      [class.session-form__total--error]="zoneTotal !== 100"
+      aria-live="polite"
+    >
+      Total des zones : {{ zoneTotal }} %
+    </p>
+    @if (objectiveErrors.zones; as message) {
+      <p class="session-form__error" role="alert">{{ message }}</p>
+    } @else if (objectiveErrors.zonesTotal; as message) {
+      <p class="session-form__error" role="alert">{{ message }}</p>
+    }
+  </fieldset>
+
   <div class="session-form__field">
     <label for="session-equipment">Matériel</label>
     <input id="session-equipment" type="text" formControlName="equipment" />

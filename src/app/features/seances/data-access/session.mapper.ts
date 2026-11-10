@@ -20,6 +20,7 @@ export function toSession(api: SessionApi, labelOf: (typeKey: string) => string)
   return {
     id: api.id,
     date: api.date,
+    disciplineTypeKey: api.disciplineTypeKey,
     disciplineLabel: labelOf(api.disciplineTypeKey),
     durationMinutes: api.durationMinutes,
     startTime: api.startTime,
@@ -29,6 +30,12 @@ export function toSession(api: SessionApi, labelOf: (typeKey: string) => string)
     equipment: api.equipment,
     attentionPoints: api.attentionPoints,
     modules: api.modules.map(toSessionModule),
+    objectives: {
+      distanceMeters: api.targetDistanceMeters,
+      zonePercentages: api.targetHrZonePercentages,
+    },
+    achievement: api.achievement,
+    linkedActivity: api.activity,
   };
 }
 

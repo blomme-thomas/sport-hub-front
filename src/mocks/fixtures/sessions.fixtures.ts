@@ -47,10 +47,16 @@ export const sessionApi: SessionApi = {
   attentionPoints: 'Hydratation',
   modules: [echauffementApi, seriesApi, retourApi],
   changeLog: [],
+  targetDistanceMeters: 10000,
+  targetHrZonePercentages: [10, 20, 40, 20, 10],
+  achievement: null,
+  activity: null,
 };
 
 export const completedSessionApi: SessionApi = {
   ...sessionApi,
+  achievement: { distanceRate: 120, durationRate: 83.3, zoneGapsPoints: [0, -5, 10, 0, -5] },
+  activity: { id: 'activity-1', origin: 'automatique', linkedAt: '2026-11-12T18:00:00.000Z' },
   id: SESSION_DONE_ID,
   status: 'realisee',
   modules: [seriesApi],

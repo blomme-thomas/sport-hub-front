@@ -1,0 +1,45 @@
+@if (error(); as failure) {
+  <p class="activity__error" role="alert">{{ failure.userMessage }}</p>
+}
+
+@if (linked(); as link) {
+  <div class="activity__linked">
+    <p class="activity__origin">
+      {{ originLabel() }} · {{ link.linkedAt | date: 'dd/MM/yyyy HH:mm' : 'UTC' }}
+    </p>
+    @if (linkedDetail(); as detail) {
+      <dl class="activity__info">
+        <dt>Distance</dt>
+        <dd>{{ formatKm(detail.distanceMeters) }}</dd>
+        <dt>Durée</dt>
+        <dd>{{ formatDuration(detail.durationSeconds) }}</dd>
+        <dt>FC moyenne</dt>
+        <dd>{{ detail.averageHeartRate === null ? '—' : detail.averageHeartRate + ' bpm' }}</dd>
+      </dl>
+    } @else {
+      <p class="activity__status">Chargement de l’activité…</p>
+    }
+    <button nz-button type="button" [disabled]="busy()" (click)="unlink.emit()">Dissocier</button>
+  </div>
+}
+
+<h3 class="activity__subheading">
+  {{ linked() ? 'Changer d’activité' : 'Activités du même jour' }}
+</h3>
+@if (candidates().length === 0) {
+  <p class="activity__status">Aucune activité du même jour et de la même discipline.</p>
+} @else {
+  <ul class="activity__list" aria-label="Activités associables">
+    @for (candidate of candidates(); track candidate.id) {
+      <li>
+        <span
+          >{{ formatDuration(candidate.durationSeconds) }} ·
+          {{ formatKm(candidate.distanceMeters) }}</span
+        >
+        <button nz-button type="button" [disabled]="busy()" (click)="link.emit(candidate.id)">
+          Associer
+        </button>
+      </li>
+    }
+  </ul>
+}

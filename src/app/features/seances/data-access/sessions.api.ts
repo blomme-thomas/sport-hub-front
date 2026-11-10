@@ -21,4 +21,19 @@ export class SessionsApi {
       body,
     );
   }
+
+  /** Associe une activité du même jour (remplace le lien précédent) ; la séance passe à réalisée. */
+  linkActivity(id: string, activityId: string): Observable<SessionApi> {
+    return this.http.put<SessionApi>(
+      `${this.baseUrl}/sessions/${encodeURIComponent(id)}/activity`,
+      {
+        activityId,
+      },
+    );
+  }
+
+  /** Dissocie l'activité liée ; le statut est conservé côté back. */
+  unlinkActivity(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/sessions/${encodeURIComponent(id)}/activity`);
+  }
 }

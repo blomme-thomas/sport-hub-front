@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input } from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { SessionActivityComponent } from '../components/session-activity.component';
 import { SessionModulesComponent } from '../components/session-modules.component';
+import { SessionObjectivesComponent } from '../components/session-objectives.component';
 import { SessionState } from '../data-access/session.state';
 import type { ModuleType, SessionStatus } from '../models/session.model';
 
@@ -17,7 +19,12 @@ const STATUS_LABELS: Record<SessionStatus, string> = {
  */
 @Component({
   selector: 'sh-session-page',
-  imports: [NzButtonComponent, SessionModulesComponent],
+  imports: [
+    NzButtonComponent,
+    SessionActivityComponent,
+    SessionModulesComponent,
+    SessionObjectivesComponent,
+  ],
   templateUrl: './session.page.html',
   styleUrl: './session.page.scss',
   providers: [SessionState],
@@ -59,6 +66,18 @@ export class SessionPage implements OnInit {
       this.state.moveUp(event.key);
     } else {
       this.state.moveDown(event.key);
+    }
+  }
+
+  protected async linkActivity(activityId: string): Promise<void> {
+    if (await this.state.linkActivity(activityId)) {
+      this.messages.success('Activité associée. La séance est marquée réalisée.');
+    }
+  }
+
+  protected async unlinkActivity(): Promise<void> {
+    if (await this.state.unlinkActivity()) {
+      this.messages.success('Activité dissociée.');
     }
   }
 

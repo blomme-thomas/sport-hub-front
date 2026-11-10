@@ -60,6 +60,21 @@ Sur la grille du calendrier (`/creneaux`), une séance planifiée porte un bouto
 
 Une séance réalisée n'a pas ce bouton : sa vignette porte la mention « Réalisée, déplacement impossible » et ne se glisse pas. Le back refuse aussi la modification d'une séance réalisée.
 
+## Objectifs et activité réalisée (story #62)
+
+**Création** : le formulaire de création (`/creneaux`) comporte une section « Objectifs ». La distance cible est facultative (en km). La répartition cible par zone de FC (Z1 à Z5, en %) est obligatoire et doit totaliser exactement 100 % ; le total est affiché sous les champs. Les erreurs ne s'affichent qu'après une tentative de création. Les valeurs partent dans `targetDistanceMeters` et `targetHrZonePercentages`.
+
+**Fiche** : la section « Objectifs » montre la distance cible et la répartition cible. Une fois une activité liée, elle ajoute les taux distance et durée, plafonnés à 100 % à l'affichage, et l'écart par zone en points, signé, avec la couleur de la zone.
+
+**Activité réalisée** : la section « Activité réalisée » liste les activités du même jour, de la même discipline (type Garmin égal à la clé de la séance), avec « Associer » pour chacune. Une activité liée affiche sa distance, sa durée, sa FC moyenne et son origine (rapprochée automatiquement ou associée manuellement), avec « Dissocier ». Associer passe la séance en réalisée (`PUT /api/sessions/:id/activity`).
+
+**Limites de cette story** :
+
+- **Dissocier ne repasse pas la séance en prévue** : le back conserve le statut « réalisée » (`DELETE /api/sessions/:id/activity`). Le critère initial demandait le retour en prévue ; à trancher côté back.
+- **Pas de rapprochement automatique depuis la fiche** : le bouton « Rapprocher automatiquement » pour la semaine affichée n'est pas livré.
+- **Pas de taux de distance sur le calendrier** : la liste des occurrences ne renvoie pas `achievement` ; le repère de réalisation sur la grille reste celui de la mention « Réalisée ».
+- **Jour et discipline** : le jour est lu en UTC, et la discipline de la séance est comparée au type Garmin de l'activité (même clé).
+
 ## Limites connues
 
 - **Pas de lien vers la fiche** : l'ouverture se fait par l'adresse `/seances/:id`.
@@ -70,4 +85,4 @@ Une séance réalisée n'a pas ce bouton : sa vignette porte la mention « Réal
 
 ## Hors scope
 
-Glisser-déposer sur le calendrier (story suivante), création de séance, journal des modifications (`changeLog`) affiché, suppression de séance, rapprochement avec une activité Garmin.
+Glisser-déposer sur le calendrier (story suivante), création de séance, journal des modifications (`changeLog`) affiché, suppression de séance, rapprochement automatique depuis la fiche (voir « Objectifs et activité réalisée »).
