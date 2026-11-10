@@ -1,0 +1,117 @@
+:host {
+  display: block;
+  /* Hauteur selon le contenu, sans suivre la carte voisine de la rangée. */
+  align-self: start;
+}
+
+.zones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-3);
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+}
+
+.zones__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+
+  sh-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.zones__ring {
+  --zones-optimal: 0%;
+
+  position: relative;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  background: conic-gradient(var(--sh-success) var(--zones-optimal), var(--sh-border) 0);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0.6rem;
+    border-radius: 50%;
+    background: var(--sh-surface);
+  }
+
+  strong,
+  span {
+    position: relative;
+  }
+
+  strong {
+    font-size: 1.25rem;
+    color: var(--sh-text);
+  }
+
+  span {
+    color: var(--sh-text-muted);
+    font-size: 0.75rem;
+  }
+}
+
+.zones__bar {
+  display: flex;
+  height: 0.75rem;
+  overflow: hidden;
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-border);
+}
+
+.zones__segment {
+  display: block;
+  height: 100%;
+}
+
+.zones__legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--sh-space-2);
+  }
+}
+
+.zones__swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.zones__label {
+  color: var(--sh-text);
+}
+
+.zones__percent {
+  color: var(--sh-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.zones__status {
+  margin: 0;
+  color: var(--sh-text-muted);
+}

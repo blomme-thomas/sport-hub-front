@@ -92,6 +92,9 @@
           @if (kpis.sportSplit(); as split) {
             <sh-sport-split-card [split]="split" />
           }
+          @if (kpis.zones(); as zones) {
+            <sh-zones-card [view]="zones" />
+          }
         </div>
       }
     }

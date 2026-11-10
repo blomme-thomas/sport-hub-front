@@ -22,6 +22,8 @@ export interface DashboardKpisResponseApi {
   averageHeartRate: number | null;
   /** Ventilation par type sur la période choisie, pour la carte Répartition par sport. */
   bySport: DashboardSportApi[];
+  /** Temps passé dans les zones cardiaques 1 à 5 ; `null` pour une zone sans donnée (carte Zones). */
+  hrTimeInZone: (number | null)[];
   daily: {
     date: string;
     count: number;

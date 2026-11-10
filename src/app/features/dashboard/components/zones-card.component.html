@@ -1,0 +1,45 @@
+<section class="zones" aria-labelledby="zones-heading">
+  <h2 id="zones-heading" class="zones__heading">
+    <sh-icon name="heart" color="var(--sh-danger)" />
+    <span>Zones d’entraînement</span>
+  </h2>
+
+  @if (view().zones.length === 0) {
+    <p class="zones__status">Aucune donnée de zone cardiaque sur cette période</p>
+  } @else {
+    <div
+      class="zones__ring"
+      [style.--zones-optimal]="view().optimalPercent + '%'"
+      aria-hidden="true"
+    >
+      <strong>{{ view().optimalPercent }} %</strong>
+      <span>Zone optimale</span>
+    </div>
+
+    <div class="zones__bar" aria-hidden="true">
+      @for (zone of view().zones; track zone.label) {
+        <span
+          class="zones__segment"
+          [style.width]="zone.percent + '%'"
+          [style.background]="'var(' + zone.colorVariable + ')'"
+        ></span>
+      }
+    </div>
+
+    <ul class="zones__legend" aria-label="Légende des zones cardiaques">
+      @for (zone of view().zones; track zone.label) {
+        <li>
+          <span
+            class="zones__swatch"
+            [style.background]="'var(' + zone.colorVariable + ')'"
+            aria-hidden="true"
+          ></span>
+          <span class="zones__label">{{ zone.label }}</span>
+          <strong class="zones__percent">{{ zone.percent }} %</strong>
+        </li>
+      }
+    </ul>
+
+    <p class="zones__status" role="status">{{ view().statusMessage }}</p>
+  }
+</section>

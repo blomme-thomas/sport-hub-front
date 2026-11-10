@@ -21,6 +21,7 @@ import { KpiCardComponent } from '../components/kpi-card.component';
 import { PerformanceCardComponent } from '../components/performance-card.component';
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card.component';
 import { SportSplitCardComponent } from '../components/sport-split-card.component';
+import { ZonesCardComponent } from '../components/zones-card.component';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card.component';
 import { WeekMiniCalendarComponent } from '../components/week-mini-calendar.component';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
@@ -52,6 +53,7 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     PerformanceCardComponent,
     RecentActivitiesCardComponent,
     SportSplitCardComponent,
+    ZonesCardComponent,
     WeekMiniCalendarComponent,
     WeeklyReviewCardComponent,
   ],

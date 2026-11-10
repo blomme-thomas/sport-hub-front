@@ -12,6 +12,7 @@ export const dashboardKpisResponse: DashboardKpisResponseApi = {
     elevationGainMeters: 435,
   },
   averageHeartRate: 142,
+  hrTimeInZone: [900, 2700, 2100, 600, null],
   bySport: [
     { type: 'running', family: 'running', count: 3, durationSeconds: 7500 },
     { type: 'cycling', family: 'cycling', count: 1, durationSeconds: 3600 },
