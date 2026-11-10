@@ -10,6 +10,8 @@ import { keepLast } from './hold-last';
 import type { DashboardPeriod } from '../models/training-stats.model';
 import { toDashboardKpis, toSportSplitView } from './dashboard-kpis.mapper';
 import type { SportSplitView } from '../models/sport-split.model';
+import type { ZonesCardView } from '../models/zones-card.model';
+import { toZonesCardView } from './zones-card.mapper';
 
 /**
  * État du bandeau d'indicateurs. Sa période suit la temporalité choisie en haut à droite.
@@ -42,6 +44,12 @@ export class DashboardKpisState {
   readonly sportSplit: Signal<SportSplitView | undefined> = keepLast(
     () => (this.response.hasValue() ? this.response.value() : undefined),
     toSportSplitView,
+  );
+
+  /** Vue de la carte Zones d'entraînement, dérivée de `hrTimeInZone` ; gardée pendant un rechargement. */
+  readonly zones: Signal<ZonesCardView | undefined> = keepLast(
+    () => (this.response.hasValue() ? this.response.value() : undefined),
+    (api) => toZonesCardView(api.hrTimeInZone),
   );
 
   readonly isLoading = computed(() => this.response.isLoading());
