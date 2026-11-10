@@ -1,0 +1,83 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  /* Même hauteur que les autres cartes de la rangée (étirées par la grille). */
+  height: 100%;
+}
+
+.completion {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sh-space-3);
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+}
+
+.completion__heading {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+
+  sh-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.completion__ring {
+  --completion-value: 0%;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 9rem;
+  height: 9rem;
+  margin: var(--sh-space-2) 0;
+  border-radius: 50%;
+  background: conic-gradient(var(--sh-accent-text) var(--completion-value), var(--sh-border) 0);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0.6rem;
+    border-radius: 50%;
+    background: var(--sh-surface);
+  }
+
+  strong,
+  span {
+    position: relative;
+  }
+
+  strong {
+    font-size: 1.5rem;
+    color: var(--sh-text);
+  }
+
+  span {
+    color: var(--sh-text-muted);
+    font-size: 0.8rem;
+  }
+}
+
+.completion__detail,
+.completion__status {
+  margin: 0;
+  color: var(--sh-text-muted);
+  text-align: center;
+}
+
+.completion__detail {
+  color: var(--sh-text);
+}

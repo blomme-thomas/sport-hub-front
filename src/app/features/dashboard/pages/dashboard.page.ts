@@ -19,6 +19,8 @@ import { PerformanceCardComponent } from '../components/performance-card.compone
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card.component';
 import { SportSplitCardComponent } from '../components/sport-split-card.component';
 import { ZonesCardComponent } from '../components/zones-card.component';
+import { CompletionCardComponent } from '../components/completion-card.component';
+import { CompletionState } from '../data-access/completion.state';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card.component';
 import { WeekMiniCalendarComponent } from '../components/week-mini-calendar.component';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
@@ -50,6 +52,7 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     RecentActivitiesCardComponent,
     SportSplitCardComponent,
     ZonesCardComponent,
+    CompletionCardComponent,
     WeekMiniCalendarComponent,
     WeeklyReviewCardComponent,
   ],
@@ -65,6 +68,7 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     HeartRateZonesState,
     WeekMiniCalendarState,
     ProfileState,
+    CompletionState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -76,6 +80,7 @@ export class DashboardPage {
   protected readonly nextEvent = inject(NextEventState);
   protected readonly recent = inject(RecentActivitiesState);
   protected readonly profile = inject(ProfileState);
+  protected readonly completion = inject(CompletionState);
 
   /** Message d'accueil : « Bonjour {prénom} », ou « Bonjour » seul si le prénom est inconnu. */
   protected readonly greeting = computed(() => {

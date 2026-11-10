@@ -89,6 +89,7 @@
           @if (kpis.zones(); as zones) {
             <sh-zones-card [view]="zones" />
           }
+          <sh-completion-card [view]="completion.view()" [loading]="completion.isLoading()" />
         </div>
       }
     }

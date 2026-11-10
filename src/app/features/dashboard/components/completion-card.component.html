@@ -1,0 +1,28 @@
+<section class="completion" aria-labelledby="completion-heading">
+  <h2 id="completion-heading" class="completion__heading">
+    <sh-icon name="flag" color="var(--sh-accent-text)" />
+    <span>Objectif</span>
+  </h2>
+
+  @if (view(); as view) {
+    @if (view.percent === null) {
+      <p class="completion__status">Aucune séance passée sur cette période</p>
+    } @else {
+      <div
+        class="completion__ring"
+        [style.--completion-value]="view.percent + '%'"
+        aria-hidden="true"
+      >
+        <strong>{{ view.percent }} %</strong>
+        <span>Réalisé</span>
+      </div>
+      <p class="completion__detail">
+        {{ view.realised }} sur {{ view.expected }} séances réalisées
+      </p>
+    }
+  } @else if (loading()) {
+    <p class="completion__status" aria-busy="true">Chargement…</p>
+  } @else {
+    <p class="completion__status">Séances indisponibles pour le moment</p>
+  }
+</section>
