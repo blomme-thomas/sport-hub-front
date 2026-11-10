@@ -3,7 +3,6 @@ import type {
   PeriodStatsApi,
   TrainingStatsResponseApi,
 } from '../models/training-stats.api-model';
-import { toSportSplit } from './sport-split.mapper';
 import type {
   ChartModel,
   ChartSeries,
@@ -58,7 +57,6 @@ export function toDashboardView(api: TrainingStatsResponseApi): Omit<DashboardVi
       duration: durationChart(granularity, periods),
       byType: byTypeChart(current),
     },
-    sportSplit: toSportSplit(current?.byType ?? [], formatHours),
   };
 }
 
@@ -161,7 +159,8 @@ function formatSessions(count: number): string {
   return `${NUMBER_FORMAT.format(count)} ${count === 1 ? 'séance' : 'séances'}`;
 }
 
-function formatHours(durationSeconds: number): string {
+/** Durée en heures à une décimale près, « 6,7 h » : utilisée aussi par la carte Répartition par sport. */
+export function formatHours(durationSeconds: number): string {
   return `${NUMBER_FORMAT.format(durationSeconds / SECONDS_PER_HOUR)} h`;
 }
 

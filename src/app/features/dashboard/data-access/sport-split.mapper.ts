@@ -1,5 +1,10 @@
-import type { TypeVolumeApi } from '../models/training-stats.api-model';
 import type { SportFamily, SportShare, SportSplitView } from '../models/sport-split.model';
+
+/** Durée d'une famille de sport, telle que la fournit `bySport` de `GET /api/stats/dashboard`. */
+export interface SportDurationInput {
+  readonly family: SportFamily;
+  readonly durationSeconds: number;
+}
 
 const FAMILY_ORDER: readonly SportFamily[] = ['running', 'cycling', 'swimming', 'other'];
 
@@ -18,16 +23,16 @@ const FAMILY_COLORS: Record<SportFamily, string> = {
 };
 
 /**
- * Répartition par famille de sport, à partir des durées par type de la période.
+ * Répartition par famille de sport, à partir des durées par type de la période (`bySport` du back).
  * Les pourcentages sont entiers et totalisent 100 (méthode des plus grands restes). Une famille sans durée
  * n'apparaît pas. `formatTotal` formate la durée totale affichée au centre du donut.
  */
 export function toSportSplit(
-  byType: readonly TypeVolumeApi[],
+  bySport: readonly SportDurationInput[],
   formatTotal: (seconds: number) => string,
 ): SportSplitView {
   const seconds = new Map<SportFamily, number>();
-  for (const item of byType) {
+  for (const item of bySport) {
     seconds.set(item.family, (seconds.get(item.family) ?? 0) + item.durationSeconds);
   }
   const present = FAMILY_ORDER.filter((family) => (seconds.get(family) ?? 0) > 0);

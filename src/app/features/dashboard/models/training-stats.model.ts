@@ -39,8 +39,6 @@ export interface PeriodSummaryView {
   durationLabel: string;
 }
 
-import type { SportSplitView } from './sport-split.model';
-
 export interface DashboardView {
   period: DashboardPeriod;
   currentPeriod: PeriodSummaryView;
@@ -49,6 +47,4 @@ export interface DashboardView {
     duration: VariationView;
   };
   charts: Record<ChartKey, ChartModel>;
-  /** Répartition par sport de la dernière période (carte Répartition par sport). */
-  sportSplit: SportSplitView;
 }

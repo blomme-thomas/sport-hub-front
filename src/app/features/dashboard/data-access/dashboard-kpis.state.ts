@@ -8,7 +8,8 @@ import { DashboardKpisApi } from './dashboard-kpis.api';
 import { DashboardState } from './dashboard.state';
 import { keepLast } from './hold-last';
 import type { DashboardPeriod } from '../models/training-stats.model';
-import { toDashboardKpis } from './dashboard-kpis.mapper';
+import { toDashboardKpis, toSportSplitView } from './dashboard-kpis.mapper';
+import type { SportSplitView } from '../models/sport-split.model';
 
 /**
  * État du bandeau d'indicateurs. Sa période suit la temporalité choisie en haut à droite.
@@ -35,6 +36,12 @@ export class DashboardKpisState {
   readonly kpis: Signal<DashboardKpi[] | undefined> = keepLast(
     () => (this.response.hasValue() ? this.response.value() : undefined),
     toDashboardKpis,
+  );
+
+  /** Répartition par sport de la période choisie ; gardée pendant un rechargement, comme `kpis`. */
+  readonly sportSplit: Signal<SportSplitView | undefined> = keepLast(
+    () => (this.response.hasValue() ? this.response.value() : undefined),
+    toSportSplitView,
   );
 
   readonly isLoading = computed(() => this.response.isLoading());
