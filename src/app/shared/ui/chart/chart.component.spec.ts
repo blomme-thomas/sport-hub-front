@@ -1,4 +1,4 @@
-import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { render, screen } from '@testing-library/angular';
 import type { ChartData, ChartOptions, ChartType } from 'chart.js';
 import {
@@ -119,13 +119,25 @@ function setInputs(fixture: ComponentFixture<ChartComponent>, overrides: Overrid
   fixture.detectChanges();
 }
 
+/**
+ * Rendu du composant en attendant la stabilisation : l'effet qui crée l'instance Chart.js est appliqué pendant
+ * la détection de changements, qui peut tarder sur un runner chargé. Sans cette attente, la lecture immédiate
+ * de `chartJs.instances` était intermittente.
+ */
+async function renderChart(options: { inputs?: Record<string, unknown> }) {
+  const result = await render(ChartComponent, options);
+  await result.fixture.whenStable();
+  TestBed.tick();
+  return result;
+}
+
 describe('ChartComponent', () => {
   beforeEach(() => {
     chartJs.instances.length = 0;
   });
 
   it('crée une instance Chart.js sur le canvas avec le type et les données', async () => {
-    await render(ChartComponent, { inputs: inputs() });
+    await renderChart({ inputs: inputs() });
 
     expect(chartJs.instances).toHaveLength(1);
     const [chart] = chartJs.instances;
@@ -135,7 +147,7 @@ describe('ChartComponent', () => {
   });
 
   it('applique les options responsive par défaut', async () => {
-    await render(ChartComponent, { inputs: inputs() });
+    await renderChart({ inputs: inputs() });
 
     expect(chartJs.instances[0].config.options).toEqual({
       responsive: true,
@@ -144,7 +156,7 @@ describe('ChartComponent', () => {
   });
 
   it('laisse les options du consommateur surcharger les valeurs par défaut', async () => {
-    await render(ChartComponent, {
+    await renderChart({
       inputs: inputs({
         options: { maintainAspectRatio: true, plugins: { legend: { display: false } } },
       }),
@@ -158,7 +170,7 @@ describe('ChartComponent', () => {
   });
 
   it('ne crée qu une seule instance au rendu initial', async () => {
-    const { detectChanges } = await render(ChartComponent, { inputs: inputs() });
+    const { detectChanges } = await renderChart({ inputs: inputs() });
 
     detectChanges();
 
@@ -166,7 +178,7 @@ describe('ChartComponent', () => {
   });
 
   it('met à jour le graphique existant quand les données changent', async () => {
-    const { fixture } = await render(ChartComponent, { inputs: inputs() });
+    const { fixture } = await renderChart({ inputs: inputs() });
     const [chart] = chartJs.instances;
 
     setInputs(fixture, { data: otherChartData });
@@ -177,7 +189,7 @@ describe('ChartComponent', () => {
   });
 
   it('met à jour les options fusionnées sans recréer le graphique', async () => {
-    const { fixture } = await render(ChartComponent, { inputs: inputs() });
+    const { fixture } = await renderChart({ inputs: inputs() });
     const [chart] = chartJs.instances;
 
     setInputs(fixture, { options: { plugins: { legend: { display: false } } } });
@@ -198,7 +210,7 @@ describe('ChartComponent', () => {
       datasets: [{ label: 'Charge', data: values }],
     };
 
-    await render(ChartComponent, { inputs: inputs({ data: source }) });
+    await renderChart({ inputs: inputs({ data: source }) });
     values.push(99);
 
     expect(chartJs.instances[0].config.data.datasets[0]).toEqual({
@@ -213,7 +225,7 @@ describe('ChartComponent', () => {
       datasets: [{ label: 'Charge', data: [40], backgroundColor: () => 'transparent' }],
     };
 
-    await render(ChartComponent, { inputs: inputs({ data: scripted }) });
+    await renderChart({ inputs: inputs({ data: scripted }) });
 
     expect(chartJs.instances).toHaveLength(1);
     expect(chartJs.instances[0].config.data.datasets[0]).toMatchObject({
@@ -222,7 +234,7 @@ describe('ChartComponent', () => {
   });
 
   it('détruit puis recrée le graphique quand le type change', async () => {
-    const { fixture } = await render(ChartComponent, { inputs: inputs() });
+    const { fixture } = await renderChart({ inputs: inputs() });
     const [previous] = chartJs.instances;
 
     setInputs(fixture, { type: 'line' });
@@ -233,7 +245,7 @@ describe('ChartComponent', () => {
   });
 
   it('détruit l instance Chart.js quand le composant est détruit', async () => {
-    const { fixture } = await render(ChartComponent, { inputs: inputs() });
+    const { fixture } = await renderChart({ inputs: inputs() });
     const [chart] = chartJs.instances;
 
     fixture.destroy();
@@ -242,33 +254,33 @@ describe('ChartComponent', () => {
   });
 
   it('donne au canvas le nom accessible passé en entrée', async () => {
-    await render(ChartComponent, { inputs: inputs() });
+    await renderChart({ inputs: inputs() });
 
     expect(screen.getByRole('img', { name: LABEL })).toBeInTheDocument();
   });
 
   it('affiche le message d état vide à la place du graphique sans jeu de données', async () => {
-    await render(ChartComponent, { inputs: inputs({ data: emptyChartData }) });
+    await renderChart({ inputs: inputs({ data: emptyChartData }) });
 
     expect(await screen.findByRole('status')).toHaveTextContent('Aucune donnée à afficher');
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 
   it('considère vide un jeu de données dont toutes les valeurs sont nulles', async () => {
-    await render(ChartComponent, { inputs: inputs({ data: nullChartData }) });
+    await renderChart({ inputs: inputs({ data: nullChartData }) });
 
     expect(await screen.findByRole('status')).toHaveTextContent('Aucune donnée à afficher');
     expect(chartJs.instances).toHaveLength(0);
   });
 
   it('ne crée aucune instance Chart.js sans donnée', async () => {
-    await render(ChartComponent, { inputs: inputs({ data: emptyChartData }) });
+    await renderChart({ inputs: inputs({ data: emptyChartData }) });
 
     expect(chartJs.instances).toHaveLength(0);
   });
 
   it('crée le graphique quand des données arrivent après un état vide', async () => {
-    const { fixture } = await render(ChartComponent, { inputs: inputs({ data: emptyChartData }) });
+    const { fixture } = await renderChart({ inputs: inputs({ data: emptyChartData }) });
 
     setInputs(fixture, { data: chartData });
 
@@ -278,7 +290,7 @@ describe('ChartComponent', () => {
   });
 
   it('détruit le graphique quand les données deviennent vides', async () => {
-    const { fixture } = await render(ChartComponent, { inputs: inputs() });
+    const { fixture } = await renderChart({ inputs: inputs() });
     const [chart] = chartJs.instances;
 
     setInputs(fixture, { data: emptyChartData });
