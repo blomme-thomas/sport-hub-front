@@ -8,13 +8,10 @@ import {
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { ChartCardComponent } from '../components/chart-card.component';
-import { CHART_KIND } from '../components/chart-config';
 import {
   ActivityDetailModalComponent,
   type ActivityDetailModalData,
 } from '../components/activity-detail-modal.component';
-import { ChartModalComponent, type ChartModalData } from '../components/chart-modal.component';
 import { PeriodSelectorComponent } from '../components/period-selector.component';
 import { NextEventCardComponent } from '../components/next-event-card.component';
 import { KpiCardComponent } from '../components/kpi-card.component';
@@ -33,7 +30,7 @@ import { PerformanceState } from '../data-access/performance.state';
 import { WeeklyReviewState } from '../data-access/weekly-review.state';
 import { RecentActivitiesState } from '../data-access/recent-activities.state';
 import { WeekMiniCalendarState } from '../data-access/week-mini-calendar.state';
-import type { ChartKey, DashboardPeriod } from '../models/training-stats.model';
+import type { DashboardPeriod } from '../models/training-stats.model';
 
 /** Libellé de la période dans le message d'état lu par les lecteurs d'écran. */
 const PERIOD_WORDS: Record<DashboardPeriod, string> = {
@@ -46,7 +43,6 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
   selector: 'sh-dashboard-page',
   imports: [
     NzButtonComponent,
-    ChartCardComponent,
     PeriodSelectorComponent,
     KpiCardComponent,
     NextEventCardComponent,
@@ -79,7 +75,6 @@ export class DashboardPage {
   protected readonly kpis = inject(DashboardKpisState);
   protected readonly nextEvent = inject(NextEventState);
   protected readonly recent = inject(RecentActivitiesState);
-  protected readonly chartKinds = CHART_KIND;
   protected readonly profile = inject(ProfileState);
 
   /** Message d'accueil : « Bonjour {prénom} », ou « Bonjour » seul si le prénom est inconnu. */
@@ -118,17 +113,5 @@ export class DashboardPage {
   /** Ouvre la fiche d'une séance depuis le mini-calendrier (lecture seule ailleurs). */
   protected openSession(id: string): void {
     void this.router.navigate(['/seances', id]);
-  }
-
-  protected openChart(chart: ChartKey): void {
-    const title = this.state.view()?.charts[chart].title ?? '';
-    const ref = this.modal.create({
-      nzTitle: title,
-      nzContent: ChartModalComponent,
-      nzData: { chart } satisfies ChartModalData,
-      nzViewContainerRef: this.viewContainer,
-      nzKeyboard: true,
-      nzFooter: [{ label: 'Fermer', onClick: () => ref.close() }],
-    });
   }
 }

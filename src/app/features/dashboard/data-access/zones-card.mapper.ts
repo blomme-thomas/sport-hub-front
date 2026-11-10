@@ -14,6 +14,9 @@ export const REBALANCE_MESSAGE = 'Zone optimale à renforcer';
 
 const ZONE_LABELS = ['Z1', 'Z2', 'Z3', 'Z4', 'Z5'] as const;
 
+/** Noms des zones, repris de la maquette (voir `heart-rate-chart.config.ts`). */
+const ZONE_NAMES = ['Récupération', 'Endurance', 'Tempo', 'Seuil', 'Puissance'] as const;
+
 const ZONE_COLORS = [
   '--sh-text-muted',
   '--sh-success',
@@ -33,11 +36,13 @@ export function toZonesCardView(hrTimeInZone: readonly (number | null)[]): Zones
     return { zones: [], optimalPercent: null, statusMessage: null };
   }
 
+  // Ordre d'affichage Z5 → Z1 (barre et légende), demandé à la relecture de la maquette.
   const zones: ZoneShareView[] = ZONE_LABELS.map((label, index) => ({
     label,
+    name: ZONE_NAMES[index] ?? '',
     percent: Math.round(((seconds[index] ?? 0) / total) * 100),
     colorVariable: ZONE_COLORS[index] ?? '--sh-text-muted',
-  }));
+  })).reverse();
 
   const optimalExact = OPTIMAL_ZONE_INDEXES.reduce(
     (sum, index) => sum + ((seconds[index] ?? 0) / total) * 100,

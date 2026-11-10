@@ -7,15 +7,15 @@ import {
 } from './zones-card.mapper';
 
 describe('toZonesCardView', () => {
-  it('calcule le pourcentage de chaque zone et l’associe à sa couleur', () => {
+  it('calcule le pourcentage de chaque zone et l’associe à sa couleur, de Z5 à Z1', () => {
     const view = toZonesCardView([100, 300, 400, 150, 50]);
 
     expect(view.zones.map((zone) => [zone.label, zone.percent, zone.colorVariable])).toEqual([
-      ['Z1', 10, '--sh-text-muted'],
-      ['Z2', 30, '--sh-success'],
-      ['Z3', 40, '--sh-orange'],
-      ['Z4', 15, '--sh-danger'],
       ['Z5', 5, '--sh-violet'],
+      ['Z4', 15, '--sh-danger'],
+      ['Z3', 40, '--sh-orange'],
+      ['Z2', 30, '--sh-success'],
+      ['Z1', 10, '--sh-text-muted'],
     ]);
   });
 
@@ -42,7 +42,7 @@ describe('toZonesCardView', () => {
   it('traite une zone null comme absente, sans l’afficher comme une valeur', () => {
     const view = toZonesCardView([null, 200, 200, null, null]);
 
-    expect(view.zones.map((zone) => zone.percent)).toEqual([0, 50, 50, 0, 0]);
+    expect(view.zones.map((zone) => zone.percent)).toEqual([0, 0, 50, 50, 0]);
   });
 
   it('renvoie une vue vide sans donnée, sans valeur fictive', () => {

@@ -2,6 +2,8 @@
 export interface ZoneShareView {
   /** Libellé court, « Z1 » à « Z5 ». */
   label: string;
+  /** Nom de la zone (Récupération, Endurance, Tempo, Seuil, Puissance). */
+  name: string;
   /** Pourcentage entier du temps passé dans la zone sur la période. */
   percent: number;
   /** Token de couleur de la zone : Z1 gris, Z2 vert, Z3 orange, Z4 rouge, Z5 violet. */

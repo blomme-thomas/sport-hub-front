@@ -9,8 +9,6 @@ import { DashboardPage } from '../../pages/dashboard.page';
 const STATS_URL = /\/api\/stats(\?.*)?$/;
 const KPIS_URL = /\/api\/stats\/dashboard(\?.*)?$/;
 const API_URL = /\/api\//;
-const SESSIONS_WEEK_TITLE = 'Séances par semaine';
-const SESSIONS_MONTH_TITLE = 'Séances par mois';
 
 test.describe('Tableau de bord', () => {
   let statsRequests: string[];
@@ -53,7 +51,9 @@ test.describe('Tableau de bord', () => {
   test('choisir 3 mois recharge les statistiques par mois', async ({ page }) => {
     const dashboard = new DashboardPage(page);
     await dashboard.goto();
-    await expect(dashboard.card(SESSIONS_WEEK_TITLE)).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Répartition par sport', exact: true }),
+    ).toBeVisible();
 
     const monthRequest = page.waitForRequest((request) =>
       request.url().includes('granularity=month'),
@@ -62,51 +62,8 @@ test.describe('Tableau de bord', () => {
     await monthRequest;
 
     await expect(dashboard.monthToggle).toHaveAttribute('aria-pressed', 'true');
-    await expect(dashboard.card(SESSIONS_MONTH_TITLE)).toBeVisible();
+    await expect(page.getByLabel('Séances du mois')).toBeVisible();
     // Les indicateurs suivent la temporalité : la vue mois les demande sur 30 jours.
     await expect.poll(() => kpiPeriods.at(-1)).toBe('3m');
-  });
-
-  test('ouvre le graphique agrandi sans nouvel appel au back', async ({ page }) => {
-    const dashboard = new DashboardPage(page);
-    await dashboard.goto();
-    await expect(dashboard.figure('Séances')).toContainText('Séances 5');
-    expect(statsRequests).toHaveLength(1);
-
-    await dashboard.openChart(SESSIONS_WEEK_TITLE);
-
-    await expect(dashboard.dialog(SESSIONS_WEEK_TITLE)).toBeVisible();
-    await expect(
-      dashboard.dialog(SESSIONS_WEEK_TITLE).getByRole('img', { name: SESSIONS_WEEK_TITLE }),
-    ).toBeVisible();
-    expect(statsRequests).toHaveLength(1);
-  });
-
-  test('ferme la modale avec la touche Échap et restitue le focus à la carte', async ({ page }) => {
-    const dashboard = new DashboardPage(page);
-    await dashboard.goto();
-    await expect(dashboard.figure('Séances')).toContainText('Séances 5');
-    await dashboard.openChart(SESSIONS_WEEK_TITLE);
-    await expect(dashboard.dialog(SESSIONS_WEEK_TITLE)).toBeVisible();
-
-    await dashboard.closeWithEscape();
-
-    await expect(dashboard.dialog(SESSIONS_WEEK_TITLE)).toBeHidden();
-    await expect(dashboard.expandButton(SESSIONS_WEEK_TITLE)).toBeFocused();
-  });
-
-  test('ferme la modale avec le bouton Fermer et restitue le focus à la carte', async ({
-    page,
-  }) => {
-    const dashboard = new DashboardPage(page);
-    await dashboard.goto();
-    await expect(dashboard.figure('Séances')).toContainText('Séances 5');
-    await dashboard.openChart(SESSIONS_WEEK_TITLE);
-    await expect(dashboard.dialog(SESSIONS_WEEK_TITLE)).toBeVisible();
-
-    await dashboard.closeWithButton(SESSIONS_WEEK_TITLE);
-
-    await expect(dashboard.dialog(SESSIONS_WEEK_TITLE)).toBeHidden();
-    await expect(dashboard.expandButton(SESSIONS_WEEK_TITLE)).toBeFocused();
   });
 });

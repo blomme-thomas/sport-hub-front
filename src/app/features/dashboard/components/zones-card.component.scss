@@ -1,10 +1,12 @@
 :host {
-  display: block;
-  /* Hauteur selon le contenu, sans suivre la carte voisine de la rangée. */
-  align-self: start;
+  display: flex;
+  flex-direction: column;
+  /* Même hauteur que les autres cartes de la rangée (étirées par la grille). */
+  height: 100%;
 }
 
 .zones {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--sh-space-3);
@@ -67,6 +69,19 @@
   }
 }
 
+/* Cercle et légende côte à côte, sous la barre ; la légende passe dessous sur étroit. */
+.zones__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sh-space-4);
+}
+
+.zones__name {
+  color: var(--sh-text-muted);
+}
+
 .zones__bar {
   display: flex;
   height: 0.75rem;
@@ -81,6 +96,10 @@
 }
 
 .zones__legend {
+  /* Largeur du contenu (et non de la rangée) : le couple cercle + légende reste centré. */
+  flex: 0 1 auto;
+  width: max-content;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--sh-space-2);
@@ -90,7 +109,7 @@
 
   li {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto auto 1fr auto;
     align-items: center;
     gap: var(--sh-space-2);
   }
