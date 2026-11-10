@@ -27,8 +27,16 @@
 }
 
 .week-mini__title {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
   margin: 0;
   font-size: 1.125rem;
+
+  sh-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
 }
 
 .week-mini__nav {

@@ -1,6 +1,9 @@
 <section class="week-mini" aria-labelledby="week-mini-title">
   <header class="week-mini__header">
-    <h2 id="week-mini-title" class="week-mini__title">{{ title() }}</h2>
+    <h2 id="week-mini-title" class="week-mini__title">
+      <sh-icon name="calendar" color="var(--sh-success)" />
+      <span>{{ title() }}</span>
+    </h2>
     <div class="week-mini__nav" role="group" aria-label="Choisir la période">
       <button
         nz-button

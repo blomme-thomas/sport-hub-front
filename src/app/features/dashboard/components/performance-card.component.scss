@@ -1,11 +1,13 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
-  /* Hauteur selon le contenu (en-tête + graphique), sans suivre la plus haute carte de la rangée. */
-  align-self: start;
+  /* Même hauteur que les autres cartes de la rangée (étirées par la grille). */
+  height: 100%;
 }
 
 .perf {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--sh-space-3);

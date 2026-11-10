@@ -8,7 +8,6 @@ import {
   normalStatsResponse,
 } from '../../../../mocks/fixtures/training-stats.fixtures';
 import { semiPastApi, volumeUndatedApi } from '../../../../mocks/fixtures/goals.fixtures';
-import { chartJsInstances } from '../../../../mocks/chart-js.fake';
 import {
   problemResponse as goalsProblemResponse,
   trackGoalsList,
@@ -21,13 +20,12 @@ import {
   trackStats,
 } from '../../../../mocks/training-stats.testing';
 import { ERROR_MESSAGES } from '../../../core/http/error-messages';
-import { toDashboardView } from '../data-access/training-stats.mapper';
 import { DashboardPage } from './dashboard.page';
 
 vi.mock('chart.js', async () => (await import('../../../../mocks/chart-js.fake')).chartJsModule);
 
-const view = toDashboardView(normalStatsResponse);
-const SESSIONS_TITLE = view.charts.sessions.title;
+/** Titre d'une carte rendue une fois les statistiques et les indicateurs reçus : signal de fin de chargement. */
+const LOADED_HEADING = 'Répartition par sport';
 
 function pageProviders() {
   return [...statsTestProviders(), provideRouter([])];
@@ -94,23 +92,20 @@ describe('DashboardPage', () => {
     ).toBeInTheDocument();
   });
 
-  it('affiche les graphiques d évolution et de répartition, chacun nommé par son titre', async () => {
+  it('affiche les cartes de la dernière ligne et n’affiche plus la carte Séances par semaine', async () => {
     trackStats();
 
     await render(DashboardPage, { providers: pageProviders() });
 
-    expect(await screen.findByRole('img', { name: SESSIONS_TITLE })).toBeInTheDocument();
-    expect(
-      await screen.findByRole('img', { name: 'Durée par jour sur la période' }),
-    ).toBeInTheDocument();
-    // Deux graphiques d'évolution nommés, le donut de répartition, plus les mini-courbes du bandeau.
-    expect(chartJsInstances).toHaveLength(6);
+    expect(await screen.findByRole('heading', { name: LOADED_HEADING })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Zones d’entraînement' })).toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: 'Séances par semaine' })).not.toBeInTheDocument();
   });
 
   it('relance la requête en granularité mois et marque la période 3 mois quand l utilisateur la choisit', async () => {
     const requests = trackStats();
     await render(DashboardPage, { providers: pageProviders() });
-    await screen.findByRole('img', { name: SESSIONS_TITLE });
+    await screen.findByRole('heading', { name: LOADED_HEADING });
 
     await userEvent.click(screen.getByRole('button', { name: '3 derniers mois' }));
 
@@ -148,7 +143,7 @@ describe('DashboardPage', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
 
-    expect(await screen.findByRole('img', { name: SESSIONS_TITLE })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: LOADED_HEADING })).toBeInTheDocument();
     expect(calls).toBe(2);
   });
 
@@ -198,7 +193,7 @@ describe('DashboardPage', () => {
         'href',
         '/goals',
       );
-      expect(await screen.findByRole('img', { name: SESSIONS_TITLE })).toBeInTheDocument();
+      expect(await screen.findByRole('heading', { name: LOADED_HEADING })).toBeInTheDocument();
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
 
@@ -209,7 +204,7 @@ describe('DashboardPage', () => {
       await render(DashboardPage, { providers: pageProviders() });
 
       expect(await screen.findByRole('alert')).toHaveTextContent(ERROR_MESSAGES['INTERNAL_ERROR']);
-      expect(await screen.findByRole('img', { name: SESSIONS_TITLE })).toBeInTheDocument();
+      expect(await screen.findByRole('heading', { name: LOADED_HEADING })).toBeInTheDocument();
     });
   });
 });

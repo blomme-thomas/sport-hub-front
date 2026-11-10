@@ -82,12 +82,6 @@
     @if (state.view(); as view) {
       @if (!state.isEmpty()) {
         <div class="dashboard__charts">
-          <sh-chart-card
-            [model]="view.charts.sessions"
-            [icon]="'calendar'"
-            [iconColor]="'var(--sh-success)'"
-            (expand)="openChart('sessions')"
-          />
           <sh-performance-card />
           @if (kpis.sportSplit(); as split) {
             <sh-sport-split-card [split]="split" />

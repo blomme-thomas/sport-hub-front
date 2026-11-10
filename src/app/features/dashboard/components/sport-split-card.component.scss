@@ -1,10 +1,12 @@
 :host {
-  display: block;
-  /* Hauteur selon le contenu, sans suivre la carte voisine de la rangée. */
-  align-self: start;
+  display: flex;
+  flex-direction: column;
+  /* Même hauteur que les autres cartes de la rangée (étirées par la grille). */
+  height: 100%;
 }
 
 .split {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--sh-space-3);

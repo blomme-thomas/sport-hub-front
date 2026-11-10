@@ -7,11 +7,11 @@ const VIEW: ZonesCardView = {
   optimalPercent: 70,
   statusMessage: 'Bon équilibre en zone optimale',
   zones: [
-    { label: 'Z1', percent: 10, colorVariable: '--sh-text-muted' },
-    { label: 'Z2', percent: 30, colorVariable: '--sh-success' },
-    { label: 'Z3', percent: 40, colorVariable: '--sh-orange' },
-    { label: 'Z4', percent: 15, colorVariable: '--sh-danger' },
-    { label: 'Z5', percent: 5, colorVariable: '--sh-violet' },
+    { label: 'Z5', name: 'Puissance', percent: 5, colorVariable: '--sh-violet' },
+    { label: 'Z4', name: 'Seuil', percent: 15, colorVariable: '--sh-danger' },
+    { label: 'Z3', name: 'Tempo', percent: 40, colorVariable: '--sh-orange' },
+    { label: 'Z2', name: 'Endurance', percent: 30, colorVariable: '--sh-success' },
+    { label: 'Z1', name: 'Récupération', percent: 10, colorVariable: '--sh-text-muted' },
   ],
 };
 
@@ -21,6 +21,7 @@ describe('ZonesCardComponent', () => {
 
     expect(screen.getByRole('list', { name: 'Légende des zones cardiaques' })).toBeInTheDocument();
     expect(screen.getByText('Z3')).toBeInTheDocument();
+    expect(screen.getByText('Tempo')).toBeInTheDocument();
     expect(screen.getByText('40 %')).toBeInTheDocument();
   });
 
