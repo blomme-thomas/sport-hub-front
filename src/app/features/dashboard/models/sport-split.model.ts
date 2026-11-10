@@ -11,7 +11,7 @@ export interface SportShare {
   colorVariable: string;
 }
 
-/** Répartition par sport de la dernière période. `shares` est vide si aucune durée n'est enregistrée. */
+/** Répartition par sport de la période choisie. `shares` est vide si aucune durée n'est enregistrée. */
 export interface SportSplitView {
   shares: SportShare[];
   totalLabel: string;

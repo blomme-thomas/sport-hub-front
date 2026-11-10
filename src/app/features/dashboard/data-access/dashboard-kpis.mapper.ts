@@ -1,6 +1,9 @@
 import type { DashboardKpisResponseApi } from '../models/dashboard-kpis.api-model';
 import type { DashboardKpi } from '../models/dashboard-kpi.model';
+import type { SportSplitView } from '../models/sport-split.model';
 import type { VariationDirection, VariationView } from '../models/training-stats.model';
+import { toSportSplit } from './sport-split.mapper';
+import { formatHours } from './training-stats.mapper';
 
 const ABSENT = '—';
 const SECONDS_PER_HOUR = 3600;
@@ -67,6 +70,11 @@ export function toDashboardKpis(api: DashboardKpisResponseApi): DashboardKpi[] {
       series: null,
     },
   ];
+}
+
+/** Répartition par sport de la période choisie, à partir de `bySport` (carte Répartition par sport). */
+export function toSportSplitView(api: DashboardKpisResponseApi): SportSplitView {
+  return toSportSplit(api.bySport, formatHours);
 }
 
 /** « 6h 42 », ou « 45 min » sous une heure. */

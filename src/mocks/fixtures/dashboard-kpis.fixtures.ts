@@ -12,6 +12,11 @@ export const dashboardKpisResponse: DashboardKpisResponseApi = {
     elevationGainMeters: 435,
   },
   averageHeartRate: 142,
+  bySport: [
+    { type: 'running', family: 'running', count: 3, durationSeconds: 7500 },
+    { type: 'cycling', family: 'cycling', count: 1, durationSeconds: 3600 },
+    { type: 'strength_training', family: 'other', count: 1, durationSeconds: 13020 },
+  ],
   daily: [
     { date: '2026-11-01', count: 0, durationSeconds: 0, calories: null },
     { date: '2026-11-02', count: 1, durationSeconds: 2700, calories: 600 },

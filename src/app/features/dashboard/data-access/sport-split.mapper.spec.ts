@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import type { TypeVolumeApi } from '../models/training-stats.api-model';
-import { toSportSplit } from './sport-split.mapper';
+import type { SportFamily } from '../models/sport-split.model';
+import { toSportSplit, type SportDurationInput } from './sport-split.mapper';
 
 const formatTotal = (seconds: number) => `${Math.round(seconds / 3600)} h`;
 
-function volume(family: TypeVolumeApi['family'], durationSeconds: number): TypeVolumeApi {
-  return { type: family, family, count: 1, durationSeconds, distanceMeters: 0 };
+function volume(family: SportFamily, durationSeconds: number): SportDurationInput {
+  return { family, durationSeconds };
 }
 
 describe('sport-split mapper', () => {

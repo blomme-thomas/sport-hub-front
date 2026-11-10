@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { dashboardKpisResponse } from '../../../../mocks/fixtures/dashboard-kpis.fixtures';
 import type { DashboardKpisResponseApi } from '../models/dashboard-kpis.api-model';
-import { formatHoursMinutes, toDashboardKpis } from './dashboard-kpis.mapper';
+import { formatHoursMinutes, toDashboardKpis, toSportSplitView } from './dashboard-kpis.mapper';
 
 // Espaces de séparation des milliers en fr-FR (espace fine insécable), écrits en échappement pour rester visibles.
 const THOUSANDS_SPACE = ' ';
@@ -14,6 +14,25 @@ describe('formatHoursMinutes', () => {
 
   it('affiche les minutes seules sous une heure', () => {
     expect(formatHoursMinutes(2700)).toBe('45 min');
+  });
+});
+
+describe('toSportSplitView', () => {
+  it('répartit la durée de bySport par famille, en pourcentages qui totalisent 100', () => {
+    const split = toSportSplitView(dashboardKpisResponse);
+
+    expect(split.shares.map((share) => [share.label, share.percent])).toEqual([
+      ['Course à pied', 31],
+      ['Cyclisme', 15],
+      ['Autres', 54],
+    ]);
+    expect(split.totalLabel).toBe('6,7 h');
+  });
+
+  it('renvoie une répartition vide quand la période n a aucune séance', () => {
+    const api: DashboardKpisResponseApi = { ...dashboardKpisResponse, bySport: [] };
+
+    expect(toSportSplitView(api)).toEqual({ shares: [], totalLabel: '0 h' });
   });
 });
 

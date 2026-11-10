@@ -89,7 +89,9 @@
             (expand)="openChart('sessions')"
           />
           <sh-performance-card />
-          <sh-sport-split-card [split]="view.sportSplit" />
+          @if (kpis.sportSplit(); as split) {
+            <sh-sport-split-card [split]="split" />
+          }
         </div>
       }
     }
