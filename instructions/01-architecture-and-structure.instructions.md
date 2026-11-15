@@ -28,7 +28,8 @@ core          →  shared
 ```
 features/<feature>/
   pages/          # composants routés (smart)
-  components/     # composants de présentation propres à la feature
+  components/     # composants de présentation : un sous-dossier par composant
+  config/         # helpers de présentation non composant (options de graphiques…)
   data-access/    # services API, stores, mappers
   models/         # modèles UI + types API (*.api.ts)
   <feature>.routes.ts

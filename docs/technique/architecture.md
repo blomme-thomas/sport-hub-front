@@ -17,7 +17,7 @@ src/app/
   core/       config (API_BASE_URL), http (intercepteur d'erreur, conversion Problem Details en AppError), layout
   shared/     ui (sh-chart), utils (css-var), pipes, directives, validators (seuls ui et utils sont livrés)
   features/<feature>/
-    pages/ components/ data-access/ models/ <feature>.routes.ts
+    pages/ components/<name>/ config/ data-access/ models/ <feature>.routes.ts
 ```
 
 Règles : une feature n'importe jamais une autre feature ; routes lazy ; pages (smart) vs composants de présentation (dumb).

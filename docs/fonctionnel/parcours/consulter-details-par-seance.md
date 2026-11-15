@@ -8,7 +8,7 @@ Voir d'un coup d'œil les dernières séances réalisées, avec leur fréquence 
 
 ## Point d'entrée
 
-- Carte « Détails par séance » sur le tableau de bord (`features/dashboard/components/recent-activities-card.component.ts`).
+- Carte « Détails par séance » sur le tableau de bord (`features/dashboard/components/recent-activities-card/recent-activities-card.component.ts`).
 
 ## Étapes
 

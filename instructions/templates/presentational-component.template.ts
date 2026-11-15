@@ -1,4 +1,4 @@
-// Squelette — à copier dans features/<feature>/components/<name>.component.ts puis adapter.
+// Squelette — à copier dans features/<feature>/components/<name>/<name>.component.ts puis adapter.
 // Exclu du build/lint/test (voir instructions/11, section "Templates de code").
 // Référence : instructions/02-components.instructions.md
 //
