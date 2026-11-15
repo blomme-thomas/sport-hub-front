@@ -190,3 +190,51 @@
     height: 0.75rem;
   }
 }
+
+/* Vue semaine : tableau avec les heures à gauche et un jour par colonne. */
+.week-mini__table-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.week-mini__table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.week-mini__head {
+  padding-bottom: var(--sh-space-1);
+  color: var(--sh-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.week-mini__hour {
+  width: 3rem;
+  padding-right: var(--sh-space-2);
+  color: var(--sh-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+.week-mini__slot {
+  min-height: 2.25rem;
+  padding: var(--sh-space-1) 2px;
+  border-top: 1px solid var(--sh-border);
+  vertical-align: top;
+
+  .week-mini__sessions {
+    justify-content: flex-start;
+  }
+}
+
+/* Colonne des heures : largeur fixe pour que les jours se partagent le reste du tableau. */
+.week-mini__corner {
+  width: 3rem;
+}

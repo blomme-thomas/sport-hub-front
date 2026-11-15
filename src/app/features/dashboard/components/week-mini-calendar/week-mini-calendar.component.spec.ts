@@ -27,6 +27,7 @@ function withRealized(list: WeekMiniDay[], date: string): WeekMiniDay[] {
             {
               id: 'act-run',
               label: 'Course à pied, 45 min',
+              startTime: '09:00',
               discipline: { icon: 'run', color: 'var(--sh-success)' },
             },
           ],
@@ -62,15 +63,13 @@ describe('WeekMiniCalendarComponent', () => {
       },
     });
 
-    const grid = screen.getByRole('list', { name: 'Séances de la semaine' });
-    const items = grid.querySelectorAll(':scope > li');
-    expect(items).toHaveLength(7);
-    expect(items[0]?.querySelector('button')?.getAttribute('aria-label')).toBe(
-      'Séance Vélo, 07:00. Ouvrir la séance',
-    );
-    expect(items[2]?.querySelector('button')?.getAttribute('aria-label')).toBe(
-      'Séance Course à pied, 18:00. Ouvrir la séance',
-    );
+    const veloButton = screen.getByRole('button', { name: 'Séance Vélo, 07:00. Ouvrir la séance' });
+    const courseButton = screen.getByRole('button', {
+      name: 'Séance Course à pied, 18:00. Ouvrir la séance',
+    });
+    // Colonnes : 0 = heure, puis lundi (1) … dimanche (7). Le vélo est lundi, la course mercredi.
+    expect((veloButton.closest('td') as HTMLTableCellElement).cellIndex).toBe(1);
+    expect((courseButton.closest('td') as HTMLTableCellElement).cellIndex).toBe(3);
   });
 
   it('émet l’identifiant de la séance au clic', async () => {

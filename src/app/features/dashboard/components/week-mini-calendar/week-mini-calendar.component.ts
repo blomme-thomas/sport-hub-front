@@ -1,25 +1,51 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { disciplineStyleOf, type DisciplineStyle } from '@shared/ui/discipline/discipline-style';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { AppError } from '../../../../core/http/app-error';
 import type { MiniCalendarView, WeekMiniDay } from '../../data-access/week-mini-calendar.state';
-import type { WeekMiniLegendEntry, WeekMiniSession } from '../../models/week-mini-calendar.model';
+import type {
+  WeekMiniActivity,
+  WeekMiniLegendEntry,
+  WeekMiniSession,
+} from '../../models/week-mini-calendar.model';
+
+/** Plage horaire affichée en vue semaine, par créneaux de deux heures ; elle s'élargit si une séance tombe en dehors. */
+const FIRST_HOUR = 6;
+const LAST_HOUR = 22;
+const SLOT_HOURS = 2;
+
+/** Une case de la vue semaine : un jour, à une heure donnée (ou sans heure). */
+export interface WeekTimeCell {
+  date: string;
+  inPeriod: boolean;
+  sessions: WeekMiniSession[];
+  realized: WeekMiniActivity[];
+}
+
+/** Une ligne de la vue semaine : une heure (ou « Sans heure ») et une case par jour. */
+export interface WeekTimeRow {
+  key: string;
+  label: string;
+  cells: WeekTimeCell[];
+}
 
 /**
- * Mini-calendrier de la semaine : une icône par séance planifiée, dans la case de son jour, colorée selon sa discipline.
+ * Mini-calendrier : vue semaine en tableau, heures à gauche et jours en colonnes ; vue mois en grille.
+ * Une icône par séance planifiée, colorée selon sa discipline, et un repère par activité réalisée.
  * Lecture seule : un clic émet l'identifiant de la séance (ouverture de sa fiche). Présentationnel.
  */
 @Component({
   selector: 'sh-week-mini-calendar',
-  imports: [IconComponent, NzButtonComponent],
+  imports: [IconComponent, NzButtonComponent, NgTemplateOutlet],
   templateUrl: './week-mini-calendar.component.html',
   styleUrl: './week-mini-calendar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeekMiniCalendarComponent {
   readonly days = input.required<readonly WeekMiniDay[]>();
-  /** Semaine (7 cases) ou mois (grille complète avec en-têtes des jours). */
+  /** Semaine (7 colonnes, une ligne par heure) ou mois (grille complète avec en-têtes des jours). */
   readonly view = input<MiniCalendarView>('week');
   readonly title = input('Cette semaine');
   readonly legend = input<readonly WeekMiniLegendEntry[]>([]);
@@ -32,6 +58,39 @@ export class WeekMiniCalendarComponent {
   readonly current = output<void>();
   readonly retry = output<void>();
   readonly sessionSelected = output<string>();
+
+  /** Lignes de la vue semaine : une par heure de la plage, avec une ligne « Sans heure » si besoin. */
+  protected readonly timeRows = computed<WeekTimeRow[]>(() => {
+    const days = this.days();
+    const hours = new Set<number>();
+    let hasUntimed = false;
+    for (const day of days) {
+      for (const item of [...day.sessions, ...day.realized]) {
+        const slot = slotOf(item.startTime);
+        if (slot === null) {
+          hasUntimed = true;
+        } else {
+          hours.add(slot);
+        }
+      }
+    }
+    const first = Math.min(FIRST_HOUR, ...hours);
+    const last = Math.max(LAST_HOUR, ...hours);
+    const slots: (number | null)[] = hasUntimed ? [null] : [];
+    for (let hour = first; hour <= last; hour += SLOT_HOURS) {
+      slots.push(hour);
+    }
+    return slots.map((hour) => ({
+      key: hour === null ? 'sans-heure' : `h${hour}`,
+      label: hour === null ? 'Sans heure' : `${hour} h`,
+      cells: days.map((day) => ({
+        date: day.date,
+        inPeriod: day.inPeriod,
+        sessions: day.sessions.filter((session) => slotOf(session.startTime) === hour),
+        realized: day.realized.filter((activity) => slotOf(activity.startTime) === hour),
+      })),
+    }));
+  });
 
   /** Style (pictogramme et couleur) d'une discipline ; une clé inconnue reçoit le style neutre. */
   protected styleOf(typeKey: string): DisciplineStyle {
@@ -63,4 +122,13 @@ export class WeekMiniCalendarComponent {
       timeZone: 'UTC',
     }).format(new Date(`${iso}T00:00:00Z`));
   }
+}
+
+/** Créneau de deux heures d'un horaire `HH:mm` (le créneau pair qui le contient), ou `null` sans horaire. */
+function slotOf(time: string | null): number | null {
+  if (time === null) {
+    return null;
+  }
+  const hour = Number(time.slice(0, 2));
+  return hour - (hour % SLOT_HOURS);
 }
