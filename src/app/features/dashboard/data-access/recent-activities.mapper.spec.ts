@@ -88,14 +88,14 @@ describe('toRecentActivity', () => {
     const item: ActivitySummaryApi = {
       id: 'act-2',
       garminActivityId: '2',
-      type: 'trail_running',
+      type: 'hang_gliding',
       startedAt: new Date(2026, 10, 6, 9, 0).toISOString(),
       durationSeconds: 60,
       distanceMeters: 1000,
       averageHeartRate: 142,
     };
 
-    expect(toRecentActivity(item, NOW).typeLabel).toBe('trail running');
+    expect(toRecentActivity(item, NOW).typeLabel).toBe('hang gliding');
     expect(toRecentActivity(item, NOW).typeIcon).toBe('🏅');
   });
 });

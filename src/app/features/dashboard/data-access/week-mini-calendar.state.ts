@@ -5,10 +5,12 @@ import { toAppError } from '../../../core/http/problem-details.mapper';
 import { addIsoDays, localIsoDate } from '../../../shared/utils/iso-date';
 import { isoWeekOf, mondayOfIsoWeek } from '../../../shared/utils/iso-week';
 import { disciplineStyleOf } from '../../../shared/ui/discipline/discipline-style';
-import type {
-  WeekMiniActivity,
-  WeekMiniLegendEntry,
-  WeekMiniSession,
+import {
+  FAMILY_LABELS,
+  type WeekMiniActivity,
+  type WeekMiniDiscipline,
+  type WeekMiniLegendEntry,
+  type WeekMiniSession,
 } from '../models/week-mini-calendar.model';
 import type { ActivitySummaryApi } from '../models/recent-activity.api-model';
 import { DashboardState } from './dashboard.state';
@@ -49,7 +51,7 @@ export class WeekMiniCalendarState {
   private readonly anchorValue = signal(localIsoDate());
   private readonly sessionsValue = signal<readonly WeekMiniSession[]>([]);
   private readonly activitiesValue = signal<readonly ActivitySummaryApi[]>([]);
-  private readonly labelsValue = signal<ReadonlyMap<string, string>>(new Map());
+  private readonly labelsValue = signal<ReadonlyMap<string, WeekMiniDiscipline>>(new Map());
   private readonly loadingValue = signal(true);
   private readonly errorValue = signal<AppError | null>(null);
   private latestRequest = 0;
@@ -96,22 +98,43 @@ export class WeekMiniCalendarState {
     return datesBetween(from, to).map((date) => ({
       date,
       inPeriod: date >= start && date <= end,
-      sessions: [...(byDate.get(date) ?? [])].sort((a, b) =>
-        (a.startTime ?? '').localeCompare(b.startTime ?? ''),
-      ),
+      sessions: [...(byDate.get(date) ?? [])]
+        .sort((a, b) => (a.startTime ?? '').localeCompare(b.startTime ?? ''))
+        .map((session) => ({
+          ...session,
+          disciplineLabel: this.disciplineLabelOf(session.disciplineTypeKey),
+        })),
       realized: realizedByDate.get(date) ?? [],
     }));
   });
 
-  /** Disciplines présentes sur la période (planifiées ou réalisées), avec leur libellé du référentiel. */
+  /**
+   * Légende : une entrée par famille de sport présente sur la période (vélo pour indoor cycling et vélo virtuel).
+   * Un type absent du référentiel garde sa propre entrée.
+   */
   readonly legend = computed<WeekMiniLegendEntry[]>(() => {
     const labels = this.labelsValue();
-    const keys = new Set([
+    const types = new Set([
       ...this.sessionsValue().map((session) => session.disciplineTypeKey),
       ...this.activitiesValue().map((activity) => activity.type),
     ]);
-    return [...keys].map((typeKey) => ({ typeKey, label: labels.get(typeKey) ?? typeKey }));
+    const entries = new Map<string, WeekMiniLegendEntry>();
+    for (const typeKey of types) {
+      const discipline = labels.get(typeKey);
+      if (discipline === undefined) {
+        entries.set(typeKey, { typeKey, label: typeKey });
+      } else {
+        const family = discipline.family;
+        entries.set(family, { typeKey: family, label: FAMILY_LABELS[family] ?? discipline.label });
+      }
+    }
+    return [...entries.values()];
   });
+
+  /** Libellé du référentiel pour un type, ou le type brut s'il est inconnu. */
+  private disciplineLabelOf(typeKey: string): string {
+    return this.labelsValue().get(typeKey)?.label ?? typeKey;
+  }
 
   /** Activités réalisées regroupées par jour local ; les activités hors de la plage sont ignorées par la grille. */
   private realizedByDate(): Map<string, WeekMiniActivity[]> {
@@ -168,7 +191,7 @@ export class WeekMiniCalendarState {
       const [sessions, activities, labels] = await Promise.all([
         firstValueFrom(this.api.list(from, to)),
         firstValueFrom(this.activitiesApi.inRange(from, to, ACTIVITY_PAGE_SIZE)),
-        needLabels ? firstValueFrom(this.api.disciplineLabels()) : Promise.resolve(null),
+        needLabels ? firstValueFrom(this.api.disciplines()) : Promise.resolve(null),
       ]);
       if (request !== this.latestRequest) {
         return;

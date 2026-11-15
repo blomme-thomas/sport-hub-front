@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { API_BASE_URL } from '../../../core/config/api-base-url.token';
-import type { WeekMiniSession } from '../models/week-mini-calendar.model';
+import type { WeekMiniDiscipline, WeekMiniSession } from '../models/week-mini-calendar.model';
 
 interface SessionOccurrenceApi {
   sessionId: string;
@@ -19,6 +19,7 @@ interface SessionOccurrencesResponseApi {
 interface DisciplineApi {
   typeKey: string;
   label: string;
+  family: string;
 }
 
 interface DisciplineListResponseApi {
@@ -51,9 +52,20 @@ export class WeekSessionsApi {
   }
 
   /** Libellés des disciplines du référentiel, par clé. */
-  disciplineLabels(): Observable<ReadonlyMap<string, string>> {
+  /** Référentiel des disciplines : libellé et famille de sport de chaque type. */
+  disciplines(): Observable<ReadonlyMap<string, WeekMiniDiscipline>> {
     return this.http
       .get<DisciplineListResponseApi>(`${this.baseUrl}/disciplines`)
-      .pipe(map((response) => new Map(response.items.map((item) => [item.typeKey, item.label]))));
+      .pipe(
+        map(
+          (response) =>
+            new Map(
+              response.items.map((item) => [
+                item.typeKey,
+                { label: item.label, family: item.family },
+              ]),
+            ),
+        ),
+      );
   }
 }
