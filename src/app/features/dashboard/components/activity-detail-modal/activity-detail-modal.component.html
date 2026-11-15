@@ -15,6 +15,18 @@
     }
   </dl>
 
+  <section class="detail__section">
+    <sh-activity-comment
+      [comment]="comments.comment()"
+      [loading]="comments.loading()"
+      [generating]="comments.generating()"
+      [errorMessage]="comments.errorMessage()"
+      (generate)="comments.generate()"
+      (regenerate)="comments.generate()"
+      (retry)="comments.reload()"
+    />
+  </section>
+
   @if (zones().length > 0) {
     <section class="detail__section" aria-label="Temps par zone de fréquence cardiaque">
       <h3>Temps par zone de FC</h3>
