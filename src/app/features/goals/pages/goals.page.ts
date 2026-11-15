@@ -4,8 +4,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalComponent, NzModalContentDirective, NzModalService } from 'ng-zorro-antd/modal';
 import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
-import { GoalFormComponent } from '../components/goal-form.component';
-import { GoalListComponent } from '../components/goal-list.component';
+import { GoalFormComponent } from '../components/goal-form/goal-form.component';
+import { GoalListComponent } from '../components/goal-list/goal-list.component';
 import { GoalsState } from '../data-access/goals.state';
 import type { Goal, GoalInput } from '../models/goal.model';
 

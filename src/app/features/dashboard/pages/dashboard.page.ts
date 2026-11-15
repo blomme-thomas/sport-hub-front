@@ -11,18 +11,18 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import {
   ActivityDetailModalComponent,
   type ActivityDetailModalData,
-} from '../components/activity-detail-modal.component';
-import { PeriodSelectorComponent } from '../components/period-selector.component';
-import { NextEventCardComponent } from '../components/next-event-card.component';
-import { KpiCardComponent } from '../components/kpi-card.component';
-import { PerformanceCardComponent } from '../components/performance-card.component';
-import { RecentActivitiesCardComponent } from '../components/recent-activities-card.component';
-import { SportSplitCardComponent } from '../components/sport-split-card.component';
-import { ZonesCardComponent } from '../components/zones-card.component';
-import { CompletionCardComponent } from '../components/completion-card.component';
+} from '../components/activity-detail-modal/activity-detail-modal.component';
+import { PeriodSelectorComponent } from '../components/period-selector/period-selector.component';
+import { NextEventCardComponent } from '../components/next-event-card/next-event-card.component';
+import { KpiCardComponent } from '../components/kpi-card/kpi-card.component';
+import { PerformanceCardComponent } from '../components/performance-card/performance-card.component';
+import { RecentActivitiesCardComponent } from '../components/recent-activities-card/recent-activities-card.component';
+import { SportSplitCardComponent } from '../components/sport-split-card/sport-split-card.component';
+import { ZonesCardComponent } from '../components/zones-card/zones-card.component';
+import { CompletionCardComponent } from '../components/completion-card/completion-card.component';
 import { CompletionState } from '../data-access/completion.state';
-import { WeeklyReviewCardComponent } from '../components/weekly-review-card.component';
-import { WeekMiniCalendarComponent } from '../components/week-mini-calendar.component';
+import { WeeklyReviewCardComponent } from '../components/weekly-review-card/weekly-review-card.component';
+import { WeekMiniCalendarComponent } from '../components/week-mini-calendar/week-mini-calendar.component';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
 import { NextEventState } from '../data-access/next-event.state';
