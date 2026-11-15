@@ -71,7 +71,13 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
   gap: var(--sh-space-3);
-  align-items: start;
+  align-items: stretch;
+}
+
+/* La colonne du graphique prend toute la hauteur du corps de la modale ; la zone du graphique la remplit. */
+.detail__panel--chart {
+  position: relative;
+  min-height: 100%;
 }
 
 .detail__side {
@@ -98,11 +104,18 @@
   font-weight: 600;
 }
 
+.detail__chart sh-chart {
+  display: block;
+  height: 100%;
+}
+
 .detail__chart {
-  position: relative;
-  width: 100%;
+  position: absolute;
+  top: 2.75rem;
+  right: var(--sh-space-3);
+  bottom: var(--sh-space-3);
+  left: var(--sh-space-3);
   min-width: 0;
-  height: 18rem;
 }
 
 .detail__list {
