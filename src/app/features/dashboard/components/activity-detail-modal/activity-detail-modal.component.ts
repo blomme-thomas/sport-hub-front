@@ -73,18 +73,12 @@ export class ActivityDetailModalComponent {
     this.detail.hasValue() ? toRecentActivity(this.detail.value(), new Date()).typeLabel : '',
   );
 
-  /** Ligne de résumé sous le titre : date, distance, durée, allure moyenne. */
+  /** Ligne sous le titre : la date de la séance. Distance, durée et allure sont dans les indicateurs. */
   protected readonly summary = computed<string>(() => {
     if (!this.detail.hasValue()) {
       return '';
     }
-    const activity = this.detail.value();
-    return [
-      formatStart(activity.startedAt),
-      formatDistance(activity.distanceMeters),
-      formatDuration(activity.durationSeconds),
-      `Allure moyenne : ${paceLabel(activity.durationSeconds, activity.distanceMeters)}`,
-    ].join(' • ');
+    return formatStart(this.detail.value().startedAt);
   });
 
   /** Indicateurs de l'en-tête, formatés. Une valeur absente s'affiche « — ». */
