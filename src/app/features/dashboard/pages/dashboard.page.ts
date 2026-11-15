@@ -112,7 +112,7 @@ export class DashboardPage {
 
   /** Ouvre le détail complet d'une séance réalisée (toutes les métriques, zones et courbe de FC). */
   protected openActivity(id: string): void {
-    const ref = this.modal.create({
+    this.modal.create({
       nzTitle: this.activityDetailTitle(),
       nzClassName: 'sh-activity-modal',
       nzWidth: 'min(1120px, 96vw)',
@@ -120,7 +120,7 @@ export class DashboardPage {
       nzData: { id } satisfies ActivityDetailModalData,
       nzViewContainerRef: this.viewContainer,
       nzKeyboard: true,
-      nzFooter: [{ label: 'Fermer', onClick: () => ref.close() }],
+      nzFooter: null,
     });
   }
 
