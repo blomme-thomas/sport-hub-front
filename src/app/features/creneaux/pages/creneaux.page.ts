@@ -131,7 +131,11 @@ export class CreneauxPage {
   protected openSessionCreate(range?: SlotDefaults): void {
     const defaults = range ?? defaultsFor(this.state.weekStart());
     this.sessionError.set(null);
-    this.sessionDraft.set({ date: defaults.date, startTime: defaults.startTime });
+    this.sessionDraft.set({
+      date: defaults.date,
+      startTime: defaults.startTime,
+      endTime: defaults.endTime,
+    });
   }
 
   protected closeSessionForm(): void {

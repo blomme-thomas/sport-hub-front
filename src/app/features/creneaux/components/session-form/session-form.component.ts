@@ -21,11 +21,16 @@ import {
 } from '../../../../shared/utils/session-objectives';
 import type { CreateSessionRequestApi } from '../../data-access/sessions-write.api';
 
+/** Durée proposée quand aucune plage n'est choisie sur la grille. */
+const DEFAULT_DURATION_MINUTES = 60;
+
 const ZONE_KEYS = ['z1', 'z2', 'z3', 'z4', 'z5'] as const;
 
 export interface SessionDefaults {
   date: string;
   startTime: string;
+  /** Fin de la plage choisie sur la grille : la durée par défaut en est l'écart. */
+  endTime?: string;
 }
 
 export interface DisciplineOption {
@@ -108,7 +113,12 @@ export class SessionFormComponent implements OnInit {
 
   ngOnInit(): void {
     const defaults = this.defaults();
-    this.form.patchValue({ date: defaults.date, startTime: defaults.startTime });
+    this.form.patchValue({
+      date: defaults.date,
+      startTime: defaults.startTime,
+      durationMinutes:
+        durationBetween(defaults.startTime, defaults.endTime) ?? DEFAULT_DURATION_MINUTES,
+    });
   }
 
   protected submit(): void {
@@ -133,4 +143,17 @@ export class SessionFormComponent implements OnInit {
       attentionPoints: value.attentionPoints.trim() || undefined,
     });
   }
+}
+
+/** Écart en minutes entre deux horaires `HH:mm`, ou `null` s'il est absent ou hors des bornes d'une séance. */
+function durationBetween(start: string, end: string | undefined): number | null {
+  if (end === undefined) {
+    return null;
+  }
+  const toMinutes = (time: string): number => {
+    const [hours = 0, minutes = 0] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+  };
+  const diff = toMinutes(end) - toMinutes(start);
+  return diff >= MIN_DURATION_MINUTES && diff <= MAX_DURATION_MINUTES ? diff : null;
 }

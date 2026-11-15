@@ -31,6 +31,18 @@ async function fillZones(user: ReturnType<typeof userEvent.setup>, values: numbe
 }
 
 describe('SessionFormComponent', () => {
+  it('reprend la durée de la plage glissée sur la grille', async () => {
+    await render(SessionFormComponent, {
+      inputs: {
+        defaults: { date: '2026-11-12', startTime: '09:00', endTime: '10:15' },
+        disciplines: DISCIPLINES,
+      },
+      on: { saved: vi.fn(), cancelled: vi.fn() },
+    });
+
+    expect(screen.getByLabelText('Durée (min)')).toHaveValue(75);
+  });
+
   it('pré-remplit la date et l’heure de la case cliquée', async () => {
     await renderForm();
 
