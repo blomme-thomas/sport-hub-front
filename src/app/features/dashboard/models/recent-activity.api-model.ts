@@ -21,6 +21,8 @@ export interface ActivityListApi {
 export interface HeartRateSampleApi {
   occurredAt: string;
   bpm: number;
+  /** Distance parcourue depuis le début, si le back la fournit : active l'axe en km. */
+  distanceMeters?: number | null;
 }
 
 /** Détail d'une activité (`GET /api/activities/:id`, `ActivityDetailResponseDto` côté back). */

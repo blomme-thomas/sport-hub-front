@@ -22,13 +22,35 @@
 
   <div class="detail__body">
     <section class="detail__panel detail__panel--chart" aria-labelledby="detail-chart-title">
-      <h3 id="detail-chart-title" class="detail__panel-title">Fréquence cardiaque</h3>
+      <div class="detail__panel-head">
+        <h3 id="detail-chart-title" class="detail__panel-title">Fréquence cardiaque</h3>
+        @if (canUseDistance()) {
+          <div class="detail__axis" role="group" aria-label="Axe horizontal">
+            <button
+              type="button"
+              class="detail__axis-button"
+              [attr.aria-pressed]="axis() === 'time'"
+              (click)="selectAxis('time')"
+            >
+              Durée
+            </button>
+            <button
+              type="button"
+              class="detail__axis-button"
+              [attr.aria-pressed]="axis() === 'distance'"
+              (click)="selectAxis('distance')"
+            >
+              Km
+            </button>
+          </div>
+        }
+      </div>
       @if (samples().length > 1) {
         <div class="detail__chart">
           <sh-chart
             type="line"
             [data]="chartData()"
-            [options]="chartOptions"
+            [options]="chartOptions()"
             label="Fréquence cardiaque pendant l’activité"
           />
         </div>
