@@ -75,9 +75,9 @@ describe('WeekGridComponent : déplacement', () => {
     const block = screen.getByRole('button', { name: /09:00 – 10:30/ });
 
     // 48 px = une heure dans la grille ; pas de colonne détectée en jsdom, le jour ne change pas.
-    fireEvent.pointerDown(block, { clientX: 10, clientY: 100, button: 0, pointerId: 1 });
-    fireEvent.pointerMove(block, { clientX: 10, clientY: 148, pointerId: 1 });
-    fireEvent.pointerUp(block, { clientX: 10, clientY: 148, pointerId: 1 });
+    fireEvent.pointerDown(block, { clientX: 10, clientY: 150, button: 0, pointerId: 1 });
+    fireEvent.pointerMove(block, { clientX: 10, clientY: 222, pointerId: 1 });
+    fireEvent.pointerUp(block, { clientX: 10, clientY: 222, pointerId: 1 });
 
     expect(moved).toHaveBeenCalledWith({
       kind: 'slot',
@@ -96,9 +96,9 @@ describe('WeekGridComponent : déplacement', () => {
     });
     const block = screen.getByRole('button', { name: /^Séance/ });
 
-    fireEvent.pointerDown(block, { clientX: 10, clientY: 100, button: 0, pointerId: 1 });
-    fireEvent.pointerMove(block, { clientX: 10, clientY: 52, pointerId: 1 });
-    fireEvent.pointerUp(block, { clientX: 10, clientY: 52, pointerId: 1 });
+    fireEvent.pointerDown(block, { clientX: 10, clientY: 150, button: 0, pointerId: 1 });
+    fireEvent.pointerMove(block, { clientX: 10, clientY: 78, pointerId: 1 });
+    fireEvent.pointerUp(block, { clientX: 10, clientY: 78, pointerId: 1 });
 
     expect(moved).toHaveBeenCalledWith({
       kind: 'session',
@@ -116,9 +116,9 @@ describe('WeekGridComponent : déplacement', () => {
     });
     const block = screen.getByRole('button', { name: /^Séance/ });
 
-    fireEvent.pointerDown(block, { clientX: 10, clientY: 100, button: 0, pointerId: 1 });
-    fireEvent.pointerMove(block, { clientX: 10, clientY: 148, pointerId: 1 });
-    fireEvent.pointerUp(block, { clientX: 10, clientY: 148, pointerId: 1 });
+    fireEvent.pointerDown(block, { clientX: 10, clientY: 150, button: 0, pointerId: 1 });
+    fireEvent.pointerMove(block, { clientX: 10, clientY: 222, pointerId: 1 });
+    fireEvent.pointerUp(block, { clientX: 10, clientY: 222, pointerId: 1 });
 
     expect(moved).toHaveBeenCalledWith({
       kind: 'session',
@@ -137,8 +137,8 @@ describe('WeekGridComponent : déplacement', () => {
     });
     const block = screen.getByRole('button', { name: /09:00 – 10:30/ });
 
-    fireEvent.pointerDown(block, { clientX: 10, clientY: 100, button: 0, pointerId: 1 });
-    fireEvent.pointerUp(block, { clientX: 10, clientY: 101, pointerId: 1 });
+    fireEvent.pointerDown(block, { clientX: 10, clientY: 150, button: 0, pointerId: 1 });
+    fireEvent.pointerUp(block, { clientX: 10, clientY: 152, pointerId: 1 });
     fireEvent.click(block);
 
     expect(moved).not.toHaveBeenCalled();

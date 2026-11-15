@@ -110,9 +110,9 @@ describe('WeekGridComponent', () => {
     const column = screen.getByRole('group', { name: 'mardi 10 novembre 2026' });
 
     // Hauteur d'une heure = 48 px ; la grille commence à 06:00 : 96 px = 08:00, 144 px = 09:00.
-    fireEvent.pointerDown(column, { clientY: 96, button: 0, pointerId: 1 });
-    fireEvent.pointerMove(column, { clientY: 144, pointerId: 1 });
-    fireEvent.pointerUp(column, { clientY: 144, pointerId: 1 });
+    fireEvent.pointerDown(column, { clientY: 144, button: 0, pointerId: 1 });
+    fireEvent.pointerMove(column, { clientY: 216, pointerId: 1 });
+    fireEvent.pointerUp(column, { clientY: 216, pointerId: 1 });
 
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,
@@ -125,8 +125,8 @@ describe('WeekGridComponent', () => {
     const { rangeSelected } = await renderGrid([]);
     const column = screen.getByRole('group', { name: 'mardi 10 novembre 2026' });
 
-    fireEvent.pointerDown(column, { clientY: 96, button: 0, pointerId: 1 });
-    fireEvent.pointerUp(column, { clientY: 96, pointerId: 1 });
+    fireEvent.pointerDown(column, { clientY: 144, button: 0, pointerId: 1 });
+    fireEvent.pointerUp(column, { clientY: 144, pointerId: 1 });
 
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,
@@ -139,8 +139,8 @@ describe('WeekGridComponent', () => {
     const { rangeSelected } = await renderGrid([]);
     const column = screen.getByRole('group', { name: 'mardi 10 novembre 2026' });
 
-    fireEvent.pointerDown(column, { clientY: 1152, button: 0, pointerId: 1 });
-    fireEvent.pointerUp(column, { clientY: 1152, pointerId: 1 });
+    fireEvent.pointerDown(column, { clientY: 1400, button: 0, pointerId: 1 });
+    fireEvent.pointerUp(column, { clientY: 1400, pointerId: 1 });
 
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,
@@ -154,10 +154,10 @@ describe('WeekGridComponent', () => {
     const column = screen.getByRole('group', { name: 'mardi 10 novembre 2026' });
 
     // Grille à partir de 6 h, 48 px par heure : 9 h 00 = 144 px, 9 h 20 = 160 px (arrondi à 9 h 15).
-    fireEvent.pointerDown(column, { clientY: 144, button: 0, pointerId: 1 });
-    fireEvent.pointerMove(column, { clientY: 160, pointerId: 1 });
+    fireEvent.pointerDown(column, { clientY: 216, button: 0, pointerId: 1 });
+    fireEvent.pointerMove(column, { clientY: 240, pointerId: 1 });
     expect(screen.getByText('09:00 – 09:15')).toBeInTheDocument();
-    fireEvent.pointerUp(column, { clientY: 160, pointerId: 1 });
+    fireEvent.pointerUp(column, { clientY: 240, pointerId: 1 });
 
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,
@@ -170,8 +170,8 @@ describe('WeekGridComponent', () => {
     const { rangeSelected } = await renderGrid([libre]);
     const slotButton = screen.getByRole('button', { name: /09:00 – 10:30/ });
 
-    fireEvent.pointerDown(slotButton, { clientY: 96, button: 0, pointerId: 1 });
-    fireEvent.pointerUp(slotButton, { clientY: 96, pointerId: 1 });
+    fireEvent.pointerDown(slotButton, { clientY: 144, button: 0, pointerId: 1 });
+    fireEvent.pointerUp(slotButton, { clientY: 144, pointerId: 1 });
 
     expect(rangeSelected).not.toHaveBeenCalled();
   });
