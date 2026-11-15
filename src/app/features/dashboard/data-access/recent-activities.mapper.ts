@@ -20,6 +20,15 @@ const TYPE_ICONS: Record<string, string> = {
   cycling: '🚴',
   lap_swimming: '🏊',
   virtual_ride: '🚴',
+  indoor_cycling: '🚴',
+  road_biking: '🚴',
+  gravel_cycling: '🚴',
+  mountain_biking: '🚵',
+  e_bike_fitness: '🚴',
+  trail_running: '🏃',
+  treadmill_running: '🏃',
+  track_running: '🏃',
+  open_water_swimming: '🏊',
   walking: '🚶',
 };
 

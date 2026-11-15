@@ -6,7 +6,23 @@ export interface WeekMiniSession {
   date: string;
   startTime: string | null;
   disciplineTypeKey: string;
+  /** Libellé du référentiel pour le type de la séance, renseigné par l'état. */
+  disciplineLabel?: string;
 }
+
+/** Discipline du référentiel : libellé et famille de sport (course, vélo, natation, autre). */
+export interface WeekMiniDiscipline {
+  label: string;
+  family: string;
+}
+
+/** Libellés des familles affichés dans la légende. */
+export const FAMILY_LABELS: Readonly<Record<string, string>> = {
+  running: 'Course à pied',
+  cycling: 'Vélo',
+  swimming: 'Natation',
+  other: 'Autres',
+};
 
 /** Activité réalisée affichée dans le mini-calendrier, en lecture seule. */
 export interface WeekMiniActivity {

@@ -40,7 +40,7 @@ export class WeekMiniCalendarComponent {
 
   /** Libellé accessible d'une séance : discipline, heure, puis action. */
   protected labelOf(session: WeekMiniSession): string {
-    const discipline = this.labelOfKey(session.disciplineTypeKey);
+    const discipline = session.disciplineLabel ?? this.labelOfKey(session.disciplineTypeKey);
     const time = session.startTime ?? 'sans heure';
     return `Séance ${discipline}, ${time}. Ouvrir la séance`;
   }

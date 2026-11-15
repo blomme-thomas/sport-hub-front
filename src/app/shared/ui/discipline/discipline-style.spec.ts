@@ -12,3 +12,16 @@ describe('disciplineStyleOf', () => {
     expect(disciplineStyleOf('golf')).toEqual({ icon: 'list', color: 'var(--sh-text-muted)' });
   });
 });
+
+describe('disciplineStyleOf — familles de sport', () => {
+  it('donne le pictogramme vélo à toutes les variantes de vélo, y compris indoor et virtuel', () => {
+    for (const key of ['indoor_cycling', 'virtual_ride', 'road_biking', 'gravel_cycling']) {
+      expect(disciplineStyleOf(key)).toEqual(disciplineStyleOf('cycling'));
+    }
+  });
+
+  it('donne le même style aux variantes de course et de natation', () => {
+    expect(disciplineStyleOf('trail_running')).toEqual(disciplineStyleOf('running'));
+    expect(disciplineStyleOf('open_water_swimming')).toEqual(disciplineStyleOf('lap_swimming'));
+  });
+});
