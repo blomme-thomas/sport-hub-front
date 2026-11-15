@@ -6,51 +6,72 @@
 } @else if (!detail.hasValue()) {
   <p class="detail__status" aria-busy="true">Chargement…</p>
 } @else {
-  <dl class="detail__metrics">
-    @for (row of rows(); track row.label) {
-      <div class="detail__row">
-        <dt>{{ row.label }}</dt>
-        <dd>{{ row.value }}</dd>
+  <header class="detail__header">
+    <h2 class="detail__title">{{ typeLabel() }}</h2>
+    <p class="detail__summary">{{ summary() }}</p>
+  </header>
+
+  <dl class="detail__kpis">
+    @for (kpi of kpis(); track kpi.label) {
+      <div class="detail__kpi">
+        <dt>{{ kpi.label }}</dt>
+        <dd>{{ kpi.value }}</dd>
       </div>
     }
   </dl>
 
-  <section class="detail__section">
-    <sh-activity-comment
-      [comment]="comments.comment()"
-      [loading]="comments.loading()"
-      [generating]="comments.generating()"
-      [errorMessage]="comments.errorMessage()"
-      (generate)="comments.generate()"
-      (regenerate)="comments.generate()"
-      (retry)="comments.reload()"
-    />
-  </section>
-
-  @if (zones().length > 0) {
-    <section class="detail__section" aria-label="Temps par zone de fréquence cardiaque">
-      <h3>Temps par zone de FC</h3>
-      <ul class="detail__zones">
-        @for (zone of zones(); track zone.label) {
-          <li>
-            <span>{{ zone.label }}</span> <strong>{{ zone.value }}</strong>
-          </li>
-        }
-      </ul>
+  <div class="detail__body">
+    <section class="detail__panel detail__panel--chart" aria-labelledby="detail-chart-title">
+      <h3 id="detail-chart-title" class="detail__panel-title">Fréquence cardiaque</h3>
+      @if (samples().length > 1) {
+        <div class="detail__chart">
+          <sh-chart
+            type="line"
+            [data]="chartData()"
+            [options]="chartOptions"
+            label="Fréquence cardiaque pendant l’activité"
+          />
+        </div>
+      } @else {
+        <p class="detail__status">Pas de courbe de fréquence cardiaque pour cette activité.</p>
+      }
     </section>
-  }
 
-  @if (samples().length > 1) {
-    <section class="detail__section" aria-label="Courbe de fréquence cardiaque">
-      <h3>Fréquence cardiaque</h3>
-      <div class="detail__chart">
-        <sh-chart
-          type="line"
-          [data]="chartData()"
-          [options]="chartOptions"
-          label="Fréquence cardiaque pendant l’activité"
-        />
-      </div>
-    </section>
-  }
+    <aside class="detail__side">
+      <section class="detail__panel" aria-labelledby="detail-info-title">
+        <h3 id="detail-info-title" class="detail__panel-title">Détails de la séance</h3>
+        <dl class="detail__list">
+          @for (row of details(); track row.label) {
+            <div class="detail__row">
+              <dt>{{ row.label }}</dt>
+              <dd>{{ row.value }}</dd>
+            </div>
+          }
+        </dl>
+      </section>
+
+      @if (zones().length > 0) {
+        <section class="detail__panel" aria-labelledby="detail-zones-title">
+          <h3 id="detail-zones-title" class="detail__panel-title">Zones de fréquence cardiaque</h3>
+          <ul class="detail__zones">
+            @for (zone of zones(); track zone.label) {
+              <li class="detail__zone">
+                <span class="detail__zone-label">{{ zone.label }}</span>
+                <span class="detail__zone-bar" aria-hidden="true">
+                  <span class="detail__zone-fill" [style.width.%]="zone.share"></span>
+                </span>
+                <strong class="detail__zone-value">{{ zone.value }}</strong>
+                <span class="detail__zone-share">{{ zone.share }} %</span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      <section class="detail__panel" aria-labelledby="detail-notes-title">
+        <h3 id="detail-notes-title" class="detail__panel-title">Notes personnelles</h3>
+        <p class="detail__notes">Aucune note pour cette séance.</p>
+      </section>
+    </aside>
+  </div>
 }

@@ -107,6 +107,7 @@ export class DashboardPage {
   protected openActivity(id: string): void {
     const ref = this.modal.create({
       nzTitle: 'Détail de la séance',
+      nzWidth: 'min(960px, 96vw)',
       nzContent: ActivityDetailModalComponent,
       nzData: { id } satisfies ActivityDetailModalData,
       nzViewContainerRef: this.viewContainer,

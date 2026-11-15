@@ -3,17 +3,16 @@ import { ChartComponent } from '@shared/ui/chart/chart.component';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { firstValueFrom } from 'rxjs';
 import { toAppError } from '../../../../core/http/problem-details.mapper';
-import { ActivityCommentState } from '../../data-access/activity-comment.state';
 import { HeartRateZonesState } from '../../data-access/heart-rate-zones.state';
 import { RecentActivitiesApi } from '../../data-access/recent-activities.api';
 import {
   formatDistance,
   formatDuration,
   formatHeartRate,
+  toRecentActivity,
 } from '../../data-access/recent-activities.mapper';
 import type { ActivityDetailApi, HeartRateSampleApi } from '../../models/recent-activity.api-model';
 import { detailChartOptions, heartRateChartData } from '../../config/heart-rate-chart.config';
-import { ActivityCommentComponent } from '../activity-comment/activity-comment.component';
 
 /** Donnée transmise à la modale : identifiant de l'activité. */
 export interface ActivityDetailModalData {
@@ -21,15 +20,22 @@ export interface ActivityDetailModalData {
 }
 
 const SECONDS_PER_MINUTE = 60;
+const METERS_PER_KILOMETER = 1000;
+
+/** Une tuile d'indicateur de l'en-tête : libellé et valeur déjà formatée. */
+export interface DetailKpi {
+  label: string;
+  value: string;
+}
 
 /**
- * Détail complet d'une activité : métriques, répartition par zone de FC et courbe de FC.
- * Les données sont chargées à l'ouverture (`GET /api/activities/:id`) ; une erreur reste affichée dans la modale.
+ * Détail d'une activité réalisée, en quatre blocs : en-tête, indicateurs, courbe de FC à gauche,
+ * détails, zones de FC et notes personnelles à droite. Lecture seule. Les données viennent de
+ * `GET /api/activities/:id` ; une erreur reste affichée dans la modale.
  */
 @Component({
   selector: 'sh-activity-detail-modal',
-  imports: [ChartComponent, ActivityCommentComponent],
-  providers: [ActivityCommentState],
+  imports: [ChartComponent],
   templateUrl: './activity-detail-modal.component.html',
   styleUrl: './activity-detail-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,11 +44,6 @@ export class ActivityDetailModalComponent {
   private readonly data = inject<ActivityDetailModalData>(NZ_MODAL_DATA);
   private readonly api = inject(RecentActivitiesApi);
   private readonly heartZones = inject(HeartRateZonesState);
-  protected readonly comments = inject(ActivityCommentState);
-
-  constructor() {
-    this.comments.select(this.data.id);
-  }
 
   protected readonly detail = resource<ActivityDetailApi, string>({
     params: () => this.data.id,
@@ -55,6 +56,57 @@ export class ActivityDetailModalComponent {
     return error === undefined ? null : toAppError(error).userMessage;
   });
 
+  /** Libellé français du type d'activité, comme dans la liste (« Course à pied »). */
+  protected readonly typeLabel = computed<string>(() =>
+    this.detail.hasValue() ? toRecentActivity(this.detail.value(), new Date()).typeLabel : '',
+  );
+
+  /** Ligne de résumé sous le titre : date, distance, durée, allure moyenne. */
+  protected readonly summary = computed<string>(() => {
+    if (!this.detail.hasValue()) {
+      return '';
+    }
+    const activity = this.detail.value();
+    return [
+      formatStart(activity.startedAt),
+      formatDistance(activity.distanceMeters),
+      formatDuration(activity.durationSeconds),
+      `Allure moyenne : ${paceLabel(activity.durationSeconds, activity.distanceMeters)}`,
+    ].join(' • ');
+  });
+
+  /** Indicateurs de l'en-tête, formatés. Une valeur absente s'affiche « — ». */
+  protected readonly kpis = computed<DetailKpi[]>(() => {
+    if (!this.detail.hasValue()) {
+      return [];
+    }
+    const activity = this.detail.value();
+    return [
+      { label: 'Distance', value: formatDistance(activity.distanceMeters) },
+      { label: 'Durée', value: formatDuration(activity.durationSeconds) },
+      {
+        label: 'Allure moyenne',
+        value: paceLabel(activity.durationSeconds, activity.distanceMeters),
+      },
+      { label: 'Calories', value: formatCalories(activity.calories) },
+      { label: 'FC moyenne', value: formatHeartRate(activity.averageHeartRate) },
+    ];
+  });
+
+  /** Lignes du bloc « Détails de la séance », formatées. */
+  protected readonly details = computed<{ label: string; value: string }[]>(() => {
+    if (!this.detail.hasValue()) {
+      return [];
+    }
+    const activity = this.detail.value();
+    return [
+      { label: 'Type', value: toRecentActivity(activity, new Date()).typeLabel },
+      { label: 'Date', value: formatStart(activity.startedAt) },
+      { label: 'Dénivelé positif', value: formatMeters(activity.elevationGainMeters) },
+      { label: 'FC maximale', value: formatHeartRate(activity.maxHeartRate) },
+    ];
+  });
+
   protected readonly samples = computed<readonly HeartRateSampleApi[]>(() =>
     this.detail.hasValue() ? (this.detail.value().heartRateSeries ?? []) : [],
   );
@@ -63,36 +115,21 @@ export class ActivityDetailModalComponent {
   );
   protected readonly chartOptions = detailChartOptions();
 
-  /** Lignes des métriques, déjà formatées. Une valeur absente s'affiche « — ». */
-  protected readonly rows = computed<{ label: string; value: string }[]>(() => {
+  /** Temps passé dans chaque zone de FC, avec sa part du total, pour les zones renseignées. */
+  protected readonly zones = computed<{ label: string; value: string; share: number }[]>(() => {
     if (!this.detail.hasValue()) {
       return [];
     }
-    const activity = this.detail.value();
-    return [
-      { label: 'Type', value: activity.type.replaceAll('_', ' ') },
-      { label: 'Date', value: formatStart(activity.startedAt) },
-      { label: 'Durée', value: formatDuration(activity.durationSeconds) },
-      { label: 'Distance', value: formatDistance(activity.distanceMeters) },
-      { label: 'Dénivelé positif', value: formatMeters(activity.elevationGainMeters) },
-      { label: 'Calories', value: formatCalories(activity.calories) },
-      { label: 'FC moyenne', value: formatHeartRate(activity.averageHeartRate) },
-      { label: 'FC maximale', value: formatHeartRate(activity.maxHeartRate) },
-    ];
-  });
-
-  /** Temps passé dans chaque zone de FC, en minutes, pour les zones renseignées. */
-  protected readonly zones = computed<{ label: string; value: string }[]>(() => {
-    if (!this.detail.hasValue()) {
-      return [];
-    }
-    return this.detail.value().hrTimeInZone.flatMap((seconds, index) =>
+    const times = this.detail.value().hrTimeInZone;
+    const total = times.reduce<number>((sum, seconds) => sum + Math.max(seconds ?? 0, 0), 0);
+    return times.flatMap((seconds, index) =>
       seconds === null || seconds <= 0
         ? []
         : [
             {
               label: `Zone ${index + 1}`,
               value: `${Math.round(seconds / SECONDS_PER_MINUTE)} min`,
+              share: total > 0 ? Math.round((seconds / total) * 100) : 0,
             },
           ],
     );
@@ -109,4 +146,15 @@ function formatMeters(meters: number | null): string {
 
 function formatCalories(kcal: number | null): string {
   return kcal === null ? '—' : `${Math.round(kcal)} kcal`;
+}
+
+/** Allure en « m:ss /km », ou « — » sans distance. */
+function paceLabel(durationSeconds: number, distanceMeters: number | null): string {
+  if (distanceMeters === null || distanceMeters <= 0) {
+    return '—';
+  }
+  const secondsPerKm = durationSeconds / (distanceMeters / METERS_PER_KILOMETER);
+  const minutes = Math.floor(secondsPerKm / SECONDS_PER_MINUTE);
+  const seconds = Math.round(secondsPerKm % SECONDS_PER_MINUTE);
+  return `${minutes}:${String(seconds).padStart(2, '0')} /km`;
 }
