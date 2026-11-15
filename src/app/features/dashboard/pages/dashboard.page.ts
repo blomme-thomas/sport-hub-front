@@ -1,10 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  TemplateRef,
   ViewContainerRef,
   computed,
   inject,
+  viewChild,
 } from '@angular/core';
+import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
@@ -45,6 +48,7 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
   selector: 'sh-dashboard-page',
   imports: [
     NzButtonComponent,
+    IconComponent,
     PeriodSelectorComponent,
     KpiCardComponent,
     NextEventCardComponent,
@@ -75,6 +79,9 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
 export class DashboardPage {
   /** Bilan de la semaine masqué tant que le token IA n'est pas disponible (story #16). */
   protected readonly weeklyReviewEnabled = false;
+  /** Titre de la modale de détail : icône de la carte « Détails par séance » et libellé. */
+  protected readonly activityDetailTitle =
+    viewChild.required<TemplateRef<object>>('activityDetailTitle');
   protected readonly state = inject(DashboardState);
   protected readonly kpis = inject(DashboardKpisState);
   protected readonly nextEvent = inject(NextEventState);
@@ -106,8 +113,9 @@ export class DashboardPage {
   /** Ouvre le détail complet d'une séance réalisée (toutes les métriques, zones et courbe de FC). */
   protected openActivity(id: string): void {
     const ref = this.modal.create({
-      nzTitle: 'Détail de la séance',
-      nzWidth: 'min(960px, 96vw)',
+      nzTitle: this.activityDetailTitle(),
+      nzClassName: 'sh-activity-modal',
+      nzWidth: 'min(1120px, 96vw)',
       nzContent: ActivityDetailModalComponent,
       nzData: { id } satisfies ActivityDetailModalData,
       nzViewContainerRef: this.viewContainer,

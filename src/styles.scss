@@ -20,3 +20,45 @@ body {
   border: 0;
   padding: 0;
 }
+
+/* Modale de détail d'activité : mêmes fond, bordures et rayon que les cartes du tableau de bord. */
+.sh-activity-modal .ant-modal-content {
+  overflow: hidden;
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+}
+
+.sh-activity-modal .ant-modal-header {
+  border-bottom-color: var(--sh-border);
+  background: var(--sh-surface);
+}
+
+.sh-activity-modal .ant-modal-footer {
+  border-top-color: var(--sh-border);
+  background: var(--sh-surface);
+}
+
+.sh-activity-modal .ant-modal-body {
+  background: var(--sh-surface);
+}
+
+.sh-activity-modal .ant-modal-title,
+.sh-activity-modal .ant-modal-close {
+  color: var(--sh-text);
+}
+
+.sh-activity-modal__title {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+
+  sh-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
