@@ -144,9 +144,26 @@ describe('WeekGridComponent', () => {
 
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,
-      startTime: '23:30',
+      startTime: '23:45',
       endTime: '23:59',
     });
+  });
+
+  it('glisser crée une plage au quart d’heure près, sans libellé d’horaire dans la sélection', async () => {
+    const { rangeSelected } = await renderGrid([]);
+    const column = screen.getByRole('group', { name: 'mardi 10 novembre 2026' });
+
+    // Grille à partir de 6 h, 48 px par heure : 9 h 00 = 144 px, 9 h 20 = 160 px (arrondi à 9 h 15).
+    fireEvent.pointerDown(column, { clientY: 144, button: 0, pointerId: 1 });
+    fireEvent.pointerMove(column, { clientY: 160, pointerId: 1 });
+    fireEvent.pointerUp(column, { clientY: 160, pointerId: 1 });
+
+    expect(rangeSelected).toHaveBeenCalledWith({
+      date: TUESDAY,
+      startTime: '09:00',
+      endTime: '09:15',
+    });
+    expect(screen.queryByText(/09:00 – 09:15/)).not.toBeInTheDocument();
   });
 
   it('ne démarre pas de sélection depuis un créneau existant', async () => {
