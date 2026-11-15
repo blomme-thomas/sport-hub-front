@@ -30,7 +30,7 @@
     <p class="week-mini__status" role="status">Chargement des séances…</p>
   } @else {
     @if (empty()) {
-      <p class="week-mini__status">Aucune séance planifiée sur cette période.</p>
+      <p class="week-mini__status">Aucune séance sur cette période.</p>
     }
 
     @if (view() === 'month') {
@@ -64,6 +64,19 @@
                     [color]="styleOf(session.disciplineTypeKey).color"
                   />
                 </button>
+              </li>
+            }
+            @for (activity of day.realized; track activity.id) {
+              <li>
+                <span
+                  class="week-mini__realized"
+                  role="img"
+                  [style.background-color]="activity.discipline.color"
+                  [attr.aria-label]="'Réalisé : ' + activity.label"
+                  [attr.title]="'Réalisé : ' + activity.label"
+                >
+                  <sh-icon [name]="activity.discipline.icon" color="var(--sh-surface)" />
+                </span>
               </li>
             }
           </ul>
