@@ -99,3 +99,10 @@
 @if (weeklyReviewEnabled) {
   <sh-weekly-review-card class="dashboard__review" />
 }
+
+<ng-template #activityDetailTitle>
+  <h2 class="sh-activity-modal__title">
+    <sh-icon name="list" color="var(--sh-success)" />
+    <span>Détail de la séance</span>
+  </h2>
+</ng-template>
