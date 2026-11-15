@@ -1,4 +1,5 @@
 import { activitiesHandlers } from './activities.handlers';
+import { dashboardAdviceHandlers } from './dashboard-advice.handlers';
 import { activityCommentsHandlers } from './activity-comments.handlers';
 import { dashboardKpisHandlers } from './dashboard-kpis.handlers';
 import { goalsHandlers } from './goals.handlers';
@@ -18,6 +19,7 @@ export const handlers = [
   ...slotsHandlers,
   ...sessionsHandlers,
   ...weeklyReviewsHandlers,
+  ...dashboardAdviceHandlers,
   ...activitiesHandlers,
   ...activityCommentsHandlers,
   ...dashboardKpisHandlers,
