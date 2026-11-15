@@ -146,6 +146,7 @@ export class WeekMiniCalendarState {
       const activity: WeekMiniActivity = {
         id: item.id,
         label: `${recent.typeLabel}, ${recent.durationLabel}`,
+        startTime: localTimeOf(new Date(item.startedAt)),
         discipline: disciplineStyleOf(item.type),
       };
       byDate.set(date, [...(byDate.get(date) ?? []), activity]);
@@ -245,6 +246,11 @@ function shiftPeriod(view: MiniCalendarView, anchor: string, count: number): str
   const year = Number(anchor.slice(0, 4));
   const month = Number(anchor.slice(5, 7)) - 1 + count;
   return new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 10);
+}
+
+/** Heure locale d'un instant, au format `HH:mm`. */
+function localTimeOf(date: Date): string {
+  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
 function mondayOfDate(iso: string): string {

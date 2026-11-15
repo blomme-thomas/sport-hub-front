@@ -29,6 +29,8 @@ export interface WeekMiniActivity {
   id: string;
   /** Libellé accessible : « Course à pied, 45 min ». */
   label: string;
+  /** Heure de début, locale, au format `HH:mm`. */
+  startTime: string;
   discipline: DisciplineStyle;
 }
 

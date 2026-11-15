@@ -80,7 +80,7 @@ test.describe('Tableau de bord : mini-calendrier de la semaine', () => {
 
     await page.goto('/');
     const miniCalendar = page.locator('sh-week-mini-calendar');
-    await expect(miniCalendar.locator('.week-mini__day')).toHaveCount(7);
+    await expect(miniCalendar.locator('.week-mini__head')).toHaveCount(7);
 
     await page.getByRole('button', { name: '30 derniers jours' }).click();
     await expect(miniCalendar.getByRole('heading', { level: 2 })).toHaveText(/^\S+ \d{4}$/);
@@ -88,7 +88,7 @@ test.describe('Tableau de bord : mini-calendrier de la semaine', () => {
     expect([28, 35, 42]).toContain(monthCells);
 
     await page.getByRole('button', { name: '7 derniers jours' }).click();
-    await expect(miniCalendar.locator('.week-mini__day')).toHaveCount(7);
+    await expect(miniCalendar.locator('.week-mini__head')).toHaveCount(7);
   });
 });
 
