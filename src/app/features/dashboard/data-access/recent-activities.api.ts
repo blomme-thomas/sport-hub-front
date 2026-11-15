@@ -23,6 +23,15 @@ export class RecentActivitiesApi {
       .pipe(map((response) => response.items));
   }
 
+  /** Activités réalisées entre deux dates locales (`YYYY-MM-DD`) incluses, de la plus récente à la plus ancienne. */
+  inRange(from: string, to: string, pageSize: number): Observable<ActivitySummaryApi[]> {
+    return this.http
+      .get<ActivityListApi>(`${this.baseUrl}/activities`, {
+        params: { from, to, pageSize: String(pageSize) },
+      })
+      .pipe(map((response) => response.items));
+  }
+
   /** Toutes les métriques d'une activité, dont la série de fréquence cardiaque. */
   detail(id: string): Observable<ActivityDetailApi> {
     return this.http.get<ActivityDetailApi>(`${this.baseUrl}/activities/${encodeURIComponent(id)}`);

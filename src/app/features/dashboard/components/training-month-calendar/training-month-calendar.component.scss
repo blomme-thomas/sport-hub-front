@@ -1,0 +1,135 @@
+.month {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-3);
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+}
+
+.month__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sh-space-2);
+}
+
+.month__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.month__nav {
+  display: flex;
+  gap: var(--sh-space-2);
+}
+
+.month__grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2px;
+  table-layout: fixed;
+
+  th {
+    padding-bottom: var(--sh-space-1);
+    color: var(--sh-text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-align: center;
+  }
+}
+
+.month__cell {
+  padding: 0;
+  vertical-align: top;
+}
+
+.month__cell--outside {
+  opacity: 0.4;
+}
+
+.month__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  min-height: 3rem;
+  padding: var(--sh-space-1);
+  border: 1px solid transparent;
+  border-radius: var(--sh-radius);
+  background: transparent;
+  color: var(--sh-text);
+  font: inherit;
+}
+
+button.month__day {
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--sh-border);
+  }
+
+  &[aria-pressed='true'] {
+    border-color: var(--sh-accent-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--sh-accent-text);
+    outline-offset: 2px;
+  }
+}
+
+.month__cell--today .month__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--sh-accent-text);
+  border-radius: 50%;
+  font-weight: 600;
+}
+
+.month__dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+}
+
+.month__dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+
+  sh-icon {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+}
+
+.month__status {
+  margin: 0;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+}
+
+.month__error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sh-space-2);
+  color: var(--sh-error);
+
+  p {
+    margin: 0;
+  }
+}
