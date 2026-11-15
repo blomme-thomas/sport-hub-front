@@ -96,18 +96,6 @@
   </section>
 }
 
-@if (adviceEnabled) {
-  <sh-dashboard-advice-card
-    class="dashboard__advice"
-    [advice]="advice.advice()"
-    [loading]="advice.loading()"
-    [generating]="advice.generating()"
-    [errorMessage]="advice.errorMessage()"
-    (generate)="advice.generate()"
-    (retry)="advice.reload()"
-  />
-}
-
 @if (weeklyReviewEnabled) {
   <sh-weekly-review-card class="dashboard__review" />
 }

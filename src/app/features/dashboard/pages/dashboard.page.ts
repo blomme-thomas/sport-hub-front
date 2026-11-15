@@ -23,8 +23,6 @@ import { CompletionCardComponent } from '../components/completion-card/completio
 import { CompletionState } from '../data-access/completion.state';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card/weekly-review-card.component';
 import { WeekMiniCalendarComponent } from '../components/week-mini-calendar/week-mini-calendar.component';
-import { DashboardAdviceCardComponent } from '../components/dashboard-advice-card/dashboard-advice-card.component';
-import { DashboardAdviceState } from '../data-access/dashboard-advice.state';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
 import { NextEventState } from '../data-access/next-event.state';
@@ -57,7 +55,6 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     CompletionCardComponent,
     WeekMiniCalendarComponent,
     WeeklyReviewCardComponent,
-    DashboardAdviceCardComponent,
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
@@ -72,17 +69,13 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     WeekMiniCalendarState,
     ProfileState,
     CompletionState,
-    DashboardAdviceState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage {
   /** Bilan de la semaine masqué tant que le token IA n'est pas disponible (story #16). */
   protected readonly weeklyReviewEnabled = false;
-  /** Conseil IA masqué tant que la fonctionnalité IA n'est pas disponible (pas de token d'utilisation). */
-  protected readonly adviceEnabled = false;
   protected readonly state = inject(DashboardState);
-  protected readonly advice = inject(DashboardAdviceState);
   protected readonly kpis = inject(DashboardKpisState);
   protected readonly nextEvent = inject(NextEventState);
   protected readonly recent = inject(RecentActivitiesState);

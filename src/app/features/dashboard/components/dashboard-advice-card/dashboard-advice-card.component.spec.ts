@@ -1,20 +1,27 @@
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import {
-  adviceApi,
-  insufficientAdviceApi,
-} from '../../../../../mocks/fixtures/dashboard-advice.fixtures';
-import { toDashboardAdvice } from '../../data-access/dashboard-advice.mapper';
+import type { DashboardAdvice } from '../../models/dashboard-advice.model';
 import { DashboardAdviceCardComponent } from './dashboard-advice-card.component';
 
-const advice = toDashboardAdvice(adviceApi);
+const advice: DashboardAdvice = {
+  week: '2026-W46',
+  text: 'Belle semaine de volume, garde la séance facile de jeudi et une vraie journée de repos.',
+  insufficient: false,
+  generatedAt: '2026-11-09T18:30:00.000Z',
+};
+
+const insufficientAdvice: DashboardAdvice = {
+  ...advice,
+  text: 'Pas encore assez d’activités cette semaine pour un conseil personnalisé.',
+  insufficient: true,
+};
 
 describe('DashboardAdviceCardComponent', () => {
   it('affiche le conseil en texte brut, avec sa date de génération', async () => {
     await render(DashboardAdviceCardComponent, { inputs: { advice } });
 
-    expect(screen.getByText(adviceApi.text)).toBeInTheDocument();
+    expect(screen.getByText(advice.text)).toBeInTheDocument();
     expect(screen.getByText(/Généré le/)).toBeInTheDocument();
   });
 
@@ -28,9 +35,7 @@ describe('DashboardAdviceCardComponent', () => {
   });
 
   it('affiche un conseil insuffisant en clair, sans alerte', async () => {
-    await render(DashboardAdviceCardComponent, {
-      inputs: { advice: toDashboardAdvice(insufficientAdviceApi) },
-    });
+    await render(DashboardAdviceCardComponent, { inputs: { advice: insufficientAdvice } });
 
     expect(
       screen.getByText('Données insuffisantes pour un conseil cette semaine.'),
