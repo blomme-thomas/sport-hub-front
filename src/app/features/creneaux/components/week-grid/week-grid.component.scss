@@ -2,6 +2,9 @@ $hour-column-width: 3.5rem;
 $day-min-width: 7.5rem;
 
 .week-grid {
+  /* Glisser pour créer une séance ne sélectionne pas le texte de la grille (libellés, horaires). */
+  user-select: none;
+  -webkit-user-select: none;
   overflow-x: auto;
   border: 1px solid var(--sh-border);
   border-radius: var(--sh-radius);
