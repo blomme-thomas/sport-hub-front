@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, resource } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  resource,
+  signal,
+} from '@angular/core';
 import { ChartComponent } from '@shared/ui/chart/chart.component';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { firstValueFrom } from 'rxjs';
@@ -12,7 +19,12 @@ import {
   toRecentActivity,
 } from '../../data-access/recent-activities.mapper';
 import type { ActivityDetailApi, HeartRateSampleApi } from '../../models/recent-activity.api-model';
-import { detailChartOptions, heartRateChartData } from '../../config/heart-rate-chart.config';
+import {
+  detailChartOptions,
+  hasDistanceAxis,
+  heartRateChartData,
+  type HeartRateAxis,
+} from '../../config/heart-rate-chart.config';
 
 /** Donnée transmise à la modale : identifiant de l'activité. */
 export interface ActivityDetailModalData {
@@ -110,10 +122,28 @@ export class ActivityDetailModalComponent {
   protected readonly samples = computed<readonly HeartRateSampleApi[]>(() =>
     this.detail.hasValue() ? (this.detail.value().heartRateSeries ?? []) : [],
   );
-  protected readonly chartData = computed(() =>
-    heartRateChartData(this.samples(), this.heartZones.floors()),
+
+  /** Axe demandé par l'utilisateur ; reste sur la durée tant que les échantillons n'ont pas de distance. */
+  protected readonly requestedAxis = signal<HeartRateAxis>('time');
+  /** Bascule Durée / Km proposée seulement si chaque échantillon porte sa distance. */
+  protected readonly canUseDistance = computed(() => hasDistanceAxis(this.samples()));
+  protected readonly axis = computed<HeartRateAxis>(() =>
+    this.requestedAxis() === 'distance' && this.canUseDistance() ? 'distance' : 'time',
   );
-  protected readonly chartOptions = detailChartOptions();
+
+  protected readonly chartData = computed(() =>
+    heartRateChartData(
+      this.samples(),
+      this.heartZones.floors(),
+      this.detail.hasValue() ? this.detail.value().startedAt : new Date(0).toISOString(),
+      this.axis(),
+    ),
+  );
+  protected readonly chartOptions = computed(() => detailChartOptions(this.axis()));
+
+  protected selectAxis(axis: HeartRateAxis): void {
+    this.requestedAxis.set(axis);
+  }
 
   /** Temps passé dans chaque zone de FC, avec sa part du total, pour les zones renseignées. */
   protected readonly zones = computed<{ label: string; value: string; share: number }[]>(() => {
@@ -122,16 +152,21 @@ export class ActivityDetailModalComponent {
     }
     const times = this.detail.value().hrTimeInZone;
     const total = times.reduce<number>((sum, seconds) => sum + Math.max(seconds ?? 0, 0), 0);
-    return times.flatMap((seconds, index) =>
-      seconds === null || seconds <= 0
-        ? []
-        : [
-            {
-              label: `Zone ${index + 1}`,
-              value: `${Math.round(seconds / SECONDS_PER_MINUTE)} min`,
-              share: total > 0 ? Math.round((seconds / total) * 100) : 0,
-            },
-          ],
+    return (
+      times
+        .flatMap((seconds, index) =>
+          seconds === null || seconds <= 0
+            ? []
+            : [
+                {
+                  label: `Zone ${index + 1}`,
+                  value: `${Math.round(seconds / SECONDS_PER_MINUTE)} min`,
+                  share: total > 0 ? Math.round((seconds / total) * 100) : 0,
+                },
+              ],
+        )
+        // Zone la plus haute en premier.
+        .reverse()
     );
   });
 }
