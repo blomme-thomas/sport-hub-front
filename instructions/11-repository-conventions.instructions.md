@@ -27,7 +27,8 @@ src/
     shared/          # ui/, pipes/, directives/, validators/, utils/
     features/<feature>/
       pages/<name>.page.ts|html|scss        # composants routés
-      components/<name>.component.ts|html|scss
+      components/<name>/<name>.component.ts|html|scss|spec.ts   # un sous-dossier par composant
+      config/<name>.ts                          # helpers de présentation non composant
       data-access/<name>.api.ts, <name>.state.ts, <name>.mapper.ts
       models/<name>.model.ts, <name>.api-model.ts
       <feature>.routes.ts

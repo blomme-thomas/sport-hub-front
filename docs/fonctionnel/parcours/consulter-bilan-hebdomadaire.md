@@ -8,7 +8,7 @@ Lire, sur le tableau de bord, le bilan de la semaine : ce qui a été suivi, un 
 
 ## Point d'entrée
 
-- Carte « Bilan de la semaine » en bas du tableau de bord (`features/dashboard/components/weekly-review-card.component.ts`).
+- Carte « Bilan de la semaine » en bas du tableau de bord (`features/dashboard/components/weekly-review-card/weekly-review-card.component.ts`).
 - Utilisateur unique, sans authentification.
 
 ## Étapes

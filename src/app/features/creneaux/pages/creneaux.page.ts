@@ -17,10 +17,13 @@ import { firstValueFrom } from 'rxjs';
 import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import { addIsoDays, localIsoDate } from '../../../shared/utils/iso-date';
-import { PauseBannersComponent } from '../components/pause-banners.component';
-import { PauseFormComponent, type PauseDraft } from '../components/pause-form.component';
-import { SessionFormComponent, type SessionDefaults } from '../components/session-form.component';
-import { type GridMove, WeekGridComponent } from '../components/week-grid.component';
+import { PauseBannersComponent } from '../components/pause-banners/pause-banners.component';
+import { PauseFormComponent, type PauseDraft } from '../components/pause-form/pause-form.component';
+import {
+  SessionFormComponent,
+  type SessionDefaults,
+} from '../components/session-form/session-form.component';
+import { type GridMove, WeekGridComponent } from '../components/week-grid/week-grid.component';
 import { PausesState } from '../data-access/pauses.state';
 import { PlanningApi, type EventGoal } from '../data-access/planning.api';
 import { SessionsWriteApi, type CreateSessionRequestApi } from '../data-access/sessions-write.api';

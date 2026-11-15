@@ -1,4 +1,4 @@
-// Squelette — à copier dans features/<feature>/components/<name>-chart.component.ts puis adapter.
+// Squelette — à copier dans features/<feature>/components/<name>-chart/<name>-chart.component.ts puis adapter.
 // Exclu du build/lint/test (voir instructions/11, section "Templates de code").
 // Référence : instructions/08-styling-ui-and-accessibility.instructions.md (section Chart.js)
 //

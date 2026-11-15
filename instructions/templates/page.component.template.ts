@@ -6,7 +6,7 @@
 
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 // import { ExampleState } from '../data-access/example.state';
-// import { ExampleCardComponent } from '../components/example-card.component';
+// import { ExampleCardComponent } from '../components/example-card/example-card.component';
 
 @Component({
   selector: 'sh-example-page',

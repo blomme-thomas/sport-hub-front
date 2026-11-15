@@ -1,4 +1,4 @@
-// Squelette — à copier dans features/<feature>/components/<name>-form.component.ts puis adapter.
+// Squelette — à copier dans features/<feature>/components/<name>-form/<name>-form.component.ts puis adapter.
 // Exclu du build/lint/test (voir instructions/11, section "Templates de code").
 // Référence : instructions/06-forms.instructions.md
 

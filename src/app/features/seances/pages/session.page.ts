@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input } from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { SessionActivityComponent } from '../components/session-activity.component';
-import { SessionModulesComponent } from '../components/session-modules.component';
-import { SessionObjectivesComponent } from '../components/session-objectives.component';
+import { SessionActivityComponent } from '../components/session-activity/session-activity.component';
+import { SessionModulesComponent } from '../components/session-modules/session-modules.component';
+import { SessionObjectivesComponent } from '../components/session-objectives/session-objectives.component';
 import { SessionState } from '../data-access/session.state';
 import type { ModuleType, SessionStatus } from '../models/session.model';
 
