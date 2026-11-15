@@ -127,6 +127,10 @@ $day-min-width: 7.5rem;
   border-radius: var(--sh-radius-sm);
   background: color-mix(in srgb, var(--sh-accent) 25%, transparent);
   color: var(--sh-text);
+  /* Le rectangle garde son surlignage ; l'horaire est du texte simple, en haut de la sélection. */
+  align-items: flex-start;
+  padding-top: 2px;
+  font-weight: 400;
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   pointer-events: none;

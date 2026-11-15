@@ -212,6 +212,7 @@ export class WeekGridComponent {
       date: current.date,
       top: ((start - this.offsetMinutes()) * PX_PER_HOUR) / MINUTES_PER_HOUR,
       height: ((end - start) * PX_PER_HOUR) / MINUTES_PER_HOUR,
+      label: `${minutesToTime(start)} – ${minutesToTime(end)}`,
     };
   });
 
