@@ -21,8 +21,8 @@ const PX_PER_HOUR = 48;
 const HOURS = 24;
 const MINUTES_PER_HOUR = 60;
 const DAY_MINUTES = HOURS * MINUTES_PER_HOUR;
-/** Pas de la sélection et du déplacement à la souris, en minutes. */
-const SNAP_MINUTES = 30;
+/** Pas de la sélection et du déplacement à la souris, en minutes : le quart d'heure. */
+const SNAP_MINUTES = 15;
 /** Durée proposée par un simple clic sur une colonne. */
 const DEFAULT_DURATION_MINUTES = 60;
 /** Hauteur minimale d'un bloc, pour que son libellé reste lisible. */
@@ -94,7 +94,7 @@ interface GridColumn {
 /**
  * Grille d'une semaine : une colonne par jour, de 00:00 à 24:00. Affiche les créneaux (libres ou occupés) et les
  * séances (icône et couleur de leur discipline). Cliquer sur un créneau émet ce créneau, cliquer sur une séance
- * émet la séance ; glisser sur une colonne émet la plage choisie (pas de 30 min, un clic seul propose une heure).
+ * émet la séance ; glisser sur une colonne émet la plage choisie (pas d'un quart d'heure, un clic seul propose une heure).
  * Un élément déplaçable (créneau, ou séance ponctuelle) se glisse vers un autre jour ou une autre heure
  * (`moved`). Une séance récurrente ne se déplace pas ici (story #49).
  * Présentationnel : ne charge rien et ne modifie rien.
@@ -212,7 +212,6 @@ export class WeekGridComponent {
       date: current.date,
       top: ((start - this.offsetMinutes()) * PX_PER_HOUR) / MINUTES_PER_HOUR,
       height: ((end - start) * PX_PER_HOUR) / MINUTES_PER_HOUR,
-      label: `${minutesToTime(start)} – ${minutesToTime(end)}`,
     };
   });
 
