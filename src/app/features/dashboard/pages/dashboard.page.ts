@@ -79,6 +79,8 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
 export class DashboardPage {
   /** Bilan de la semaine masqué tant que le token IA n'est pas disponible (story #16). */
   protected readonly weeklyReviewEnabled = false;
+  /** Conseil IA masqué tant que la fonctionnalité IA n'est pas disponible (pas de token d'utilisation). */
+  protected readonly adviceEnabled = false;
   protected readonly state = inject(DashboardState);
   protected readonly advice = inject(DashboardAdviceState);
   protected readonly kpis = inject(DashboardKpisState);
