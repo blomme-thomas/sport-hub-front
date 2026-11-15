@@ -85,7 +85,7 @@ test.describe('Calendrier : modifier la durée d’une séance', () => {
     }
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await page.mouse.down();
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 + 48, { steps: 6 });
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 + 72, { steps: 6 });
     await page.mouse.up();
 
     await page.waitForTimeout(300);

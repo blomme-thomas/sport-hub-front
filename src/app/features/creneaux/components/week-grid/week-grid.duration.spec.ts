@@ -77,9 +77,9 @@ describe('WeekGridComponent : durée et séances réalisées', () => {
     });
     const block = screen.getByRole('button', { name: /réalisée/ });
 
-    fireEvent.pointerDown(block, { clientX: 10, clientY: 100, button: 0, pointerId: 1 });
-    fireEvent.pointerMove(block, { clientX: 10, clientY: 148, pointerId: 1 });
-    fireEvent.pointerUp(block, { clientX: 10, clientY: 148, pointerId: 1 });
+    fireEvent.pointerDown(block, { clientX: 10, clientY: 150, button: 0, pointerId: 1 });
+    fireEvent.pointerMove(block, { clientX: 10, clientY: 222, pointerId: 1 });
+    fireEvent.pointerUp(block, { clientX: 10, clientY: 222, pointerId: 1 });
 
     expect(moved).not.toHaveBeenCalled();
   });

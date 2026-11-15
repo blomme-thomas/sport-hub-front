@@ -54,13 +54,13 @@ test.describe('Calendrier : déplacer une séance', () => {
       throw new Error('bloc de séance introuvable');
     }
 
-    // Une heure dans la grille = 48 px ; on glisse d'une heure vers le bas.
+    // Une heure dans la grille = 72 px ; on glisse d'une heure vers le bas.
     const startX = box.x + box.width / 2;
     const startY = box.y + box.height / 2;
     await page.mouse.move(startX, startY);
     await page.mouse.down();
     await page.mouse.move(startX, startY + 24, { steps: 4 });
-    await page.mouse.move(startX, startY + 48, { steps: 4 });
+    await page.mouse.move(startX, startY + 72, { steps: 4 });
     await page.mouse.up();
 
     await expect.poll(() => patched).toMatchObject({ startTime: '19:00' });

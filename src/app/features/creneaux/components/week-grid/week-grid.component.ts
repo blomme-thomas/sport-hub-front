@@ -17,7 +17,7 @@ import type { Slot, SlotDefaults } from '../../models/slot.model';
 import type { WeekDay } from '../../models/week-day.model';
 
 /** Hauteur d'une heure dans la grille, en pixels. */
-const PX_PER_HOUR = 48;
+const PX_PER_HOUR = 72;
 const HOURS = 24;
 const MINUTES_PER_HOUR = 60;
 const DAY_MINUTES = HOURS * MINUTES_PER_HOUR;
