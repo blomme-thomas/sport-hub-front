@@ -121,7 +121,7 @@ describe('WeekGridComponent', () => {
     });
   });
 
-  it('propose une heure à partir du point cliqué sans glisser', async () => {
+  it('propose un quart d’heure à partir du point cliqué sans glisser', async () => {
     const { rangeSelected } = await renderGrid([]);
     const column = screen.getByRole('group', { name: 'mardi 10 novembre 2026' });
 
@@ -131,7 +131,7 @@ describe('WeekGridComponent', () => {
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,
       startTime: '08:00',
-      endTime: '09:00',
+      endTime: '08:15',
     });
   });
 

@@ -24,7 +24,7 @@ const DAY_MINUTES = HOURS * MINUTES_PER_HOUR;
 /** Pas de la sélection et du déplacement à la souris, en minutes : le quart d'heure. */
 const SNAP_MINUTES = 15;
 /** Durée proposée par un simple clic sur une colonne. */
-const DEFAULT_DURATION_MINUTES = 60;
+const DEFAULT_DURATION_MINUTES = SNAP_MINUTES;
 /** Hauteur minimale d'un bloc, pour que son libellé reste lisible. */
 const MIN_BLOCK_HEIGHT_PX = 20;
 const BLOCK_GAP_PX = 2;
