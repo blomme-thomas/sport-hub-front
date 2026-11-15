@@ -79,19 +79,6 @@
       />
     </div>
 
-    <sh-training-month-calendar
-      class="dashboard__month"
-      [title]="month.title()"
-      [weeks]="month.weeks()"
-      [loading]="month.isLoading()"
-      [empty]="month.isEmpty()"
-      [error]="month.errorMessage()"
-      (previous)="month.previous()"
-      (next)="month.next()"
-      (current)="month.today()"
-      (retry)="month.reload()"
-    />
-
     @if (state.view(); as view) {
       @if (!state.isEmpty()) {
         <div class="dashboard__charts">

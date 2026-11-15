@@ -23,8 +23,6 @@ import { CompletionCardComponent } from '../components/completion-card/completio
 import { CompletionState } from '../data-access/completion.state';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card/weekly-review-card.component';
 import { WeekMiniCalendarComponent } from '../components/week-mini-calendar/week-mini-calendar.component';
-import { TrainingMonthCalendarComponent } from '../components/training-month-calendar/training-month-calendar.component';
-import { TrainingMonthState } from '../data-access/training-month.state';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
 import { NextEventState } from '../data-access/next-event.state';
@@ -57,7 +55,6 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     CompletionCardComponent,
     WeekMiniCalendarComponent,
     WeeklyReviewCardComponent,
-    TrainingMonthCalendarComponent,
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
@@ -72,7 +69,6 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     WeekMiniCalendarState,
     ProfileState,
     CompletionState,
-    TrainingMonthState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -80,7 +76,6 @@ export class DashboardPage {
   /** Bilan de la semaine masqué tant que le token IA n'est pas disponible (story #16). */
   protected readonly weeklyReviewEnabled = false;
   protected readonly state = inject(DashboardState);
-  protected readonly month = inject(TrainingMonthState);
   protected readonly kpis = inject(DashboardKpisState);
   protected readonly nextEvent = inject(NextEventState);
   protected readonly recent = inject(RecentActivitiesState);

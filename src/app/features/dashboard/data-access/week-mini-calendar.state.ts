@@ -4,20 +4,34 @@ import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import { addIsoDays, localIsoDate } from '../../../shared/utils/iso-date';
 import { isoWeekOf, mondayOfIsoWeek } from '../../../shared/utils/iso-week';
-import type { WeekMiniLegendEntry, WeekMiniSession } from '../models/week-mini-calendar.model';
+import { disciplineStyleOf } from '../../../shared/ui/discipline/discipline-style';
+import type {
+  WeekMiniActivity,
+  WeekMiniLegendEntry,
+  WeekMiniSession,
+} from '../models/week-mini-calendar.model';
+import type { ActivitySummaryApi } from '../models/recent-activity.api-model';
 import { DashboardState } from './dashboard.state';
+import { RecentActivitiesApi } from './recent-activities.api';
+import { toRecentActivity } from './recent-activities.mapper';
 import { WeekSessionsApi } from './week-sessions.api';
 
 const DAYS_PER_WEEK = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+/** Activités réalisées chargées pour la grille ; au-delà, les excédentaires ne s'affichent pas. */
+const ACTIVITY_PAGE_SIZE = 100;
 
 /** Vue du mini-calendrier : une semaine, ou un mois. Elle suit le sélecteur Semaine/Mois du tableau de bord. */
 export type MiniCalendarView = 'week' | 'month';
 
-/** Case du mini-calendrier : sa date, ses séances triées par heure, et si elle appartient à la période affichée. */
+/**
+ * Case du mini-calendrier : sa date, ses séances planifiées triées par heure, ses activités réalisées,
+ * et si elle appartient à la période affichée.
+ */
 export interface WeekMiniDay {
   date: string;
   sessions: WeekMiniSession[];
+  realized: WeekMiniActivity[];
   inPeriod: boolean;
 }
 
@@ -29,10 +43,12 @@ export interface WeekMiniDay {
 @Injectable()
 export class WeekMiniCalendarState {
   private readonly api = inject(WeekSessionsApi);
+  private readonly activitiesApi = inject(RecentActivitiesApi);
   private readonly dashboard = inject(DashboardState);
   /** Date de référence : un jour de la période affichée (semaine ou mois). */
   private readonly anchorValue = signal(localIsoDate());
   private readonly sessionsValue = signal<readonly WeekMiniSession[]>([]);
+  private readonly activitiesValue = signal<readonly ActivitySummaryApi[]>([]);
   private readonly labelsValue = signal<ReadonlyMap<string, string>>(new Map());
   private readonly loadingValue = signal(true);
   private readonly errorValue = signal<AppError | null>(null);
@@ -52,7 +68,12 @@ export class WeekMiniCalendarState {
 
   readonly isLoading = this.loadingValue.asReadonly();
   readonly error = this.errorValue.asReadonly();
-  readonly isEmpty = computed(() => !this.loadingValue() && this.sessionsValue().length === 0);
+  readonly isEmpty = computed(
+    () =>
+      !this.loadingValue() &&
+      this.sessionsValue().length === 0 &&
+      this.activitiesValue().length === 0,
+  );
 
   readonly title = computed(() => {
     const { start, end } = this.period();
@@ -71,21 +92,43 @@ export class WeekMiniCalendarState {
     for (const session of this.sessionsValue()) {
       byDate.set(session.date, [...(byDate.get(session.date) ?? []), session]);
     }
+    const realizedByDate = this.realizedByDate();
     return datesBetween(from, to).map((date) => ({
       date,
       inPeriod: date >= start && date <= end,
       sessions: [...(byDate.get(date) ?? [])].sort((a, b) =>
         (a.startTime ?? '').localeCompare(b.startTime ?? ''),
       ),
+      realized: realizedByDate.get(date) ?? [],
     }));
   });
 
-  /** Disciplines présentes sur la période, avec leur libellé du référentiel (la clé brute si elle est inconnue). */
+  /** Disciplines présentes sur la période (planifiées ou réalisées), avec leur libellé du référentiel. */
   readonly legend = computed<WeekMiniLegendEntry[]>(() => {
     const labels = this.labelsValue();
-    const keys = new Set(this.sessionsValue().map((session) => session.disciplineTypeKey));
+    const keys = new Set([
+      ...this.sessionsValue().map((session) => session.disciplineTypeKey),
+      ...this.activitiesValue().map((activity) => activity.type),
+    ]);
     return [...keys].map((typeKey) => ({ typeKey, label: labels.get(typeKey) ?? typeKey }));
   });
+
+  /** Activités réalisées regroupées par jour local ; les activités hors de la plage sont ignorées par la grille. */
+  private realizedByDate(): Map<string, WeekMiniActivity[]> {
+    const byDate = new Map<string, WeekMiniActivity[]>();
+    const now = new Date();
+    for (const item of this.activitiesValue()) {
+      const date = localIsoDate(new Date(item.startedAt));
+      const recent = toRecentActivity(item, now);
+      const activity: WeekMiniActivity = {
+        id: item.id,
+        label: `${recent.typeLabel}, ${recent.durationLabel}`,
+        discipline: disciplineStyleOf(item.type),
+      };
+      byDate.set(date, [...(byDate.get(date) ?? []), activity]);
+    }
+    return byDate;
+  }
 
   constructor() {
     // Chaque changement de période (navigation, ou bascule Semaine/Mois) recharge les séances de la plage.
@@ -122,14 +165,16 @@ export class WeekMiniCalendarState {
     // Les libellés du référentiel ne changent pas d'une période à l'autre : on ne les demande qu'une fois.
     const needLabels = this.labelsValue().size === 0;
     try {
-      const [sessions, labels] = await Promise.all([
+      const [sessions, activities, labels] = await Promise.all([
         firstValueFrom(this.api.list(from, to)),
+        firstValueFrom(this.activitiesApi.inRange(from, to, ACTIVITY_PAGE_SIZE)),
         needLabels ? firstValueFrom(this.api.disciplineLabels()) : Promise.resolve(null),
       ]);
       if (request !== this.latestRequest) {
         return;
       }
       this.sessionsValue.set(sessions);
+      this.activitiesValue.set(activities);
       if (labels !== null) {
         this.labelsValue.set(labels);
       }
@@ -137,6 +182,7 @@ export class WeekMiniCalendarState {
     } catch (error) {
       if (request === this.latestRequest) {
         this.sessionsValue.set([]);
+        this.activitiesValue.set([]);
         this.errorValue.set(error instanceof AppError ? error : toAppError(error));
       }
     } finally {

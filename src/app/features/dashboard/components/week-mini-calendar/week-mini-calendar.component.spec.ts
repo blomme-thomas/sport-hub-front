@@ -13,8 +13,26 @@ function days(sessionsByDate: Record<string, WeekMiniDay['sessions']>): WeekMini
     const date = new Date(Date.parse(`${MONDAY}T00:00:00Z`) + index * 86_400_000)
       .toISOString()
       .slice(0, 10);
-    return { date, sessions: sessionsByDate[date] ?? [], inPeriod: true };
+    return { date, sessions: sessionsByDate[date] ?? [], realized: [], inPeriod: true };
   });
+}
+
+/** Ajoute une activité réalisée au jour `date` de la liste. */
+function withRealized(list: WeekMiniDay[], date: string): WeekMiniDay[] {
+  return list.map((day) =>
+    day.date === date
+      ? {
+          ...day,
+          realized: [
+            {
+              id: 'act-run',
+              label: 'Course à pied, 45 min',
+              discipline: { icon: 'run', color: 'var(--sh-success)' },
+            },
+          ],
+        }
+      : day,
+  );
 }
 
 const course = {
@@ -88,7 +106,7 @@ describe('WeekMiniCalendarComponent', () => {
     expect(screen.queryByRole('alert')).toBeNull();
   });
 
-  it('affiche le message vide quand aucune séance n’est planifiée', async () => {
+  it('affiche le message vide quand aucune séance n’est planifiée ni réalisée', async () => {
     await render(WeekMiniCalendarComponent, {
       inputs: { days: days({}), legend: [], empty: true },
       on: {
@@ -100,7 +118,7 @@ describe('WeekMiniCalendarComponent', () => {
       },
     });
 
-    expect(screen.getByText('Aucune séance planifiée sur cette période.')).toBeTruthy();
+    expect(screen.getByText('Aucune séance sur cette période.')).toBeTruthy();
   });
 
   it('affiche l’erreur avec un bouton Réessayer qui émet retry', async () => {
@@ -117,5 +135,24 @@ describe('WeekMiniCalendarComponent', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Connexion impossible.');
     await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
     expect(retry).toHaveBeenCalled();
+  });
+});
+
+describe('WeekMiniCalendarComponent — activités réalisées', () => {
+  it('affiche une activité réalisée comme repère non interactif, avec son libellé', async () => {
+    await render(WeekMiniCalendarComponent, {
+      inputs: { days: withRealized(days({}), WEDNESDAY), legend: [] },
+      on: {
+        previous: vi.fn(),
+        next: vi.fn(),
+        current: vi.fn(),
+        retry: vi.fn(),
+        sessionSelected: vi.fn(),
+      },
+    });
+
+    const marker = screen.getByRole('img', { name: 'Réalisé : Course à pied, 45 min' });
+    expect(marker).toBeInTheDocument();
+    expect(marker.closest('button')).toBeNull();
   });
 });
