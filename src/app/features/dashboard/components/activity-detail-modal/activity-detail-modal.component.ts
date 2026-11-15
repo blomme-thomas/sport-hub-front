@@ -3,6 +3,7 @@ import { ChartComponent } from '@shared/ui/chart/chart.component';
 import { NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { firstValueFrom } from 'rxjs';
 import { toAppError } from '../../../../core/http/problem-details.mapper';
+import { ActivityCommentState } from '../../data-access/activity-comment.state';
 import { HeartRateZonesState } from '../../data-access/heart-rate-zones.state';
 import { RecentActivitiesApi } from '../../data-access/recent-activities.api';
 import {
@@ -12,6 +13,7 @@ import {
 } from '../../data-access/recent-activities.mapper';
 import type { ActivityDetailApi, HeartRateSampleApi } from '../../models/recent-activity.api-model';
 import { detailChartOptions, heartRateChartData } from '../../config/heart-rate-chart.config';
+import { ActivityCommentComponent } from '../activity-comment/activity-comment.component';
 
 /** Donnée transmise à la modale : identifiant de l'activité. */
 export interface ActivityDetailModalData {
@@ -26,7 +28,8 @@ const SECONDS_PER_MINUTE = 60;
  */
 @Component({
   selector: 'sh-activity-detail-modal',
-  imports: [ChartComponent],
+  imports: [ChartComponent, ActivityCommentComponent],
+  providers: [ActivityCommentState],
   templateUrl: './activity-detail-modal.component.html',
   styleUrl: './activity-detail-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,6 +38,11 @@ export class ActivityDetailModalComponent {
   private readonly data = inject<ActivityDetailModalData>(NZ_MODAL_DATA);
   private readonly api = inject(RecentActivitiesApi);
   private readonly heartZones = inject(HeartRateZonesState);
+  protected readonly comments = inject(ActivityCommentState);
+
+  constructor() {
+    this.comments.select(this.data.id);
+  }
 
   protected readonly detail = resource<ActivityDetailApi, string>({
     params: () => this.data.id,

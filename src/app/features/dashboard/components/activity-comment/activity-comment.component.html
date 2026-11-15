@@ -1,0 +1,57 @@
+<section
+  class="comment"
+  aria-labelledby="activity-comment-heading"
+  [attr.aria-busy]="loading() || generating()"
+>
+  <h3 id="activity-comment-heading" class="comment__title">Commentaire</h3>
+
+  @if (errorMessage(); as message) {
+    <div class="comment__error" role="alert">
+      <p>{{ message }}</p>
+      <button nz-button type="button" (click)="retry.emit()">Réessayer</button>
+    </div>
+  } @else if (comment(); as value) {
+    <p class="comment__text">{{ value.text }}</p>
+    <footer class="comment__footer">
+      <span class="comment__meta">{{ sourceLabel() }} · {{ generatedLabel() }}</span>
+      @if (confirming()) {
+        <p class="comment__confirm">Le commentaire actuel sera remplacé.</p>
+        <div class="comment__actions">
+          <button
+            nz-button
+            nzType="primary"
+            type="button"
+            [disabled]="generating()"
+            (click)="confirmRegenerate()"
+          >
+            Confirmer la régénération
+          </button>
+          <button nz-button type="button" (click)="confirming.set(false)">Annuler</button>
+        </div>
+      } @else {
+        <button nz-button type="button" [disabled]="generating()" (click)="confirming.set(true)">
+          Régénérer
+        </button>
+      }
+    </footer>
+  } @else if (loading()) {
+    <p class="comment__status">Chargement…</p>
+  } @else {
+    <div class="comment__empty">
+      <p>Aucun commentaire pour cette activité.</p>
+      <button
+        nz-button
+        nzType="primary"
+        type="button"
+        [disabled]="generating()"
+        (click)="generate.emit()"
+      >
+        Générer le commentaire
+      </button>
+    </div>
+  }
+
+  @if (generating()) {
+    <p class="comment__status" role="status">Génération en cours…</p>
+  }
+</section>
