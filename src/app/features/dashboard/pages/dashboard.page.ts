@@ -115,7 +115,7 @@ export class DashboardPage {
     this.modal.create({
       nzTitle: this.activityDetailTitle(),
       nzClassName: 'sh-activity-modal',
-      nzWidth: 'min(1120px, 96vw)',
+      nzWidth: 'min(1400px, 96vw)',
       nzContent: ActivityDetailModalComponent,
       nzData: { id } satisfies ActivityDetailModalData,
       nzViewContainerRef: this.viewContainer,
