@@ -37,6 +37,16 @@
   }
 </section>
 
+<sh-dashboard-advice-card
+  class="dashboard__advice"
+  [advice]="advice.advice()"
+  [loading]="advice.isLoading()"
+  [generating]="advice.generating()"
+  [errorMessage]="advice.errorMessage()"
+  (generate)="advice.regenerate()"
+  (retry)="advice.reload()"
+/>
+
 @if (state.error(); as error) {
   <div class="dashboard__error" role="alert">
     <p>{{ error.userMessage }}</p>

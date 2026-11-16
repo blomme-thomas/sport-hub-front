@@ -120,12 +120,15 @@ function setInputs(fixture: ComponentFixture<ChartComponent>, overrides: Overrid
 }
 
 /**
- * Rendu du composant en attendant la stabilisation : l'effet qui crée l'instance Chart.js est appliqué pendant
- * la détection de changements, qui peut tarder sur un runner chargé. Sans cette attente, la lecture immédiate
- * de `chartJs.instances` était intermittente.
+ * Rendu du composant en attendant la stabilisation. L'effet qui crée l'instance Chart.js lit le canvas, résolu
+ * pendant la première détection de changements : il ne s'applique qu'à la passe suivante. Deux passes
+ * explicites rendent la lecture de `chartJs.instances` déterministe, sur un runner chargé comme en local.
  */
 async function renderChart(options: { inputs?: Record<string, unknown> }) {
   const result = await render(ChartComponent, options);
+  result.fixture.detectChanges();
+  await result.fixture.whenStable();
+  result.fixture.detectChanges();
   await result.fixture.whenStable();
   TestBed.tick();
   return result;

@@ -25,6 +25,8 @@ import { ZonesCardComponent } from '../components/zones-card/zones-card.componen
 import { CompletionCardComponent } from '../components/completion-card/completion-card.component';
 import { CompletionState } from '../data-access/completion.state';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card/weekly-review-card.component';
+import { DashboardAdviceCardComponent } from '../components/dashboard-advice-card/dashboard-advice-card.component';
+import { DashboardAdviceState } from '../data-access/dashboard-advice.state';
 import { WeekMiniCalendarComponent } from '../components/week-mini-calendar/week-mini-calendar.component';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
@@ -59,6 +61,7 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     CompletionCardComponent,
     WeekMiniCalendarComponent,
     WeeklyReviewCardComponent,
+    DashboardAdviceCardComponent,
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
@@ -73,6 +76,7 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     WeekMiniCalendarState,
     ProfileState,
     CompletionState,
+    DashboardAdviceState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -88,6 +92,7 @@ export class DashboardPage {
   protected readonly recent = inject(RecentActivitiesState);
   protected readonly profile = inject(ProfileState);
   protected readonly completion = inject(CompletionState);
+  protected readonly advice = inject(DashboardAdviceState);
 
   /** Message d'accueil : « Bonjour {prénom} », ou « Bonjour » seul si le prénom est inconnu. */
   protected readonly greeting = computed(() => {
