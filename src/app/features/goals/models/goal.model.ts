@@ -1,4 +1,4 @@
-export type GoalType = 'evenement' | 'volume' | 'regularite';
+export type GoalType = 'evenement' | 'volume' | 'regularite' | 'hebdomadaire';
 
 export type EventFormat = 'sprint' | 'olympique' | 'half' | 'full' | 'autre';
 

@@ -115,6 +115,16 @@ Le sélecteur de période en haut à droite pilote les métriques du tableau de 
 - **« Vos performances »** : en vue semaine, une courbe par jour. En vue mois, un point par semaine ISO (libellés « S45 », etc.), pour éviter une trentaine de libellés de jours redondants. Le graphique reste une courbe dans les deux vues : seules les données changent, animées, sans recréer le graphique. La grille est horizontale, fine et pointillée.
 - **Hors sélecteur** : « Détails par séance », le mini-calendrier (qui a son propre sélecteur de semaine ou de mois) et la zone de FC, qui ne dépendent pas de cette période.
 
+## Objectif de la semaine (story #31)
+
+Carte « Objectif de la semaine » : anneau de progression, durée réalisée sur la cible (« 6h 42 / 8h 00 »), message de statut et mini-courbe des huit dernières semaines.
+
+- **Source** : `GET /api/goals/weekly/:week` (semaine ISO courante). Le back renvoie des secondes brutes : la cible (null sans objectif hebdomadaire), le réalisé de la semaine et l'historique. Le pourcentage et le statut sont calculés côté front.
+- **Pourcentage** : arrondi, sans plafond dans le texte (il peut dépasser 100 %) ; l'anneau est plafonné à 100 %.
+- **Statut** (seuils dans `config/weekly-goal-status.ts`) : « Objectif atteint ! » à partir de 100 %, « Très bien ! » à partir de 75 %, « En bonne voie » à partir de 50 %, « À renforcer » en dessous.
+- **Sans objectif** : pas de pourcentage (jamais 0 %) ; la carte propose « Définir un objectif » vers `/goals`, où le type « Hebdomadaire (cible par semaine) » se crée avec un temps cible.
+- **États** : chargement, erreur avec « Réessayer », sans objectif, valeurs affichées.
+
 ## Hors périmètre
 
-Progression chiffrée vers l'objectif, bilan hebdomadaire généré par l'IA, mini-calendrier de la semaine, commentaire IA, calendrier et planning : stories à venir.
+Progression chiffrée des objectifs événement et volume, bilan hebdomadaire généré par l'IA, commentaire IA, calendrier et planning : stories à venir.
