@@ -9,6 +9,24 @@ body {
   font-family: var(--sh-font-family);
 }
 
+/* Focus visible sur tous les contrôles (clavier), sans le retirer pour la souris. */
+:focus-visible {
+  outline: 2px solid var(--sh-accent-text);
+  outline-offset: 2px;
+}
+
+/* Réduction des mouvements : transitions et animations CSS (anneaux, barres, apparitions) quasi instantanées. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

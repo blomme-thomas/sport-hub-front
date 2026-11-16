@@ -23,8 +23,18 @@ function isEmpty(data: ChartData): boolean {
   );
 }
 
+/** Vrai quand l'utilisateur demande moins de mouvement ; absent des environnements sans `matchMedia`. */
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches === true
+  );
+}
+
 function withDefaults(options: ChartOptions): ChartOptions {
-  return { ...DEFAULT_OPTIONS, ...options };
+  // Chart.js anime ses graphiques par défaut, en JS (hors CSS) : on le coupe pour qui demande moins de mouvement.
+  const motion: ChartOptions = prefersReducedMotion() ? { animation: false } : {};
+  return { ...DEFAULT_OPTIONS, ...motion, ...options };
 }
 
 function cloneData(data: ChartData): ChartData {
