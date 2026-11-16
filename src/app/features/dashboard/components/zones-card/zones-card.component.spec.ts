@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/angular';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import type { ZonesCardView } from '../../models/zones-card.model';
 import { ZonesCardComponent } from './zones-card.component';
 
@@ -43,5 +44,26 @@ describe('ZonesCardComponent', () => {
     expect(
       screen.queryByRole('list', { name: 'Légende des zones cardiaques' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('affiche un état de chargement tant que la vue n’est pas reçue', async () => {
+    const { container } = await render(ZonesCardComponent, {
+      inputs: { view: undefined, loading: true },
+    });
+
+    expect(screen.getByText('Chargement…')).toBeInTheDocument();
+    expect(container.querySelector('section')).toHaveAttribute('aria-busy', 'true');
+  });
+
+  it('affiche son erreur avec un bouton Réessayer qui émet retry', async () => {
+    const retry = vi.fn();
+    await render(ZonesCardComponent, {
+      inputs: { view: undefined, errorMessage: 'Zones indisponibles' },
+      on: { retry },
+    });
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Zones indisponibles');
+    await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
+    expect(retry).toHaveBeenCalledTimes(1);
   });
 });

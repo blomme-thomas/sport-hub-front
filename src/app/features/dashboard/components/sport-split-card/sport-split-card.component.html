@@ -1,39 +1,48 @@
-<section class="split" aria-labelledby="sport-split-heading">
+<section class="split" aria-labelledby="sport-split-heading" [attr.aria-busy]="loading()">
   <h2 id="sport-split-heading" class="split__heading">
     <sh-icon name="pie" color="var(--sh-violet)" />
     <span>Répartition par sport</span>
   </h2>
 
-  @if (split().shares.length === 0) {
-    <p class="split__status">Aucune séance sur cette période</p>
-  } @else {
-    <div class="split__body">
-      <div class="split__chart">
-        <sh-chart
-          type="doughnut"
-          [data]="chartData()"
-          [options]="chartOptions"
-          label="Répartition du temps d’entraînement par sport"
-        />
-        <div class="split__total" aria-hidden="true">
-          <strong>{{ split().totalLabel }}</strong>
-          <span>Total</span>
-        </div>
-      </div>
-
-      <ul class="split__legend" aria-label="Légende de la répartition">
-        @for (share of split().shares; track share.family) {
-          <li>
-            <span
-              class="split__swatch"
-              [style.background]="'var(' + share.colorVariable + ')'"
-              aria-hidden="true"
-            ></span>
-            <span class="split__label">{{ share.label }}</span>
-            <strong class="split__percent">{{ share.percent }} %</strong>
-          </li>
-        }
-      </ul>
+  @if (errorMessage(); as message) {
+    <div class="split__error" role="alert">
+      <p>{{ message }}</p>
+      <button nz-button type="button" (click)="retry.emit()">Réessayer</button>
     </div>
+  } @else if (split(); as value) {
+    @if (value.shares.length === 0) {
+      <p class="split__status">Aucune séance sur cette période</p>
+    } @else {
+      <div class="split__body">
+        <div class="split__chart">
+          <sh-chart
+            type="doughnut"
+            [data]="chartData()"
+            [options]="chartOptions"
+            label="Répartition du temps d’entraînement par sport"
+          />
+          <div class="split__total" aria-hidden="true">
+            <strong>{{ value.totalLabel }}</strong>
+            <span>Total</span>
+          </div>
+        </div>
+
+        <ul class="split__legend" aria-label="Légende de la répartition">
+          @for (share of value.shares; track share.family) {
+            <li>
+              <span
+                class="split__swatch"
+                [style.background]="'var(' + share.colorVariable + ')'"
+                aria-hidden="true"
+              ></span>
+              <span class="split__label">{{ share.label }}</span>
+              <strong class="split__percent">{{ share.percent }} %</strong>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  } @else {
+    <p class="split__status" role="status">Chargement…</p>
   }
 </section>
