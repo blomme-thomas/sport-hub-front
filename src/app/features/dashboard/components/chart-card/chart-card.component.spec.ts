@@ -10,6 +10,8 @@ vi.mock('chart.js', async () => (await import('../../../../../mocks/chart-js.fak
 
 const TITLE = 'Séances par semaine';
 const CHART_TIMEOUT_MS = 5000;
+// Timeout du test entier : il englobe le rendu à froid, plus lent sur un runner CI chargé.
+const CHART_TEST_TIMEOUT_MS = 15_000;
 
 const chartModel: ChartModel = {
   title: TITLE,
@@ -46,24 +48,28 @@ describe('ChartCardComponent', () => {
     expect(expand).toHaveBeenCalledTimes(1);
   });
 
-  it('transmet les libellés et les valeurs du modèle à Chart.js', async () => {
-    await render(ChartCardComponent, { inputs: { model: chartModel } });
+  it(
+    'transmet les libellés et les valeurs du modèle à Chart.js',
+    async () => {
+      await render(ChartCardComponent, { inputs: { model: chartModel } });
 
-    // Chart.js est créé de façon asynchrone après le rendu : on attend l'instance avant de la lire.
-    // Délai allongé : sur un runner CI chargé, la création dépasse le délai par défaut d'une seconde.
-    await vi.waitFor(
-      () => {
-        TestBed.tick();
-        expect(chartJsInstances).toHaveLength(1);
-      },
-      { timeout: CHART_TIMEOUT_MS },
-    );
-    const [chart] = chartJsInstances;
-    expect(chart?.config.data.labels).toEqual(['S43', 'S44']);
-    expect(chart?.config.data.datasets).toEqual([
-      expect.objectContaining({ label: 'Séances', data: [2, 4] }),
-    ]);
-  });
+      // Chart.js est créé de façon asynchrone après le rendu : on attend l'instance avant de la lire.
+      // Délai allongé : sur un runner CI chargé, la création dépasse le délai par défaut d'une seconde.
+      await vi.waitFor(
+        () => {
+          TestBed.tick();
+          expect(chartJsInstances).toHaveLength(1);
+        },
+        { timeout: CHART_TIMEOUT_MS },
+      );
+      const [chart] = chartJsInstances;
+      expect(chart?.config.data.labels).toEqual(['S43', 'S44']);
+      expect(chart?.config.data.datasets).toEqual([
+        expect.objectContaining({ label: 'Séances', data: [2, 4] }),
+      ]);
+    },
+    CHART_TEST_TIMEOUT_MS,
+  );
 
   it('nomme le graphique par son titre pour les lecteurs d écran', async () => {
     await render(ChartCardComponent, { inputs: { model: chartModel } });
@@ -71,21 +77,25 @@ describe('ChartCardComponent', () => {
     expect(screen.getByRole('img', { name: TITLE })).toBeInTheDocument();
   });
 
-  it('dessine un graphique horizontal à barres quand le type demandé est horizontal-bar', async () => {
-    await render(ChartCardComponent, {
-      inputs: { model: chartModel, kind: 'horizontal-bar' },
-    });
+  it(
+    'dessine un graphique horizontal à barres quand le type demandé est horizontal-bar',
+    async () => {
+      await render(ChartCardComponent, {
+        inputs: { model: chartModel, kind: 'horizontal-bar' },
+      });
 
-    await vi.waitFor(
-      () => {
-        TestBed.tick();
-        expect(chartJsInstances).toHaveLength(1);
-      },
-      { timeout: CHART_TIMEOUT_MS },
-    );
-    expect(chartJsInstances[0]?.config.type).toBe('bar');
-    expect(chartJsInstances[0]?.config.options).toMatchObject({ indexAxis: 'y' });
-  });
+      await vi.waitFor(
+        () => {
+          TestBed.tick();
+          expect(chartJsInstances).toHaveLength(1);
+        },
+        { timeout: CHART_TIMEOUT_MS },
+      );
+      expect(chartJsInstances[0]?.config.type).toBe('bar');
+      expect(chartJsInstances[0]?.config.options).toMatchObject({ indexAxis: 'y' });
+    },
+    CHART_TEST_TIMEOUT_MS,
+  );
 
   it('affiche un tableau récapitulatif des libellés et des valeurs', async () => {
     await render(ChartCardComponent, { inputs: { model: chartModel } });

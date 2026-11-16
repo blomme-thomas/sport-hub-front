@@ -1,8 +1,13 @@
 import { expect, test } from '@playwright/test';
 import { CreneauxPage } from '../../pages/creneaux.page';
+import { currentWeekDay } from '../../support/week-dates';
 
 const SESSIONS_URL = /\/api\/sessions(\?.*)?$/;
-const CANCEL_URL = /\/api\/sessions\/session-piscine\/occurrences\/2026-11-09\/cancel$/;
+// Lundi de la semaine affichée : la séance et l'occurrence annulée tombent dans cette semaine.
+const OCCURRENCE_DATE = currentWeekDay(0);
+const CANCEL_URL = new RegExp(
+  `/api/sessions/session-piscine/occurrences/${OCCURRENCE_DATE}/cancel$`,
+);
 const SLOTS_URL = /\/api\/slots(\?.*)?$/;
 const DISCIPLINES_URL = /\/api\/disciplines$/;
 
@@ -21,7 +26,7 @@ test.describe('Calendrier : une occurrence de séance hebdomadaire', () => {
           items: [
             {
               sessionId: 'session-piscine',
-              date: '2026-11-09',
+              date: OCCURRENCE_DATE,
               startTime: '18:00',
               durationMinutes: 60,
               disciplineTypeKey: 'lap_swimming',

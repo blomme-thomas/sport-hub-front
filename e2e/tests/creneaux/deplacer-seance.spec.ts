@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { CreneauxPage } from '../../pages/creneaux.page';
+import { currentWeekDay } from '../../support/week-dates';
 
 const SESSIONS_URL = /\/api\/sessions(\?.*)?$/;
 const SESSION_URL = /\/api\/sessions\/session-course$/;
@@ -23,7 +24,7 @@ test.describe('Calendrier : déplacer une séance', () => {
           items: [
             {
               sessionId: 'session-course',
-              date: '2026-11-12',
+              date: currentWeekDay(2),
               startTime: '18:00',
               durationMinutes: 45,
               disciplineTypeKey: 'running',
