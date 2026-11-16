@@ -1,9 +1,14 @@
 import { http, HttpResponse } from 'msw';
 import { weeklyGoalApi } from '../fixtures/weekly-goal.fixtures';
+import { storedWeeklyTargetSeconds } from './user-settings.handlers';
 
-/** Cible hebdomadaire de toute semaine demandée, pour que le tableau de bord se charge sans back. */
+/** Progression hebdomadaire de toute semaine demandée, avec la cible enregistrée dans les réglages. */
 export const weeklyGoalHandlers = [
-  http.get('*/api/goals/weekly/:week', ({ params }) =>
-    HttpResponse.json({ ...weeklyGoalApi, week: String(params['week']) }),
+  http.get('*/api/settings/weekly-target/:week', ({ params }) =>
+    HttpResponse.json({
+      ...weeklyGoalApi,
+      week: String(params['week']),
+      targetSeconds: storedWeeklyTargetSeconds(),
+    }),
   ),
 ];

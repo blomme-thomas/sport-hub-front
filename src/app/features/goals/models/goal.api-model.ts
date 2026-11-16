@@ -1,4 +1,4 @@
-export type GoalTypeApi = 'evenement' | 'volume' | 'regularite' | 'hebdomadaire';
+export type GoalTypeApi = 'evenement' | 'volume' | 'regularite';
 
 export type EventFormatApi = 'sprint' | 'olympique' | 'half' | 'full' | 'autre';
 

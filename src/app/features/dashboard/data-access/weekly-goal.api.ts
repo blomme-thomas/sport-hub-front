@@ -12,6 +12,8 @@ export class WeeklyGoalApiService {
 
   /** Cible et réalisé de la semaine ISO demandée (`AAAA-Www`). */
   get(week: string): Observable<WeeklyGoalApi> {
-    return this.http.get<WeeklyGoalApi>(`${this.baseUrl}/goals/weekly/${encodeURIComponent(week)}`);
+    return this.http.get<WeeklyGoalApi>(
+      `${this.baseUrl}/settings/weekly-target/${encodeURIComponent(week)}`,
+    );
   }
 }

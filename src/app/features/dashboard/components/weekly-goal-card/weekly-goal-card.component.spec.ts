@@ -38,15 +38,15 @@ describe('WeeklyGoalCardComponent', () => {
     expect(screen.getByRole('img', { name: 'Objectif atteint à 84 %' })).toBeInTheDocument();
   });
 
-  it('propose de définir un objectif vers la page Objectifs quand la semaine n’a pas de cible', async () => {
+  it('propose de définir la cible vers les paramètres quand la semaine n’en a pas', async () => {
     await render(WeeklyGoalCardComponent, {
       inputs: { view: WITHOUT_TARGET },
       providers: [provideRouter([])],
     });
 
-    expect(screen.getByRole('link', { name: 'Définir un objectif' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Définir la cible' })).toHaveAttribute(
       'href',
-      '/goals',
+      '/parametres',
     );
     expect(screen.queryByText(/\d %/)).not.toBeInTheDocument();
   });

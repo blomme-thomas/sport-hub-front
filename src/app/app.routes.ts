@@ -23,6 +23,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/seances/seances.routes').then((m) => m.SEANCES_ROUTES),
   },
   {
+    path: 'parametres',
+    loadChildren: () =>
+      import('./features/reglages/reglages.routes').then((m) => m.REGLAGES_ROUTES),
+  },
+  {
     path: '**',
     title: 'Page introuvable',
     loadComponent: () => import('./core/layout/not-found.page').then((m) => m.NotFoundPage),

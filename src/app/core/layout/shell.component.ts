@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 /** Entrées du menu pas encore disponibles : affichées, non cliquables. */
-const COMING_SOON = ['Entraînements', 'Statistiques', 'Conseils IA', 'Paramètres'] as const;
+const COMING_SOON = ['Entraînements', 'Statistiques', 'Conseils IA'] as const;
 
 /** Coque de l'application : sidebar de navigation et zone de contenu routée. */
 @Component({

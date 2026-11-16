@@ -119,10 +119,12 @@ Le sélecteur de période en haut à droite pilote les métriques du tableau de 
 
 Carte « Objectif de la semaine » : anneau de progression, durée réalisée sur la cible (« 6h 42 / 8h 00 »), message de statut et mini-courbe des huit dernières semaines.
 
-- **Source** : `GET /api/goals/weekly/:week` (semaine ISO courante). Le back renvoie des secondes brutes : la cible (null sans objectif hebdomadaire), le réalisé de la semaine et l'historique. Le pourcentage et le statut sont calculés côté front.
+- **Cible** : réglage personnel, saisi dans **Paramètres** (`/parametres`, `GET/PUT /api/settings`). Elle reste la même tant qu'elle n'est pas modifiée.
+- **Source** : `GET /api/settings/weekly-target/:week` (semaine ISO courante). Le back renvoie des secondes brutes : la cible (null si non définie), le réalisé de la semaine et l'historique. Le pourcentage et le statut sont calculés côté front.
 - **Pourcentage** : arrondi, sans plafond dans le texte (il peut dépasser 100 %) ; l'anneau est plafonné à 100 %.
 - **Statut** (seuils dans `config/weekly-goal-status.ts`) : « Objectif atteint ! » à partir de 100 %, « Très bien ! » à partir de 75 %, « En bonne voie » à partir de 50 %, « À renforcer » en dessous.
-- **Sans objectif** : pas de pourcentage (jamais 0 %) ; la carte propose « Définir un objectif » vers `/goals`, où le type « Hebdomadaire (cible par semaine) » se crée avec un temps cible.
+- **Sans cible** : pas de pourcentage (jamais 0 %) ; la carte propose « Définir la cible » vers `/parametres`.
+- **Paramètres** : heures et minutes de la cible, « Enregistrer » (refuse une durée nulle) et « Retirer l’objectif » (envoie `null`).
 - **États** : chargement, erreur avec « Réessayer », sans objectif, valeurs affichées.
 
 ## Hors périmètre

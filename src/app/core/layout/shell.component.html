@@ -56,6 +56,17 @@
             Calendrier
           </a>
         </li>
+        <li>
+          <a
+            class="shell__link"
+            routerLink="/parametres"
+            routerLinkActive="shell__link--active"
+            ariaCurrentWhenActive="page"
+            (click)="closeMenu()"
+          >
+            Paramètres
+          </a>
+        </li>
         @for (label of comingSoon; track label) {
           <li>
             <span

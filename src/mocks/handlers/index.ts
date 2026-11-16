@@ -8,6 +8,7 @@ import { heartRateZonesHandlers } from './heart-rate-zones.handlers';
 import { sessionsHandlers } from './sessions.handlers';
 import { slotsHandlers } from './slots.handlers';
 import { trainingStatsHandlers } from './training-stats.handlers';
+import { userSettingsHandlers } from './user-settings.handlers';
 import { weeklyGoalHandlers } from './weekly-goal.handlers';
 import { weeklyReviewsHandlers } from './weekly-reviews.handlers';
 
@@ -24,4 +25,5 @@ export const handlers = [
   ...profileHandlers,
   ...dashboardAdviceHandlers,
   ...weeklyGoalHandlers,
+  ...userSettingsHandlers,
 ];

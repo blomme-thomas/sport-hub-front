@@ -1,0 +1,90 @@
+<header class="reglages__header">
+  <h1 class="reglages__title">Paramètres</h1>
+</header>
+
+<section
+  class="reglages__section"
+  aria-labelledby="weekly-target-heading"
+  [attr.aria-busy]="state.isLoading()"
+>
+  <h2 id="weekly-target-heading" class="reglages__heading">Objectif de la semaine</h2>
+  <p class="reglages__help">
+    Le temps que vous visez chaque semaine. Il reste le même tant que vous ne le modifiez pas.
+  </p>
+
+  @if (state.isLoading()) {
+    <p class="reglages__status" role="status">Chargement…</p>
+  } @else {
+    <p class="reglages__current">
+      @if (currentLabel(); as label) {
+        Cible actuelle : <strong>{{ label }}</strong>
+      } @else {
+        Aucun objectif hebdomadaire défini.
+      }
+    </p>
+
+    <form class="reglages__form" (submit)="$event.preventDefault(); submit()" novalidate>
+      <div class="reglages__fields">
+        <div class="reglages__field">
+          <label for="target-hours">Heures</label>
+          <input
+            id="target-hours"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            [max]="maxHours"
+            step="1"
+            [value]="hours()"
+            (input)="onHours($event)"
+            [attr.aria-invalid]="touched() && invalid()"
+            [attr.aria-describedby]="touched() && invalid() ? 'target-error' : null"
+          />
+        </div>
+        <div class="reglages__field">
+          <label for="target-minutes">Minutes</label>
+          <input
+            id="target-minutes"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            [max]="maxMinutes"
+            step="1"
+            [value]="minutes()"
+            (input)="onMinutes($event)"
+            [attr.aria-invalid]="touched() && invalid()"
+            [attr.aria-describedby]="touched() && invalid() ? 'target-error' : null"
+          />
+        </div>
+      </div>
+
+      @if (touched() && invalid()) {
+        <p id="target-error" class="reglages__error">{{ invalidMessage }}</p>
+      }
+
+      <div class="reglages__actions">
+        <button nz-button nzType="primary" type="submit" [disabled]="state.saving()">
+          Enregistrer
+        </button>
+        <button
+          nz-button
+          type="button"
+          [disabled]="state.saving() || currentLabel() === null"
+          (click)="clear()"
+        >
+          Retirer l’objectif
+        </button>
+      </div>
+    </form>
+
+    @if (state.saved()) {
+      <p class="reglages__status" role="status">Cible enregistrée.</p>
+    }
+  }
+
+  @if (state.error(); as error) {
+    <div class="reglages__error-block" role="alert">
+      <p>{{ error.userMessage }}</p>
+      <button nz-button type="button" (click)="state.reload()">Réessayer</button>
+    </div>
+  }
+</section>
