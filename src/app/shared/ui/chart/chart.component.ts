@@ -69,22 +69,33 @@ export class ChartComponent {
   protected readonly emptyMessage = EMPTY_MESSAGE;
   protected readonly empty = computed(() => isEmpty(this.data()));
 
-  private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
+  // Non requis et lu dans l'effet : si le canvas n'est pas encore rendu, l'effet se relance quand il l'est.
+  private readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
   private rendered: { chart: Chart; type: ChartType } | null = null;
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this.destroyChart());
 
     effect(() => {
+      const canvas = this.canvas();
       const type = this.type();
       const data = this.data();
       const options = this.options();
       const empty = this.empty();
-      untracked(() => this.sync(type, data, options, empty));
+      if (canvas === undefined) {
+        return;
+      }
+      untracked(() => this.sync(canvas.nativeElement, type, data, options, empty));
     });
   }
 
-  private sync(type: ChartType, data: ChartData, options: ChartOptions, empty: boolean): void {
+  private sync(
+    canvas: HTMLCanvasElement,
+    type: ChartType,
+    data: ChartData,
+    options: ChartOptions,
+    empty: boolean,
+  ): void {
     if (empty) {
       this.destroyChart();
       return;
@@ -97,7 +108,7 @@ export class ChartComponent {
     if (!this.rendered) {
       this.rendered = {
         type,
-        chart: new Chart(this.canvas().nativeElement, {
+        chart: new Chart(canvas, {
           type,
           data: cloneData(data),
           options: withDefaults(options),
