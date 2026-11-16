@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/angular';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import type { SportSplitView } from '../../models/sport-split.model';
 import { SportSplitCardComponent } from './sport-split-card.component';
 
@@ -30,5 +31,26 @@ describe('SportSplitCardComponent', () => {
     expect(
       screen.queryByRole('list', { name: 'Légende de la répartition' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('affiche un état de chargement tant que la répartition n’est pas reçue', async () => {
+    const { container } = await render(SportSplitCardComponent, {
+      inputs: { split: undefined, loading: true },
+    });
+
+    expect(screen.getByText('Chargement…')).toBeInTheDocument();
+    expect(container.querySelector('section')).toHaveAttribute('aria-busy', 'true');
+  });
+
+  it('affiche son erreur avec un bouton Réessayer qui émet retry', async () => {
+    const retry = vi.fn();
+    await render(SportSplitCardComponent, {
+      inputs: { split: undefined, errorMessage: 'Répartition indisponible' },
+      on: { retry },
+    });
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Répartition indisponible');
+    await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
+    expect(retry).toHaveBeenCalledTimes(1);
   });
 });

@@ -154,6 +154,15 @@ describe('DashboardPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(ERROR_MESSAGES['INVALID_RESPONSE']);
   });
 
+  it('une erreur de statistiques ne masque ni la page ni les cartes qui n en dépendent pas', async () => {
+    server.use(http.get(STATS_URL, () => new HttpResponse(null, { status: 500 })));
+    await render(DashboardPage, { providers: pageProviders() });
+
+    await screen.findByRole('alert');
+    expect(screen.getByRole('heading', { level: 1, name: 'Tableau de bord' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Conseil IA personnalisé' })).toBeInTheDocument();
+  });
+
   describe('bloc Prochain événement', () => {
     beforeEach(() => {
       vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-30T10:00:00Z') });
