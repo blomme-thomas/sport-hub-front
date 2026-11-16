@@ -14,7 +14,7 @@ import {
   PointElement,
   Tooltip,
 } from 'chart.js';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CHART_REGISTERED_ITEMS } from './chart-registry';
 import { chartJsInstances } from '../../../../mocks/chart-js.fake';
 import { ChartComponent } from './chart.component';
@@ -75,6 +75,19 @@ async function renderChart(options: { inputs?: Record<string, unknown> }) {
 }
 
 describe('ChartComponent', () => {
+  it('désactive l’animation de Chart.js quand l’utilisateur demande moins de mouvement', async () => {
+    const original = window.matchMedia;
+    window.matchMedia = vi
+      .fn()
+      .mockReturnValue({ matches: true }) as unknown as typeof window.matchMedia;
+    try {
+      await renderChart({ inputs: inputs() });
+      expect(chartJsInstances[0]?.config.options).toMatchObject({ animation: false });
+    } finally {
+      window.matchMedia = original;
+    }
+  });
+
   beforeEach(() => {
     chartJsInstances.length = 0;
   });
