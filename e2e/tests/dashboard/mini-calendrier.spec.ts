@@ -3,13 +3,21 @@ import {
   monthStatsResponse,
   normalStatsResponse,
 } from '../../../src/mocks/fixtures/training-stats.fixtures';
+import { dashboardKpisResponse } from '../../../src/mocks/fixtures/dashboard-kpis.fixtures';
 
+const API_URL = /\/api\//;
 const STATS_URL = /\/api\/stats(\?.*)?$/;
+const KPIS_URL = /\/api\/stats\/dashboard(\?.*)?$/;
+const PROFILE_URL = /\/api\/profile$/;
 const SESSIONS_URL = /\/api\/sessions(\?.*)?$/;
 const DISCIPLINES_URL = /\/api\/disciplines$/;
 
 test.describe('Tableau de bord : mini-calendrier de la semaine', () => {
   test.beforeEach(async ({ page }) => {
+    // Catch-all enregistré en premier : sans back en CI, toute requête non mockée ferait passer la page en erreur.
+    await page.route(API_URL, (route) => route.fulfill({ json: { items: [] } }));
+    await page.route(KPIS_URL, (route) => route.fulfill({ json: dashboardKpisResponse }));
+    await page.route(PROFILE_URL, (route) => route.fulfill({ json: { displayName: null } }));
     await page.route(STATS_URL, (route) =>
       route.fulfill({
         json:
