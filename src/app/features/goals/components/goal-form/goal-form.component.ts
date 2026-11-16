@@ -43,7 +43,6 @@ const FORM_FIELDS: Readonly<Record<FormFieldName, true>> = {
 };
 
 const EVENT_TYPE: GoalType = 'evenement';
-const WEEKLY_TYPE: GoalType = 'hebdomadaire';
 const REQUIRED_MESSAGE = 'Ce champ est obligatoire.';
 
 const notBlank = (control: AbstractControl): ValidationErrors | null =>
@@ -104,8 +103,6 @@ export class GoalFormComponent implements OnInit {
     initialValue: this.form.controls.type.value,
   });
   protected readonly isEvent = computed(() => this.typeValue() === EVENT_TYPE);
-  /** Objectif hebdomadaire : ni date cible ni format, seulement un temps cible par semaine. */
-  protected readonly isWeekly = computed(() => this.typeValue() === WEEKLY_TYPE);
 
   private readonly serverMessages = computed(() => {
     const messages = new Map<FormFieldName, string>();
@@ -165,12 +162,11 @@ export class GoalFormComponent implements OnInit {
 
   private toGoalInput(): GoalInput {
     const value = this.form.getRawValue();
-    const weekly = value.type === WEEKLY_TYPE;
     return {
       title: value.title,
       type: value.type,
-      targetDate: weekly ? null : toIsoDate(value.targetDate),
-      eventFormat: weekly ? null : value.eventFormat,
+      targetDate: toIsoDate(value.targetDate),
+      eventFormat: value.eventFormat,
       targetTime: value.targetTimeSeconds,
     };
   }
