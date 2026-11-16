@@ -28,6 +28,8 @@ import { AI_FEATURES } from '../../../core/config/ai-features';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card/weekly-review-card.component';
 import { DashboardAdviceCardComponent } from '../components/dashboard-advice-card/dashboard-advice-card.component';
 import { DashboardAdviceState } from '../data-access/dashboard-advice.state';
+import { WeeklyGoalCardComponent } from '../components/weekly-goal-card/weekly-goal-card.component';
+import { WeeklyGoalState } from '../data-access/weekly-goal.state';
 import { WeekMiniCalendarComponent } from '../components/week-mini-calendar/week-mini-calendar.component';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
@@ -63,6 +65,7 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     WeekMiniCalendarComponent,
     WeeklyReviewCardComponent,
     DashboardAdviceCardComponent,
+    WeeklyGoalCardComponent,
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
@@ -78,6 +81,7 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     ProfileState,
     CompletionState,
     DashboardAdviceState,
+    WeeklyGoalState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -96,6 +100,7 @@ export class DashboardPage {
   protected readonly profile = inject(ProfileState);
   protected readonly completion = inject(CompletionState);
   protected readonly advice = inject(DashboardAdviceState);
+  protected readonly weeklyGoal = inject(WeeklyGoalState);
 
   /** Message d'accueil : « Bonjour {prénom} », ou « Bonjour » seul si le prénom est inconnu. */
   protected readonly greeting = computed(() => {

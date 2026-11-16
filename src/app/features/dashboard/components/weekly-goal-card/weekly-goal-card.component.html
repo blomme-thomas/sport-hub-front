@@ -1,0 +1,47 @@
+<section class="goal" aria-labelledby="weekly-goal-heading" [attr.aria-busy]="loading()">
+  <h2 id="weekly-goal-heading" class="goal__heading">
+    <sh-icon name="flag" color="var(--sh-accent-text)" />
+    <span>Objectif de la semaine</span>
+  </h2>
+
+  @if (errorMessage(); as message) {
+    <div class="goal__error" role="alert">
+      <p>{{ message }}</p>
+      <button nz-button type="button" (click)="retry.emit()">Réessayer</button>
+    </div>
+  } @else if (view(); as value) {
+    @if (value.targetLabel === null) {
+      <div class="goal__empty">
+        <p>Aucun objectif hebdomadaire défini.</p>
+        <a nz-button nzType="primary" routerLink="/goals">Définir un objectif</a>
+      </div>
+    } @else {
+      <div class="goal__body">
+        <div
+          class="goal__ring"
+          [style.--goal-percent]="ringPercent() + '%'"
+          role="img"
+          [attr.aria-label]="'Objectif atteint à ' + value.percent + ' %'"
+        >
+          <strong>{{ value.percent }} %</strong>
+        </div>
+
+        <div class="goal__figures">
+          <p class="goal__value">{{ value.doneLabel }} / {{ value.targetLabel }}</p>
+          <p class="goal__status" role="status">{{ value.statusMessage }}</p>
+        </div>
+      </div>
+
+      <div class="goal__trend">
+        <sh-chart
+          type="line"
+          [data]="chartData()"
+          [options]="chartOptions"
+          label="Durée réalisée des huit dernières semaines"
+        />
+      </div>
+    }
+  } @else {
+    <p class="goal__status" role="status">Chargement…</p>
+  }
+</section>

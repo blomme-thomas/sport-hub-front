@@ -9,6 +9,7 @@ export const GOAL_TYPES: readonly GoalOption<GoalType>[] = [
   { value: 'evenement', label: 'Événement' },
   { value: 'volume', label: 'Volume' },
   { value: 'regularite', label: 'Régularité' },
+  { value: 'hebdomadaire', label: 'Hebdomadaire (cible par semaine)' },
 ];
 
 export const EVENT_FORMATS: readonly GoalOption<EventFormat>[] = [

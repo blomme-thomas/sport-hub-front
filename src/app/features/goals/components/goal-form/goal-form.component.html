@@ -33,17 +33,19 @@
     }
   </div>
 
-  <div class="goal-form__field">
-    <label for="goal-date">Date</label>
-    <nz-date-picker
-      nzId="goal-date"
-      formControlName="targetDate"
-      [attr.aria-describedby]="errorOf('targetDate') ? 'goal-date-error' : null"
-    />
-    @if (errorOf('targetDate'); as message) {
-      <p id="goal-date-error" class="goal-form__error">{{ message }}</p>
-    }
-  </div>
+  @if (!isWeekly()) {
+    <div class="goal-form__field">
+      <label for="goal-date">Date</label>
+      <nz-date-picker
+        nzId="goal-date"
+        formControlName="targetDate"
+        [attr.aria-describedby]="errorOf('targetDate') ? 'goal-date-error' : null"
+      />
+      @if (errorOf('targetDate'); as message) {
+        <p id="goal-date-error" class="goal-form__error">{{ message }}</p>
+      }
+    </div>
+  }
 
   @if (isEvent()) {
     <div class="goal-form__field">

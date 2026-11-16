@@ -94,6 +94,12 @@
   @if (state.view(); as view) {
     @if (!state.isEmpty()) {
       <div class="dashboard__charts">
+        <sh-weekly-goal-card
+          [view]="weeklyGoal.view()"
+          [loading]="weeklyGoal.isLoading()"
+          [errorMessage]="weeklyGoal.errorMessage()"
+          (retry)="weeklyGoal.reload()"
+        />
         <sh-performance-card />
         <sh-sport-split-card
           [split]="kpis.sportSplit()"
