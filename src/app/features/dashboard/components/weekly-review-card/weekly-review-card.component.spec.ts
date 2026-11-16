@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { HttpResponse, http } from 'msw';
 import { describe, expect, it } from 'vitest';
+import { AI_FEATURES } from '../../../../core/config/ai-features';
 import { weeklyReviewApi } from '../../../../../mocks/fixtures/weekly-review.fixtures';
 import { statsTestProviders } from '../../../../../mocks/training-stats.testing';
 import { server } from '../../../../../mocks/server';
@@ -12,7 +13,12 @@ import { WeeklyReviewCardComponent } from './weekly-review-card.component';
 const REVIEW_URL = '*/api/weekly-reviews/:week';
 
 function providers() {
-  return [...statsTestProviders(), WeeklyReviewApiService, WeeklyReviewState];
+  return [
+    ...statsTestProviders(),
+    { provide: AI_FEATURES, useValue: true },
+    WeeklyReviewApiService,
+    WeeklyReviewState,
+  ];
 }
 
 describe('WeeklyReviewCardComponent', () => {

@@ -1,5 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { AI_FEATURES } from '../../../core/config/ai-features';
 import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import type { DashboardAdvice } from '../models/dashboard-advice.model';
@@ -15,6 +16,7 @@ const NOT_FOUND = 404;
 @Injectable()
 export class DashboardAdviceState {
   private readonly api = inject(DashboardAdviceApiService);
+  private readonly aiEnabled = inject(AI_FEATURES);
   private readonly adviceValue = signal<DashboardAdvice | null>(null);
   private readonly loadingValue = signal(false);
   private readonly generatingValue = signal(false);
@@ -38,6 +40,9 @@ export class DashboardAdviceState {
 
   /** Génère le conseil de la semaine courante, ou remplace le précédent. */
   async regenerate(): Promise<void> {
+    if (!this.aiEnabled) {
+      return;
+    }
     this.generatingValue.set(true);
     this.errorValue.set(null);
     try {
@@ -50,6 +55,9 @@ export class DashboardAdviceState {
   }
 
   private async load(): Promise<void> {
+    if (!this.aiEnabled) {
+      return;
+    }
     this.loadingValue.set(true);
     this.errorValue.set(null);
     try {

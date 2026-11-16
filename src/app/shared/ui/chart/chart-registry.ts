@@ -13,7 +13,8 @@ import {
   Tooltip,
 } from 'chart.js';
 
-Chart.register(
+/** Contrôleurs, éléments, échelles et plugins réellement utilisés : rien d'autre n'est enregistré (tree-shaking). */
+export const CHART_REGISTERED_ITEMS = [
   ArcElement,
   BarController,
   DoughnutController,
@@ -25,4 +26,6 @@ Chart.register(
   LinearScale,
   Tooltip,
   Legend,
-);
+];
+
+Chart.register(...CHART_REGISTERED_ITEMS);

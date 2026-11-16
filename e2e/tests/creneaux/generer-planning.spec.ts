@@ -6,7 +6,8 @@ const SLOTS_URL = /\/api\/slots(\?.*)?$/;
 const DISCIPLINES_URL = /\/api\/disciplines$/;
 const GENERATE_URL = /\/api\/planning\/generate$/;
 
-test.describe('Calendrier : générer le planning', () => {
+// Fonctionnalité IA désactivée (AI_FEATURES_ENABLED = false) : le bouton n'est pas rendu, le parcours est suspendu.
+test.describe.skip('Calendrier : générer le planning', () => {
   test.beforeEach(async ({ page }) => {
     await page.route(SLOTS_URL, (route) =>
       route.fulfill({ json: { from: '', to: '', items: [] } }),

@@ -24,6 +24,7 @@ import { SportSplitCardComponent } from '../components/sport-split-card/sport-sp
 import { ZonesCardComponent } from '../components/zones-card/zones-card.component';
 import { CompletionCardComponent } from '../components/completion-card/completion-card.component';
 import { CompletionState } from '../data-access/completion.state';
+import { AI_FEATURES } from '../../../core/config/ai-features';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card/weekly-review-card.component';
 import { DashboardAdviceCardComponent } from '../components/dashboard-advice-card/dashboard-advice-card.component';
 import { DashboardAdviceState } from '../data-access/dashboard-advice.state';
@@ -82,7 +83,9 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
 })
 export class DashboardPage {
   /** Bilan de la semaine masqué tant que le token IA n'est pas disponible (story #16). */
-  protected readonly weeklyReviewEnabled = false;
+  protected readonly weeklyReviewEnabled = inject(AI_FEATURES);
+  /** Conseil du tableau de bord : fonctionnalité IA, masquée tant qu'elle est désactivée. */
+  protected readonly aiEnabled = inject(AI_FEATURES);
   /** Titre de la modale de détail : icône de la carte « Détails par séance » et libellé. */
   protected readonly activityDetailTitle =
     viewChild.required<TemplateRef<object>>('activityDetailTitle');

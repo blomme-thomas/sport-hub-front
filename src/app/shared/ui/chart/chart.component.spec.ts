@@ -14,70 +14,10 @@ import {
   PointElement,
   Tooltip,
 } from 'chart.js';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { CHART_REGISTERED_ITEMS } from './chart-registry';
+import { chartJsInstances } from '../../../../mocks/chart-js.fake';
 import { ChartComponent } from './chart.component';
-
-const chartJs = vi.hoisted(() => {
-  interface FakeConfig {
-    type: string;
-    data: { datasets: unknown[] };
-    options: unknown;
-  }
-
-  const instances: FakeChart[] = [];
-  const registrations: unknown[][] = [];
-
-  class FakeChart {
-    static readonly register = vi.fn((...items: unknown[]) => {
-      registrations.push(items);
-    });
-
-    readonly config: FakeConfig;
-    readonly update = vi.fn();
-    readonly destroy = vi.fn();
-
-    constructor(
-      readonly canvas: HTMLCanvasElement,
-      config: FakeConfig,
-    ) {
-      this.config = config;
-      instances.push(this);
-    }
-
-    get data(): FakeConfig['data'] {
-      return this.config.data;
-    }
-
-    set data(data: FakeConfig['data']) {
-      this.config.data = data;
-    }
-
-    get options(): unknown {
-      return this.config.options;
-    }
-
-    set options(options: unknown) {
-      this.config.options = options;
-    }
-  }
-
-  return { instances, registrations, FakeChart };
-});
-
-vi.mock('chart.js', () => ({
-  Chart: chartJs.FakeChart,
-  ArcElement: 'ArcElement',
-  DoughnutController: 'DoughnutController',
-  BarController: 'BarController',
-  LineController: 'LineController',
-  BarElement: 'BarElement',
-  LineElement: 'LineElement',
-  PointElement: 'PointElement',
-  CategoryScale: 'CategoryScale',
-  LinearScale: 'LinearScale',
-  Tooltip: 'Tooltip',
-  Legend: 'Legend',
-}));
 
 const LABEL = 'Charge hebdomadaire';
 
@@ -122,7 +62,7 @@ function setInputs(fixture: ComponentFixture<ChartComponent>, overrides: Overrid
 /**
  * Rendu du composant en attendant la stabilisation. L'effet qui crée l'instance Chart.js lit le canvas, résolu
  * pendant la première détection de changements : il ne s'applique qu'à la passe suivante. Deux passes
- * explicites rendent la lecture de `chartJs.instances` déterministe, sur un runner chargé comme en local.
+ * explicites rendent la lecture de `chartJsInstances` déterministe, sur un runner chargé comme en local.
  */
 async function renderChart(options: { inputs?: Record<string, unknown> }) {
   const result = await render(ChartComponent, options);
@@ -136,14 +76,14 @@ async function renderChart(options: { inputs?: Record<string, unknown> }) {
 
 describe('ChartComponent', () => {
   beforeEach(() => {
-    chartJs.instances.length = 0;
+    chartJsInstances.length = 0;
   });
 
   it('crée une instance Chart.js sur le canvas avec le type et les données', async () => {
     await renderChart({ inputs: inputs() });
 
-    expect(chartJs.instances).toHaveLength(1);
-    const [chart] = chartJs.instances;
+    expect(chartJsInstances).toHaveLength(1);
+    const [chart] = chartJsInstances;
     expect(chart.canvas).toBe(screen.getByRole('img'));
     expect(chart.config.type).toBe('bar');
     expect(chart.config.data).toEqual(chartData);
@@ -152,7 +92,7 @@ describe('ChartComponent', () => {
   it('applique les options responsive par défaut', async () => {
     await renderChart({ inputs: inputs() });
 
-    expect(chartJs.instances[0].config.options).toEqual({
+    expect(chartJsInstances[0].config.options).toEqual({
       responsive: true,
       maintainAspectRatio: false,
     });
@@ -165,7 +105,7 @@ describe('ChartComponent', () => {
       }),
     });
 
-    expect(chartJs.instances[0].config.options).toEqual({
+    expect(chartJsInstances[0].config.options).toEqual({
       responsive: true,
       maintainAspectRatio: true,
       plugins: { legend: { display: false } },
@@ -177,27 +117,27 @@ describe('ChartComponent', () => {
 
     detectChanges();
 
-    expect(chartJs.instances).toHaveLength(1);
+    expect(chartJsInstances).toHaveLength(1);
   });
 
   it('met à jour le graphique existant quand les données changent', async () => {
     const { fixture } = await renderChart({ inputs: inputs() });
-    const [chart] = chartJs.instances;
+    const [chart] = chartJsInstances;
 
     setInputs(fixture, { data: otherChartData });
 
-    expect(chartJs.instances).toHaveLength(1);
+    expect(chartJsInstances).toHaveLength(1);
     expect(chart.update).toHaveBeenCalledTimes(1);
     expect(chart.config.data).toEqual(otherChartData);
   });
 
   it('met à jour les options fusionnées sans recréer le graphique', async () => {
     const { fixture } = await renderChart({ inputs: inputs() });
-    const [chart] = chartJs.instances;
+    const [chart] = chartJsInstances;
 
     setInputs(fixture, { options: { plugins: { legend: { display: false } } } });
 
-    expect(chartJs.instances).toHaveLength(1);
+    expect(chartJsInstances).toHaveLength(1);
     expect(chart.update).toHaveBeenCalledTimes(1);
     expect(chart.config.options).toEqual({
       responsive: true,
@@ -216,7 +156,7 @@ describe('ChartComponent', () => {
     await renderChart({ inputs: inputs({ data: source }) });
     values.push(99);
 
-    expect(chartJs.instances[0].config.data.datasets[0]).toEqual({
+    expect(chartJsInstances[0].config.data.datasets[0]).toEqual({
       label: 'Charge',
       data: [40, 55],
     });
@@ -230,26 +170,26 @@ describe('ChartComponent', () => {
 
     await renderChart({ inputs: inputs({ data: scripted }) });
 
-    expect(chartJs.instances).toHaveLength(1);
-    expect(chartJs.instances[0].config.data.datasets[0]).toMatchObject({
+    expect(chartJsInstances).toHaveLength(1);
+    expect(chartJsInstances[0].config.data.datasets[0]).toMatchObject({
       backgroundColor: expect.any(Function),
     });
   });
 
   it('détruit puis recrée le graphique quand le type change', async () => {
     const { fixture } = await renderChart({ inputs: inputs() });
-    const [previous] = chartJs.instances;
+    const [previous] = chartJsInstances;
 
     setInputs(fixture, { type: 'line' });
 
     expect(previous.destroy).toHaveBeenCalledTimes(1);
-    expect(chartJs.instances).toHaveLength(2);
-    expect(chartJs.instances[1].config.type).toBe('line');
+    expect(chartJsInstances).toHaveLength(2);
+    expect(chartJsInstances[1].config.type).toBe('line');
   });
 
   it('détruit l instance Chart.js quand le composant est détruit', async () => {
     const { fixture } = await renderChart({ inputs: inputs() });
-    const [chart] = chartJs.instances;
+    const [chart] = chartJsInstances;
 
     fixture.destroy();
 
@@ -273,13 +213,13 @@ describe('ChartComponent', () => {
     await renderChart({ inputs: inputs({ data: nullChartData }) });
 
     expect(await screen.findByRole('status')).toHaveTextContent('Aucune donnée à afficher');
-    expect(chartJs.instances).toHaveLength(0);
+    expect(chartJsInstances).toHaveLength(0);
   });
 
   it('ne crée aucune instance Chart.js sans donnée', async () => {
     await renderChart({ inputs: inputs({ data: emptyChartData }) });
 
-    expect(chartJs.instances).toHaveLength(0);
+    expect(chartJsInstances).toHaveLength(0);
   });
 
   it('crée le graphique quand des données arrivent après un état vide', async () => {
@@ -287,14 +227,14 @@ describe('ChartComponent', () => {
 
     setInputs(fixture, { data: chartData });
 
-    expect(chartJs.instances).toHaveLength(1);
+    expect(chartJsInstances).toHaveLength(1);
     expect(screen.getByRole('img', { name: LABEL })).toBeInTheDocument();
     expect(screen.queryByText('Aucune donnée à afficher')).not.toBeInTheDocument();
   });
 
   it('détruit le graphique quand les données deviennent vides', async () => {
     const { fixture } = await renderChart({ inputs: inputs() });
-    const [chart] = chartJs.instances;
+    const [chart] = chartJsInstances;
 
     setInputs(fixture, { data: emptyChartData });
 
@@ -305,20 +245,18 @@ describe('ChartComponent', () => {
 
 describe('chart-registry', () => {
   it('enregistre uniquement les contrôleurs, éléments, échelles et plugins utilisés', () => {
-    expect(chartJs.registrations).toEqual([
-      [
-        ArcElement,
-        BarController,
-        DoughnutController,
-        LineController,
-        BarElement,
-        LineElement,
-        PointElement,
-        CategoryScale,
-        LinearScale,
-        Tooltip,
-        Legend,
-      ],
+    expect(CHART_REGISTERED_ITEMS).toEqual([
+      ArcElement,
+      BarController,
+      DoughnutController,
+      LineController,
+      BarElement,
+      LineElement,
+      PointElement,
+      CategoryScale,
+      LinearScale,
+      Tooltip,
+      Legend,
     ]);
   });
 });
