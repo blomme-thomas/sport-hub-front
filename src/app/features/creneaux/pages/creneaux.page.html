@@ -4,9 +4,11 @@
     <button nz-button type="button" [disabled]="planningBusy()" (click)="openPauseCreate()">
       Nouvelle pause
     </button>
-    <button nz-button type="button" [disabled]="planningBusy()" (click)="openPlanning()">
-      Générer le planning
-    </button>
+    @if (aiEnabled) {
+      <button nz-button type="button" [disabled]="planningBusy()" (click)="openPlanning()">
+        Générer le planning
+      </button>
+    }
     <button
       nz-button
       nzType="primary"

@@ -160,7 +160,7 @@ describe('DashboardPage', () => {
 
     await screen.findByRole('alert');
     expect(screen.getByRole('heading', { level: 1, name: 'Tableau de bord' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Conseil IA personnalisé' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Indicateurs de la période' })).toBeInTheDocument();
   });
 
   describe('bloc Prochain événement', () => {

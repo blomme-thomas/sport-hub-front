@@ -14,6 +14,7 @@ import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalComponent, NzModalContentDirective, NzModalService } from 'ng-zorro-antd/modal';
 import { firstValueFrom } from 'rxjs';
+import { AI_FEATURES } from '../../../core/config/ai-features';
 import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import { addIsoDays, localIsoDate } from '../../../shared/utils/iso-date';
@@ -88,6 +89,8 @@ export class CreneauxPage {
   private readonly sessionsWrite = inject(SessionsWriteApi);
   private readonly planningApi = inject(PlanningApi);
 
+  /** Génération de planning : fonctionnalité IA, masquée et sans requête tant qu'elle est désactivée. */
+  protected readonly aiEnabled = inject(AI_FEATURES);
   /** Modale de génération de planning ouverte. */
   protected readonly planningOpen = signal(false);
   /** Période choisie : la semaine affichée, le mois de cette semaine, ou jusqu'à un événement. */
@@ -340,6 +343,9 @@ export class CreneauxPage {
 
   /** Ouvre la modale de génération et charge les événements proposés pour la fin du planning. */
   protected async openPlanning(): Promise<void> {
+    if (!this.aiEnabled) {
+      return;
+    }
     this.planningError.set(null);
     this.planningOpen.set(true);
     this.eventsError.set(null);
@@ -362,6 +368,9 @@ export class CreneauxPage {
    * pas rechargée : l'état du calendrier reste tel quel.
    */
   protected async generatePlanning(): Promise<void> {
+    if (!this.aiEnabled) {
+      return;
+    }
     const body = this.planningRequest();
     if (body === null) {
       return;

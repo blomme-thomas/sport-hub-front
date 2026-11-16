@@ -37,15 +37,17 @@
   }
 </section>
 
-<sh-dashboard-advice-card
-  class="dashboard__advice"
-  [advice]="advice.advice()"
-  [loading]="advice.isLoading()"
-  [generating]="advice.generating()"
-  [errorMessage]="advice.errorMessage()"
-  (generate)="advice.regenerate()"
-  (retry)="advice.reload()"
-/>
+@if (aiEnabled) {
+  <sh-dashboard-advice-card
+    class="dashboard__advice"
+    [advice]="advice.advice()"
+    [loading]="advice.isLoading()"
+    [generating]="advice.generating()"
+    [errorMessage]="advice.errorMessage()"
+    (generate)="advice.regenerate()"
+    (retry)="advice.reload()"
+  />
+}
 
 <section class="dashboard__content" [attr.aria-busy]="state.isLoading()">
   <div class="dashboard__row">

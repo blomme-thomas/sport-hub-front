@@ -4,6 +4,7 @@ import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import { addIsoDays, localIsoDate } from '../../../shared/utils/iso-date';
 import { isoWeekOf, mondayOfIsoWeek, shiftIsoWeek } from '../../../shared/utils/iso-week';
+import { AI_FEATURES } from '../../../core/config/ai-features';
 import type { WeeklyReview } from '../models/weekly-review.model';
 import { WeeklyReviewApiService } from './weekly-review.api';
 
@@ -17,6 +18,7 @@ const NOT_FOUND = 404;
 @Injectable()
 export class WeeklyReviewState {
   private readonly api = inject(WeeklyReviewApiService);
+  private readonly aiEnabled = inject(AI_FEATURES);
   private readonly weekValue = signal(isoWeekOf(localIsoDate()));
   private readonly reviewValue = signal<WeeklyReview | null>(null);
   private readonly loadingValue = signal(false);
@@ -57,6 +59,9 @@ export class WeeklyReviewState {
 
   /** Génère le bilan de la semaine affichée, ou le remplace. */
   async generate(): Promise<void> {
+    if (!this.aiEnabled) {
+      return;
+    }
     const week = this.weekValue();
     this.generatingValue.set(true);
     this.errorValue.set(null);
@@ -79,6 +84,9 @@ export class WeeklyReviewState {
   }
 
   private async load(): Promise<void> {
+    if (!this.aiEnabled) {
+      return;
+    }
     const request = ++this.latestRequest;
     const week = this.weekValue();
     this.loadingValue.set(true);

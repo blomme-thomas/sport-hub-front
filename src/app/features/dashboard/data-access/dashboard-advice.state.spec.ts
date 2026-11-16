@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpResponse, http } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
+import { AI_FEATURES } from '../../../core/config/ai-features';
 import { dashboardAdviceApi } from '../../../../mocks/fixtures/dashboard-advice.fixtures';
 import { statsTestProviders } from '../../../../mocks/training-stats.testing';
 import { server } from '../../../../mocks/server';
@@ -10,9 +11,14 @@ import { DashboardAdviceState } from './dashboard-advice.state';
 const ADVICE_URL = '*/api/advice/dashboard';
 const REGENERATE_URL = '*/api/advice/dashboard/regenerate';
 
-function setup(): DashboardAdviceState {
+function setup(aiEnabled = true): DashboardAdviceState {
   TestBed.configureTestingModule({
-    providers: [...statsTestProviders(), DashboardAdviceApiService, DashboardAdviceState],
+    providers: [
+      ...statsTestProviders(),
+      { provide: AI_FEATURES, useValue: aiEnabled },
+      DashboardAdviceApiService,
+      DashboardAdviceState,
+    ],
   });
   return TestBed.inject(DashboardAdviceState);
 }
@@ -32,6 +38,26 @@ function problem(status: number, code: string) {
 }
 
 describe('DashboardAdviceState', () => {
+  it('n émet aucune requête vers les routes du conseil tant que les fonctionnalités IA sont désactivées', async () => {
+    const requested: string[] = [];
+    server.use(
+      http.get(ADVICE_URL, () => {
+        requested.push('GET');
+        return HttpResponse.json(dashboardAdviceApi);
+      }),
+      http.post(REGENERATE_URL, () => {
+        requested.push('POST');
+        return HttpResponse.json(dashboardAdviceApi, { status: 201 });
+      }),
+    );
+
+    const state = setup(false);
+    await state.regenerate();
+
+    expect(requested).toEqual([]);
+    expect(state.advice()).toBeNull();
+  });
+
   it('charge le conseil stocké sans demander de génération', async () => {
     const requested: string[] = [];
     server.use(

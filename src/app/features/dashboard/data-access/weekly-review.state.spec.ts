@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpResponse, http } from 'msw';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { AI_FEATURES } from '../../../core/config/ai-features';
 import { weeklyReviewApi } from '../../../../mocks/fixtures/weekly-review.fixtures';
 import { statsTestProviders } from '../../../../mocks/training-stats.testing';
 import { server } from '../../../../mocks/server';
@@ -11,7 +12,12 @@ const REVIEW_URL = '*/api/weekly-reviews/:week';
 
 function setup(): WeeklyReviewState {
   TestBed.configureTestingModule({
-    providers: [...statsTestProviders(), WeeklyReviewApiService, WeeklyReviewState],
+    providers: [
+      ...statsTestProviders(),
+      { provide: AI_FEATURES, useValue: true },
+      WeeklyReviewApiService,
+      WeeklyReviewState,
+    ],
   });
   return TestBed.inject(WeeklyReviewState);
 }
