@@ -54,6 +54,11 @@
                     <sh-icon [name]="block.icon" [color]="block.color" />
                   </span>
                 }
+                @if (block.done) {
+                  <span class="week-grid__done" aria-hidden="true">
+                    <sh-icon name="check" color="var(--sh-success)" />
+                  </span>
+                }
                 <span class="week-grid__slot-time">{{ block.timeRange }}</span>
                 @if (block.slot?.recurrence === 'hebdomadaire') {
                   <span class="week-grid__slot-tag">Chaque semaine</span>
