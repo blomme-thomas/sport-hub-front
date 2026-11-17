@@ -75,6 +75,22 @@ Une séance réalisée n'a pas ce bouton : sa vignette porte la mention « Réal
 - **Pas de taux de distance sur le calendrier** : la liste des occurrences ne renvoie pas `achievement` ; le repère de réalisation sur la grille reste celui de la mention « Réalisée ».
 - **Jour et discipline** : le jour est lu en UTC, et la discipline de la séance est comparée au type Garmin de l'activité (même clé).
 
+## Commentaire de l’activité réalisée (story #15)
+
+Sous « Activité réalisée », un bloc « Commentaire » apparaît dès qu’une activité est liée à la séance.
+
+- **Affichage** : le commentaire est rendu en markdown (titres, listes, gras, liens). Il indique sa source (« Saisi à la main », « Généré par l’IA » ou « Commentaire générique ») et sa date.
+- **Sans commentaire** : le bloc indique « Aucun commentaire pour cette activité » et propose « Ajouter un commentaire ». Cet état est normal, pas une erreur.
+- **Modifier** : un champ de saisie markdown s’ouvre, avec un aperçu rendu sous le champ. « Enregistrer » appelle `PUT /api/activities/:id/comment` et remplace le commentaire. « Annuler » ferme la saisie sans rien enregistrer.
+- **Enregistrer** reste désactivé tant que le texte est vide. En cas d’échec, le message s’affiche sous le champ et le texte saisi est conservé.
+- **Génération par l’IA** : non branchée côté front (`AI_FEATURES_ENABLED = false`). Aucun bouton de génération ni de régénération n’apparaît.
+
+**Limites de cette story** :
+
+- **Pas d’historique** : chaque enregistrement remplace le commentaire précédent.
+- **Pas de limite de longueur** côté front ni côté back pour la saisie manuelle.
+- **Pas de notification pour l’absence de commentaire** : l’intercepteur HTTP affiche un message à chaque erreur, y compris le 404 normal d’une activité sans commentaire. Le traitement de ce cas reste à faire dans l’intercepteur partagé.
+
 ## Limites connues
 
 - **Pas de lien vers la fiche** : l'ouverture se fait par l'adresse `/seances/:id`.

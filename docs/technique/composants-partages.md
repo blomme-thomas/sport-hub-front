@@ -73,3 +73,9 @@ export class ExempleComponent {
 ```
 
 Le consommateur passe des données déjà mappées, dans un signal ou une valeur stable, et met à jour le signal pour rafraîchir le graphique.
+
+### Rendu markdown (`shared/utils/markdown.ts`)
+
+`renderMarkdown(text)` est le point d’entrée unique pour afficher du markdown : `marked` produit le HTML, puis `DOMPurify` le nettoie. Tout contenu markdown affiché ou prévisualisé passe par cette fonction ; le HTML brut n’est jamais injecté sans nettoyage. Versions épinglées dans `package.json` (`marked` 18.1.3, `dompurify` 3.4.17).
+
+Usage : `[innerHTML]="renderMarkdown(text)"` dans un template, avec `renderMarkdown` appelé dans un `computed`. Ne pas appeler `marked` ni `DOMPurify` directement dans un composant.

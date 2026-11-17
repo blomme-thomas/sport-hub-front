@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input } from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { ActivityCommentComponent } from '../components/activity-comment/activity-comment.component';
 import { SessionActivityComponent } from '../components/session-activity/session-activity.component';
 import { SessionModulesComponent } from '../components/session-modules/session-modules.component';
 import { SessionObjectivesComponent } from '../components/session-objectives/session-objectives.component';
+import { ActivityCommentState } from '../data-access/activity-comment.state';
 import { SessionState } from '../data-access/session.state';
 import type { ModuleType, SessionStatus } from '../models/session.model';
 
@@ -21,19 +23,21 @@ const STATUS_LABELS: Record<SessionStatus, string> = {
   selector: 'sh-session-page',
   imports: [
     NzButtonComponent,
+    ActivityCommentComponent,
     SessionActivityComponent,
     SessionModulesComponent,
     SessionObjectivesComponent,
   ],
   templateUrl: './session.page.html',
   styleUrl: './session.page.scss',
-  providers: [SessionState],
+  providers: [SessionState, ActivityCommentState],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionPage implements OnInit {
   readonly id = input.required<string>();
 
   protected readonly state = inject(SessionState);
+  protected readonly comments = inject(ActivityCommentState);
   private readonly messages = inject(NzMessageService);
 
   protected readonly dateLabel = computed(() => {
@@ -78,6 +82,12 @@ export class SessionPage implements OnInit {
   protected async unlinkActivity(): Promise<void> {
     if (await this.state.unlinkActivity()) {
       this.messages.success('Activité dissociée.');
+    }
+  }
+
+  protected async saveComment(): Promise<void> {
+    if (await this.comments.save()) {
+      this.messages.success('Commentaire enregistré.');
     }
   }
 
