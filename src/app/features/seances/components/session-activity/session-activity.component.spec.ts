@@ -71,4 +71,29 @@ describe('SessionActivityComponent', () => {
 
     expect(screen.getByRole('alert')).toHaveTextContent('Activité introuvable.');
   });
+
+  it('ne propose pas l’export JSON sans activité liée', async () => {
+    await render(SessionActivityComponent, { inputs: { linked: null } });
+
+    expect(
+      screen.queryByRole('button', { name: 'Exporter la séance (JSON)' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('émet l’export JSON de la séance quand une activité est liée', async () => {
+    const exportSession = vi.fn();
+    await render(SessionActivityComponent, {
+      inputs: { linked: LINKED },
+      on: { exportSession },
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Exporter la séance (JSON)' }));
+
+    expect(exportSession).toHaveBeenCalledOnce();
+  });
+
+  it('désactive l’export pendant le téléchargement', async () => {
+    await render(SessionActivityComponent, { inputs: { linked: LINKED, exporting: true } });
+
+    expect(screen.getByRole('button', { name: 'Téléchargement…' })).toBeDisabled();
+  });
 });

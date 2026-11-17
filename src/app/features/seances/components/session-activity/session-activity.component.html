@@ -20,6 +20,9 @@
       <p class="activity__status">Chargement de l’activité…</p>
     }
     <button nz-button type="button" [disabled]="busy()" (click)="unlink.emit()">Dissocier</button>
+    <button nz-button type="button" [disabled]="exporting()" (click)="exportSession.emit()">
+      {{ exporting() ? 'Téléchargement…' : 'Exporter la séance (JSON)' }}
+    </button>
   </div>
 }
 

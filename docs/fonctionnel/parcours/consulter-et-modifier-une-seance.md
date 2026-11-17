@@ -91,6 +91,16 @@ Sous « Activité réalisée », un bloc « Commentaire » apparaît dès qu’u
 - **Pas de limite de longueur** côté front ni côté back pour la saisie manuelle.
 - **Pas de notification pour l’absence de commentaire** : l’intercepteur HTTP affiche un message à chaque erreur, y compris le 404 normal d’une activité sans commentaire. Le traitement de ce cas reste à faire dans l’intercepteur partagé.
 
+## Export de la séance avec son activité (story #123)
+
+Quand une activité est liée à la séance, le bloc « Activité réalisée » propose « Exporter la séance (JSON) ».
+
+- **Clic** : le fichier renvoyé par `GET /api/exports/sessions/:id` est téléchargé tel quel, sans transformation côté front.
+- **Nom du fichier** : `seance-<date de la séance>-<identifiant>.json`, par exemple `seance-2026-11-12-session-course.json`.
+- **Pendant le téléchargement** : le bouton affiche « Téléchargement… » et reste désactivé.
+- **Erreur** (réseau, 404) : le message est affiché par l'intercepteur HTTP partagé ; l'écran reste en place.
+- **Sans activité liée** : le bouton n'apparaît pas.
+
 ## Limites connues
 
 - **Pas de lien vers la fiche** : l'ouverture se fait par l'adresse `/seances/:id`.
