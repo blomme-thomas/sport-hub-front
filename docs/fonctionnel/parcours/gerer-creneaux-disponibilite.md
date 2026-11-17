@@ -76,6 +76,10 @@ La page `/creneaux`, intitulée « Calendrier », affiche aussi les séances de 
 - Un clic sur une séance ouvre sa fiche (`/seances/:id`). La création, le déplacement et la modification au clic des séances viennent avec les stories #47 à #49.
 - Les données viennent de `GET /api/sessions?from&to` (occurrences) et de `GET /api/disciplines`.
 
+## Coche des séances réalisées (issue #126)
+
+Une séance réalisée (liée à une activité) affiche une coche verte en haut à droite de son bloc. La coche est décorative : le libellé « Réalisée, déplacement impossible » porte l'information pour les lecteurs d'écran. L'activité liée n'est pas affichée sur le calendrier : elle se consulte depuis la fiche de séance.
+
 ## Créer une séance ou un créneau depuis le calendrier (issue #47)
 
 - Une sélection sur la grille (glisser, ou un clic) ouvre le choix « Créneau » ou « Séance », avec la plage choisie affichée.
