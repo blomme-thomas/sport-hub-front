@@ -7,6 +7,8 @@ export interface SportShare {
   label: string;
   /** Pourcentage entier ; la somme des parts vaut 100. */
   percent: number;
+  /** Durée réalisée sur la période, formatée (« 2h 05 »), pour la vue détaillée. */
+  durationLabel: string;
   /** Token de couleur de la maquette (course bleu, cyclisme vert, natation orange, autres violet). */
   colorVariable: string;
 }

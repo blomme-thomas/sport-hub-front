@@ -2,6 +2,17 @@
   <div class="kpi__header">
     <span class="kpi__icon" aria-hidden="true"><sh-icon [name]="iconName()" /></span>
     <h2 class="kpi__label">{{ kpi().label }}</h2>
+    <button
+      nz-button
+      nzType="text"
+      type="button"
+      class="card-expand"
+      [attr.aria-label]="'Agrandir : ' + kpi().label"
+      [disabled]="false"
+      (click)="expand.emit()"
+    >
+      <sh-icon name="expand" />
+    </button>
   </div>
   <p class="kpi__value">
     {{ kpi().value }}

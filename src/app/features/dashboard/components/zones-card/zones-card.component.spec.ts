@@ -8,11 +8,17 @@ const VIEW: ZonesCardView = {
   optimalPercent: 70,
   statusMessage: 'Bon équilibre en zone optimale',
   zones: [
-    { label: 'Z5', name: 'Puissance', percent: 5, colorVariable: '--sh-violet' },
-    { label: 'Z4', name: 'Seuil', percent: 15, colorVariable: '--sh-danger' },
-    { label: 'Z3', name: 'Tempo', percent: 40, colorVariable: '--sh-orange' },
-    { label: 'Z2', name: 'Endurance', percent: 30, colorVariable: '--sh-success' },
-    { label: 'Z1', name: 'Récupération', percent: 10, colorVariable: '--sh-text-muted' },
+    { label: 'Z5', name: 'Puissance', percent: 5, seconds: 0, colorVariable: '--sh-violet' },
+    { label: 'Z4', name: 'Seuil', percent: 15, seconds: 0, colorVariable: '--sh-danger' },
+    { label: 'Z3', name: 'Tempo', percent: 40, seconds: 0, colorVariable: '--sh-orange' },
+    { label: 'Z2', name: 'Endurance', percent: 30, seconds: 0, colorVariable: '--sh-success' },
+    {
+      label: 'Z1',
+      name: 'Récupération',
+      percent: 10,
+      seconds: 0,
+      colorVariable: '--sh-text-muted',
+    },
   ],
 };
 

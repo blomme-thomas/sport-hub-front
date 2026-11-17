@@ -3,6 +3,17 @@
     <sh-icon name="heart" color="var(--sh-danger)" />
     <span>Zones d’entraînement</span>
   </h2>
+  <button
+    nz-button
+    nzType="text"
+    type="button"
+    class="card-expand"
+    [attr.aria-label]="'Agrandir : Zones d’entraînement'"
+    [disabled]="!view()"
+    (click)="expand.emit()"
+  >
+    <sh-icon name="expand" />
+  </button>
 
   @if (errorMessage(); as message) {
     <div class="zones__error" role="alert">

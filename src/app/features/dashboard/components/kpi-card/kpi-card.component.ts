@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { ChartComponent } from '@shared/ui/chart/chart.component';
 import { IconComponent, type IconName } from '@shared/ui/icon/icon.component';
 import { readCssVar } from '@shared/utils/css-var';
 import type { ChartData, ChartOptions } from 'chart.js';
 import type { DashboardKpi, KpiTone } from '../../models/dashboard-kpi.model';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { VariationBadgeComponent } from '../variation-badge/variation-badge.component';
 
 const TONE_VARIABLES: Record<KpiTone, string> = {
@@ -35,13 +36,14 @@ const SPARKLINE_OPTIONS: ChartOptions<'line'> = {
 
 @Component({
   selector: 'sh-kpi-card',
-  imports: [ChartComponent, VariationBadgeComponent, IconComponent],
+  imports: [ChartComponent, VariationBadgeComponent, IconComponent, NzButtonComponent],
   templateUrl: './kpi-card.component.html',
   styleUrl: './kpi-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KpiCardComponent {
   readonly kpi = input.required<DashboardKpi>();
+  readonly expand = output<void>();
 
   protected readonly sparkData = computed<ChartData<'line'> | null>(() => {
     const kpi = this.kpi();

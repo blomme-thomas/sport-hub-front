@@ -6,6 +6,8 @@ export interface ZoneShareView {
   name: string;
   /** Pourcentage entier du temps passé dans la zone sur la période. */
   percent: number;
+  /** Temps passé dans la zone, en secondes, pour la vue détaillée. */
+  seconds: number;
   /** Token de couleur de la zone : Z1 gris, Z2 vert, Z3 orange, Z4 rouge, Z5 violet. */
   colorVariable: string;
 }

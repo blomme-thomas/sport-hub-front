@@ -115,6 +115,22 @@ Le sélecteur de période en haut à droite pilote les métriques du tableau de 
 - **« Vos performances »** : en vue semaine, une courbe par jour. En vue mois, un point par semaine ISO (libellés « S45 », etc.), pour éviter une trentaine de libellés de jours redondants. Le graphique reste une courbe dans les deux vues : seules les données changent, animées, sans recréer le graphique. La grille est horizontale, fine et pointillée.
 - **Hors sélecteur** : « Détails par séance », le mini-calendrier (qui a son propre sélecteur de semaine ou de mois) et la zone de FC, qui ne dépendent pas de cette période.
 
+## Vues détaillées des cartes (story #91)
+
+Chaque carte d'indicateur, « Répartition par sport » et « Zones d’entraînement » a un bouton « Agrandir : <titre> » (en haut à droite). Il ouvre une modale avec le détail, fermable avec Échap ou « Fermer ». Le focus revient à la carte d'origine.
+
+- **Indicateur** : valeur complète et variation par rapport à la période précédente. Le back ne fournit la variation que pour la durée : pour les autres, la modale indique « — ».
+- **Répartition par sport** : tableau par sport avec la durée et la part, et le total.
+- **Zones d’entraînement** : tableau par zone (Z1 à Z5) avec le temps passé, la part et le seuil bas en bpm (depuis `GET /api/heart-rate-zones`). La zone optimale et le message de statut sont rappelés au-dessus.
+- **Sans donnée** : la modale affiche un état vide, jamais « 0 » pour une valeur absente.
+
+**Limites de cette story** :
+
+- **Instantané** : la modale reprend les données au moment de l'ouverture. Changer la période dans la modale ne met pas à jour la carte, et inversement.
+- **Carte Volume** : la carte « Volume » n'existe plus sur le tableau de bord (remplacée par « Performances »). Elle n'a donc pas de vue détaillée.
+- **Carte Performances** : hors périmètre de cette story.
+- **Pas de route dédiée** : la vue est une modale. Une route pourra être ajoutée plus tard pour partager une vue.
+
 ## Objectif de la semaine (story #31)
 
 Carte « Objectif de la semaine » : anneau de progression, durée réalisée sur la cible (« 6h 42 / 8h 00 ») et message de statut. La mini-courbe des semaines précédentes a été retirée.
