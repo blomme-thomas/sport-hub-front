@@ -3,7 +3,6 @@ import type { WeeklyGoalApi } from '../models/weekly-goal.api-model';
 import type { WeeklyGoalView } from '../models/weekly-goal.model';
 import { formatDuration } from './recent-activities.mapper';
 
-const SECONDS_PER_HOUR = 3600;
 const ABSENT = null;
 
 /**
@@ -21,9 +20,5 @@ export function toWeeklyGoalView(api: WeeklyGoalApi): WeeklyGoalView {
     targetLabel: hasTarget ? formatDuration(target) : ABSENT,
     percent,
     statusMessage: percent === null ? ABSENT : weeklyGoalStatusOf(percent),
-    trend: (api.history ?? []).map((point) => ({
-      label: point.week,
-      hours: point.doneSeconds / SECONDS_PER_HOUR,
-    })),
   };
 }

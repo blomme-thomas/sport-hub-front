@@ -117,10 +117,10 @@ Le sélecteur de période en haut à droite pilote les métriques du tableau de 
 
 ## Objectif de la semaine (story #31)
 
-Carte « Objectif de la semaine » : anneau de progression, durée réalisée sur la cible (« 6h 42 / 8h 00 »), message de statut et mini-courbe des huit dernières semaines.
+Carte « Objectif de la semaine » : anneau de progression, durée réalisée sur la cible (« 6h 42 / 8h 00 ») et message de statut. La mini-courbe des semaines précédentes a été retirée.
 
 - **Cible** : réglage personnel, saisi dans **Paramètres** (`/parametres`, `GET/PUT /api/settings`). Elle reste la même tant qu'elle n'est pas modifiée.
-- **Source** : `GET /api/settings/weekly-target/:week` (semaine ISO courante). Le back renvoie des secondes brutes : la cible (null si non définie), le réalisé de la semaine et l'historique. Le pourcentage et le statut sont calculés côté front.
+- **Source** : `GET /api/settings/weekly-target/:week` (semaine ISO courante). Le back renvoie des secondes brutes : la cible (null si non définie), le réalisé de la semaine et l'historique (ce dernier n'est plus utilisé par le front). Le pourcentage et le statut sont calculés côté front.
 - **Pourcentage** : arrondi, sans plafond dans le texte (il peut dépasser 100 %) ; l'anneau est plafonné à 100 %.
 - **Statut** (seuils dans `config/weekly-goal-status.ts`) : « Objectif atteint ! » à partir de 100 %, « Très bien ! » à partir de 75 %, « En bonne voie » à partir de 50 %, « À renforcer » en dessous.
 - **Sans cible** : pas de pourcentage (jamais 0 %) ; la carte propose « Définir la cible » vers `/parametres`.

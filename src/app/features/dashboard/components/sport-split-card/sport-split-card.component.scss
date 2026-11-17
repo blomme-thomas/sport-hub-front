@@ -37,6 +37,7 @@
 }
 
 .split__body {
+  flex: 1;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -46,9 +47,9 @@
 
 .split__chart {
   position: relative;
-  width: 14rem;
+  width: 11rem;
   flex-shrink: 0;
-  --sh-chart-height: 14rem;
+  --sh-chart-height: 11rem;
 }
 
 .split__total {

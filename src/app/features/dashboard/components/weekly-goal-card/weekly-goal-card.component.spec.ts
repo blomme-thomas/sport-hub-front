@@ -10,10 +10,6 @@ const VIEW: WeeklyGoalView = {
   targetLabel: '8h 00',
   percent: 84,
   statusMessage: 'Très bien !',
-  trend: [
-    { label: '2026-W46', hours: 2.5 },
-    { label: '2026-W47', hours: 6.7 },
-  ],
 };
 
 const WITHOUT_TARGET: WeeklyGoalView = {
@@ -21,7 +17,6 @@ const WITHOUT_TARGET: WeeklyGoalView = {
   targetLabel: null,
   percent: null,
   statusMessage: null,
-  trend: [],
 };
 
 describe('WeeklyGoalCardComponent', () => {
@@ -36,6 +31,9 @@ describe('WeeklyGoalCardComponent', () => {
     expect(screen.getByText('84 %')).toBeInTheDocument();
     expect(screen.getByText('Très bien !')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'Objectif atteint à 84 %' })).toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('Durée réalisée des huit dernières semaines'),
+    ).not.toBeInTheDocument();
   });
 
   it('propose de définir la cible vers les paramètres quand la semaine n’en a pas', async () => {

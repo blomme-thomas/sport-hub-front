@@ -8,6 +8,4 @@ export interface WeeklyGoalView {
   percent: number | null;
   /** Message de statut dérivé du pourcentage ; null sans objectif. */
   statusMessage: string | null;
-  /** Points de la mini-courbe : libellé de semaine et durée réalisée en heures. */
-  trend: { label: string; hours: number }[];
 }

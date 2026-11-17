@@ -71,6 +71,7 @@
 
 /* Cercle et légende côte à côte, sous la barre ; la légende passe dessous sur étroit. */
 .zones__body {
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
