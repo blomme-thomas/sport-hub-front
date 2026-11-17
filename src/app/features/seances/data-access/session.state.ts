@@ -15,6 +15,8 @@ import {
   toSession,
 } from './session.mapper';
 import { SessionsApi } from './sessions.api';
+import { SessionExportApi } from './session-export.api';
+import { saveBlob } from '../../../shared/utils/download';
 
 /**
  * État de la fiche d'une séance : séance enregistrée, brouillon des modules, chargement et enregistrement.
@@ -26,6 +28,8 @@ export class SessionState {
   private readonly sessionsApi = inject(SessionsApi);
   private readonly disciplinesApi = inject(DisciplinesApi);
   private readonly activitiesApi = inject(SessionActivitiesApi);
+  private readonly exportApi = inject(SessionExportApi);
+  private readonly exportingValue = signal(false);
 
   private readonly sessionValue = signal<Session | null>(null);
   private readonly candidatesValue = signal<SessionActivityApi[]>([]);
@@ -57,6 +61,7 @@ export class SessionState {
   readonly linkedActivityDetail = this.linkedDetailValue.asReadonly();
   readonly activityBusy = this.activityBusyValue.asReadonly();
   readonly activityError = this.activityErrorValue.asReadonly();
+  readonly exporting = this.exportingValue.asReadonly();
 
   readonly readOnly = computed(() => this.sessionValue()?.status === 'realisee');
   readonly dirty = computed(() => {
@@ -173,6 +178,26 @@ export class SessionState {
       return false;
     } finally {
       this.savingValue.set(false);
+    }
+  }
+
+  /**
+   * Télécharge le JSON de la séance avec son activité réalisée. Sans activité liée, ne fait rien.
+   * Une erreur (réseau, 404) est notifiée par l'intercepteur HTTP ; l'écran reste affiché.
+   */
+  async exportLinkedSession(): Promise<void> {
+    const session = this.sessionValue();
+    if (session?.linkedActivity == null || this.exportingValue()) {
+      return;
+    }
+    this.exportingValue.set(true);
+    try {
+      const file = await firstValueFrom(this.exportApi.download(session.id));
+      saveBlob(file, `seance-${session.date}-${session.id}.json`);
+    } catch {
+      // Notifiée par l'intercepteur HTTP.
+    } finally {
+      this.exportingValue.set(false);
     }
   }
 

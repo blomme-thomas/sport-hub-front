@@ -30,9 +30,11 @@ export class SessionActivityComponent {
   readonly candidates = input<readonly SessionActivityApi[]>([]);
   readonly busy = input(false);
   readonly error = input<AppError | null>(null);
+  readonly exporting = input(false);
 
   readonly link = output<string>();
   readonly unlink = output<void>();
+  readonly exportSession = output<void>();
 
   protected readonly originLabel = computed(() => {
     const origin = this.linked()?.origin;

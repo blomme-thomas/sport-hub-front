@@ -1,5 +1,6 @@
 import { activitiesHandlers } from './activities.handlers';
 import { activityCommentsHandlers } from './activity-comments.handlers';
+import { sessionExportsHandlers } from './session-exports.handlers';
 import { dashboardAdviceHandlers } from './dashboard-advice.handlers';
 import { dashboardKpisHandlers } from './dashboard-kpis.handlers';
 import { goalsHandlers } from './goals.handlers';
@@ -23,6 +24,7 @@ export const handlers = [
   ...weeklyReviewsHandlers,
   ...activitiesHandlers,
   ...activityCommentsHandlers,
+  ...sessionExportsHandlers,
   ...dashboardKpisHandlers,
   ...profileHandlers,
   ...dashboardAdviceHandlers,

@@ -59,6 +59,8 @@
       [error]="state.activityError()"
       (link)="linkActivity($event)"
       (unlink)="unlinkActivity()"
+      [exporting]="state.exporting()"
+      (exportSession)="state.exportLinkedSession()"
     />
     @if (session.linkedActivity) {
       <sh-activity-comment
