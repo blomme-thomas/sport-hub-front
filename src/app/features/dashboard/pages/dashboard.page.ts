@@ -22,8 +22,6 @@ import { PerformanceCardComponent } from '../components/performance-card/perform
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card/recent-activities-card.component';
 import { SportSplitCardComponent } from '../components/sport-split-card/sport-split-card.component';
 import { ZonesCardComponent } from '../components/zones-card/zones-card.component';
-import { CompletionCardComponent } from '../components/completion-card/completion-card.component';
-import { CompletionState } from '../data-access/completion.state';
 import { AI_FEATURES } from '../../../core/config/ai-features';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card/weekly-review-card.component';
 import { DashboardAdviceCardComponent } from '../components/dashboard-advice-card/dashboard-advice-card.component';
@@ -61,7 +59,6 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     RecentActivitiesCardComponent,
     SportSplitCardComponent,
     ZonesCardComponent,
-    CompletionCardComponent,
     WeekMiniCalendarComponent,
     WeeklyReviewCardComponent,
     DashboardAdviceCardComponent,
@@ -79,7 +76,6 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     HeartRateZonesState,
     WeekMiniCalendarState,
     ProfileState,
-    CompletionState,
     DashboardAdviceState,
     WeeklyGoalState,
   ],
@@ -98,7 +94,6 @@ export class DashboardPage {
   protected readonly nextEvent = inject(NextEventState);
   protected readonly recent = inject(RecentActivitiesState);
   protected readonly profile = inject(ProfileState);
-  protected readonly completion = inject(CompletionState);
   protected readonly advice = inject(DashboardAdviceState);
   protected readonly weeklyGoal = inject(WeeklyGoalState);
 

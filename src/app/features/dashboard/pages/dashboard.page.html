@@ -113,7 +113,6 @@
           [errorMessage]="kpis.error()?.userMessage ?? null"
           (retry)="kpis.reload()"
         />
-        <sh-completion-card [view]="completion.view()" [loading]="completion.isLoading()" />
       </div>
     }
   }
