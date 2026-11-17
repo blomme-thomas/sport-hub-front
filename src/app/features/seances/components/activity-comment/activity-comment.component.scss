@@ -1,0 +1,65 @@
+.comment {
+  display: grid;
+  gap: var(--sh-space-3, 0.75rem);
+}
+
+.comment__heading {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.comment__form {
+  display: grid;
+  gap: var(--sh-space-2, 0.5rem);
+}
+
+.comment__label {
+  margin: 0;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+}
+
+.comment__input {
+  width: 100%;
+  padding: var(--sh-space-2, 0.5rem);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm, 4px);
+  background: var(--sh-surface);
+  color: var(--sh-text);
+  font: inherit;
+  resize: vertical;
+}
+
+.comment__meta,
+.comment__status {
+  margin: 0;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+}
+
+.comment__rendered {
+  line-height: 1.5;
+
+  :first-child {
+    margin-top: 0;
+  }
+}
+
+.comment__preview {
+  display: grid;
+  gap: var(--sh-space-1, 0.25rem);
+  padding: var(--sh-space-2, 0.5rem);
+  border: 1px dashed var(--sh-border);
+  border-radius: var(--sh-radius-sm, 4px);
+}
+
+.comment__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sh-space-2, 0.5rem);
+}
+
+.comment__error {
+  margin: 0;
+  color: var(--sh-error);
+}

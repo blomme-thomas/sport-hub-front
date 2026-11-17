@@ -60,6 +60,22 @@
       (link)="linkActivity($event)"
       (unlink)="unlinkActivity()"
     />
+    @if (session.linkedActivity) {
+      <sh-activity-comment
+        [comment]="comments.comment()"
+        [loading]="comments.isLoading()"
+        [error]="comments.error()"
+        [editing]="comments.editing()"
+        [draft]="comments.draft()"
+        [saving]="comments.saving()"
+        [saveError]="comments.saveError()"
+        [canSave]="comments.canSave()"
+        (edit)="comments.startEdit()"
+        (cancelEdit)="comments.cancel()"
+        (save)="saveComment()"
+        (draftChange)="comments.setDraft($event)"
+      />
+    }
   </section>
 
   <section class="session__section" aria-labelledby="session-modules-heading">
