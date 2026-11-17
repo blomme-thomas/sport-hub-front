@@ -31,13 +31,6 @@ describe('toWeeklyGoalView', () => {
     expect(view.statusMessage).toBe('Objectif atteint !');
   });
 
-  it('convertit l’historique en heures, dans l’ordre reçu', () => {
-    const view = toWeeklyGoalView(weeklyGoalApi);
-
-    expect(view.trend).toHaveLength(8);
-    expect(view.trend.at(-1)).toEqual({ label: '2026-W47', hours: 24120 / 3600 });
-  });
-
   it('traite une réponse incomplète comme absente, sans valeur fictive', () => {
     const view = toWeeklyGoalView({
       week: '2026-W47',
@@ -48,6 +41,5 @@ describe('toWeeklyGoalView', () => {
 
     expect(view.targetLabel).toBeNull();
     expect(view.percent).toBeNull();
-    expect(view.trend).toEqual([]);
   });
 });

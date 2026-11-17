@@ -31,15 +31,6 @@
           <p class="goal__status" role="status">{{ value.statusMessage }}</p>
         </div>
       </div>
-
-      <div class="goal__trend">
-        <sh-chart
-          type="line"
-          [data]="chartData()"
-          [options]="chartOptions"
-          label="Durée réalisée des huit dernières semaines"
-        />
-      </div>
     }
   } @else {
     <p class="goal__status" role="status">Chargement…</p>
