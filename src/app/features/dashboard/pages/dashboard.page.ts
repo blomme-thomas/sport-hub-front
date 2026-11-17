@@ -12,6 +12,14 @@ import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import {
+  CardDetailModalComponent,
+  type CardDetailModalData,
+} from '../components/card-detail-modal/card-detail-modal.component';
+import type { CardDetail } from '../models/card-detail.model';
+import type { DashboardKpi } from '../models/dashboard-kpi.model';
+import type { ZoneFloors } from '../models/heart-rate-zones.model';
+import { formatDuration } from '../data-access/recent-activities.mapper';
+import {
   ActivityDetailModalComponent,
   type ActivityDetailModalData,
 } from '../components/activity-detail-modal/activity-detail-modal.component';
@@ -96,6 +104,7 @@ export class DashboardPage {
   protected readonly profile = inject(ProfileState);
   protected readonly advice = inject(DashboardAdviceState);
   protected readonly weeklyGoal = inject(WeeklyGoalState);
+  protected readonly heartZones = inject(HeartRateZonesState);
 
   /** Message d'accueil : « Bonjour {prénom} », ou « Bonjour » seul si le prénom est inconnu. */
   protected readonly greeting = computed(() => {
@@ -118,6 +127,72 @@ export class DashboardPage {
       : '';
   });
 
+  /** Vue détaillée d'un indicateur (story #91). */
+  protected openKpi(kpi: DashboardKpi): void {
+    this.openDetail({
+      kind: 'kpi',
+      title: kpi.label,
+      value: kpi.value,
+      unit: kpi.unit,
+      variation: kpi.variation,
+    });
+  }
+
+  /** Vue détaillée de la répartition par sport. Sans donnée, ne fait rien. */
+  protected openSplit(): void {
+    const split = this.kpis.sportSplit();
+    if (split === undefined) {
+      return;
+    }
+    this.openDetail({
+      kind: 'split',
+      title: 'Répartition par sport',
+      totalLabel: split.totalLabel,
+      rows: split.shares.map((share) => ({
+        label: share.label,
+        percent: share.percent,
+        durationLabel: share.durationLabel,
+        colorVariable: share.colorVariable,
+      })),
+    });
+  }
+
+  /** Vue détaillée des zones de fréquence cardiaque, avec les seuils de l'utilisateur. Sans donnée, ne fait rien. */
+  protected openZones(): void {
+    const zones = this.kpis.zones();
+    if (zones === undefined) {
+      return;
+    }
+    const floors = this.heartZones.floors();
+    this.openDetail({
+      kind: 'zones',
+      title: 'Zones d’entraînement',
+      optimalPercent: zones.optimalPercent,
+      statusMessage: zones.statusMessage,
+      rows: zones.zones.map((zone) => ({
+        label: zone.label,
+        name: zone.name,
+        percent: zone.percent,
+        durationLabel: formatDuration(zone.seconds),
+        floorBpm: floorOf(zone.label, floors),
+        colorVariable: zone.colorVariable,
+      })),
+    });
+  }
+
+  private openDetail(detail: CardDetail): void {
+    this.modal.create({
+      nzTitle: detail.title,
+      nzContent: CardDetailModalComponent,
+      nzData: { detail } satisfies CardDetailModalData,
+      nzViewContainerRef: this.viewContainer,
+      nzWidth: 'min(720px, 96vw)',
+      nzClassName: 'sh-card-detail-modal',
+      nzKeyboard: true,
+      nzFooter: null,
+    });
+  }
+
   /** Ouvre le détail complet d'une séance réalisée (toutes les métriques, zones et courbe de FC). */
   protected openActivity(id: string): void {
     this.modal.create({
@@ -136,4 +211,10 @@ export class DashboardPage {
   protected openSession(id: string): void {
     void this.router.navigate(['/seances', id]);
   }
+}
+
+/** Seuil bas (bpm) de la zone « Z1 » à « Z5 », `null` si les zones ne sont pas disponibles. */
+function floorOf(label: string, floors: ZoneFloors | null): number | null {
+  const index = Number(label.slice(1)) - 1;
+  return floors?.[index] ?? null;
 }

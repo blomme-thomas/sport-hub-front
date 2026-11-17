@@ -7,10 +7,34 @@ import { SportSplitCardComponent } from './sport-split-card.component';
 const SPLIT: SportSplitView = {
   totalLabel: '6h 42',
   shares: [
-    { family: 'running', label: 'Course à pied', percent: 52, colorVariable: '--sh-accent-text' },
-    { family: 'cycling', label: 'Cyclisme', percent: 28, colorVariable: '--sh-success' },
-    { family: 'swimming', label: 'Natation', percent: 12, colorVariable: '--sh-orange' },
-    { family: 'other', label: 'Autres', percent: 8, colorVariable: '--sh-violet' },
+    {
+      family: 'running',
+      label: 'Course à pied',
+      percent: 52,
+      durationLabel: '0 min',
+      colorVariable: '--sh-accent-text',
+    },
+    {
+      family: 'cycling',
+      label: 'Cyclisme',
+      percent: 28,
+      durationLabel: '0 min',
+      colorVariable: '--sh-success',
+    },
+    {
+      family: 'swimming',
+      label: 'Natation',
+      percent: 12,
+      durationLabel: '0 min',
+      colorVariable: '--sh-orange',
+    },
+    {
+      family: 'other',
+      label: 'Autres',
+      percent: 8,
+      durationLabel: '0 min',
+      colorVariable: '--sh-violet',
+    },
   ],
 };
 

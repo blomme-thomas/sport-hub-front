@@ -30,7 +30,7 @@
     </div>
   } @else if (kpis.kpis(); as list) {
     @for (kpi of list; track kpi.id) {
-      <sh-kpi-card [kpi]="kpi" />
+      <sh-kpi-card [kpi]="kpi" (expand)="openKpi(kpi)" />
     }
   } @else {
     <p class="dashboard__loading">Chargement…</p>
@@ -106,12 +106,14 @@
           [loading]="kpis.isLoading()"
           [errorMessage]="kpis.error()?.userMessage ?? null"
           (retry)="kpis.reload()"
+          (expand)="openSplit()"
         />
         <sh-zones-card
           [view]="kpis.zones()"
           [loading]="kpis.isLoading()"
           [errorMessage]="kpis.error()?.userMessage ?? null"
           (retry)="kpis.reload()"
+          (expand)="openZones()"
         />
       </div>
     }

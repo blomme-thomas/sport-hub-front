@@ -1,0 +1,110 @@
+@switch (data.detail.kind) {
+  @case ('kpi') {
+    <div class="detail">
+      <p class="detail__value">
+        {{ data.detail.value }}
+        @if (data.detail.unit; as unit) {
+          <span class="detail__unit">{{ unit }}</span>
+        }
+      </p>
+      @if (data.detail.variation; as variation) {
+        <sh-variation-badge [variation]="variation" />
+      } @else {
+        <p class="detail__muted">Variation par rapport à la période précédente : —</p>
+      }
+    </div>
+  }
+  @case ('split') {
+    <div class="detail">
+      <p class="detail__muted">Total : {{ data.detail.totalLabel }}</p>
+      @if (data.detail.rows.length === 0) {
+        <p class="detail__muted">Aucune séance sur cette période</p>
+      } @else {
+        <table class="detail__table">
+          <caption class="visually-hidden">
+            Répartition détaillée par sport
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Sport</th>
+              <th scope="col">Durée</th>
+              <th scope="col">Part</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of data.detail.rows; track row.label) {
+              <tr>
+                <td>
+                  <span
+                    class="detail__swatch"
+                    [style.background]="'var(' + row.colorVariable + ')'"
+                    aria-hidden="true"
+                  ></span>
+                  {{ row.label }}
+                </td>
+                <td>{{ row.durationLabel }}</td>
+                <td>{{ row.percent }} %</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+  @case ('zones') {
+    <div class="detail">
+      @if (data.detail.optimalPercent !== null) {
+        <p class="detail__muted">
+          Zone optimale (Z2 et Z3) : {{ data.detail.optimalPercent }} %
+          @if (data.detail.statusMessage; as message) {
+            · {{ message }}
+          }
+        </p>
+      }
+      @if (data.detail.rows.length === 0) {
+        <p class="detail__muted">Aucune donnée de zone sur cette période</p>
+      } @else {
+        <table class="detail__table">
+          <caption class="visually-hidden">
+            Temps passé par zone de fréquence cardiaque
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Zone</th>
+              <th scope="col">Seuil</th>
+              <th scope="col">Temps</th>
+              <th scope="col">Part</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of data.detail.rows; track row.label) {
+              <tr>
+                <td>
+                  <span
+                    class="detail__swatch"
+                    [style.background]="'var(' + row.colorVariable + ')'"
+                    aria-hidden="true"
+                  ></span>
+                  {{ row.label }} · {{ row.name }}
+                </td>
+                <td>
+                  @if (row.floorBpm !== null) {
+                    à partir de {{ row.floorBpm }} bpm
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>{{ row.durationLabel }}</td>
+                <td>{{ row.percent }} %</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+}
+
+<div class="detail__footer">
+  <button nz-button nzType="primary" type="button" (click)="close()">Fermer</button>
+</div>

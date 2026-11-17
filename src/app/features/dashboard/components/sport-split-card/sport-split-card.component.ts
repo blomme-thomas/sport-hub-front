@@ -23,6 +23,7 @@ export class SportSplitCardComponent {
   readonly loading = input(false);
   readonly errorMessage = input<string | null>(null);
   readonly retry = output<void>();
+  readonly expand = output<void>();
 
   protected readonly chartData = computed<ChartData<'doughnut'>>(() => {
     const shares = this.split()?.shares ?? [];

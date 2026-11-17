@@ -3,6 +3,17 @@
     <sh-icon name="pie" color="var(--sh-violet)" />
     <span>Répartition par sport</span>
   </h2>
+  <button
+    nz-button
+    nzType="text"
+    type="button"
+    class="card-expand"
+    [attr.aria-label]="'Agrandir : Répartition par sport'"
+    [disabled]="!split()"
+    (click)="expand.emit()"
+  >
+    <sh-icon name="expand" />
+  </button>
 
   @if (errorMessage(); as message) {
     <div class="split__error" role="alert">

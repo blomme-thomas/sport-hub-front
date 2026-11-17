@@ -60,6 +60,7 @@ export function toSportSplit(
     family: item.family,
     label: FAMILY_LABELS[item.family],
     percent: floors[index] ?? 0,
+    durationLabel: formatTotal(seconds.get(item.family) ?? 0),
     colorVariable: FAMILY_COLORS[item.family],
   }));
   return { shares, totalLabel: formatTotal(total) };

@@ -21,4 +21,5 @@ export class ZonesCardComponent {
   readonly loading = input(false);
   readonly errorMessage = input<string | null>(null);
   readonly retry = output<void>();
+  readonly expand = output<void>();
 }

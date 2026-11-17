@@ -104,3 +104,16 @@
   color: var(--sh-text);
   font-variant-numeric: tabular-nums;
 }
+
+/* Bouton « Agrandir » de la carte : en haut à droite, la carte sert de repère. */
+:host {
+  position: relative;
+  display: block;
+}
+
+.card-expand {
+  position: absolute;
+  top: var(--sh-space-3, 0.75rem);
+  right: var(--sh-space-3, 0.75rem);
+  z-index: 1;
+}

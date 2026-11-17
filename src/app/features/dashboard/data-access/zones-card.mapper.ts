@@ -41,6 +41,7 @@ export function toZonesCardView(hrTimeInZone: readonly (number | null)[]): Zones
     label,
     name: ZONE_NAMES[index] ?? '',
     percent: Math.round(((seconds[index] ?? 0) / total) * 100),
+    seconds: seconds[index] ?? 0,
     colorVariable: ZONE_COLORS[index] ?? '--sh-text-muted',
   })).reverse();
 
