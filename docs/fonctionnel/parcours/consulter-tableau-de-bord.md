@@ -87,18 +87,20 @@ Le bloc n'est pas relancé par la bascule Semaine / Mois. La section porte le ti
 - La légende n'apparaît que pour un graphique à plusieurs séries. Aujourd'hui, chaque graphique n'en a qu'une : les libellés et le tableau portent l'information.
 - La bascule est un groupe de boutons radio « Granularité », libellés « Semaine » et « Mois ».
 
-## Mini-calendrier de la semaine (story #18)
+## Calendrier du mois (story #18)
 
-En bas du tableau de bord, le bloc « Cette semaine » affiche les séances planifiées de la semaine affichée, une icône par séance, placée dans la case de son jour. L'icône et la couleur viennent de la discipline (correspondance unique dans `shared/ui/discipline`). Une discipline absente de la correspondance s'affiche en neutre, avec sa clé comme libellé, sans erreur.
+En bas du tableau de bord, le bloc « Calendrier » affiche le mois civil : une grille lundi à dimanche avec les en-têtes des jours, toujours six semaines (42 cases), à partir du lundi de la semaine du 1er du mois. La hauteur ne dépend donc pas du mois affiché. Une icône par séance planifiée, placée dans la case de son jour ; l'icône et la couleur viennent de la discipline (correspondance unique dans `shared/ui/discipline`). Une discipline absente de la correspondance s'affiche en neutre, avec sa clé comme libellé, sans erreur.
 
-- **Navigation** : « ‹ » et « › » changent de semaine, « Aujourd’hui » revient à la semaine courante. Le bloc se recharge à chaque changement.
-- **Légende** : les disciplines présentes sur la semaine, avec leur libellé du référentiel.
+- **Navigation** : « ‹ » et « › » changent de mois. Le bouton central porte le nom du mois affiché (« Novembre 2026 ») et revient au mois courant. Le bloc se recharge à chaque changement.
+- **Aujourd’hui** : sa case est pleine, en couleur d'accent, avec `aria-current="date"` (jour local).
+- **Semaine en cours** : ses sept cases ont une teinte légère.
+- **Week-ends** : fond distinct. Les jours hors du mois affiché sont atténués, séances comprises.
 - **Clic sur une icône** : ouvre la fiche de la séance (`/seances/:id`).
-- **Lecture seule** : rien ne se modifie depuis ce bloc. Les séances réalisées, manquées ou annulées ne sont pas affichées.
-- **Vue mois** : la période 30 jours ou 3 mois (et non 7 jours) passe ce bloc en vue mois. En vue mois, la grille couvre le mois entier (lundi à dimanche), avec les en-têtes des jours ; « ‹ » et « › » passent au mois précédent ou suivant.
-- **Taille commune** : sur ordinateur, « Détails par séance » et le mini-calendrier ont la même hauteur fixe, quelle que soit la vue (semaine ou mois). Le mini-calendrier remplit cette hauteur ; en vue mois, les six semaines y tiennent.
+- **Lecture seule** : rien ne se modifie depuis ce bloc. Les séances réalisées, manquées ou annulées ne sont pas affichées comme séances ; les activités réalisées sont des repères non interactifs.
+- **Indépendant du sélecteur** : la période « Semaine / Mois » du tableau de bord ne change pas ce bloc.
+- **Taille commune** : sur ordinateur, « Détails par séance » et le calendrier ont la même hauteur fixe ; les six semaines y tiennent.
 - **Détails par séance** : la liste affiche quatre lignes et défile au-delà ; la barre de défilement est masquée, le défilement reste possible à la molette, au tactile et au clavier.
-- **États** : chargement, « Aucune séance planifiée cette semaine. », et erreur avec « Réessayer ».
+- **États** : chargement et erreur avec « Réessayer ». Sans séance sur le mois, le calendrier reste affiché, vide, sans message.
 
 Hors scope de ce bloc : détail de la séance (fiche #10), création ou déplacement (calendrier, #46), regroupement des disciplines en familles.
 
