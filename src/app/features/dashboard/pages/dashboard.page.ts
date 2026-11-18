@@ -30,6 +30,10 @@ import { PerformanceCardComponent } from '../components/performance-card/perform
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card/recent-activities-card.component';
 import { SportSplitCardComponent } from '../components/sport-split-card/sport-split-card.component';
 import { ZonesCardComponent } from '../components/zones-card/zones-card.component';
+import {
+  DayDetailModalComponent,
+  type DayDetailModalData,
+} from '../components/day-detail-modal/day-detail-modal.component';
 import { AI_FEATURES } from '../../../core/config/ai-features';
 import { WeeklyReviewCardComponent } from '../components/weekly-review-card/weekly-review-card.component';
 import { DashboardAdviceCardComponent } from '../components/dashboard-advice-card/dashboard-advice-card.component';
@@ -40,7 +44,6 @@ import { WeekMiniCalendarComponent } from '../components/week-mini-calendar/week
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
 import { NextEventState } from '../data-access/next-event.state';
-import { ProfileState } from '../data-access/profile.state';
 import { HeartRateZonesState } from '../data-access/heart-rate-zones.state';
 import { PerformanceState } from '../data-access/performance.state';
 import { WeeklyReviewState } from '../data-access/weekly-review.state';
@@ -50,9 +53,14 @@ import type { DashboardPeriod } from '../models/training-stats.model';
 
 /** Libellé de la période dans le message d'état lu par les lecteurs d'écran. */
 const PERIOD_WORDS: Record<DashboardPeriod, string> = {
-  '7d': '7 derniers jours',
-  '30d': '30 derniers jours',
-  '3m': '3 derniers mois',
+  week: 'la semaine en cours',
+  month: 'le mois en cours',
+};
+
+/** Unité affichée sur l'axe du graphique agrandi, pour les indicateurs qui en ont une. */
+const AXIS_UNITS: Partial<Record<DashboardKpi['id'], string>> = {
+  duration: 'h',
+  calories: 'kcal',
 };
 
 @Component({
@@ -83,7 +91,6 @@ const PERIOD_WORDS: Record<DashboardPeriod, string> = {
     WeeklyReviewState,
     HeartRateZonesState,
     WeekMiniCalendarState,
-    ProfileState,
     DashboardAdviceState,
     WeeklyGoalState,
   ],
@@ -101,16 +108,10 @@ export class DashboardPage {
   protected readonly kpis = inject(DashboardKpisState);
   protected readonly nextEvent = inject(NextEventState);
   protected readonly recent = inject(RecentActivitiesState);
-  protected readonly profile = inject(ProfileState);
   protected readonly advice = inject(DashboardAdviceState);
   protected readonly weeklyGoal = inject(WeeklyGoalState);
   protected readonly heartZones = inject(HeartRateZonesState);
 
-  /** Message d'accueil : « Bonjour {prénom} », ou « Bonjour » seul si le prénom est inconnu. */
-  protected readonly greeting = computed(() => {
-    const name = this.profile.displayName();
-    return name ? `Bonjour ${name}` : 'Bonjour';
-  });
   protected readonly miniCalendar = inject(WeekMiniCalendarState);
 
   private readonly router = inject(Router);
@@ -135,6 +136,16 @@ export class DashboardPage {
       value: kpi.value,
       unit: kpi.unit,
       variation: kpi.variation,
+      ...(kpi.series !== null && kpi.seriesLabels
+        ? {
+            series: {
+              labels: kpi.seriesLabels,
+              values: kpi.series,
+              tone: kpi.tone,
+              axisUnit: AXIS_UNITS[kpi.id] ?? null,
+            },
+          }
+        : {}),
     });
   }
 
@@ -187,7 +198,7 @@ export class DashboardPage {
       nzData: { detail } satisfies CardDetailModalData,
       nzViewContainerRef: this.viewContainer,
       nzWidth: 'min(720px, 96vw)',
-      nzClassName: 'sh-card-detail-modal',
+      nzClassName: 'sh-activity-modal sh-card-detail-modal',
       nzKeyboard: true,
       nzFooter: null,
     });
@@ -207,10 +218,36 @@ export class DashboardPage {
     });
   }
 
+  /** Ouvre la modale d'un jour du mini-calendrier : résumé, séances, activités et zones du jour. */
+  protected openDay(iso: string): void {
+    this.modal.create({
+      nzTitle: dayTitleOf(iso),
+      nzContent: DayDetailModalComponent,
+      nzData: { date: iso } satisfies DayDetailModalData,
+      nzViewContainerRef: this.viewContainer,
+      nzWidth: 'min(860px, 96vw)',
+      nzClassName: 'sh-activity-modal',
+      nzKeyboard: true,
+      nzFooter: null,
+    });
+  }
+
   /** Ouvre la fiche d'une séance depuis le mini-calendrier (lecture seule ailleurs). */
   protected openSession(id: string): void {
     void this.router.navigate(['/seances', id]);
   }
+}
+
+/** Titre d'une journée : « Mardi 17 novembre 2026 ». */
+function dayTitleOf(iso: string): string {
+  const text = new Intl.DateTimeFormat('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(`${iso}T00:00:00Z`));
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 /** Seuil bas (bpm) de la zone « Z1 » à « Z5 », `null` si les zones ne sont pas disponibles. */

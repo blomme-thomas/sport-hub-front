@@ -25,7 +25,7 @@ export class PerformanceState {
 
   /** Regroupement attendu pour la période choisie (7 jours par jour, sinon par semaine), sans attendre les données. */
   private readonly requestedGrouping = computed<PerformanceGrouping>(() =>
-    this.dashboard.period() === '7d' ? 'day' : 'week',
+    this.dashboard.period() === 'week' ? 'day' : 'week',
   );
 
   private readonly held: Signal<HeldPerformance | undefined> = keepLast(

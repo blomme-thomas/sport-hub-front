@@ -59,6 +59,13 @@
   font-weight: 500;
 }
 
+.kpi__figures {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sh-space-2);
+}
+
 .kpi__value {
   margin: 0;
   font-size: 1.75rem;

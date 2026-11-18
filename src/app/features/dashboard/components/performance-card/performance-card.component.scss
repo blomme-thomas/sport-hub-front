@@ -64,3 +64,13 @@
   width: 1.5rem;
   height: 1.5rem;
 }
+
+/* Vide : même hauteur que le graphique, avec une grille en pointillés et une ligne de base. */
+.perf__placeholder {
+  flex: 1;
+  min-height: 0;
+  border-bottom: 2px dashed var(--sh-border);
+  background-image: linear-gradient(var(--sh-border) 1px, transparent 1px);
+  background-size: 100% 25%;
+  opacity: 0.6;
+}

@@ -12,6 +12,11 @@
       } @else {
         <p class="detail__muted">Variation par rapport à la période précédente : —</p>
       }
+      @if (chart; as line) {
+        <div class="detail__chart">
+          <sh-chart type="line" [data]="line.data" [options]="line.options" [label]="line.label" />
+        </div>
+      }
     </div>
   }
   @case ('split') {

@@ -3,6 +3,8 @@
   flex-direction: column;
   /* Même hauteur que les autres cartes de la rangée (étirées par la grille). */
   height: 100%;
+  /* Repère du bouton « Agrandir » (positionné en absolu). */
+  position: relative;
 }
 
 .zones {
@@ -137,14 +139,33 @@
 }
 
 /* Bouton « Agrandir » de la carte : en haut à droite, la carte sert de repère. */
-:host {
-  position: relative;
-  display: block;
-}
-
 .card-expand {
   position: absolute;
   top: var(--sh-space-3, 0.75rem);
   right: var(--sh-space-3, 0.75rem);
   z-index: 1;
+}
+
+/* Vide : barre en grisé, anneau en pointillés et légende grisée. */
+.zones__bar--empty {
+  gap: 2px;
+  background: transparent;
+
+  .zones__segment {
+    flex: 1;
+    background: var(--sh-border);
+  }
+}
+
+.zones__ring--empty {
+  background: none;
+  border: 2px dashed var(--sh-border);
+}
+
+.zones__swatch--empty {
+  background: var(--sh-border);
+}
+
+.zones__body:has(.zones__ring--empty) {
+  opacity: 0.6;
 }

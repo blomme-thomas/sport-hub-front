@@ -12,4 +12,6 @@ export interface DashboardKpi {
   /** Présente uniquement pour la durée : le back ne fournit que cette variation. */
   variation: VariationView | null;
   series: (number | null)[] | null;
+  /** Libellés des jours de `series` (même longueur), pour l’axe du graphique agrandi ; absents sans série. */
+  seriesLabels?: string[] | null;
 }

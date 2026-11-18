@@ -7,7 +7,7 @@ import type { DashboardKpi, KpiTone } from '../../models/dashboard-kpi.model';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { VariationBadgeComponent } from '../variation-badge/variation-badge.component';
 
-const TONE_VARIABLES: Record<KpiTone, string> = {
+export const TONE_VARIABLES: Record<KpiTone, string> = {
   accent: '--sh-accent-text',
   success: '--sh-success',
   orange: '--sh-orange',
@@ -30,7 +30,8 @@ const SPARKLINE_OPTIONS: ChartOptions<'line'> = {
   // Marge interne : une série à 0 ne tombe plus sur le bord, où Chart.js découpe la moitié du trait.
   layout: { padding: { top: 3, bottom: 3, left: 2, right: 2 } },
   plugins: { legend: { display: false }, tooltip: { enabled: false } },
-  scales: { x: { display: false }, y: { display: false } },
+  // Le 0 est toujours au bas de la courbe, pour que les zéros des cartes soient alignés entre elles.
+  scales: { x: { display: false }, y: { display: false, beginAtZero: true } },
   elements: { point: { radius: 0 }, line: { borderWidth: 2, tension: 0.35 } },
 };
 

@@ -17,6 +17,14 @@ function days(sessionsByDate: Record<string, WeekMiniDay['sessions']>): WeekMini
   });
 }
 
+/** Numéro du jour de la case qui contient l'élément (vue mois). */
+function dayNumberOf(element: HTMLElement): string | null {
+  return (
+    element.closest('li.week-mini__day')?.querySelector('.week-mini__day-label')?.textContent ??
+    null
+  );
+}
+
 /** Ajoute une activité réalisée au jour `date` de la liste. */
 function withRealized(list: WeekMiniDay[], date: string): WeekMiniDay[] {
   return list.map((day) =>
@@ -67,9 +75,9 @@ describe('WeekMiniCalendarComponent', () => {
     const courseButton = screen.getByRole('button', {
       name: 'Séance Course à pied, 18:00. Ouvrir la séance',
     });
-    // Colonnes : 0 = heure, puis lundi (1) … dimanche (7). Le vélo est lundi, la course mercredi.
-    expect((veloButton.closest('td') as HTMLTableCellElement).cellIndex).toBe(1);
-    expect((courseButton.closest('td') as HTMLTableCellElement).cellIndex).toBe(3);
+    // Chaque séance est dans la case de son jour : le vélo le lundi 9, la course le mercredi 11.
+    expect(dayNumberOf(veloButton)).toBe('9');
+    expect(dayNumberOf(courseButton)).toBe('11');
   });
 
   it('émet l’identifiant de la séance au clic', async () => {
@@ -103,21 +111,6 @@ describe('WeekMiniCalendarComponent', () => {
       screen.getByRole('button', { name: 'Séance golf, sans heure. Ouvrir la séance' }),
     ).toBeTruthy();
     expect(screen.queryByRole('alert')).toBeNull();
-  });
-
-  it('affiche le message vide quand aucune séance n’est planifiée ni réalisée', async () => {
-    await render(WeekMiniCalendarComponent, {
-      inputs: { days: days({}), legend: [], empty: true },
-      on: {
-        previous: vi.fn(),
-        next: vi.fn(),
-        current: vi.fn(),
-        retry: vi.fn(),
-        sessionSelected: vi.fn(),
-      },
-    });
-
-    expect(screen.getByText('Aucune séance sur cette période.')).toBeTruthy();
   });
 
   it('affiche l’erreur avec un bouton Réessayer qui émet retry', async () => {

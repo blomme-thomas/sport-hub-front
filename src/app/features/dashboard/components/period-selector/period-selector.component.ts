@@ -10,9 +10,8 @@ interface PeriodOption {
 }
 
 const OPTIONS: readonly PeriodOption[] = [
-  { value: '7d', label: '7 j', spokenLabel: '7 derniers jours' },
-  { value: '30d', label: '30 j', spokenLabel: '30 derniers jours' },
-  { value: '3m', label: '3 mois', spokenLabel: '3 derniers mois' },
+  { value: 'week', label: 'Semaine', spokenLabel: 'Semaine en cours' },
+  { value: 'month', label: 'Mois', spokenLabel: 'Mois en cours' },
 ];
 
 /**

@@ -14,15 +14,17 @@
       <sh-icon name="expand" />
     </button>
   </div>
-  <p class="kpi__value">
-    {{ kpi().value }}
-    @if (kpi().unit; as unit) {
-      <span class="kpi__unit">{{ unit }}</span>
+  <div class="kpi__figures">
+    <p class="kpi__value">
+      {{ kpi().value }}
+      @if (kpi().unit; as unit) {
+        <span class="kpi__unit">{{ unit }}</span>
+      }
+    </p>
+    @if (kpi().variation; as variation) {
+      <sh-variation-badge [variation]="variation" />
     }
-  </p>
-  @if (kpi().variation; as variation) {
-    <sh-variation-badge [variation]="variation" />
-  }
+  </div>
   @if (sparkData(); as data) {
     <div class="kpi__spark">
       <sh-chart

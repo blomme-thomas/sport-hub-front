@@ -1,40 +1,20 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { disciplineStyleOf, type DisciplineStyle } from '@shared/ui/discipline/discipline-style';
+import { addIsoDays, localIsoDate } from '@shared/utils/iso-date';
+import { isoWeekOf, mondayOfIsoWeek } from '@shared/utils/iso-week';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { AppError } from '../../../../core/http/app-error';
-import type { MiniCalendarView, WeekMiniDay } from '../../data-access/week-mini-calendar.state';
-import type {
-  WeekMiniActivity,
-  WeekMiniLegendEntry,
-  WeekMiniSession,
-} from '../../models/week-mini-calendar.model';
+import type { WeekMiniDay } from '../../data-access/week-mini-calendar.state';
+import type { WeekMiniLegendEntry, WeekMiniSession } from '../../models/week-mini-calendar.model';
 
-/** Plage horaire affichée en vue semaine, par créneaux de deux heures ; elle s'élargit si une séance tombe en dehors. */
-const FIRST_HOUR = 6;
-const LAST_HOUR = 22;
-const SLOT_HOURS = 2;
-
-/** Une case de la vue semaine : un jour, à une heure donnée (ou sans heure). */
-export interface WeekTimeCell {
-  date: string;
-  inPeriod: boolean;
-  sessions: WeekMiniSession[];
-  realized: WeekMiniActivity[];
-}
-
-/** Une ligne de la vue semaine : une heure (ou « Sans heure ») et une case par jour. */
-export interface WeekTimeRow {
-  key: string;
-  label: string;
-  cells: WeekTimeCell[];
-}
+const DAYS_PER_WEEK = 7;
 
 /**
- * Mini-calendrier : vue semaine en tableau, heures à gauche et jours en colonnes ; vue mois en grille.
- * Une icône par séance planifiée, colorée selon sa discipline, et un repère par activité réalisée.
- * Lecture seule : un clic émet l'identifiant de la séance (ouverture de sa fiche). Présentationnel.
+ * Mini-calendrier du mois : grille lundi à dimanche avec les en-têtes des jours. Une icône par séance planifiée,
+ * colorée selon sa discipline, et un repère par activité réalisée. Le jour d'aujourd'hui et la semaine en cours
+ * sont surlignés. Lecture seule : un clic émet l'identifiant de la séance (ouverture de sa fiche). Présentationnel.
  */
 @Component({
   selector: 'sh-week-mini-calendar',
@@ -45,12 +25,10 @@ export interface WeekTimeRow {
 })
 export class WeekMiniCalendarComponent {
   readonly days = input.required<readonly WeekMiniDay[]>();
-  /** Semaine (7 colonnes, une ligne par heure) ou mois (grille complète avec en-têtes des jours). */
-  readonly view = input<MiniCalendarView>('week');
-  readonly title = input('Cette semaine');
+  /** Nom du mois affiché (« Novembre 2026 »), porté par le bouton qui revient au mois courant. */
+  readonly title = input('Ce mois');
   readonly legend = input<readonly WeekMiniLegendEntry[]>([]);
   readonly loading = input(false);
-  readonly empty = input(false);
   readonly error = input<AppError | null>(null);
 
   readonly previous = output<void>();
@@ -58,39 +36,26 @@ export class WeekMiniCalendarComponent {
   readonly current = output<void>();
   readonly retry = output<void>();
   readonly sessionSelected = output<string>();
+  /** Date `YYYY-MM-DD` du jour cliqué dans la vue mois. */
+  readonly daySelected = output<string>();
 
-  /** Lignes de la vue semaine : une par heure de la plage, avec une ligne « Sans heure » si besoin. */
-  protected readonly timeRows = computed<WeekTimeRow[]>(() => {
-    const days = this.days();
-    const hours = new Set<number>();
-    let hasUntimed = false;
-    for (const day of days) {
-      for (const item of [...day.sessions, ...day.realized]) {
-        const slot = slotOf(item.startTime);
-        if (slot === null) {
-          hasUntimed = true;
-        } else {
-          hours.add(slot);
-        }
-      }
-    }
-    const first = Math.min(FIRST_HOUR, ...hours);
-    const last = Math.max(LAST_HOUR, ...hours);
-    const slots: (number | null)[] = hasUntimed ? [null] : [];
-    for (let hour = first; hour <= last; hour += SLOT_HOURS) {
-      slots.push(hour);
-    }
-    return slots.map((hour) => ({
-      key: hour === null ? 'sans-heure' : `h${hour}`,
-      label: hour === null ? 'Sans heure' : `${hour} h`,
-      cells: days.map((day) => ({
-        date: day.date,
-        inPeriod: day.inPeriod,
-        sessions: day.sessions.filter((session) => slotOf(session.startTime) === hour),
-        realized: day.realized.filter((activity) => slotOf(activity.startTime) === hour),
-      })),
-    }));
-  });
+  /** Jour local d'aujourd'hui, marqué dans la grille. */
+  protected readonly todayIso = localIsoDate();
+
+  /** Lundi et dimanche de la semaine en cours : ses sept jours sont surlignés dans la grille. */
+  private readonly currentWeekStart = mondayOfIsoWeek(isoWeekOf(this.todayIso));
+  private readonly currentWeekEnd = addIsoDays(this.currentWeekStart, DAYS_PER_WEEK - 1);
+
+  /** Samedi ou dimanche : fond distinct. */
+  protected isWeekend(iso: string): boolean {
+    const day = new Date(`${iso}T00:00:00Z`).getUTCDay();
+    return day === 0 || day === 6;
+  }
+
+  /** Vrai pour les sept jours de la semaine en cours. */
+  protected isInCurrentWeek(iso: string): boolean {
+    return iso >= this.currentWeekStart && iso <= this.currentWeekEnd;
+  }
 
   /** Style (pictogramme et couleur) d'une discipline ; une clé inconnue reçoit le style neutre. */
   protected styleOf(typeKey: string): DisciplineStyle {
@@ -111,24 +76,8 @@ export class WeekMiniCalendarComponent {
 
   protected readonly weekdayNames = ['Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.'];
 
-  /** Libellé d'une case : le jour et le mois en vue semaine, le numéro du jour en vue mois. */
-  protected dayLabel(iso: string): string {
-    if (this.view() === 'month') {
-      return String(Number(iso.slice(8, 10)));
-    }
-    return new Intl.DateTimeFormat('fr-FR', {
-      weekday: 'short',
-      day: 'numeric',
-      timeZone: 'UTC',
-    }).format(new Date(`${iso}T00:00:00Z`));
+  /** Numéro du jour dans la case. */
+  protected dayNumber(iso: string): string {
+    return String(Number(iso.slice(8, 10)));
   }
-}
-
-/** Créneau de deux heures d'un horaire `HH:mm` (le créneau pair qui le contient), ou `null` sans horaire. */
-function slotOf(time: string | null): number | null {
-  if (time === null) {
-    return null;
-  }
-  const hour = Number(time.slice(0, 2));
-  return hour - (hour % SLOT_HOURS);
 }

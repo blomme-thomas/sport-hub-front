@@ -2,9 +2,9 @@
   <header class="week-mini__header">
     <h2 id="week-mini-title" class="week-mini__title">
       <sh-icon name="calendar" color="var(--sh-success)" />
-      <span>{{ title() }}</span>
+      <span>Calendrier</span>
     </h2>
-    <div class="week-mini__nav" role="group" aria-label="Choisir la période">
+    <div class="week-mini__nav" role="group" aria-label="Choisir le mois">
       <button
         nz-button
         nzSize="small"
@@ -14,7 +14,9 @@
       >
         ‹
       </button>
-      <button nz-button nzSize="small" type="button" (click)="current.emit()">Aujourd’hui</button>
+      <button nz-button nzSize="small" type="button" (click)="current.emit()">
+        {{ title() }}
+      </button>
       <button nz-button nzSize="small" type="button" aria-label="Suivant" (click)="next.emit()">
         ›
       </button>
@@ -29,10 +31,6 @@
   } @else if (loading()) {
     <p class="week-mini__status" role="status">Chargement des séances…</p>
   } @else {
-    @if (empty()) {
-      <p class="week-mini__status">Aucune séance sur cette période.</p>
-    }
-
     <ng-template #slotItems let-sessions="sessions" let-realized="realized">
       <ul class="week-mini__sessions">
         @for (session of sessions; track session.id) {
@@ -42,7 +40,7 @@
               class="week-mini__session"
               [style.border-color]="styleOf(session.disciplineTypeKey).color"
               [attr.aria-label]="labelOf(session)"
-              (click)="sessionSelected.emit(session.id)"
+              (click)="$event.stopPropagation(); sessionSelected.emit(session.id)"
             >
               <sh-icon
                 [name]="styleOf(session.disciplineTypeKey).icon"
@@ -67,71 +65,35 @@
       </ul>
     </ng-template>
 
-    @if (view() === 'week') {
-      <div class="week-mini__table-wrap">
-        <table class="week-mini__table">
-          <caption class="visually-hidden">
-            Séances de la semaine, par heure
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col" class="week-mini__corner">
-                <span class="visually-hidden">Heure</span>
-              </th>
-              @for (day of days(); track day.date) {
-                <th scope="col" class="week-mini__head">{{ dayLabel(day.date) }}</th>
-              }
-            </tr>
-          </thead>
-          <tbody>
-            @for (row of timeRows(); track row.key) {
-              <tr>
-                <th scope="row" class="week-mini__hour">{{ row.label }}</th>
-                @for (cell of row.cells; track cell.date) {
-                  <td class="week-mini__slot">
-                    <ng-container
-                      [ngTemplateOutlet]="slotItems"
-                      [ngTemplateOutletContext]="{
-                        sessions: cell.sessions,
-                        realized: cell.realized,
-                      }"
-                    />
-                  </td>
-                }
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    } @else {
-      <ul class="week-mini__weekdays" aria-hidden="true">
-        @for (name of weekdayNames; track name) {
-          <li>{{ name }}</li>
-        }
-      </ul>
+    <ul class="week-mini__weekdays" aria-hidden="true">
+      @for (name of weekdayNames; track name) {
+        <li>{{ name }}</li>
+      }
+    </ul>
 
-      <ol class="week-mini__grid week-mini__grid--month" aria-label="Séances du mois">
-        @for (day of days(); track day.date) {
-          <li class="week-mini__day" [class.week-mini__day--outside]="!day.inPeriod">
-            <span class="week-mini__day-label">{{ dayLabel(day.date) }}</span>
-            <ng-container
-              [ngTemplateOutlet]="slotItems"
-              [ngTemplateOutletContext]="{ sessions: day.sessions, realized: day.realized }"
-            />
-          </li>
-        }
-      </ol>
-    }
-
-    @if (legend().length > 0) {
-      <ul class="week-mini__legend" aria-label="Légende">
-        @for (entry of legend(); track entry.typeKey) {
-          <li>
-            <sh-icon [name]="styleOf(entry.typeKey).icon" [color]="styleOf(entry.typeKey).color" />
-            {{ entry.label }}
-          </li>
-        }
-      </ul>
-    }
+    <ol class="week-mini__grid week-mini__grid--month" aria-label="Séances du mois">
+      @for (day of days(); track day.date) {
+        <li
+          class="week-mini__day"
+          [class.week-mini__day--outside]="!day.inPeriod"
+          [class.week-mini__day--weekend]="isWeekend(day.date)"
+          [class.week-mini__day--current-week]="isInCurrentWeek(day.date)"
+          [class.week-mini__day--today]="day.date === todayIso"
+          [attr.aria-current]="day.date === todayIso ? 'date' : null"
+        >
+          <button
+            type="button"
+            class="week-mini__day-hit"
+            [attr.aria-label]="'Ouvrir le jour ' + day.date"
+            (click)="daySelected.emit(day.date)"
+          ></button>
+          <span class="week-mini__day-label">{{ dayNumber(day.date) }}</span>
+          <ng-container
+            [ngTemplateOutlet]="slotItems"
+            [ngTemplateOutletContext]="{ sessions: day.sessions, realized: day.realized }"
+          />
+        </li>
+      }
+    </ol>
   }
 </section>

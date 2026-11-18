@@ -20,48 +20,45 @@
       <p>{{ message }}</p>
       <button nz-button type="button" (click)="retry.emit()">Réessayer</button>
     </div>
-  } @else if (view(); as data) {
-    @if (data.zones.length === 0) {
-      <p class="zones__status">Aucune donnée de zone cardiaque sur cette période</p>
-    } @else {
-      <div class="zones__bar" aria-hidden="true">
-        @for (zone of data.zones; track zone.label) {
-          <span
-            class="zones__segment"
-            [style.width]="zone.percent + '%'"
-            [style.background]="'var(' + zone.colorVariable + ')'"
-          ></span>
+  } @else if (view()) {
+    <div class="zones__bar" [class.zones__bar--empty]="isEmpty()" aria-hidden="true">
+      @for (row of rows(); track row.label) {
+        <span
+          class="zones__segment"
+          [style.width]="row.width"
+          [style.background]="'var(' + row.colorVariable + ')'"
+        ></span>
+      }
+    </div>
+
+    <div class="zones__body">
+      <div
+        class="zones__ring"
+        [class.zones__ring--empty]="isEmpty()"
+        [style.--zones-optimal]="ringPercent()"
+        aria-hidden="true"
+      >
+        <strong>{{ optimalLabel() }}</strong>
+        <span>Zone optimale</span>
+      </div>
+
+      <ul class="zones__legend" aria-label="Légende des zones cardiaques">
+        @for (row of rows(); track row.label) {
+          <li>
+            <span
+              class="zones__swatch"
+              [style.background]="'var(' + row.colorVariable + ')'"
+              aria-hidden="true"
+            ></span>
+            <span class="zones__label">{{ row.label }}</span>
+            <span class="zones__name">{{ row.name }}</span>
+            <strong class="zones__percent">{{ row.percentLabel }}</strong>
+          </li>
         }
-      </div>
+      </ul>
+    </div>
 
-      <div class="zones__body">
-        <div
-          class="zones__ring"
-          [style.--zones-optimal]="data.optimalPercent + '%'"
-          aria-hidden="true"
-        >
-          <strong>{{ data.optimalPercent }} %</strong>
-          <span>Zone optimale</span>
-        </div>
-
-        <ul class="zones__legend" aria-label="Légende des zones cardiaques">
-          @for (zone of data.zones; track zone.label) {
-            <li>
-              <span
-                class="zones__swatch"
-                [style.background]="'var(' + zone.colorVariable + ')'"
-                aria-hidden="true"
-              ></span>
-              <span class="zones__label">{{ zone.label }}</span>
-              <span class="zones__name">{{ zone.name }}</span>
-              <strong class="zones__percent">{{ zone.percent }} %</strong>
-            </li>
-          }
-        </ul>
-      </div>
-
-      <p class="zones__status" role="status">{{ data.statusMessage }}</p>
-    }
+    <p class="zones__status" role="status">{{ statusLabel() }}</p>
   } @else {
     <p class="zones__status" role="status">Chargement…</p>
   }

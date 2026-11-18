@@ -107,13 +107,13 @@ describe('DashboardPage', () => {
     await render(DashboardPage, { providers: pageProviders() });
     await screen.findByRole('heading', { name: LOADED_HEADING });
 
-    await userEvent.click(screen.getByRole('button', { name: '3 derniers mois' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Mois en cours' }));
 
     await waitFor(() => {
       expect(requests.at(-1)?.searchParams.get('granularity')).toBe('month');
     });
     expect(requests[0]?.searchParams.get('granularity')).toBe('week');
-    expect(screen.getByRole('button', { name: '3 derniers mois' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'Mois en cours' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import type { ZonesCardView } from '../../models/zones-card.model';
@@ -47,9 +47,10 @@ describe('ZonesCardComponent', () => {
     expect(
       screen.getByText('Aucune donnée de zone cardiaque sur cette période'),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('list', { name: 'Légende des zones cardiaques' }),
-    ).not.toBeInTheDocument();
+    // Le gabarit reste celui des données : les cinq zones de repère, avec leur nom et un tiret.
+    const legend = screen.getByRole('list', { name: 'Légende des zones cardiaques' });
+    expect(within(legend).getAllByText('— %')).toHaveLength(5);
+    expect(within(legend).getByText('Puissance')).toBeInTheDocument();
   });
 
   it('affiche un état de chargement tant que la vue n’est pas reçue', async () => {

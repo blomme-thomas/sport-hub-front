@@ -1,12 +1,12 @@
 export type Granularity = 'week' | 'month';
 
-/** Période du tableau de bord, choisie dans le sélecteur de l'en-tête. */
-export const DASHBOARD_PERIODS = ['7d', '30d', '3m'] as const;
+/** Période du tableau de bord, choisie dans le sélecteur de l'en-tête : la semaine ou le mois civil en cours. */
+export const DASHBOARD_PERIODS = ['week', 'month'] as const;
 export type DashboardPeriod = (typeof DASHBOARD_PERIODS)[number];
 
-/** Granularité des statistiques (graphiques) pour une période : semaines pour 7 et 30 jours, mois pour 3 mois. */
+/** Granularité des statistiques (graphiques) pour une période : la même que la période (semaine ou mois). */
 export function granularityOf(period: DashboardPeriod): Granularity {
-  return period === '3m' ? 'month' : 'week';
+  return period;
 }
 
 export type ChartKey = 'sessions' | 'duration' | 'byType';
