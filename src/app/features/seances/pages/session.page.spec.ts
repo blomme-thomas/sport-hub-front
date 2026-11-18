@@ -42,7 +42,6 @@ describe('SessionPage', () => {
       .getByRole('heading', { name: 'Modules (3) · 45 min' })
       .closest('section') as HTMLElement;
     expect(within(modulesSection).getAllByRole('listitem')).toHaveLength(3);
-    expect(screen.getByText('Montre GPS')).toBeInTheDocument();
   });
 
   it('affiche la mention « Modifiée » quand la séance a été modifiée à la main', async () => {
@@ -91,8 +90,7 @@ describe('SessionPage', () => {
         status: 'planifiee',
         modifiedManually: true,
         description: null,
-        equipment: 'Montre GPS',
-        attentionPoints: 'Hydratation',
+        title: null,
         modules: [
           {
             position: 1,

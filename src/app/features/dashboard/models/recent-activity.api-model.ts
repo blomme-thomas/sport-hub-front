@@ -3,6 +3,8 @@ export interface ActivitySummaryApi {
   id: string;
   garminActivityId: string;
   type: string;
+  /** Famille déduite du type : course, vélo, natation ou autre. */
+  family: 'running' | 'cycling' | 'swimming' | 'other';
   startedAt: string;
   durationSeconds: number;
   distanceMeters: number | null;
@@ -30,6 +32,8 @@ export interface ActivityDetailApi {
   id: string;
   garminActivityId: string;
   type: string;
+  /** Famille déduite du type : course, vélo, natation ou autre. */
+  family: 'running' | 'cycling' | 'swimming' | 'other';
   startedAt: string;
   durationSeconds: number;
   distanceMeters: number | null;

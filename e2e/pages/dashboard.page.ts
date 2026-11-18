@@ -10,7 +10,7 @@ export class DashboardPage {
 
   constructor(private readonly page: Page) {
     this.heading = page.getByRole('heading', { name: 'Tableau de bord', level: 1 });
-    this.monthToggle = page.getByRole('button', { name: '3 derniers mois' });
+    this.monthToggle = page.getByRole('button', { name: 'Mois en cours' });
     this.byTypeCard = this.card(BYTYPE_TITLE);
   }
 
@@ -19,7 +19,7 @@ export class DashboardPage {
   }
 
   async selectMonth(): Promise<void> {
-    await this.page.getByRole('button', { name: '3 derniers mois' }).click();
+    await this.page.getByRole('button', { name: 'Mois en cours' }).click();
   }
 
   figure(label: string): Locator {

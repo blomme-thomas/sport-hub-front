@@ -39,6 +39,7 @@ function activity(id: string, type: string) {
     id,
     garminActivityId: id,
     type,
+    family: 'other' as const,
     startedAt: new Date(2026, 10, 11, 9).toISOString(),
     durationSeconds: 2700,
     distanceMeters: 10000,

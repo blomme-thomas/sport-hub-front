@@ -6,6 +6,11 @@ import { toSportSplit } from './sport-split.mapper';
 import { formatHours } from './training-stats.mapper';
 
 const ABSENT = '—';
+const DAY_LABEL = new Intl.DateTimeFormat('fr-FR', {
+  day: 'numeric',
+  month: 'short',
+  timeZone: 'UTC',
+});
 const SECONDS_PER_HOUR = 3600;
 const SECONDS_PER_MINUTE = 60;
 const MINUS_SIGN = '−';
@@ -32,6 +37,7 @@ export function toDashboardKpis(api: DashboardKpisResponseApi): DashboardKpi[] {
       tone: 'accent',
       variation: null,
       series: daily.map((day) => day.count),
+      seriesLabels: dayLabelsOf(daily),
     },
     {
       id: 'duration',
@@ -41,6 +47,7 @@ export function toDashboardKpis(api: DashboardKpisResponseApi): DashboardKpi[] {
       tone: 'success',
       variation: toDurationVariation(api.variation),
       series: daily.map((day) => day.durationSeconds / SECONDS_PER_HOUR),
+      seriesLabels: dayLabelsOf(daily),
     },
     {
       id: 'calories',
@@ -50,6 +57,7 @@ export function toDashboardKpis(api: DashboardKpisResponseApi): DashboardKpi[] {
       tone: 'orange',
       variation: null,
       series: daily.map((day) => day.calories),
+      seriesLabels: dayLabelsOf(daily),
     },
     {
       id: 'elevation',
@@ -101,4 +109,9 @@ function toDurationVariation(
     text: `${sign}${NUMBER_FORMAT.format(Math.abs(variation.percent))} %`,
     direction: variation.direction,
   };
+}
+
+/** Libellés « 3 nov. » des jours d’une série journalière, dans l’ordre de la série. */
+function dayLabelsOf(daily: { date: string }[]): string[] {
+  return daily.map((day) => DAY_LABEL.format(new Date(`${day.date}T00:00:00Z`)));
 }

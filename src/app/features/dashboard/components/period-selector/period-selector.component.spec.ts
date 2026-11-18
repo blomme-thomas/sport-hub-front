@@ -6,24 +6,24 @@ import { PeriodSelectorComponent } from './period-selector.component';
 describe('PeriodSelectorComponent', () => {
   it('marque la période active avec aria-pressed et émet la période choisie', async () => {
     const changed = vi.fn();
-    await render(PeriodSelectorComponent, { inputs: { value: '30d' }, on: { changed } });
+    await render(PeriodSelectorComponent, { inputs: { value: 'month' }, on: { changed } });
 
-    expect(screen.getByRole('button', { name: '30 derniers jours' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'Mois en cours' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
-    expect(screen.getByRole('button', { name: '7 derniers jours' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'Semaine en cours' })).toHaveAttribute(
       'aria-pressed',
       'false',
     );
 
-    await userEvent.click(screen.getByRole('button', { name: '3 derniers mois' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Semaine en cours' }));
 
-    expect(changed).toHaveBeenCalledWith('3m');
+    expect(changed).toHaveBeenCalledWith('week');
   });
 
   it('présente le bouton calendrier désactivé', async () => {
-    await render(PeriodSelectorComponent, { inputs: { value: '7d' } });
+    await render(PeriodSelectorComponent, { inputs: { value: 'week' } });
 
     expect(
       screen.getByRole('button', { name: 'Choisir des dates (bientôt disponible)' }),

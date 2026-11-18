@@ -1,8 +1,6 @@
 <header class="dashboard__header">
   <div class="dashboard__heading">
     <h1 class="dashboard__title">Tableau de bord</h1>
-    <p class="dashboard__greeting">{{ greeting() }}</p>
-    <p class="dashboard__subtitle">Voici un aperçu de vos entraînements et de votre progression.</p>
   </div>
   <sh-period-selector [value]="state.period()" (changed)="state.setPeriod($event)" />
 </header>
@@ -77,17 +75,16 @@
     <sh-week-mini-calendar
       class="dashboard__week"
       [days]="miniCalendar.days()"
-      [view]="miniCalendar.view()"
       [title]="miniCalendar.title()"
       [legend]="miniCalendar.legend()"
       [loading]="miniCalendar.isLoading()"
-      [empty]="miniCalendar.isEmpty()"
       [error]="miniCalendar.error()"
       (previous)="miniCalendar.previous()"
       (next)="miniCalendar.next()"
       (current)="miniCalendar.today()"
       (retry)="miniCalendar.reload()"
       (sessionSelected)="openSession($event)"
+      (daySelected)="openDay($event)"
     />
   </div>
 

@@ -90,3 +90,17 @@
     color: var(--sh-text-muted);
   }
 }
+
+/* Sans cible : anneau vide en pointillés, à côté du texte et du bouton. */
+.goal__ring--empty {
+  background: none;
+  border: 2px dashed var(--sh-border);
+
+  strong {
+    color: var(--sh-text-muted);
+  }
+}
+
+.goal__body--empty {
+  opacity: 0.85;
+}

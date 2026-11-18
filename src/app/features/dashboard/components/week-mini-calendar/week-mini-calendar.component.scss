@@ -143,36 +143,14 @@
   }
 }
 
-.week-mini__legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sh-space-3) var(--sh-space-4);
-  margin: var(--sh-space-3) 0 0;
-  padding: 0;
-  list-style: none;
-  color: var(--sh-text-muted);
-  font-size: 0.875rem;
-
-  li {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--sh-space-2);
-  }
-
-  sh-icon {
-    width: 1rem;
-    height: 1rem;
-  }
-}
-
 /* Vue mois : six semaines dans la hauteur commune, icônes un peu plus petites. */
 .week-mini__grid--month .week-mini__session {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2.6rem;
+  height: 2.6rem;
 
   sh-icon {
-    width: 0.95rem;
-    height: 0.95rem;
+    width: 1.6rem;
+    height: 1.6rem;
   }
 }
 
@@ -181,63 +159,87 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 2.6rem;
+  height: 2.6rem;
   border-radius: 50%;
 
   sh-icon {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 1.6rem;
+    height: 1.6rem;
   }
 }
 
-/* Vue semaine : tableau avec les heures à gauche et un jour par colonne. */
-.week-mini__table-wrap {
-  flex: 1 1 auto;
-  min-height: 0;
+/* Vue mois : cases en carte, week-ends teintés, jours hors période atténués ; semaine en cours et aujourd'hui surlignés. */
+.week-mini__grid--month .week-mini__day {
+  padding: var(--sh-space-1) var(--sh-space-1) var(--sh-space-2);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface-raised);
 }
 
-.week-mini__table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
+.week-mini__grid--month .week-mini__day--weekend {
+  background: var(--sh-surface);
 }
 
-.week-mini__head {
-  padding-bottom: var(--sh-space-1);
-  color: var(--sh-text-muted);
+.week-mini__grid--month .week-mini__day--outside {
+  opacity: 0.4;
+}
+
+/* Semaine en cours : teinte légère sur ses sept cases. */
+.week-mini__grid--month .week-mini__day--current-week {
+  border-color: var(--sh-accent-text);
+  background: color-mix(in srgb, var(--sh-accent) 12%, var(--sh-surface-raised));
+}
+
+/* Aujourd'hui : case pleine en accent, plus marquée que la semaine. */
+.week-mini__grid--month .week-mini__day--today {
+  border-color: var(--sh-border);
+  background: var(--sh-accent);
+}
+
+.week-mini__day--today .week-mini__day-label {
+  color: var(--sh-text-on-accent);
+  font-weight: 700;
+}
+
+/* Vue mois : numéro du jour dans le coin haut-gauche, hors du flux, pour laisser toute la case aux séances. */
+.week-mini__grid--month .week-mini__day {
+  position: relative;
+}
+
+.week-mini__grid--month .week-mini__day-label {
+  position: absolute;
+  pointer-events: none;
+  top: var(--sh-space-1);
+  left: var(--sh-space-2);
   font-size: 0.75rem;
-  font-weight: 500;
-  text-align: center;
-  text-transform: capitalize;
+  line-height: 1;
 }
 
-.week-mini__hour {
-  width: 3rem;
-  padding-right: var(--sh-space-2);
-  color: var(--sh-text-muted);
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-align: right;
-  white-space: nowrap;
-  vertical-align: middle;
-  border-top: 1px solid var(--sh-border);
+.week-mini__grid--month .week-mini__sessions {
+  flex: 1;
+  align-content: center;
+  justify-content: center;
 }
 
-.week-mini__slot {
-  height: 2.25rem;
-  padding: 0 2px;
-  border-top: 1px solid var(--sh-border);
-  text-align: center;
-  vertical-align: middle;
-
-  .week-mini__sessions {
-    justify-content: center;
-    height: 100%;
-  }
+/* Survol d'une case du mois : bordure et teinte neutres, distinctes de la semaine en cours (accent) ; la case d'aujourd'hui reste inchangée. */
+.week-mini__grid--month .week-mini__day:not(.week-mini__day--today):hover {
+  border-color: var(--sh-text-muted);
+  background: color-mix(in srgb, var(--sh-text) 10%, var(--sh-surface-raised));
 }
 
-/* Colonne des heures : largeur fixe pour que les jours se partagent le reste du tableau. */
-.week-mini__corner {
-  width: 3rem;
+/* Vue mois : la case entière est un bouton (sous les séances), pour ouvrir le jour au clic ou au clavier. */
+.week-mini__grid--month .week-mini__day-hit {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: none;
+  cursor: pointer;
+}
+
+.week-mini__grid--month .week-mini__sessions {
+  position: relative;
+  z-index: 1;
 }

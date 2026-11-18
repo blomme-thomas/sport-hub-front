@@ -51,6 +51,7 @@ describe('toRecentActivity', () => {
       id: 'act-1',
       garminActivityId: '1',
       type: 'lap_swimming',
+      family: 'swimming',
       startedAt: new Date(2026, 10, 7, 9, 0).toISOString(),
       durationSeconds: 3600,
       distanceMeters: null,
@@ -73,6 +74,7 @@ describe('toRecentActivity', () => {
       id: 'act-3',
       garminActivityId: '3',
       type: 'virtual_ride',
+      family: 'cycling',
       startedAt: new Date(2026, 10, 7, 7, 0).toISOString(),
       durationSeconds: 2400,
       distanceMeters: 15000,
@@ -80,7 +82,7 @@ describe('toRecentActivity', () => {
     };
 
     const activity = toRecentActivity(item, NOW);
-    expect(activity.typeLabel).toBe('Vélo virtuel');
+    expect(activity.typeLabel).toBe('Vélo');
     expect(activity.typeIcon).toBe('🚴');
   });
 
@@ -89,6 +91,7 @@ describe('toRecentActivity', () => {
       id: 'act-2',
       garminActivityId: '2',
       type: 'hang_gliding',
+      family: 'other',
       startedAt: new Date(2026, 10, 6, 9, 0).toISOString(),
       durationSeconds: 60,
       distanceMeters: 1000,

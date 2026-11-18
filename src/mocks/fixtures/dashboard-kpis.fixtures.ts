@@ -2,7 +2,7 @@ import type { DashboardKpisResponseApi } from '../../app/features/dashboard/mode
 
 /** Indicateurs sur 7 jours, avec une série journalière complète (jours vides compris). */
 export const dashboardKpisResponse: DashboardKpisResponseApi = {
-  period: '7d',
+  period: 'week',
   from: '2026-11-01',
   to: '2026-11-07',
   totals: {

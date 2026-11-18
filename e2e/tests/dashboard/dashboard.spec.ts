@@ -64,6 +64,6 @@ test.describe('Tableau de bord', () => {
     await expect(dashboard.monthToggle).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByLabel('Séances du mois')).toBeVisible();
     // Les indicateurs suivent la temporalité : la vue mois les demande sur 30 jours.
-    await expect.poll(() => kpiPeriods.at(-1)).toBe('3m');
+    await expect.poll(() => kpiPeriods.at(-1)).toBe('month');
   });
 });

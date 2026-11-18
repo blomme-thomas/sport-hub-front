@@ -33,10 +33,10 @@
     <dl class="session__info">
       <dt>Durée prévue</dt>
       <dd>{{ session.durationMinutes }} min</dd>
-      <dt>Matériel</dt>
-      <dd>{{ session.equipment ?? '—' }}</dd>
-      <dt>Points d’attention</dt>
-      <dd>{{ session.attentionPoints ?? '—' }}</dd>
+      @if (session.title) {
+        <dt>Titre</dt>
+        <dd>{{ session.title }}</dd>
+      }
       @if (session.description) {
         <dt>Description</dt>
         <dd>{{ session.description }}</dd>

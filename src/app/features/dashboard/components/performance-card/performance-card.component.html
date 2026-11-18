@@ -13,6 +13,7 @@
     </div>
   } @else if (state.series(); as series) {
     @if (series.totalSeconds === 0) {
+      <div class="perf__placeholder" aria-hidden="true"></div>
       <p class="perf__status">Aucune séance sur cette période</p>
     } @else {
       <div class="perf__chart">

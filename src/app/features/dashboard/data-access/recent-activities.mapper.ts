@@ -15,6 +15,13 @@ const TYPE_LABELS: Record<string, string> = {
   walking: 'Marche',
 };
 
+/** Libellé des familles de sport affichées ; les autres types gardent leur libellé par type. */
+const FAMILY_LABELS: Partial<Record<string, string>> = {
+  running: 'Course',
+  cycling: 'Vélo',
+  swimming: 'Natation',
+};
+
 const TYPE_ICONS: Record<string, string> = {
   running: '🏃',
   cycling: '🚴',
@@ -39,7 +46,8 @@ export function toRecentActivity(item: ActivitySummaryApi, now: Date): RecentAct
   const startedAt = new Date(item.startedAt);
   return {
     id: item.id,
-    typeLabel: TYPE_LABELS[item.type] ?? item.type.replaceAll('_', ' '),
+    typeLabel:
+      FAMILY_LABELS[item.family] ?? TYPE_LABELS[item.type] ?? item.type.replaceAll('_', ' '),
     typeIcon: TYPE_ICONS[item.type] ?? DEFAULT_TYPE_ICON,
     dateLabel: toRelativeDateLabel(startedAt, now),
     durationLabel: formatDuration(item.durationSeconds),

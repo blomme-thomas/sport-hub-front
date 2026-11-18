@@ -67,9 +67,9 @@ test.describe('Tableau de bord : mini-calendrier de la semaine', () => {
     await page.goto('/');
 
     const miniCalendar = page
-      .getByRole('region', { name: 'Cette semaine' })
+      .getByRole('region', { name: 'Calendrier' })
       .or(page.locator('sh-week-mini-calendar'));
-    await expect(miniCalendar.getByRole('heading', { name: 'Cette semaine' })).toBeVisible();
+    await expect(miniCalendar.getByRole('heading', { name: 'Calendrier' })).toBeVisible();
     // La séance réalisée n'apparaît pas : une seule icône dans le bloc.
     const icons = miniCalendar.getByRole('button', { name: /^Séance Course à pied/ });
     await expect(icons).toHaveCount(1);
@@ -81,22 +81,18 @@ test.describe('Tableau de bord : mini-calendrier de la semaine', () => {
     await icons.click();
     await expect(page).toHaveURL(/\/seances\/session-course$/);
   });
-  test('la bascule Mois affiche une grille du mois, et Semaine revient à sept cases', async ({
+  test('la grille affiche le mois entier, avec aujourd’hui et la semaine en cours surlignés', async ({
     page,
   }) => {
     await page.route(SESSIONS_URL, (route) => route.fulfill({ json: { items: [] } }));
 
     await page.goto('/');
     const miniCalendar = page.locator('sh-week-mini-calendar');
-    await expect(miniCalendar.locator('.week-mini__head')).toHaveCount(7);
-
-    await page.getByRole('button', { name: '30 derniers jours' }).click();
-    await expect(miniCalendar.getByRole('heading', { level: 2 })).toHaveText(/^\S+ \d{4}$/);
+    await expect(miniCalendar.locator('.week-mini__weekdays li')).toHaveCount(7);
     const monthCells = await miniCalendar.locator('.week-mini__day').count();
     expect([28, 35, 42]).toContain(monthCells);
-
-    await page.getByRole('button', { name: '7 derniers jours' }).click();
-    await expect(miniCalendar.locator('.week-mini__head')).toHaveCount(7);
+    await expect(miniCalendar.locator('.week-mini__day--today')).toHaveCount(1);
+    await expect(miniCalendar.locator('.week-mini__day--current-week')).toHaveCount(7);
   });
 });
 

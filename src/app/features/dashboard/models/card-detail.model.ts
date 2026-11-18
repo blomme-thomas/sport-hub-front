@@ -1,3 +1,4 @@
+import type { KpiTone } from './dashboard-kpi.model';
 import type { VariationView } from './training-stats.model';
 
 /** Ligne d'une vue détaillée de zones : temps, part et seuil bas de la zone. */
@@ -20,6 +21,13 @@ export type CardDetail =
       unit: string | null;
       /** Présente uniquement pour la durée : le back ne fournit que cette variation. */
       variation: VariationView | null;
+      /** Série journalière pour le graphique agrandi ; absente pour les indicateurs sans série. */
+      series?: {
+        labels: string[];
+        values: (number | null)[];
+        tone: KpiTone;
+        axisUnit: string | null;
+      };
     }
   | {
       kind: 'split';

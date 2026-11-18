@@ -39,8 +39,7 @@ export interface SessionApi {
   status: SessionStatusApi;
   modifiedManually: boolean;
   description: string | null;
-  equipment: string | null;
-  attentionPoints: string | null;
+  title: string | null;
   modules: SessionModuleApi[];
   changeLog: ChangeLogEntryApi[];
   /** Distance cible en mètres ; `null` si non renseignée. */

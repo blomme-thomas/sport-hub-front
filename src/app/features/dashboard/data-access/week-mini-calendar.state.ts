@@ -13,18 +13,13 @@ import {
   type WeekMiniSession,
 } from '../models/week-mini-calendar.model';
 import type { ActivitySummaryApi } from '../models/recent-activity.api-model';
-import { DashboardState } from './dashboard.state';
 import { RecentActivitiesApi } from './recent-activities.api';
 import { toRecentActivity } from './recent-activities.mapper';
 import { WeekSessionsApi } from './week-sessions.api';
 
-const DAYS_PER_WEEK = 7;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 /** Activités réalisées chargées pour la grille ; au-delà, les excédentaires ne s'affichent pas. */
 const ACTIVITY_PAGE_SIZE = 100;
-
-/** Vue du mini-calendrier : une semaine, ou un mois. Elle suit le sélecteur Semaine/Mois du tableau de bord. */
-export type MiniCalendarView = 'week' | 'month';
 
 /**
  * Case du mini-calendrier : sa date, ses séances planifiées triées par heure, ses activités réalisées,
@@ -46,7 +41,6 @@ export interface WeekMiniDay {
 export class WeekMiniCalendarState {
   private readonly api = inject(WeekSessionsApi);
   private readonly activitiesApi = inject(RecentActivitiesApi);
-  private readonly dashboard = inject(DashboardState);
   /** Date de référence : un jour de la période affichée (semaine ou mois). */
   private readonly anchorValue = signal(localIsoDate());
   private readonly sessionsValue = signal<readonly WeekMiniSession[]>([]);
@@ -57,13 +51,8 @@ export class WeekMiniCalendarState {
   private latestRequest = 0;
   private loaded = false;
 
-  /** Semaine pour la période de 7 jours, mois sinon. */
-  readonly view = computed<MiniCalendarView>(() =>
-    this.dashboard.period() === '7d' ? 'week' : 'month',
-  );
-
   /** Période affichée : la semaine ou le mois qui contient la date de référence. */
-  private readonly period = computed(() => periodOf(this.view(), this.anchorValue()));
+  private readonly period = computed(() => periodOf(this.anchorValue()));
 
   /** Plage interrogée : la période, étendue aux jours de semaine voisins pour une grille de mois complète. */
   private readonly range = computed(() => gridRangeOf(this.period()));
@@ -77,15 +66,7 @@ export class WeekMiniCalendarState {
       this.activitiesValue().length === 0,
   );
 
-  readonly title = computed(() => {
-    const { start, end } = this.period();
-    if (this.view() === 'month') {
-      return capitalize(formatMonth(start));
-    }
-    return mondayOfDate(this.anchorValue()) === mondayOfDate(localIsoDate())
-      ? 'Cette semaine'
-      : `Semaine du ${formatShortDay(start)} au ${formatShortDay(end)}`;
-  });
+  readonly title = computed(() => capitalize(formatMonth(this.period().start)));
 
   readonly days = computed<WeekMiniDay[]>(() => {
     const { start, end } = this.period();
@@ -137,6 +118,16 @@ export class WeekMiniCalendarState {
   }
 
   /** Activités réalisées regroupées par jour local ; les activités hors de la plage sont ignorées par la grille. */
+  /** Séances planifiées et activités réalisées d'un jour, pour la modale du jour. */
+  dayOf(iso: string): { sessions: WeekMiniSession[]; activities: ActivitySummaryApi[] } {
+    return {
+      sessions: this.sessionsValue().filter((session) => session.date === iso),
+      activities: this.activitiesValue().filter(
+        (item) => localIsoDate(new Date(item.startedAt)) === iso,
+      ),
+    };
+  }
+
   private realizedByDate(): Map<string, WeekMiniActivity[]> {
     const byDate = new Map<string, WeekMiniActivity[]>();
     const now = new Date();
@@ -163,11 +154,11 @@ export class WeekMiniCalendarState {
   }
 
   previous(): void {
-    this.anchorValue.set(shiftPeriod(this.view(), this.anchorValue(), -1));
+    this.anchorValue.set(shiftPeriod(this.anchorValue(), -1));
   }
 
   next(): void {
-    this.anchorValue.set(shiftPeriod(this.view(), this.anchorValue(), 1));
+    this.anchorValue.set(shiftPeriod(this.anchorValue(), 1));
   }
 
   today(): void {
@@ -222,27 +213,21 @@ interface Period {
   end: string;
 }
 
-/** Semaine ISO ou mois civil qui contient la date. */
-function periodOf(view: MiniCalendarView, anchor: string): Period {
-  if (view === 'month') {
-    return { start: `${anchor.slice(0, 7)}-01`, end: lastDayOfMonth(anchor) };
-  }
-  const start = mondayOfIsoWeek(isoWeekOf(anchor));
-  return { start, end: addIsoDays(start, DAYS_PER_WEEK - 1) };
+/** Mois civil qui contient la date. */
+function periodOf(anchor: string): Period {
+  return { start: `${anchor.slice(0, 7)}-01`, end: lastDayOfMonth(anchor) };
 }
 
-/** Plage de la grille : pour un mois, du lundi de la première semaine au dimanche de la dernière. */
+/** Grille à six semaines fixes, du lundi de la semaine du 1er du mois : la hauteur ne dépend pas du mois. */
+const GRID_DAYS = 6 * 7;
+
 function gridRangeOf(period: Period): { from: string; to: string } {
   const from = mondayOfIsoWeek(isoWeekOf(period.start));
-  const weekday = (new Date(`${period.end}T00:00:00Z`).getUTCDay() + 6) % 7;
-  return { from, to: addIsoDays(period.end, 6 - weekday) };
+  return { from, to: addIsoDays(from, GRID_DAYS - 1) };
 }
 
-/** Période décalée d'une semaine ou d'un mois, en gardant un jour de référence valide. */
-function shiftPeriod(view: MiniCalendarView, anchor: string, count: number): string {
-  if (view === 'week') {
-    return addIsoDays(anchor, count * DAYS_PER_WEEK);
-  }
+/** Mois décalé de `count` mois, en gardant un jour de référence valide. */
+function shiftPeriod(anchor: string, count: number): string {
   const year = Number(anchor.slice(0, 4));
   const month = Number(anchor.slice(5, 7)) - 1 + count;
   return new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 10);
@@ -251,10 +236,6 @@ function shiftPeriod(view: MiniCalendarView, anchor: string, count: number): str
 /** Heure locale d'un instant, au format `HH:mm`. */
 function localTimeOf(date: Date): string {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-}
-
-function mondayOfDate(iso: string): string {
-  return mondayOfIsoWeek(isoWeekOf(iso));
 }
 
 function lastDayOfMonth(iso: string): string {
@@ -267,14 +248,6 @@ function lastDayOfMonth(iso: string): string {
 function datesBetween(from: string, to: string): string[] {
   const count = (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / MS_PER_DAY + 1;
   return Array.from({ length: count }, (_, index) => addIsoDays(from, index));
-}
-
-function formatShortDay(iso: string): string {
-  return new Intl.DateTimeFormat('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'UTC',
-  }).format(new Date(`${iso}T00:00:00Z`));
 }
 
 function formatMonth(iso: string): string {

@@ -3,6 +3,8 @@
   flex-direction: column;
   /* Même hauteur que les autres cartes de la rangée (étirées par la grille). */
   height: 100%;
+  /* Repère du bouton « Agrandir » (positionné en absolu). */
+  position: relative;
 }
 
 .split {
@@ -106,14 +108,39 @@
 }
 
 /* Bouton « Agrandir » de la carte : en haut à droite, la carte sert de repère. */
-:host {
-  position: relative;
-  display: block;
-}
-
 .card-expand {
   position: absolute;
   top: var(--sh-space-3, 0.75rem);
   right: var(--sh-space-3, 0.75rem);
   z-index: 1;
+}
+
+/* Vide : anneau en pointillés et légende grisée, à la place des parts. */
+.split__body--empty {
+  opacity: 0.6;
+}
+
+.split__ring-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 11rem;
+  height: 11rem;
+  border: 2px dashed var(--sh-border);
+  border-radius: 50%;
+
+  strong {
+    font-size: 1.25rem;
+    color: var(--sh-text-muted);
+  }
+
+  span {
+    color: var(--sh-text-muted);
+    font-size: 0.875rem;
+  }
+}
+
+.split__swatch--empty {
+  background: var(--sh-border);
 }

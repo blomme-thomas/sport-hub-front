@@ -4,6 +4,7 @@ import fr from '@angular/common/locales/fr';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import {
   PreloadAllModules,
+  TitleStrategy,
   provideRouter,
   withComponentInputBinding,
   withPreloading,
@@ -13,6 +14,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { API_BASE_URL } from './core/config/api-base-url.token';
+import { AppTitleStrategy } from './core/config/app-title.strategy';
 import { errorInterceptor } from './core/http/error.interceptor';
 
 registerLocaleData(fr);
@@ -25,5 +27,6 @@ export const appConfig: ApplicationConfig = {
     provideNzI18n(fr_FR),
     NzModalService,
     { provide: API_BASE_URL, useValue: environment.apiBaseUrl },
+    { provide: TitleStrategy, useClass: AppTitleStrategy },
   ],
 };

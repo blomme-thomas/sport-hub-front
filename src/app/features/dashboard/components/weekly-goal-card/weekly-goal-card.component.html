@@ -11,9 +11,15 @@
     </div>
   } @else if (view(); as value) {
     @if (value.targetLabel === null) {
-      <div class="goal__empty">
-        <p>Aucune cible hebdomadaire définie.</p>
-        <a nz-button nzType="primary" routerLink="/parametres">Définir la cible</a>
+      <div class="goal__body goal__body--empty">
+        <div class="goal__ring goal__ring--empty" aria-hidden="true">
+          <strong>— %</strong>
+        </div>
+        <div class="goal__figures">
+          <p class="goal__value">— / —</p>
+          <p class="goal__status">Aucune cible hebdomadaire définie.</p>
+          <a nz-button nzType="primary" routerLink="/parametres">Définir la cible</a>
+        </div>
       </div>
     } @else {
       <div class="goal__body">

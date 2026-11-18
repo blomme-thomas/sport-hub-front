@@ -41,7 +41,7 @@ describe('DashboardState', () => {
   it('démarre sur la période 7 jours, en granularité semaine', async () => {
     const state = setup();
 
-    expect(state.period()).toBe('7d');
+    expect(state.period()).toBe('week');
     expect(state.granularity()).toBe('week');
     await settle(() => expect(state.view()).toBeDefined());
   });
@@ -62,7 +62,7 @@ describe('DashboardState', () => {
     const state = setup();
     await settle(() => expect(state.view()).toBeDefined());
 
-    state.setPeriod('3m');
+    state.setPeriod('month');
 
     await settle(() => expect(requests.at(-1)?.searchParams.get('granularity')).toBe('month'));
     expect(requests.at(-1)?.searchParams.get('from')).toBe('2026-06-01');
@@ -74,20 +74,20 @@ describe('DashboardState', () => {
     const state = setup();
     await settle(() => expect(state.view()).toBeDefined());
 
-    state.setPeriod('3m');
+    state.setPeriod('month');
 
     expect(state.granularity()).toBe('month');
-    await settle(() => expect(state.view()?.period).toBe('3m'));
+    await settle(() => expect(state.view()?.period).toBe('month'));
   });
 
-  it('ne recharge pas les statistiques quand la période change sans changer de granularité', async () => {
+  it('ne recharge pas les statistiques quand la période déjà active est choisie à nouveau', async () => {
     const requests = trackStats();
     const state = setup();
     await settle(() => expect(state.view()).toBeDefined());
 
-    state.setPeriod('30d');
+    state.setPeriod('week');
 
-    await settle(() => expect(state.view()?.period).toBe('30d'));
+    await settle(() => expect(requests).toHaveLength(1));
     expect(requests).toHaveLength(1);
   });
 

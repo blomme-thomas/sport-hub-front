@@ -45,3 +45,9 @@
   justify-content: flex-end;
   margin-top: var(--sh-space-4, 1rem);
 }
+
+/* Graphique agrandi d'un indicateur : toute la largeur de la modale, hauteur généreuse pour lire les échelles. */
+.detail__chart {
+  --sh-chart-height: 18rem;
+  width: 100%;
+}

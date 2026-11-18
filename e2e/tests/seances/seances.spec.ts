@@ -14,8 +14,7 @@ const session = {
   status: 'planifiee',
   modifiedManually: false,
   description: null,
-  equipment: 'Montre GPS',
-  attentionPoints: 'Hydratation',
+  title: null,
   modules: [
     {
       position: 1,

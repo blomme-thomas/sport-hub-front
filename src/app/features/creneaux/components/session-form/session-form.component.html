@@ -11,107 +11,112 @@
 }
 
 <form class="session-form" [formGroup]="form" (ngSubmit)="submit()">
-  <div class="session-form__row">
-    <div class="session-form__field">
-      <label for="session-date">Date</label>
-      <input id="session-date" type="date" formControlName="date" />
-    </div>
-    <div class="session-form__field">
-      <label for="session-start">Heure de début</label>
-      <input id="session-start" type="time" step="1800" formControlName="startTime" />
-    </div>
-  </div>
-
-  <div class="session-form__field">
-    <label for="session-discipline">Discipline</label>
-    <select id="session-discipline" formControlName="disciplineTypeKey">
-      <option value="" disabled>Choisir une discipline</option>
-      @for (option of disciplines(); track option.typeKey) {
-        <option [value]="option.typeKey">{{ option.label }}</option>
-      }
-    </select>
-  </div>
-
-  <div class="session-form__row">
-    <div class="session-form__field">
-      <label for="session-duration">Durée (min)</label>
-      <input
-        id="session-duration"
-        type="number"
-        min="1"
-        [attr.max]="maxDuration"
-        step="1"
-        formControlName="durationMinutes"
-      />
-    </div>
-    <div class="session-form__field">
-      <label for="session-recurrence">Récurrence</label>
-      <select id="session-recurrence" formControlName="recurrence">
-        <option value="aucune">Aucune (ponctuelle)</option>
-        <option value="hebdomadaire">Chaque semaine</option>
-      </select>
-    </div>
-  </div>
-
-  <fieldset class="session-form__objectives">
-    <legend>Objectifs</legend>
-    <div class="session-form__field">
-      <label for="session-distance">Distance cible (km)</label>
-      <input
-        id="session-distance"
-        type="number"
-        min="0"
-        step="0.1"
-        formControlName="distanceKm"
-        [attr.aria-invalid]="!!objectiveErrors.distance"
-      />
-      @if (objectiveErrors.distance; as message) {
-        <p class="session-form__error" role="alert">{{ message }}</p>
-      }
-    </div>
-
-    <div class="session-form__zones" formGroupName="zones">
-      @for (zone of zoneFields; track zone.key) {
+  <div class="session-form__body">
+    <div class="session-form__main">
+      <div class="session-form__row">
         <div class="session-form__field">
-          <label [for]="'session-zone-' + zone.key">{{ zone.label }} (%)</label>
+          <label for="session-date">Date</label>
+          <input id="session-date" type="date" formControlName="date" />
+        </div>
+        <div class="session-form__field">
+          <label for="session-start">Heure de début</label>
+          <input id="session-start" type="time" step="1800" formControlName="startTime" />
+        </div>
+      </div>
+
+      <div class="session-form__field">
+        <label for="session-discipline">Discipline</label>
+        <select id="session-discipline" formControlName="disciplineTypeKey">
+          <option value="" disabled>Choisir une discipline</option>
+          @for (option of disciplines(); track option.typeKey) {
+            <option [value]="option.typeKey">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="session-form__row">
+        <div class="session-form__field">
+          <label for="session-duration">Durée (min)</label>
           <input
-            [id]="'session-zone-' + zone.key"
+            id="session-duration"
             type="number"
-            min="0"
-            max="100"
+            min="1"
+            [attr.max]="maxDuration"
             step="1"
-            [formControlName]="zone.key"
+            formControlName="durationMinutes"
           />
         </div>
-      }
+        <div class="session-form__field">
+          <label for="session-recurrence">Récurrence</label>
+          <select id="session-recurrence" formControlName="recurrence">
+            <option value="aucune">Aucune (ponctuelle)</option>
+            <option value="hebdomadaire">Chaque semaine</option>
+          </select>
+        </div>
+      </div>
+
+      <fieldset class="session-form__objectives">
+        <legend>Objectifs</legend>
+        <div class="session-form__field">
+          <label for="session-distance">Distance cible (km)</label>
+          <input
+            id="session-distance"
+            type="number"
+            min="0"
+            step="0.1"
+            formControlName="distanceKm"
+            [attr.aria-invalid]="!!objectiveErrors.distance"
+          />
+          @if (objectiveErrors.distance; as message) {
+            <p class="session-form__error" role="alert">{{ message }}</p>
+          }
+        </div>
+
+        <div class="session-form__zones" formGroupName="zones">
+          @for (zone of zoneFields; track zone.key) {
+            <div class="session-form__field">
+              <label [for]="'session-zone-' + zone.key">{{ zone.label }} (%)</label>
+              <input
+                [id]="'session-zone-' + zone.key"
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                [formControlName]="zone.key"
+              />
+            </div>
+          }
+        </div>
+        <p
+          class="session-form__total"
+          [class.session-form__total--error]="zoneTotal !== 100"
+          aria-live="polite"
+        >
+          Total des zones : {{ zoneTotal }} %
+        </p>
+        @if (objectiveErrors.zones; as message) {
+          <p class="session-form__error" role="alert">{{ message }}</p>
+        } @else if (objectiveErrors.zonesTotal; as message) {
+          <p class="session-form__error" role="alert">{{ message }}</p>
+        }
+      </fieldset>
     </div>
-    <p
-      class="session-form__total"
-      [class.session-form__total--error]="zoneTotal !== 100"
-      aria-live="polite"
-    >
-      Total des zones : {{ zoneTotal }} %
-    </p>
-    @if (objectiveErrors.zones; as message) {
-      <p class="session-form__error" role="alert">{{ message }}</p>
-    } @else if (objectiveErrors.zonesTotal; as message) {
-      <p class="session-form__error" role="alert">{{ message }}</p>
-    }
-  </fieldset>
 
-  <div class="session-form__field">
-    <label for="session-equipment">Matériel</label>
-    <input id="session-equipment" type="text" formControlName="equipment" />
-  </div>
-
-  <div class="session-form__field">
-    <label for="session-attention">Points d’attention</label>
-    <input id="session-attention" type="text" formControlName="attentionPoints" />
-  </div>
-
-  <div class="session-form__field">
-    <label for="session-description">Description</label>
-    <input id="session-description" type="text" formControlName="description" />
+    <section class="session-form__aside" aria-labelledby="session-description-heading">
+      <div class="session-form__field">
+        <label for="session-title">Titre</label>
+        <input id="session-title" type="text" maxlength="200" formControlName="title" />
+      </div>
+      <h3 id="session-description-heading" class="session-form__heading">Description</h3>
+      <label class="visually-hidden" for="session-description">Description de la séance</label>
+      <textarea
+        id="session-description"
+        class="session-form__textarea"
+        rows="12"
+        maxlength="2000"
+        formControlName="description"
+      ></textarea>
+    </section>
   </div>
 
   <div class="session-form__actions">

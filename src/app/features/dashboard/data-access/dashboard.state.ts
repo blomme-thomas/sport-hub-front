@@ -30,7 +30,7 @@ interface DateRange {
 @Injectable()
 export class DashboardState {
   private readonly api = inject(TrainingStatsApi);
-  private readonly periodValue = signal<DashboardPeriod>('7d');
+  private readonly periodValue = signal<DashboardPeriod>('week');
 
   /** Granularité des graphiques, dérivée de la période (semaines ou mois). */
   readonly granularity = computed<Granularity>(() => granularityOf(this.periodValue()));
@@ -80,7 +80,7 @@ export class DashboardState {
     if (granularityOf(this.periodValue()) === granularity) {
       return;
     }
-    this.periodValue.set(granularity === 'week' ? '7d' : '3m');
+    this.periodValue.set(granularity);
   }
 
   reload(): void {

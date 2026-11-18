@@ -28,8 +28,7 @@ export interface Session {
   status: SessionStatus;
   modifiedManually: boolean;
   description: string | null;
-  equipment: string | null;
-  attentionPoints: string | null;
+  title: string | null;
   modules: SessionModule[];
   objectives: SessionObjectives;
   achievement: SessionAchievement | null;

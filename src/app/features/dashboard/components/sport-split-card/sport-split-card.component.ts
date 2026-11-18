@@ -18,6 +18,8 @@ import type { SportSplitView } from '../../models/sport-split.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SportSplitCardComponent {
+  /** Familles affichées en grisé quand aucune séance n'est enregistrée sur la période. */
+  protected readonly placeholderLabels = ['Course', 'Vélo', 'Natation', 'Autre'];
   /** Absent tant que la réponse n'est pas reçue : la carte affiche alors son état de chargement. */
   readonly split = input<SportSplitView | undefined>(undefined);
   readonly loading = input(false);
