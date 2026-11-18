@@ -78,10 +78,18 @@
 @if (sessionDraft(); as draft) {
   <nz-modal
     [nzVisible]="true"
-    nzTitle="Nouvelle séance"
+    nzClassName="sh-activity-modal"
+    nzWidth="min(960px, 96vw)"
+    [nzTitle]="sessionTitle"
     [nzFooter]="null"
     (nzOnCancel)="closeSessionForm()"
   >
+    <ng-template #sessionTitle>
+      <h2 class="sh-activity-modal__title">
+        <sh-icon name="calendar" color="var(--sh-accent-text)" />
+        <span>Nouvelle séance</span>
+      </h2>
+    </ng-template>
     <ng-container *nzModalContent>
       <sh-session-form
         [defaults]="draft"

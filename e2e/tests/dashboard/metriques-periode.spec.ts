@@ -26,12 +26,12 @@ test.describe('Tableau de bord : métriques liées à la temporalité', () => {
     });
 
     await page.goto('/');
-    await expect.poll(() => periods.at(-1)).toBe('7d');
+    await expect.poll(() => periods.at(-1)).toBe('week');
 
-    await page.getByRole('button', { name: '30 derniers jours' }).click();
-    await expect.poll(() => periods.at(-1)).toBe('30d');
+    await page.getByRole('button', { name: 'Mois en cours' }).click();
+    await expect.poll(() => periods.at(-1)).toBe('month');
 
-    await page.getByRole('button', { name: '7 derniers jours' }).click();
-    await expect.poll(() => periods.at(-1)).toBe('7d');
+    await page.getByRole('button', { name: 'Semaine en cours' }).click();
+    await expect.poll(() => periods.at(-1)).toBe('week');
   });
 });

@@ -15,8 +15,7 @@ export interface CreateSessionRequestApi {
   /** Répartition cible du temps par zone de FC, Z1 à Z5, totalisant 100. Obligatoire côté back. */
   targetHrZonePercentages: number[];
   description?: string;
-  equipment?: string;
-  attentionPoints?: string;
+  title?: string;
 }
 
 /** Écriture des séances depuis le calendrier ; les erreurs remontent telles quelles (`AppError` via l'intercepteur). */

@@ -82,9 +82,8 @@ export class SessionFormComponent implements OnInit {
       z4: this.fb.control<number | null>(0),
       z5: this.fb.control<number | null>(0),
     }),
+    title: this.fb.control(''),
     description: this.fb.control(''),
-    equipment: this.fb.control(''),
-    attentionPoints: this.fb.control(''),
   });
 
   protected readonly zoneFields = HR_ZONES.map((zone, index) => ({
@@ -138,9 +137,8 @@ export class SessionFormComponent implements OnInit {
         targetDistanceMeters: Math.round(value.distanceKm * 1000),
       }),
       targetHrZonePercentages: ZONE_KEYS.map((key) => value.zones[key] ?? 0),
+      title: value.title.trim() || undefined,
       description: value.description.trim() || undefined,
-      equipment: value.equipment.trim() || undefined,
-      attentionPoints: value.attentionPoints.trim() || undefined,
     });
   }
 }

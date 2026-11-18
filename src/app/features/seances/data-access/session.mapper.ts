@@ -27,8 +27,7 @@ export function toSession(api: SessionApi, labelOf: (typeKey: string) => string)
     status: api.status,
     modifiedManually: api.modifiedManually,
     description: api.description,
-    equipment: api.equipment,
-    attentionPoints: api.attentionPoints,
+    title: api.title,
     modules: api.modules.map(toSessionModule),
     objectives: {
       distanceMeters: api.targetDistanceMeters,

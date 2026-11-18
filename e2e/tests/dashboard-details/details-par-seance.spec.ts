@@ -12,6 +12,7 @@ const activity = {
   id: 'act-1',
   garminActivityId: 'g-1',
   type: 'running',
+  family: 'running',
   startedAt: new Date().toISOString(),
   durationSeconds: 3900,
   distanceMeters: 12400,
@@ -33,6 +34,7 @@ test.describe('Dashboard : détails par séance', () => {
           id: 'act-1',
           garminActivityId: 'g-1',
           type: 'running',
+          family: 'running',
           startedAt: activity.startedAt,
           durationSeconds: 3900,
           distanceMeters: 12400,
@@ -51,7 +53,7 @@ test.describe('Dashboard : détails par séance', () => {
 
     await page.goto('/');
 
-    await page.getByRole('button', { name: /Détail de la séance Course à pied/ }).click();
+    await page.getByRole('button', { name: /Détail de la séance Course/ }).click();
 
     const dialog = page.getByRole('dialog');
     await expect(dialog.getByText('Calories')).toBeVisible();
