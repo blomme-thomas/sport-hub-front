@@ -114,6 +114,8 @@ Dans la modale « Nouvelle séance », la section « Pré-remplir depuis un fich
 - Un fichier de plusieurs séances est refusé avec un renvoi vers « Importer des séances ».
 - Limite actuelle : les modules importés ne sont pas éditables dans la modale de création (on peut seulement les retirer). Leur édition se fait sur la fiche de séance, après création.
 
+Le fichier peut aussi porter, au niveau de la séance, un `title` (200 caractères au plus), une `targetDistanceMeters` (en mètres) et une `targetHrZonePercentages` (Z1 à Z5, totalisant 100). Ils pré-remplissent le titre, la distance et les cases de zones. Les modules s'affichent en lignes compactes, sans défilement.
+
 ## Importer plusieurs séances (story #133)
 
 « Importer des séances » ouvre une fenêtre de dépôt ou de collage du fichier `plan-seances`, quel que soit le nombre de séances.
