@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../core/config/api-base-url.token';
+import type { PlanSeanceModule } from '../../../shared/plan-seances/plan-seances.model';
 
 /** Corps de `POST /api/sessions` tel que le calendrier l'envoie. */
 export interface CreateSessionRequestApi {
@@ -16,6 +17,8 @@ export interface CreateSessionRequestApi {
   targetHrZonePercentages: number[];
   description?: string;
   title?: string;
+  /** Modules pré-remplis depuis un fichier `plan-seances` ; absents pour une création manuelle. */
+  modules?: PlanSeanceModule[];
 }
 
 /** Écriture des séances depuis le calendrier ; les erreurs remontent telles quelles (`AppError` via l'intercepteur). */

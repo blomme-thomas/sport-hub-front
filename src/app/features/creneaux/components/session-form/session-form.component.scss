@@ -139,3 +139,21 @@
   margin: 0;
   color: var(--sh-error);
 }
+
+.session-form__import {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-3);
+  padding: var(--sh-space-3);
+  border: 1px dashed var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+}
+
+.session-form__issues {
+  margin: var(--sh-space-1) 0 0;
+  padding-left: var(--sh-space-4);
+
+  code {
+    font-size: 0.875rem;
+  }
+}

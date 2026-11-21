@@ -10,6 +10,32 @@
   </p>
 }
 
+<section class="session-form__import" aria-labelledby="session-import-heading">
+  <h3 id="session-import-heading" class="session-form__heading">
+    Pré-remplir depuis un fichier JSON
+  </h3>
+  <sh-json-file-input
+    label="Fichier de séance (.json)"
+    [disabled]="submitting()"
+    (contentChange)="onJsonChange($event)"
+  />
+  @if (importIssues().length > 0) {
+    <div class="session-form__alert" role="alert">
+      <p>Le fichier n’est pas valide, le formulaire n’a pas été modifié :</p>
+      <ul class="session-form__issues">
+        @for (issue of importIssues(); track $index) {
+          <li>
+            <code>{{ issue.path }}</code> : {{ issue.message }}
+          </li>
+        }
+      </ul>
+    </div>
+  }
+  @if (importSummary(); as summary) {
+    <p class="session-form__hint" aria-live="polite">{{ summary }}</p>
+  }
+</section>
+
 <form class="session-form" [formGroup]="form" (ngSubmit)="submit()">
   <div class="session-form__body">
     <div class="session-form__main">
@@ -100,6 +126,18 @@
           <p class="session-form__error" role="alert">{{ message }}</p>
         }
       </fieldset>
+
+      @if (importedModules().length > 0) {
+        <sh-plan-modules-editor
+          [modules]="importedModules()"
+          (modulesChange)="importedModules.set($event)"
+        />
+        @if (modulesInvalid()) {
+          <p class="session-form__error" role="alert">
+            Corrigez les modules : durée de 1 à 1440 minutes et consigne obligatoire.
+          </p>
+        }
+      }
     </div>
 
     <section class="session-form__aside" aria-labelledby="session-description-heading">
@@ -125,7 +163,7 @@
       nz-button
       nzType="primary"
       type="submit"
-      [disabled]="submitting() || disciplines().length === 0"
+      [disabled]="submitting() || disciplines().length === 0 || modulesInvalid()"
     >
       Créer la séance
     </button>
