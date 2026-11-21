@@ -41,6 +41,9 @@ function comparable(module: SessionModuleApi): unknown[] {
   ];
 }
 
+const IMPORT_KIND = 'plan-seances';
+const importedIds = new Set<string>();
+
 /** Séance du back à partir d'un corps de création ou d'une séance d'un fichier d'import. */
 function sessionFromBody(body: Record<string, unknown>): SessionApi {
   const modules = (body['modules'] as SessionModuleApi[] | undefined) ?? [];
@@ -69,6 +72,32 @@ export const sessionsHandlers = [
     const created = sessionFromBody(body);
     sessions = [...sessions, created];
     return HttpResponse.json({ id: created.id }, { status: 201 });
+  }),
+  http.post('*/api/sessions/import', async ({ request }) => {
+    const body = (await request.json()) as {
+      kind?: string;
+      importId?: string;
+      seances?: Record<string, unknown>[];
+    };
+    if (body.kind !== IMPORT_KIND) {
+      return problem(400, 'SESSION_IMPORT_INVALID', 'Fichier plan-seances attendu.');
+    }
+    if (body.importId !== undefined && importedIds.has(body.importId)) {
+      return problem(409, 'SESSION_IMPORT_ALREADY_DONE', 'Fichier déjà importé.');
+    }
+    const created = (body.seances ?? []).map((seance) => sessionFromBody(seance));
+    sessions = [...sessions, ...created];
+    if (body.importId !== undefined) {
+      importedIds.add(body.importId);
+    }
+    return HttpResponse.json(
+      {
+        importId: body.importId ?? crypto.randomUUID(),
+        createdCount: created.length,
+        sessionIds: created.map((session) => session.id),
+      },
+      { status: 201 },
+    );
   }),
   http.patch('*/api/sessions/:id', async ({ params, request }) => {
     const id = String(params['id']);

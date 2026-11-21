@@ -92,6 +92,114 @@ test.describe('Séances préparées en JSON', () => {
     await expect(page).toHaveURL(/\/seances\/session-json$/);
   });
 
+  test('importe plusieurs séances d’un coup puis affiche le nombre créé', async ({ page }) => {
+    await mockCalendar(page);
+    const imports: unknown[] = [];
+    await page.route(IMPORT_URL, (route) => {
+      imports.push(route.request().postDataJSON());
+      return route.fulfill({
+        status: 201,
+        json: { importId: IMPORT_ID, createdCount: 2, sessionIds: ['a', 'b'] },
+      });
+    });
+
+    const calendrier = new CreneauxPage(page);
+    await calendrier.goto();
+    await page.getByRole('button', { name: 'Importer des séances', exact: true }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByLabel('Ou collez le contenu JSON').fill(
+      planFile([
+        {
+          date: '2026-11-25',
+          disciplineTypeKey: 'running',
+          durationMinutes: 50,
+          modules: [MODULE],
+        },
+        {
+          date: '2026-11-27',
+          disciplineTypeKey: 'running',
+          durationMinutes: 30,
+          modules: [MODULE],
+        },
+      ]),
+    );
+    await expect(dialog.getByText('2 séance(s) détectée(s) dans le fichier.')).toBeVisible();
+    await dialog.getByRole('button', { name: 'Importer les séances', exact: true }).click();
+
+    await expect(page.getByText('2 séance(s) importée(s).')).toBeVisible();
+    await expect(dialog).toBeHidden();
+    expect(imports).toHaveLength(1);
+    expect(imports[0]).toMatchObject({ kind: 'plan-seances', importId: IMPORT_ID });
+  });
+
+  test('affiche chaque erreur d’import avec son chemin et ne crée aucune séance', async ({
+    page,
+  }) => {
+    await mockCalendar(page);
+    await page.route(IMPORT_URL, (route) =>
+      route.fulfill({
+        status: 400,
+        contentType: 'application/problem+json',
+        body: JSON.stringify({
+          type: 'urn:sport-hub:problem:session-import-invalid',
+          title: 'Bad Request',
+          status: 400,
+          detail: 'Fichier invalide.',
+          instance: '/api/sessions/import',
+          code: 'SESSION_IMPORT_INVALID',
+          correlationId: '7c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f',
+          errors: [
+            {
+              field: 'seances[1].modules[0].durationMinutes',
+              code: 'SESSION_IMPORT_FIELD_TYPE',
+              message: 'doit être un nombre entier',
+            },
+          ],
+        }),
+      }),
+    );
+
+    const calendrier = new CreneauxPage(page);
+    await calendrier.goto();
+    await page.getByRole('button', { name: 'Importer des séances', exact: true }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByLabel('Ou collez le contenu JSON').fill(SINGLE_SESSION);
+    await dialog.getByRole('button', { name: 'Importer les séances', exact: true }).click();
+
+    await expect(dialog.getByRole('alert')).toContainText('aucune séance n’a été créée');
+    await expect(dialog.getByText('seances[1].modules[0].durationMinutes')).toBeVisible();
+    await expect(dialog).toBeVisible();
+  });
+
+  test('signale un fichier déjà importé sans créer de séance', async ({ page }) => {
+    await mockCalendar(page);
+    await page.route(IMPORT_URL, (route) =>
+      route.fulfill({
+        status: 409,
+        contentType: 'application/problem+json',
+        body: JSON.stringify({
+          type: 'urn:sport-hub:problem:session-import-already-done',
+          title: 'Conflict',
+          status: 409,
+          detail: 'Déjà importé.',
+          instance: '/api/sessions/import',
+          code: 'SESSION_IMPORT_ALREADY_DONE',
+          correlationId: '7c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f',
+        }),
+      }),
+    );
+
+    const calendrier = new CreneauxPage(page);
+    await calendrier.goto();
+    await page.getByRole('button', { name: 'Importer des séances', exact: true }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByLabel('Ou collez le contenu JSON').fill(SINGLE_SESSION);
+    await dialog.getByRole('button', { name: 'Importer les séances', exact: true }).click();
+
+    await expect(dialog.getByRole('alert')).toContainText('Ce fichier a déjà été importé');
+    await expect(dialog).toBeVisible();
+  });
+
   test('modifie une séance depuis un fichier JSON puis enregistre ses champs', async ({ page }) => {
     const session = {
       id: 'session-course',

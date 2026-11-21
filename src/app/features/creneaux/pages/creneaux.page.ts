@@ -24,6 +24,7 @@ import {
   SessionFormComponent,
   type SessionDefaults,
 } from '../components/session-form/session-form.component';
+import { SessionImportComponent } from '../components/session-import/session-import.component';
 import { type GridMove, WeekGridComponent } from '../components/week-grid/week-grid.component';
 import { PausesState } from '../data-access/pauses.state';
 import { PlanningApi, type EventGoal } from '../data-access/planning.api';
@@ -58,6 +59,7 @@ const QUICK_DURATION_STEP = 5;
     PauseBannersComponent,
     PauseFormComponent,
     SessionFormComponent,
+    SessionImportComponent,
     WeekGridComponent,
   ],
   templateUrl: './creneaux.page.html',
@@ -144,6 +146,37 @@ export class CreneauxPage {
   protected closeSessionForm(): void {
     this.sessionDraft.set(null);
     this.sessionError.set(null);
+  }
+
+  /** Import multiple (story #133) : fenêtre ouverte depuis le calendrier. */
+  protected readonly importOpen = signal(false);
+  protected readonly importError = signal<AppError | null>(null);
+  protected readonly importSaving = signal(false);
+
+  protected openImport(): void {
+    this.importError.set(null);
+    this.importOpen.set(true);
+  }
+
+  protected closeImport(): void {
+    this.importOpen.set(false);
+    this.importError.set(null);
+  }
+
+  /** Envoie le fichier tel quel ; en cas de succès, le calendrier est rechargé pour afficher les séances créées. */
+  protected async onImportSaved(content: unknown): Promise<void> {
+    this.importError.set(null);
+    this.importSaving.set(true);
+    try {
+      const result = await firstValueFrom(this.sessionsWrite.importPlan(content));
+      this.importOpen.set(false);
+      this.messages.success(`${result.createdCount} séance(s) importée(s).`);
+      this.state.reload();
+    } catch (error) {
+      this.importError.set(error instanceof AppError ? error : toAppError(error));
+    } finally {
+      this.importSaving.set(false);
+    }
   }
 
   /** Crée la séance puis ouvre sa fiche (story #10). */
