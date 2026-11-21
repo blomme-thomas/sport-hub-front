@@ -3,7 +3,7 @@ import { CreneauxPage } from '../../pages/creneaux.page';
 
 const SESSIONS_URL = /\/api\/sessions(\?.*)?$/;
 const SLOTS_URL = /\/api\/slots(\?.*)?$/;
-const DISCIPLINES_URL = /\/api\/disciplines$/;
+const DISCIPLINES_URL = /\/api\/sessions\/disciplines$/;
 const GENERATE_URL = /\/api\/planning\/generate$/;
 
 // Fonctionnalité IA désactivée (AI_FEATURES_ENABLED = false) : le bouton n'est pas rendu, le parcours est suspendu.

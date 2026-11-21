@@ -67,6 +67,8 @@ function sessionFromBody(body: Record<string, unknown>): SessionApi {
 }
 
 export const sessionsHandlers = [
+  // Déclaré avant `GET /api/sessions/:id` : la route statique l'emporte, comme côté back.
+  http.get('*/api/sessions/disciplines', () => HttpResponse.json({ items: disciplinesFixtures })),
   http.post('*/api/sessions', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>;
     const created = sessionFromBody(body);
@@ -176,5 +178,4 @@ export const sessionsHandlers = [
       }));
     return HttpResponse.json({ items });
   }),
-  http.get('*/api/disciplines', () => HttpResponse.json({ items: disciplinesFixtures })),
 ];

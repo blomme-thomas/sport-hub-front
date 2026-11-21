@@ -12,7 +12,7 @@ export class DisciplinesApi {
 
   list(): Observable<Map<string, string>> {
     return this.http
-      .get<DisciplineListResponseApi>(`${this.baseUrl}/disciplines`)
+      .get<DisciplineListResponseApi>(`${this.baseUrl}/sessions/disciplines`)
       .pipe(map((response) => new Map(response.items.map((item) => [item.typeKey, item.label]))));
   }
 }

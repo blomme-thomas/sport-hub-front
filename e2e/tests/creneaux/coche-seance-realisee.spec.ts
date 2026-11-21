@@ -4,7 +4,7 @@ import { currentWeekDay } from '../../support/week-dates';
 
 const SESSIONS_URL = /\/api\/sessions(\?.*)?$/;
 const SLOTS_URL = /\/api\/slots(\?.*)?$/;
-const DISCIPLINES_URL = /\/api\/disciplines$/;
+const DISCIPLINES_URL = /\/api\/sessions\/disciplines$/;
 
 function sessionOccurrence(sessionId: string, status: 'planifiee' | 'realisee', startTime: string) {
   return {

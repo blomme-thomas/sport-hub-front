@@ -4,7 +4,7 @@ import { currentWeekDay } from '../../support/week-dates';
 
 const SESSIONS_URL = /\/api\/sessions(\?.*)?$/;
 const SLOTS_URL = /\/api\/slots(\?.*)?$/;
-const DISCIPLINES_URL = /\/api\/disciplines$/;
+const DISCIPLINES_URL = /\/api\/sessions\/disciplines$/;
 
 test.describe('Calendrier : séances', () => {
   test('affiche une séance de la semaine avec le nom de sa discipline et ouvre sa fiche', async ({

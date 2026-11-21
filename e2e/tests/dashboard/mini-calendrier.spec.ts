@@ -10,7 +10,7 @@ const STATS_URL = /\/api\/stats(\?.*)?$/;
 const KPIS_URL = /\/api\/stats\/dashboard(\?.*)?$/;
 const PROFILE_URL = /\/api\/profile$/;
 const SESSIONS_URL = /\/api\/sessions(\?.*)?$/;
-const DISCIPLINES_URL = /\/api\/disciplines$/;
+const DISCIPLINES_URL = /\/api\/sessions\/disciplines$/;
 
 test.describe('Tableau de bord : mini-calendrier de la semaine', () => {
   test.beforeEach(async ({ page }) => {
