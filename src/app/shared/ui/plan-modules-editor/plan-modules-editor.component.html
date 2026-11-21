@@ -2,56 +2,63 @@
   <h3 id="modules-editor-heading" class="modules-editor__heading">
     Modules ({{ modules().length }}) · {{ totalMinutes() }} min
   </h3>
-  <ol class="modules-editor__list">
+  <ul class="modules-editor__list">
     @for (module of modules(); track $index) {
-      <li class="modules-editor__module" [class.modules-editor__module--invalid]="!isValid(module)">
-        <div class="modules-editor__row">
-          <div class="modules-editor__field">
-            <label [for]="'module-type-' + $index">Type du module {{ $index + 1 }}</label>
-            <select
-              [id]="'module-type-' + $index"
-              [value]="module.type"
-              (change)="typeChanged($index, $any($event.target).value)"
-            >
-              @for (option of typeOptions; track option.value) {
-                <option [value]="option.value">{{ option.label }}</option>
-              }
-            </select>
-          </div>
-          <div class="modules-editor__field">
-            <label [for]="'module-duration-' + $index"
-              >Durée du module {{ $index + 1 }} (min)</label
-            >
-            <input
-              [id]="'module-duration-' + $index"
-              type="number"
-              [attr.min]="durationMin"
-              [attr.max]="durationMax"
-              step="1"
-              [value]="module.durationMinutes"
-              (change)="durationChanged($index, $any($event.target).value)"
-            />
-          </div>
-          <button nz-button type="button" nzDanger (click)="remove($index)">
-            Supprimer le module {{ $index + 1 }}
-          </button>
-        </div>
-        <div class="modules-editor__field">
-          <label [for]="'module-instruction-' + $index">Consigne</label>
-          <textarea
-            [id]="'module-instruction-' + $index"
-            rows="2"
-            [attr.maxlength]="instructionMax"
-            [value]="module.instruction"
-            (change)="instructionChanged($index, $any($event.target).value)"
-          ></textarea>
-        </div>
-        @if (!isValid(module)) {
-          <p class="modules-editor__error" role="alert">
-            Durée de 1 à 1440 minutes et consigne obligatoire.
-          </p>
-        }
+      <li class="modules-editor__row" [class.modules-editor__row--invalid]="!isValid(module)">
+        <span class="modules-editor__index" aria-hidden="true">{{ $index + 1 }}</span>
+        <label class="modules-editor__sr" [for]="'module-type-' + $index">
+          Type du module {{ $index + 1 }}
+        </label>
+        <select
+          class="modules-editor__type"
+          [id]="'module-type-' + $index"
+          [value]="module.type"
+          (change)="typeChanged($index, $any($event.target).value)"
+        >
+          @for (option of typeOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+        <label class="modules-editor__sr" [for]="'module-duration-' + $index">
+          Durée du module {{ $index + 1 }} (min)
+        </label>
+        <input
+          class="modules-editor__duration"
+          [id]="'module-duration-' + $index"
+          type="number"
+          [attr.min]="durationMin"
+          [attr.max]="durationMax"
+          step="1"
+          [value]="module.durationMinutes"
+          (change)="durationChanged($index, $any($event.target).value)"
+        />
+        <label class="modules-editor__sr" [for]="'module-instruction-' + $index">
+          Consigne du module {{ $index + 1 }}
+        </label>
+        <input
+          class="modules-editor__instruction"
+          [id]="'module-instruction-' + $index"
+          type="text"
+          [attr.maxlength]="instructionMax"
+          [value]="module.instruction"
+          (change)="instructionChanged($index, $any($event.target).value)"
+        />
+        <button
+          nz-button
+          nzDanger
+          nzSize="small"
+          type="button"
+          [attr.aria-label]="'Supprimer le module ' + ($index + 1)"
+          (click)="remove($index)"
+        >
+          ✕
+        </button>
       </li>
     }
-  </ol>
+  </ul>
+  @if (hasInvalid()) {
+    <p class="modules-editor__error" role="alert">
+      Un module a une durée hors de 1 à 1440 minutes ou une consigne vide.
+    </p>
+  }
 </section>

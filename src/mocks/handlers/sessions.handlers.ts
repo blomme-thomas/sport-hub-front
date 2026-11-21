@@ -116,6 +116,13 @@ export const sessionsHandlers = [
       ...(body.durationMinutes !== undefined && { durationMinutes: body.durationMinutes }),
       ...(body.startTime !== undefined && { startTime: body.startTime }),
       ...(body.description !== undefined && { description: body.description }),
+      ...(body.title !== undefined && { title: body.title }),
+      ...(body.targetDistanceMeters !== undefined && {
+        targetDistanceMeters: body.targetDistanceMeters,
+      }),
+      ...(body.targetHrZonePercentages !== undefined && {
+        targetHrZonePercentages: body.targetHrZonePercentages,
+      }),
       modifiedManually: true,
     };
     sessions = sessions.map((item) => (item.id === id ? updated : item));

@@ -94,5 +94,10 @@ export interface UpdateSessionRequestApi {
   disciplineTypeKey?: string;
   durationMinutes?: number;
   startTime?: string | null;
+  title?: string | null;
   description?: string | null;
+  /** Distance cible en mètres ; `null` efface. */
+  targetDistanceMeters?: number | null;
+  /** Répartition Z1 à Z5, totalisant 100 ; absente = inchangée. */
+  targetHrZonePercentages?: number[];
 }

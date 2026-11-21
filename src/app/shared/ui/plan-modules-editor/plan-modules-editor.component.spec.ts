@@ -35,9 +35,7 @@ describe('PlanModulesEditorComponent', () => {
     await renderEditor();
 
     expect(screen.getByRole('heading', { name: 'Modules (2) · 40 min' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Consigne', { selector: '#module-instruction-1' })).toHaveValue(
-      '4 x 400 m',
-    );
+    expect(screen.getByLabelText('Consigne du module 2')).toHaveValue('4 x 400 m');
   });
 
   it('émet la liste complète avec la durée modifiée', async () => {
@@ -67,6 +65,6 @@ describe('PlanModulesEditorComponent', () => {
   it('signale un module hors bornes sans bloquer le formulaire parent', async () => {
     await renderEditor([{ ...MODULES[0], durationMinutes: 0 }]);
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Durée de 1 à 1440 minutes');
+    expect(screen.getByRole('alert')).toHaveTextContent('1 à 1440 minutes');
   });
 });

@@ -38,7 +38,13 @@ export interface PlanSeance {
   disciplineTypeKey: string;
   durationMinutes: number;
   startTime?: string | null;
+  /** Titre de la séance, 200 caractères au plus. */
+  title?: string | null;
   description?: string | null;
+  /** Distance cible en mètres. */
+  targetDistanceMeters?: number | null;
+  /** Répartition cible par zone de FC, Z1 à Z5, totalisant 100. */
+  targetHrZonePercentages?: number[] | null;
   modules: PlanSeanceModule[];
 }
 

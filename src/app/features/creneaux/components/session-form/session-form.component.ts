@@ -172,6 +172,13 @@ export class SessionFormComponent implements OnInit {
       disciplineTypeKey: prefill.disciplineTypeKey,
       ...(prefill.startTime !== undefined && { startTime: prefill.startTime }),
       ...(prefill.description !== undefined && { description: prefill.description }),
+      ...(prefill.title !== undefined && { title: prefill.title }),
+      ...(prefill.targetDistanceMeters !== undefined && {
+        distanceKm: prefill.targetDistanceMeters / 1000,
+      }),
+      ...(prefill.targetHrZonePercentages !== undefined && {
+        zones: zonesControls(prefill.targetHrZonePercentages),
+      }),
     });
     this.importedModules.set(prefill.modules);
     this.importSummary.set(
@@ -224,4 +231,16 @@ function durationBetween(start: string, end: string | undefined): number | null 
   };
   const diff = toMinutes(end) - toMinutes(start);
   return diff >= MIN_DURATION_MINUTES && diff <= MAX_DURATION_MINUTES ? diff : null;
+}
+
+/** Valeurs des cases Z1 à Z5 à partir de la liste du fichier. */
+function zonesControls(values: readonly number[]): {
+  z1: number;
+  z2: number;
+  z3: number;
+  z4: number;
+  z5: number;
+} {
+  const [z1 = 0, z2 = 0, z3 = 0, z4 = 0, z5 = 0] = values;
+  return { z1, z2, z3, z4, z5 };
 }

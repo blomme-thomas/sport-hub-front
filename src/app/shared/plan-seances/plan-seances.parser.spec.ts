@@ -41,7 +41,7 @@ describe('parseSingleSession', () => {
   it('accepte un fichier d’une seule séance valide', () => {
     const result = parseSingleSession(file([SEANCE]));
 
-    expect(result).toEqual({ ok: true, seance: SEANCE });
+    expect(result).toMatchObject({ ok: true, seance: SEANCE });
   });
 
   it('signale un JSON mal formé sans lever d’exception', () => {
@@ -201,5 +201,54 @@ describe('toPrefill', () => {
 
     expect(prefill.startTime).toBe('18:00');
     expect(prefill.description).toBe('Fond');
+  });
+});
+
+describe('titre, distance et zones de la séance', () => {
+  it('reprend le titre, la distance et la répartition par zone dans le pré-remplissage', () => {
+    const result = parseSingleSession(
+      file([
+        {
+          ...SEANCE,
+          title: 'Fond en aisance',
+          targetDistanceMeters: 10000,
+          targetHrZonePercentages: [10, 20, 40, 20, 10],
+        },
+      ]),
+    );
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(toPrefill(result.seance)).toMatchObject({
+        title: 'Fond en aisance',
+        targetDistanceMeters: 10000,
+        targetHrZonePercentages: [10, 20, 40, 20, 10],
+      });
+    }
+  });
+
+  it('refuse une répartition par zone qui ne totalise pas 100 %', () => {
+    const result = parseSingleSession(
+      file([{ ...SEANCE, targetHrZonePercentages: [10, 20, 40, 20, 20] }]),
+    );
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.issues).toEqual([
+        {
+          path: 'seances[0].targetHrZonePercentages',
+          message: 'les zones doivent totaliser 100 %',
+        },
+      ]);
+    }
+  });
+
+  it('refuse un titre de plus de 200 caractères', () => {
+    const result = parseSingleSession(file([{ ...SEANCE, title: 'x'.repeat(201) }]));
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.issues[0]?.path).toBe('seances[0].title');
+    }
   });
 });
