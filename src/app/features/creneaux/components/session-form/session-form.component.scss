@@ -75,7 +75,7 @@
 
 .session-form__textarea {
   flex: 1;
-  min-height: 16rem;
+  min-height: 0;
   padding: var(--sh-space-2);
   border: 1px solid var(--sh-border);
   border-radius: var(--sh-radius-sm);

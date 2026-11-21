@@ -10,6 +10,7 @@ import {
 
 /** Bornes identiques au back : durée 1 à 1440, 30 modules au plus, consignes de 2000 caractères au plus. */
 const DURATION_MAX = 1440;
+const TITLE_MAX = 200;
 const MODULES_MAX = 30;
 const TEXT_MAX = 2000;
 const DISCIPLINE_KEY_MAX = 100;
@@ -23,7 +24,10 @@ const SEANCE_FIELDS = [
   'disciplineTypeKey',
   'durationMinutes',
   'startTime',
+  'title',
   'description',
+  'targetDistanceMeters',
+  'targetHrZonePercentages',
   'modules',
 ];
 const MODULE_FIELDS = ['type', 'durationMinutes', 'instruction', 'targetZones', 'perceivedEffort'];
@@ -40,7 +44,12 @@ export interface SessionPrefill {
   durationMinutes: number;
   disciplineTypeKey: string;
   startTime?: string;
+  title?: string;
   description?: string;
+  /** Distance cible en mètres, reprise telle quelle du fichier. */
+  targetDistanceMeters?: number;
+  /** Répartition Z1 à Z5, totalisant 100. */
+  targetHrZonePercentages?: number[];
   modules: PlanSeanceModule[];
 }
 
@@ -133,6 +142,15 @@ export function toPrefill(seance: PlanSeance): SessionPrefill {
   if (seance.description !== undefined && seance.description !== null) {
     prefill.description = seance.description;
   }
+  if (seance.title) {
+    prefill.title = seance.title;
+  }
+  if (seance.targetDistanceMeters !== undefined && seance.targetDistanceMeters !== null) {
+    prefill.targetDistanceMeters = seance.targetDistanceMeters;
+  }
+  if (seance.targetHrZonePercentages) {
+    prefill.targetHrZonePercentages = seance.targetHrZonePercentages;
+  }
   return prefill;
 }
 
@@ -175,10 +193,16 @@ function validateSeance(
     max: DURATION_MAX,
   });
   const startTime = readStartTime(raw, path, issues);
+  const title = readText(raw, 'title', path, issues, { required: false, max: TITLE_MAX });
   const description = readText(raw, 'description', path, issues, {
     required: false,
     max: TEXT_MAX,
   });
+  const targetDistanceMeters = readInteger(raw, 'targetDistanceMeters', path, issues, {
+    required: false,
+    min: 1,
+  });
+  const targetHrZonePercentages = readZonePercentages(raw, path, issues);
 
   const modules = validateModules(raw['modules'], `${path}.modules`, issues);
 
@@ -195,7 +219,10 @@ function validateSeance(
     disciplineTypeKey,
     durationMinutes,
     startTime,
+    title,
     description,
+    targetDistanceMeters,
+    targetHrZonePercentages,
     modules,
   };
 }
@@ -452,4 +479,35 @@ export function isPlanModuleValid(module: PlanSeanceModule): boolean {
     module.instruction.trim() !== '' &&
     module.instruction.length <= TEXT_MAX
   );
+}
+
+/** Répartition Z1 à Z5 : 5 entiers de 0 à 100 ; absente ou \`null\` si non renseignée. Le total (100) est contrôlé ici. */
+function readZonePercentages(
+  raw: Fields,
+  path: string,
+  issues: PlanSeanceIssue[],
+): number[] | null {
+  const value = raw['targetHrZonePercentages'];
+  const fieldPath = `${path}.targetHrZonePercentages`;
+  if (value === undefined || value === null) {
+    return null;
+  }
+  if (
+    !Array.isArray(value) ||
+    value.length !== 5 ||
+    !value.every((item) => Number.isInteger(item))
+  ) {
+    issues.push({ path: fieldPath, message: 'doit être une liste de 5 entiers (Z1 à Z5)' });
+    return null;
+  }
+  const numbers = value as number[];
+  if (numbers.some((item) => item < 0 || item > 100)) {
+    issues.push({ path: fieldPath, message: 'chaque zone doit être entre 0 et 100 %' });
+    return null;
+  }
+  if (numbers.reduce((sum, item) => sum + item, 0) !== 100) {
+    issues.push({ path: fieldPath, message: 'les zones doivent totaliser 100 %' });
+    return null;
+  }
+  return numbers;
 }

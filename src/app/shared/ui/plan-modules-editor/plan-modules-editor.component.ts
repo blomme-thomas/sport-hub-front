@@ -39,6 +39,10 @@ export class PlanModulesEditorComponent {
     this.modules().reduce((sum, module) => sum + module.durationMinutes, 0),
   );
 
+  protected readonly hasInvalid = computed(() =>
+    this.modules().some((module) => !isPlanModuleValid(module)),
+  );
+
   protected isValid(module: PlanSeanceModule): boolean {
     return isPlanModuleValid(module);
   }

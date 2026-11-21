@@ -73,10 +73,48 @@
   </div>
 
   <div class="session-edit__field">
+    <label for="session-edit-title">Titre</label>
+    <input id="session-edit-title" type="text" maxlength="200" formControlName="title" />
+  </div>
+
+  <div class="session-edit__field">
+    <label for="session-edit-distance">Distance cible (km)</label>
+    <input
+      id="session-edit-distance"
+      type="number"
+      min="0"
+      step="0.1"
+      formControlName="distanceKm"
+    />
+  </div>
+
+  <fieldset class="session-edit__zones" formGroupName="zones">
+    <legend>Répartition cible par zone de FC (%)</legend>
+    @for (zone of zoneFields; track zone.key) {
+      <div class="session-edit__field">
+        <label [for]="'session-edit-zone-' + zone.key">{{ zone.label }}</label>
+        <input
+          [id]="'session-edit-zone-' + zone.key"
+          type="number"
+          min="0"
+          max="100"
+          step="1"
+          [formControlName]="zone.key"
+        />
+      </div>
+    }
+  </fieldset>
+  @if (zonesInvalid()) {
+    <p class="session-edit__alert" role="alert">
+      Les zones doivent totaliser 100 % (ou rester à 0).
+    </p>
+  }
+
+  <div class="session-edit__field">
     <label for="session-edit-description">Description</label>
     <textarea
       id="session-edit-description"
-      rows="4"
+      rows="3"
       [attr.maxlength]="descriptionMax"
       formControlName="description"
     ></textarea>

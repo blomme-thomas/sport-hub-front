@@ -31,6 +31,20 @@ import type { UpdateSessionRequestApi } from '../../models/session.api-model';
 import type { Session } from '../../models/session.model';
 
 const DESCRIPTION_MAX_LENGTH = 2000;
+const TITLE_MAX_LENGTH = 200;
+const ZONE_KEYS = ['z1', 'z2', 'z3', 'z4', 'z5'] as const;
+
+/** Valeurs des cases Z1 à Z5 à partir de la liste de l'API ou du fichier. */
+function zonesControls(values: readonly number[]): {
+  z1: number;
+  z2: number;
+  z3: number;
+  z4: number;
+  z5: number;
+} {
+  const [z1 = 0, z2 = 0, z3 = 0, z4 = 0, z5 = 0] = values;
+  return { z1, z2, z3, z4, z5 };
+}
 
 export interface SessionDisciplineOption {
   typeKey: string;
@@ -83,7 +97,34 @@ export class SessionEditFormComponent implements OnInit {
       Validators.max(MAX_DURATION_MINUTES),
     ]),
     disciplineTypeKey: this.fb.control('', [Validators.required]),
+    title: this.fb.control('', [Validators.maxLength(TITLE_MAX_LENGTH)]),
+    distanceKm: this.fb.control<number | null>(null),
+    zones: this.fb.group({
+      z1: this.fb.control<number | null>(0),
+      z2: this.fb.control<number | null>(0),
+      z3: this.fb.control<number | null>(0),
+      z4: this.fb.control<number | null>(0),
+      z5: this.fb.control<number | null>(0),
+    }),
     description: this.fb.control('', [Validators.maxLength(DESCRIPTION_MAX_LENGTH)]),
+  });
+
+  protected readonly zoneFields = [
+    { key: 'z1', label: 'Z1 (%)' },
+    { key: 'z2', label: 'Z2 (%)' },
+    { key: 'z3', label: 'Z3 (%)' },
+    { key: 'z4', label: 'Z4 (%)' },
+    { key: 'z5', label: 'Z5 (%)' },
+  ] as const;
+
+  /** Total des zones saisies : 0 (inchangées) ou 100 (valide). */
+  protected readonly zoneTotal = computed(() => {
+    const zones = this.form.getRawValue().zones;
+    return ZONE_KEYS.reduce((sum, key) => sum + (zones[key] ?? 0), 0);
+  });
+  protected readonly zonesInvalid = computed(() => {
+    const total = this.zoneTotal();
+    return total !== 0 && total !== 100;
   });
 
   protected readonly importIssues = signal<readonly PlanSeanceIssue[]>([]);
@@ -127,6 +168,12 @@ export class SessionEditFormComponent implements OnInit {
       durationMinutes: session.durationMinutes,
       disciplineTypeKey: session.disciplineTypeKey,
       description: session.description ?? '',
+      title: session.title ?? '',
+      distanceKm:
+        session.objectives.distanceMeters === null
+          ? null
+          : session.objectives.distanceMeters / 1000,
+      zones: zonesControls(session.objectives.zonePercentages ?? [0, 0, 0, 0, 0]),
     });
   }
 
@@ -154,6 +201,13 @@ export class SessionEditFormComponent implements OnInit {
       disciplineTypeKey: prefill.disciplineTypeKey,
       ...(prefill.startTime !== undefined && { startTime: prefill.startTime }),
       ...(prefill.description !== undefined && { description: prefill.description }),
+      ...(prefill.title !== undefined && { title: prefill.title }),
+      ...(prefill.targetDistanceMeters !== undefined && {
+        distanceKm: prefill.targetDistanceMeters / 1000,
+      }),
+      ...(prefill.targetHrZonePercentages !== undefined && {
+        zones: zonesControls(prefill.targetHrZonePercentages),
+      }),
     });
     this.importedModules.set(prefill.modules);
     this.importSummary.set(
@@ -162,7 +216,7 @@ export class SessionEditFormComponent implements OnInit {
   }
 
   protected submit(): void {
-    if (this.form.invalid || this.modulesInvalid()) {
+    if (this.form.invalid || this.modulesInvalid() || this.zonesInvalid()) {
       this.form.markAllAsTouched();
       return;
     }
@@ -170,13 +224,20 @@ export class SessionEditFormComponent implements OnInit {
     const modules = this.importedModules();
     const startTime = value.startTime.trim();
     const description = value.description.trim();
+    const title = value.title.trim();
+    const zones = ZONE_KEYS.map((key) => value.zones[key] ?? 0);
     this.saved.emit({
       details: {
         date: value.date,
         startTime: startTime === '' ? null : startTime,
         durationMinutes: Number(value.durationMinutes),
         disciplineTypeKey: value.disciplineTypeKey,
+        title: title === '' ? null : title,
         description: description === '' ? null : description,
+        targetDistanceMeters:
+          value.distanceKm === null ? null : Math.round(value.distanceKm * 1000),
+        // Zones à 0 partout : répartition inchangée (le back n'accepte pas de la vider).
+        ...(this.zoneTotal() === 100 && { targetHrZonePercentages: zones }),
       },
       modules: modules === null ? null : [...modules],
     });

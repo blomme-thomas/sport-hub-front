@@ -87,7 +87,9 @@ describe('SessionEditFormComponent', () => {
         startTime: '18:00',
         durationMinutes: 60,
         disciplineTypeKey: 'course_a_pied',
+        title: null,
         description: null,
+        targetDistanceMeters: null,
       },
       modules: null,
     });
@@ -115,7 +117,9 @@ describe('SessionEditFormComponent', () => {
         startTime: '18:00',
         durationMinutes: 70,
         disciplineTypeKey: 'velo',
+        title: null,
         description: 'Fond',
+        targetDistanceMeters: null,
       },
       modules: [
         {
