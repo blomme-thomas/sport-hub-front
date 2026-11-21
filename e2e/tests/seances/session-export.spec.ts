@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 import { SessionPage } from '../../pages/session.page';
 
 const SESSION_URL = /\/api\/sessions\/session-course$/;
-const DISCIPLINES_URL = /\/api\/disciplines$/;
+const DISCIPLINES_URL = /\/api\/sessions\/disciplines$/;
 const ACTIVITIES_LIST_URL = /\/api\/activities(\?.*)?$/;
 const ACTIVITY_DETAIL_URL = /\/api\/activities\/activity-1$/;
 const COMMENT_URL = /\/api\/activities\/activity-1\/comment$/;

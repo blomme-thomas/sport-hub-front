@@ -4,7 +4,7 @@ import { CreneauxPage } from '../../pages/creneaux.page';
 const SESSIONS_URL = /\/api\/sessions(\?.*)?$/;
 const POST_SESSIONS_URL = /\/api\/sessions$/;
 const SLOTS_URL = /\/api\/slots(\?.*)?$/;
-const DISCIPLINES_URL = /\/api\/disciplines$/;
+const DISCIPLINES_URL = /\/api\/sessions\/disciplines$/;
 
 test.describe('Calendrier : créer une séance', () => {
   test('crée une séance depuis le calendrier et ouvre sa fiche', async ({ page }) => {

@@ -3,7 +3,7 @@ import { SessionPage } from '../../pages/session.page';
 
 const SESSION_URL = /\/api\/sessions\/session-course$/;
 const MODULES_URL = /\/api\/sessions\/session-course\/modules$/;
-const DISCIPLINES_URL = /\/api\/disciplines$/;
+const DISCIPLINES_URL = /\/api\/sessions\/disciplines$/;
 
 const session = {
   id: 'session-course',

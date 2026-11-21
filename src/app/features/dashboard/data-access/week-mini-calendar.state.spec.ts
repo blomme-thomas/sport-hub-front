@@ -57,7 +57,7 @@ function settle(assertion: () => void): Promise<void> {
 describe('WeekMiniCalendarState — légende', () => {
   it('annote la légende par famille : indoor cycling et vélo virtuel donnent une seule entrée « Vélo »', async () => {
     server.use(
-      http.get('*/api/disciplines', () => HttpResponse.json(DISCIPLINES)),
+      http.get('*/api/sessions/disciplines', () => HttpResponse.json(DISCIPLINES)),
       http.get('*/api/sessions', () => HttpResponse.json({ items: [] })),
       http.get('*/api/activities', () =>
         HttpResponse.json({

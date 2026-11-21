@@ -5,7 +5,7 @@ import { currentWeekDay } from '../../support/week-dates';
 const SESSIONS_URL = /\/api\/sessions(\?.*)?$/;
 const SESSION_URL = /\/api\/sessions\/session-course$/;
 const SLOTS_URL = /\/api\/slots(\?.*)?$/;
-const DISCIPLINES_URL = /\/api\/disciplines$/;
+const DISCIPLINES_URL = /\/api\/sessions\/disciplines$/;
 
 test.describe('Calendrier : déplacer une séance', () => {
   test('glisse une séance ponctuelle d’une heure plus tard et enregistre la nouvelle heure', async ({

@@ -20,7 +20,7 @@ import { SessionPage } from './session.page';
 
 function useFixtures(): void {
   server.use(
-    http.get('*/api/disciplines', () => HttpResponse.json({ items: disciplinesFixtures })),
+    http.get('*/api/sessions/disciplines', () => HttpResponse.json({ items: disciplinesFixtures })),
   );
 }
 

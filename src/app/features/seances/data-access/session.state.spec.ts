@@ -39,7 +39,7 @@ function useSession(body: object, status = 200): void {
 
 function useDisciplines(): void {
   server.use(
-    http.get('*/api/disciplines', () => HttpResponse.json({ items: disciplinesFixtures })),
+    http.get('*/api/sessions/disciplines', () => HttpResponse.json({ items: disciplinesFixtures })),
   );
 }
 
@@ -73,7 +73,9 @@ describe('SessionState', () => {
   });
 
   it('garde le code de discipline si le référentiel est indisponible', async () => {
-    server.use(http.get('*/api/disciplines', () => new HttpResponse(null, { status: 500 })));
+    server.use(
+      http.get('*/api/sessions/disciplines', () => new HttpResponse(null, { status: 500 })),
+    );
     const state = setup();
 
     await state.load(SESSION_ID);

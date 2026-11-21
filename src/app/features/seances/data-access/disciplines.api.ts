@@ -13,7 +13,7 @@ export class DisciplinesApi {
   /** Libellé par clé de discipline. */
   list(): Observable<Map<string, string>> {
     return this.http
-      .get<DisciplineListResponseApi>(`${this.baseUrl}/disciplines`)
+      .get<DisciplineListResponseApi>(`${this.baseUrl}/sessions/disciplines`)
       .pipe(map((response) => toLabels(response.items)));
   }
 }

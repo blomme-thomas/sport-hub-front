@@ -41,7 +41,7 @@ function trackSessions(
       requests.push(new URL(request.url));
       return respond();
     }),
-    http.get('*/api/disciplines', () =>
+    http.get('*/api/sessions/disciplines', () =>
       HttpResponse.json({ items: [{ typeKey: 'running', label: 'Course à pied' }] }),
     ),
   );

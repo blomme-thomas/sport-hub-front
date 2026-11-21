@@ -9,7 +9,7 @@ const CANCEL_URL = new RegExp(
   `/api/sessions/session-piscine/occurrences/${OCCURRENCE_DATE}/cancel$`,
 );
 const SLOTS_URL = /\/api\/slots(\?.*)?$/;
-const DISCIPLINES_URL = /\/api\/disciplines$/;
+const DISCIPLINES_URL = /\/api\/sessions\/disciplines$/;
 
 test.describe('Calendrier : une occurrence de séance hebdomadaire', () => {
   test('annule cette semaine seulement', async ({ page }) => {

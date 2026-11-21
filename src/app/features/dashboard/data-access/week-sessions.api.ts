@@ -55,7 +55,7 @@ export class WeekSessionsApi {
   /** Référentiel des disciplines : libellé et famille de sport de chaque type. */
   disciplines(): Observable<ReadonlyMap<string, WeekMiniDiscipline>> {
     return this.http
-      .get<DisciplineListResponseApi>(`${this.baseUrl}/disciplines`)
+      .get<DisciplineListResponseApi>(`${this.baseUrl}/sessions/disciplines`)
       .pipe(
         map(
           (response) =>
