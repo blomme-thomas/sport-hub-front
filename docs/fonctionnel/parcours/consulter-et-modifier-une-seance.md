@@ -112,3 +112,15 @@ Quand une activité est liée à la séance, le bloc « Activité réalisée » 
 ## Hors scope
 
 Glisser-déposer sur le calendrier (story suivante), création de séance, journal des modifications (`changeLog`) affiché, suppression de séance, rapprochement automatique depuis la fiche (voir « Objectifs et activité réalisée »).
+
+## Modifier une séance depuis un fichier JSON (story #134)
+
+Sur une séance planifiée, « Modifier la séance » ouvre une fenêtre avec les champs date, heure de début, durée, discipline et description. Une zone permet de déposer un fichier `.json` ou de coller son contenu, au format `plan-seances` (version 1) contenant **une seule** séance.
+
+1. Un JSON valide pré-remplit les champs présents dans le fichier et remplace les modules du brouillon. Rien n'est enregistré à ce stade. Les champs absents (heure, description) gardent leur valeur actuelle.
+2. Un JSON invalide affiche chaque erreur avec son chemin, par exemple `seances[0].modules[1].durationMinutes`, et ne modifie pas le formulaire.
+3. « Enregistrer » envoie `PATCH /api/sessions/:id` avec les champs du formulaire (une heure ou une description vides sont envoyées `null`), puis `PUT /api/sessions/:id/modules` si le fichier a fourni des modules. Une fois la séance enregistrée, la fenêtre se ferme et « Séance modifiée. » s'affiche.
+
+Une séance réalisée n'a pas le bouton « Modifier la séance ». La discipline de la séance reste proposée même si elle a disparu du référentiel.
+
+Code : `features/seances/components/session-edit-form/`, état `SessionState.saveDetails`, validation partagée `shared/plan-seances/`.
