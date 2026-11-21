@@ -105,3 +105,11 @@ Une séance réalisée (liée à une activité) affiche une coche verte en haut 
 - Une occurrence annulée reste affichée, barrée et en pointillés.
 - Limite : les routes du back s'adressent à la date de programmation de l'occurrence. La liste ne renvoie que la date courante. Une occurrence déjà déplacée ne peut donc pas être annulée, restaurée ni redéplacée tant que la liste n'exposera pas cette date (champ à ajouter côté back).
 - Limite : l'affichage « Déplacée » n'est pas encore présent, faute d'information dans la liste.
+
+## Créer une séance depuis un fichier JSON (story #132)
+
+Dans la modale « Nouvelle séance », la section « Pré-remplir depuis un fichier JSON » accepte un fichier `plan-seances` (une seule séance) ou son contenu collé. Un JSON valide renseigne la date, l'heure, la durée, la discipline et la description présentes dans le fichier, et reprend ses modules, listés en récapitulatif sous les objectifs. Rien n'est enregistré avant « Créer la séance », qui envoie `POST /api/sessions` avec ces modules.
+
+- Un JSON invalide affiche chaque erreur avec son chemin, et le formulaire reste inchangé.
+- Un fichier de plusieurs séances est refusé avec un renvoi vers « Importer des séances ».
+- Limite actuelle : les modules importés ne sont pas éditables dans la modale de création (on peut seulement les retirer). Leur édition se fait sur la fiche de séance, après création.
