@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  computed,
   inject,
   input,
   output,
@@ -10,6 +11,18 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { AppError } from '../../../../core/http/app-error';
+import {
+  isPlanModuleValid,
+  parseSingleSession,
+  toPrefill,
+  type SessionPrefill,
+} from '../../../../shared/plan-seances/plan-seances.parser';
+import {
+  type PlanSeanceIssue,
+  type PlanSeanceModule,
+} from '../../../../shared/plan-seances/plan-seances.model';
+import { PlanModulesEditorComponent } from '../../../../shared/ui/plan-modules-editor/plan-modules-editor.component';
+import { JsonFileInputComponent } from '../../../../shared/ui/json-file-input/json-file-input.component';
 import {
   MAX_SESSION_DURATION_MINUTES as MAX_DURATION_MINUTES,
   MIN_SESSION_DURATION_MINUTES as MIN_DURATION_MINUTES,
@@ -44,7 +57,12 @@ export interface DisciplineOption {
  */
 @Component({
   selector: 'sh-session-form',
-  imports: [ReactiveFormsModule, NzButtonComponent],
+  imports: [
+    ReactiveFormsModule,
+    NzButtonComponent,
+    JsonFileInputComponent,
+    PlanModulesEditorComponent,
+  ],
   templateUrl: './session-form.component.html',
   styleUrl: './session-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -91,6 +109,16 @@ export class SessionFormComponent implements OnInit {
     label: zone.label,
   }));
 
+  /** Erreurs du fichier JSON collé ou chargé, avec leur chemin ; le formulaire n'est pas modifié tant qu'il y en a. */
+  protected readonly importIssues = signal<readonly PlanSeanceIssue[]>([]);
+  protected readonly importSummary = signal<string | null>(null);
+  /** Modules venus du fichier : envoyés à la création, affichés en récapitulatif. */
+  protected readonly importedModules = signal<readonly PlanSeanceModule[]>([]);
+  /** Vrai si un module modifié à la main sort des bornes du format : l'envoi est alors bloqué. */
+  protected readonly modulesInvalid = computed(() =>
+    this.importedModules().some((module) => !isPlanModuleValid(module)),
+  );
+
   /** Erreurs des objectifs, affichées seulement après une tentative de création. */
   protected get objectiveErrors(): Partial<Record<ObjectiveErrorKey, string>> {
     return this.submitted() ? this.computeObjectiveErrors() : {};
@@ -120,6 +148,43 @@ export class SessionFormComponent implements OnInit {
     });
   }
 
+  /** Lit le fichier ou le texte collé : un JSON valide pré-remplit le formulaire, un JSON invalide le laisse intact. */
+  protected onJsonChange(text: string): void {
+    if (text.trim() === '') {
+      this.importIssues.set([]);
+      this.importSummary.set(null);
+      return;
+    }
+    const result = parseSingleSession(text, this.knownDisciplineKeys());
+    if (!result.ok) {
+      this.importIssues.set(result.issues);
+      this.importSummary.set(null);
+      return;
+    }
+    this.importIssues.set([]);
+    this.applyPrefill(toPrefill(result.seance));
+  }
+
+  private applyPrefill(prefill: SessionPrefill): void {
+    this.form.patchValue({
+      date: prefill.date,
+      durationMinutes: prefill.durationMinutes,
+      disciplineTypeKey: prefill.disciplineTypeKey,
+      ...(prefill.startTime !== undefined && { startTime: prefill.startTime }),
+      ...(prefill.description !== undefined && { description: prefill.description }),
+    });
+    this.importedModules.set(prefill.modules);
+    this.importSummary.set(
+      `Séance pré-remplie avec ${prefill.modules.length} module(s). Relisez les valeurs, puis créez la séance.`,
+    );
+  }
+
+  /** Clés du référentiel pour contrôler la discipline du fichier ; sans référentiel, le contrôle est laissé au back. */
+  private knownDisciplineKeys(): ReadonlySet<string> | undefined {
+    const keys = this.disciplines();
+    return keys.length === 0 ? undefined : new Set(keys.map((option) => option.typeKey));
+  }
+
   protected submit(): void {
     this.submitted.set(true);
     if (this.form.invalid || Object.keys(this.computeObjectiveErrors()).length > 0) {
@@ -127,6 +192,10 @@ export class SessionFormComponent implements OnInit {
       return;
     }
     const value = this.form.getRawValue();
+    const modules = this.importedModules();
+    if (this.modulesInvalid()) {
+      return;
+    }
     this.saved.emit({
       date: value.date,
       startTime: value.startTime,
@@ -139,6 +208,7 @@ export class SessionFormComponent implements OnInit {
       targetHrZonePercentages: ZONE_KEYS.map((key) => value.zones[key] ?? 0),
       title: value.title.trim() || undefined,
       description: value.description.trim() || undefined,
+      ...(modules.length > 0 && { modules: [...modules] }),
     });
   }
 }

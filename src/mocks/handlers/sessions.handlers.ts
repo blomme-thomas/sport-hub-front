@@ -41,7 +41,35 @@ function comparable(module: SessionModuleApi): unknown[] {
   ];
 }
 
+/** Séance du back à partir d'un corps de création ou d'une séance d'un fichier d'import. */
+function sessionFromBody(body: Record<string, unknown>): SessionApi {
+  const modules = (body['modules'] as SessionModuleApi[] | undefined) ?? [];
+  return {
+    id: crypto.randomUUID(),
+    date: String(body['date']),
+    disciplineTypeKey: String(body['disciplineTypeKey']),
+    durationMinutes: Number(body['durationMinutes']),
+    startTime: (body['startTime'] as string | null | undefined) ?? null,
+    status: 'planifiee',
+    modifiedManually: false,
+    description: (body['description'] as string | null | undefined) ?? null,
+    title: (body['title'] as string | null | undefined) ?? null,
+    modules: modules.map((module, index) => ({ ...module, position: index + 1 })),
+    changeLog: [],
+    targetDistanceMeters: (body['targetDistanceMeters'] as number | undefined) ?? null,
+    targetHrZonePercentages: (body['targetHrZonePercentages'] as number[] | undefined) ?? null,
+    achievement: null,
+    activity: null,
+  };
+}
+
 export const sessionsHandlers = [
+  http.post('*/api/sessions', async ({ request }) => {
+    const body = (await request.json()) as Record<string, unknown>;
+    const created = sessionFromBody(body);
+    sessions = [...sessions, created];
+    return HttpResponse.json({ id: created.id }, { status: 201 });
+  }),
   http.patch('*/api/sessions/:id', async ({ params, request }) => {
     const id = String(params['id']);
     const session = sessions.find((item) => item.id === id);
