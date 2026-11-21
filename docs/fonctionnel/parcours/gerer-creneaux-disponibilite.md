@@ -113,3 +113,15 @@ Dans la modale « Nouvelle séance », la section « Pré-remplir depuis un fich
 - Un JSON invalide affiche chaque erreur avec son chemin, et le formulaire reste inchangé.
 - Un fichier de plusieurs séances est refusé avec un renvoi vers « Importer des séances ».
 - Limite actuelle : les modules importés ne sont pas éditables dans la modale de création (on peut seulement les retirer). Leur édition se fait sur la fiche de séance, après création.
+
+## Importer plusieurs séances (story #133)
+
+« Importer des séances » ouvre une fenêtre de dépôt ou de collage du fichier `plan-seances`, quel que soit le nombre de séances.
+
+1. Le front indique le nombre de séances détectées, sans valider leur contenu.
+2. « Importer les séances » envoie le contenu tel quel à `POST /api/sessions/import`.
+3. Succès : « N séance(s) importée(s). » et rechargement du calendrier.
+4. Erreur de validation (`SESSION_IMPORT_INVALID`) : aucune séance n'est créée ; chaque erreur est listée avec son chemin JSON.
+5. Fichier déjà importé (`SESSION_IMPORT_ALREADY_DONE`) : message dédié, rien n'est créé.
+
+Code : `features/creneaux/components/session-import/`, `shared/plan-seances/` (format, validation, pré-remplissage), `shared/ui/json-file-input/` (dépôt ou collage, partagé avec la fiche de séance).
