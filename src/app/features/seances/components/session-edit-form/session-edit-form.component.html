@@ -1,0 +1,97 @@
+<section class="session-edit__import" aria-labelledby="session-edit-import-heading">
+  <h3 id="session-edit-import-heading" class="session-edit__heading">
+    Pré-remplir depuis un fichier JSON
+  </h3>
+  <sh-json-file-input
+    label="Fichier de séance (.json)"
+    [disabled]="saving()"
+    (contentChange)="onJsonChange($event)"
+  />
+  @if (importIssues().length > 0) {
+    <div class="session-edit__alert" role="alert">
+      <p>Le fichier n’est pas valide, le formulaire n’a pas été modifié :</p>
+      <ul class="session-edit__issues">
+        @for (issue of importIssues(); track $index) {
+          <li>
+            <code>{{ issue.path }}</code> : {{ issue.message }}
+          </li>
+        }
+      </ul>
+    </div>
+  }
+  @if (importSummary(); as summary) {
+    <p class="session-edit__hint" aria-live="polite">{{ summary }}</p>
+  }
+  @if (editedModules(); as modules) {
+    <sh-plan-modules-editor [modules]="modules" (modulesChange)="onModulesChange($event)" />
+    @if (modulesInvalid()) {
+      <p class="session-edit__alert" role="alert">
+        Au moins un module est requis, avec une durée de 1 à 1440 minutes et une consigne.
+      </p>
+    }
+  }
+</section>
+
+<form class="session-edit" [formGroup]="form" (ngSubmit)="submit()">
+  @if (serverError(); as failure) {
+    <div class="session-edit__alert" role="alert">
+      <p>{{ failure.userMessage }}</p>
+    </div>
+  }
+
+  <div class="session-edit__row">
+    <div class="session-edit__field">
+      <label for="session-edit-date">Date</label>
+      <input id="session-edit-date" type="date" formControlName="date" />
+    </div>
+    <div class="session-edit__field">
+      <label for="session-edit-start">Heure de début</label>
+      <input id="session-edit-start" type="time" step="1800" formControlName="startTime" />
+    </div>
+  </div>
+
+  <div class="session-edit__row">
+    <div class="session-edit__field">
+      <label for="session-edit-duration">Durée (min)</label>
+      <input
+        id="session-edit-duration"
+        type="number"
+        [attr.min]="durationMin"
+        [attr.max]="durationMax"
+        step="1"
+        formControlName="durationMinutes"
+      />
+    </div>
+    <div class="session-edit__field">
+      <label for="session-edit-discipline">Discipline</label>
+      <select id="session-edit-discipline" formControlName="disciplineTypeKey">
+        @for (option of disciplineOptions(); track option.typeKey) {
+          <option [value]="option.typeKey">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="session-edit__field">
+    <label for="session-edit-description">Description</label>
+    <textarea
+      id="session-edit-description"
+      rows="4"
+      [attr.maxlength]="descriptionMax"
+      formControlName="description"
+    ></textarea>
+  </div>
+
+  <div class="session-edit__actions">
+    <button nz-button type="button" (click)="cancelled.emit()">Annuler</button>
+    <button
+      nz-button
+      nzType="primary"
+      type="submit"
+      [disabled]="saving() || form.invalid || modulesInvalid()"
+      [attr.aria-busy]="saving()"
+    >
+      Enregistrer
+    </button>
+  </div>
+</form>

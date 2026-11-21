@@ -87,3 +87,12 @@ export interface DisciplineApi {
 export interface DisciplineListResponseApi {
   items: DisciplineApi[];
 }
+
+/** Corps de `PATCH /api/sessions/:id` : seuls les champs envoyés sont modifiés ; `null` efface startTime ou description. */
+export interface UpdateSessionRequestApi {
+  date?: string;
+  disciplineTypeKey?: string;
+  durationMinutes?: number;
+  startTime?: string | null;
+  description?: string | null;
+}

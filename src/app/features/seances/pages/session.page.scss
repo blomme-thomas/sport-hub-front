@@ -107,3 +107,9 @@
   gap: var(--sh-space-2);
   margin-top: var(--sh-space-4);
 }
+
+.session__header-actions {
+  display: flex;
+  gap: var(--sh-space-2);
+  margin-top: var(--sh-space-3);
+}

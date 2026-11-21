@@ -1,7 +1,20 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalComponent, NzModalContentDirective } from 'ng-zorro-antd/modal';
 import { ActivityCommentComponent } from '../components/activity-comment/activity-comment.component';
+import {
+  SessionEditFormComponent,
+  type SessionDetailsSave,
+} from '../components/session-edit-form/session-edit-form.component';
 import { SessionActivityComponent } from '../components/session-activity/session-activity.component';
 import { SessionModulesComponent } from '../components/session-modules/session-modules.component';
 import { SessionObjectivesComponent } from '../components/session-objectives/session-objectives.component';
@@ -23,8 +36,11 @@ const STATUS_LABELS: Record<SessionStatus, string> = {
   selector: 'sh-session-page',
   imports: [
     NzButtonComponent,
+    NzModalComponent,
+    NzModalContentDirective,
     ActivityCommentComponent,
     SessionActivityComponent,
+    SessionEditFormComponent,
     SessionModulesComponent,
     SessionObjectivesComponent,
   ],
@@ -94,6 +110,24 @@ export class SessionPage implements OnInit {
   protected async save(): Promise<void> {
     const saved = await this.state.save();
     if (saved) {
+      this.messages.success('Séance modifiée.');
+    }
+  }
+
+  /** Fenêtre de modification de la séance (story #134) ; fermée tant qu'elle n'est pas enregistrée. */
+  protected readonly editOpen = signal(false);
+
+  protected openEdit(): void {
+    this.editOpen.set(true);
+  }
+
+  protected closeEdit(): void {
+    this.editOpen.set(false);
+  }
+
+  protected async saveDetails(event: SessionDetailsSave): Promise<void> {
+    if (await this.state.saveDetails(event.details, event.modules)) {
+      this.editOpen.set(false);
       this.messages.success('Séance modifiée.');
     }
   }
