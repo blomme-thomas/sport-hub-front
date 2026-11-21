@@ -17,6 +17,8 @@ import {
 import { SessionsApi } from './sessions.api';
 import { SessionExportApi } from './session-export.api';
 import { saveBlob } from '../../../shared/utils/download';
+import type { PlanSeanceModule } from '../../../shared/plan-seances/plan-seances.model';
+import type { UpdateSessionRequestApi } from '../models/session.api-model';
 
 /**
  * État de la fiche d'une séance : séance enregistrée, brouillon des modules, chargement et enregistrement.
@@ -30,6 +32,9 @@ export class SessionState {
   private readonly activitiesApi = inject(SessionActivitiesApi);
   private readonly exportApi = inject(SessionExportApi);
   private readonly exportingValue = signal(false);
+  private readonly disciplineOptionsValue = signal<readonly { typeKey: string; label: string }[]>(
+    [],
+  );
 
   private readonly sessionValue = signal<Session | null>(null);
   private readonly candidatesValue = signal<SessionActivityApi[]>([]);
@@ -62,6 +67,8 @@ export class SessionState {
   readonly activityBusy = this.activityBusyValue.asReadonly();
   readonly activityError = this.activityErrorValue.asReadonly();
   readonly exporting = this.exportingValue.asReadonly();
+  /** Disciplines du référentiel, pour le formulaire de modification. */
+  readonly disciplines = this.disciplineOptionsValue.asReadonly();
 
   readonly readOnly = computed(() => this.sessionValue()?.status === 'realisee');
   readonly dirty = computed(() => {
@@ -103,6 +110,7 @@ export class SessionState {
         return;
       }
       this.labels = labels;
+      this.disciplineOptionsValue.set([...labels].map(([typeKey, label]) => ({ typeKey, label })));
       this.apply(toSession(api, (key) => labels.get(key) ?? key));
     } catch (error) {
       if (request === this.latestRequest) {
@@ -172,6 +180,48 @@ export class SessionState {
         this.sessionsApi.replaceModules(session.id, toReplaceRequest(this.draftValue())),
       );
       this.apply(toSession(api, (key) => this.labels.get(key) ?? key));
+      return true;
+    } catch (error) {
+      this.saveErrorValue.set(asAppError(error));
+      return false;
+    } finally {
+      this.savingValue.set(false);
+    }
+  }
+
+  /**
+   * Enregistre les champs de la séance (`PATCH`) puis, si un fichier JSON a fourni des modules, la liste des modules
+   * (`PUT`). Renvoie `false` si le back refuse (erreur dans `saveError`) ; une réponse réussie remplace la séance.
+   */
+  async saveDetails(
+    details: UpdateSessionRequestApi,
+    modules: readonly PlanSeanceModule[] | null,
+  ): Promise<boolean> {
+    const session = this.sessionValue();
+    if (session === null || this.readOnly() || this.savingValue()) {
+      return false;
+    }
+    this.savingValue.set(true);
+    this.saveErrorValue.set(null);
+    try {
+      const updated = await firstValueFrom(this.sessionsApi.update(session.id, details));
+      this.apply(toSession(updated, (key) => this.labels.get(key) ?? key));
+      if (modules !== null) {
+        this.draftValue.set(
+          modules.map((module) => ({
+            key: ++this.keySequence,
+            type: module.type,
+            durationMinutes: module.durationMinutes,
+            instruction: module.instruction,
+            targetZones: module.targetZones,
+            perceivedEffort: module.perceivedEffort,
+          })),
+        );
+        const withModules = await firstValueFrom(
+          this.sessionsApi.replaceModules(session.id, toReplaceRequest(this.draftValue())),
+        );
+        this.apply(toSession(withModules, (key) => this.labels.get(key) ?? key));
+      }
       return true;
     } catch (error) {
       this.saveErrorValue.set(asAppError(error));

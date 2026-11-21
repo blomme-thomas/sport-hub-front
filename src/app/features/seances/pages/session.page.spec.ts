@@ -7,6 +7,7 @@ import {
   disciplinesFixtures,
   SESSION_DONE_ID,
   SESSION_ID,
+  sessionApi,
 } from '../../../../mocks/fixtures/sessions.fixtures';
 import {
   SESSIONS_URL,
@@ -149,5 +150,78 @@ describe('SessionPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Cette séance est réalisée : elle ne peut plus être modifiée.',
     );
+  });
+});
+
+describe('SessionPage – modification par JSON (#134)', () => {
+  const PLAN = JSON.stringify({
+    kind: 'plan-seances',
+    schemaVersion: 1,
+    importId: '3f2504e0-4f89-41d3-9a0c-0305e82c3301',
+    seances: [
+      {
+        date: '2026-11-12',
+        disciplineTypeKey: 'course_a_pied',
+        durationMinutes: 70,
+        modules: [
+          {
+            type: 'series',
+            durationMinutes: 60,
+            instruction: 'Sortie longue',
+            targetZones: null,
+            perceivedEffort: null,
+          },
+        ],
+      },
+    ],
+  });
+
+  it('propose « Modifier la séance » pour une séance planifiée', async () => {
+    useFixtures();
+
+    await renderPage(SESSION_ID);
+
+    expect(await screen.findByRole('button', { name: 'Modifier la séance' })).toBeInTheDocument();
+  });
+
+  it('ne propose pas « Modifier la séance » pour une séance réalisée', async () => {
+    useFixtures();
+
+    await renderPage(SESSION_DONE_ID);
+
+    await screen.findByText('Séance réalisée : elle est affichée en lecture seule.');
+    expect(screen.queryByRole('button', { name: 'Modifier la séance' })).not.toBeInTheDocument();
+  });
+
+  it('pré-remplit depuis le fichier, enregistre les champs puis les modules', async () => {
+    useFixtures();
+    const user = userEvent.setup();
+    const patches: Record<string, unknown>[] = [];
+    server.use(
+      http.patch(`${SESSIONS_URL}/:id`, async ({ request }) => {
+        const body = (await request.json()) as Record<string, unknown>;
+        patches.push(body);
+        return HttpResponse.json({ ...sessionApi, ...body, modifiedManually: true });
+      }),
+    );
+    const replaces = trackModulesReplace(() =>
+      HttpResponse.json({ ...sessionApi, durationMinutes: 70, modifiedManually: true }),
+    );
+
+    await renderPage(SESSION_ID);
+    await user.click(await screen.findByRole('button', { name: 'Modifier la séance' }));
+    await user.click(screen.getByLabelText('Ou collez le contenu JSON'));
+    await user.paste(PLAN);
+    await user.click(screen.getByRole('button', { name: 'Enregistrer' }));
+
+    expect(await screen.findByText('70 min')).toBeInTheDocument();
+    expect(patches[0]).toMatchObject({
+      date: '2026-11-12',
+      disciplineTypeKey: 'course_a_pied',
+      durationMinutes: 70,
+    });
+    expect(replaces[0]).toMatchObject({
+      modules: [expect.objectContaining({ type: 'series', durationMinutes: 60 })],
+    });
   });
 });

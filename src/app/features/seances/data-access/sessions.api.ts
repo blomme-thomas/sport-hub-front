@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../core/config/api-base-url.token';
-import type { ReplaceSessionModulesRequestApi, SessionApi } from '../models/session.api-model';
+import type {
+  ReplaceSessionModulesRequestApi,
+  SessionApi,
+  UpdateSessionRequestApi,
+} from '../models/session.api-model';
 
 /** Accès HTTP aux séances ; les erreurs remontent telles quelles et sont normalisées par l'état. */
 @Injectable({ providedIn: 'root' })
@@ -12,6 +16,11 @@ export class SessionsApi {
 
   get(id: string): Observable<SessionApi> {
     return this.http.get<SessionApi>(`${this.baseUrl}/sessions/${encodeURIComponent(id)}`);
+  }
+
+  /** Modifie les champs envoyés de la séance (date, heure, durée, discipline, description) ; renvoie la séance. */
+  update(id: string, body: UpdateSessionRequestApi): Observable<SessionApi> {
+    return this.http.patch<SessionApi>(`${this.baseUrl}/sessions/${encodeURIComponent(id)}`, body);
   }
 
   /** Remplace la liste ordonnée des modules ; renvoie la séance mise à jour. */

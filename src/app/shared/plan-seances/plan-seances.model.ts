@@ -1,0 +1,57 @@
+/** Format de fichier `plan-seances` (forme JSON, identique au modèle renvoyé par le back). */
+export const PLAN_SEANCES_KIND = 'plan-seances';
+export const PLAN_SEANCES_SCHEMA_VERSION = 1;
+
+export const PLAN_MODULE_TYPES = [
+  'echauffement',
+  'educatifs',
+  'series',
+  'retour_au_calme',
+  'autre',
+] as const;
+
+export type PlanModuleType = (typeof PLAN_MODULE_TYPES)[number];
+
+export interface PlanZoneRange {
+  min: number;
+  max: number;
+}
+
+/** Zones cibles d'un module ; une zone absente n'est pas définie. */
+export interface PlanTargetZones {
+  heartRate?: PlanZoneRange;
+  pace?: PlanZoneRange;
+  power?: PlanZoneRange;
+}
+
+export interface PlanSeanceModule {
+  type: PlanModuleType;
+  durationMinutes: number;
+  instruction: string;
+  targetZones: PlanTargetZones | null;
+  perceivedEffort: number | null;
+}
+
+/** Une séance du fichier. `startTime` et `description` peuvent être absents ou `null`. */
+export interface PlanSeance {
+  date: string;
+  disciplineTypeKey: string;
+  durationMinutes: number;
+  startTime?: string | null;
+  description?: string | null;
+  modules: PlanSeanceModule[];
+}
+
+/** Erreur de validation : `path` est le chemin JSON, par exemple `seances[0].modules[1].durationMinutes`. */
+export interface PlanSeanceIssue {
+  path: string;
+  message: string;
+}
+
+export const PLAN_MODULE_LABELS: Readonly<Record<PlanModuleType, string>> = {
+  echauffement: 'Échauffement',
+  educatifs: 'Éducatifs',
+  series: 'Séries',
+  retour_au_calme: 'Retour au calme',
+  autre: 'Autre',
+};

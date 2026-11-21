@@ -42,6 +42,28 @@ function comparable(module: SessionModuleApi): unknown[] {
 }
 
 export const sessionsHandlers = [
+  http.patch('*/api/sessions/:id', async ({ params, request }) => {
+    const id = String(params['id']);
+    const session = sessions.find((item) => item.id === id);
+    if (session === undefined) {
+      return problem(404, 'SESSION_NOT_FOUND', 'Séance introuvable.');
+    }
+    if (session.status === 'realisee') {
+      return problem(409, 'SESSION_ALREADY_COMPLETED', 'Séance réalisée.');
+    }
+    const body = (await request.json()) as Partial<SessionApi>;
+    const updated: SessionApi = {
+      ...session,
+      ...(body.date !== undefined && { date: body.date }),
+      ...(body.disciplineTypeKey !== undefined && { disciplineTypeKey: body.disciplineTypeKey }),
+      ...(body.durationMinutes !== undefined && { durationMinutes: body.durationMinutes }),
+      ...(body.startTime !== undefined && { startTime: body.startTime }),
+      ...(body.description !== undefined && { description: body.description }),
+      modifiedManually: true,
+    };
+    sessions = sessions.map((item) => (item.id === id ? updated : item));
+    return HttpResponse.json(updated);
+  }),
   http.get('*/api/sessions/:id', ({ params }) => {
     const session = sessions.find((item) => item.id === String(params['id']));
     if (session === undefined) {

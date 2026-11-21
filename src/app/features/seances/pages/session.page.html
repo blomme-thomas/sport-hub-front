@@ -20,12 +20,38 @@
         <span class="session__badge session__badge--modified">Modifiée</span>
       }
     </div>
+    @if (!state.readOnly()) {
+      <div class="session__header-actions">
+        <button nz-button type="button" (click)="openEdit()">Modifier la séance</button>
+      </div>
+    }
   </header>
 
   @if (state.readOnly()) {
     <p class="session__readonly" role="status">
       Séance réalisée : elle est affichée en lecture seule.
     </p>
+  }
+
+  @if (editOpen()) {
+    <nz-modal
+      [nzVisible]="true"
+      nzTitle="Modifier la séance"
+      nzWidth="min(720px, 96vw)"
+      [nzFooter]="null"
+      (nzOnCancel)="closeEdit()"
+    >
+      <ng-container *nzModalContent>
+        <sh-session-edit-form
+          [session]="session"
+          [disciplines]="state.disciplines()"
+          [saving]="state.saving()"
+          [serverError]="state.saveError()"
+          (saved)="saveDetails($event)"
+          (cancelled)="closeEdit()"
+        />
+      </ng-container>
+    </nz-modal>
   }
 
   <section class="session__section" aria-labelledby="session-info-heading">

@@ -240,3 +240,76 @@ describe('SessionState', () => {
     expect(state.isLoading()).toBe(false);
   });
 });
+
+describe('SessionState.saveDetails', () => {
+  function trackPatch(respond: (body: Record<string, unknown>) => Response): unknown[] {
+    const bodies: unknown[] = [];
+    server.use(
+      http.patch(`${SESSIONS_URL}/:id`, async ({ request }) => {
+        const body = (await request.json()) as Record<string, unknown>;
+        bodies.push(body);
+        return respond(body);
+      }),
+    );
+    return bodies;
+  }
+
+  it('enregistre les champs de la séance sans toucher aux modules quand aucun fichier n’en fournit', async () => {
+    const state = await loaded();
+    const patches = trackPatch((body) =>
+      HttpResponse.json({ ...sessionApi, ...body, modifiedManually: true }),
+    );
+    const modules = trackModulesReplace();
+
+    const saved = await state.saveDetails(
+      { date: '2026-11-20', startTime: null, description: null },
+      null,
+    );
+
+    expect(saved).toBe(true);
+    expect(patches).toEqual([{ date: '2026-11-20', startTime: null, description: null }]);
+    expect(modules).toEqual([]);
+    expect(state.session()?.date).toBe('2026-11-20');
+    expect(state.session()?.startTime).toBeNull();
+  });
+
+  it('enregistre les champs puis remplace les modules par ceux du fichier', async () => {
+    const state = await loaded();
+    trackPatch((body) => HttpResponse.json({ ...sessionApi, ...body, modifiedManually: true }));
+    const bodies = trackModulesReplace((): Response =>
+      HttpResponse.json({
+        ...sessionApi,
+        durationMinutes: 70,
+        modifiedManually: true,
+        modules: [],
+      }),
+    );
+    const imported = [
+      {
+        type: 'educatifs' as const,
+        durationMinutes: 30,
+        instruction: 'Cadence 100 rpm',
+        targetZones: null,
+        perceivedEffort: null,
+      },
+    ];
+
+    const saved = await state.saveDetails({ durationMinutes: 70 }, imported);
+
+    expect(saved).toBe(true);
+    expect(bodies).toEqual([{ modules: [{ ...imported[0] }] }]);
+    expect(state.session()?.durationMinutes).toBe(70);
+    expect(state.saving()).toBe(false);
+  });
+
+  it('garde la séance affichée et expose l’erreur quand le back refuse la modification', async () => {
+    const state = await loaded();
+    trackPatch(() => sessionProblem(409, 'SESSION_ALREADY_COMPLETED'));
+
+    const saved = await state.saveDetails({ durationMinutes: 70 }, null);
+
+    expect(saved).toBe(false);
+    expect(state.saveError()?.userMessage).toBe(ERROR_MESSAGES['SESSION_ALREADY_COMPLETED']);
+    expect(state.session()?.durationMinutes).toBe(sessionApi.durationMinutes);
+  });
+});

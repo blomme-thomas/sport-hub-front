@@ -1,0 +1,57 @@
+<section class="modules-editor" aria-labelledby="modules-editor-heading">
+  <h3 id="modules-editor-heading" class="modules-editor__heading">
+    Modules ({{ modules().length }}) · {{ totalMinutes() }} min
+  </h3>
+  <ol class="modules-editor__list">
+    @for (module of modules(); track $index) {
+      <li class="modules-editor__module" [class.modules-editor__module--invalid]="!isValid(module)">
+        <div class="modules-editor__row">
+          <div class="modules-editor__field">
+            <label [for]="'module-type-' + $index">Type du module {{ $index + 1 }}</label>
+            <select
+              [id]="'module-type-' + $index"
+              [value]="module.type"
+              (change)="typeChanged($index, $any($event.target).value)"
+            >
+              @for (option of typeOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="modules-editor__field">
+            <label [for]="'module-duration-' + $index"
+              >Durée du module {{ $index + 1 }} (min)</label
+            >
+            <input
+              [id]="'module-duration-' + $index"
+              type="number"
+              [attr.min]="durationMin"
+              [attr.max]="durationMax"
+              step="1"
+              [value]="module.durationMinutes"
+              (change)="durationChanged($index, $any($event.target).value)"
+            />
+          </div>
+          <button nz-button type="button" nzDanger (click)="remove($index)">
+            Supprimer le module {{ $index + 1 }}
+          </button>
+        </div>
+        <div class="modules-editor__field">
+          <label [for]="'module-instruction-' + $index">Consigne</label>
+          <textarea
+            [id]="'module-instruction-' + $index"
+            rows="2"
+            [attr.maxlength]="instructionMax"
+            [value]="module.instruction"
+            (change)="instructionChanged($index, $any($event.target).value)"
+          ></textarea>
+        </div>
+        @if (!isValid(module)) {
+          <p class="modules-editor__error" role="alert">
+            Durée de 1 à 1440 minutes et consigne obligatoire.
+          </p>
+        }
+      </li>
+    }
+  </ol>
+</section>

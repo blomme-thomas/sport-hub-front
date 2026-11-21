@@ -1,0 +1,29 @@
+<div class="json-input">
+  <div class="json-input__field">
+    <label class="json-input__label" [for]="fileInputId">{{ label() }}</label>
+    <input
+      class="json-input__file"
+      [id]="fileInputId"
+      type="file"
+      accept=".json,application/json"
+      [disabled]="disabled()"
+      (change)="onFile($event)"
+    />
+    @if (fileName(); as name) {
+      <p class="json-input__hint" aria-live="polite">Fichier chargé : {{ name }}</p>
+    }
+  </div>
+
+  <div class="json-input__field">
+    <label class="json-input__label" [for]="textareaId">Ou collez le contenu JSON</label>
+    <textarea
+      class="json-input__textarea"
+      [id]="textareaId"
+      rows="6"
+      spellcheck="false"
+      [disabled]="disabled()"
+      [value]="text()"
+      (input)="onText($event)"
+    ></textarea>
+  </div>
+</div>
