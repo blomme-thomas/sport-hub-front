@@ -9,6 +9,9 @@
         Générer le planning
       </button>
     }
+    <button nz-button type="button" [disabled]="planningBusy()" (click)="openImport()">
+      Importer des séances
+    </button>
     <button
       nz-button
       nzType="primary"
@@ -98,6 +101,26 @@
         [serverError]="sessionError()"
         (saved)="onSessionSaved($event)"
         (cancelled)="closeSessionForm()"
+      />
+    </ng-container>
+  </nz-modal>
+}
+
+@if (importOpen()) {
+  <nz-modal
+    [nzVisible]="true"
+    nzClassName="sh-activity-modal"
+    nzWidth="min(640px, 96vw)"
+    nzTitle="Importer des séances"
+    [nzFooter]="null"
+    (nzOnCancel)="closeImport()"
+  >
+    <ng-container *nzModalContent>
+      <sh-session-import
+        [submitting]="importSaving()"
+        [serverError]="importError()"
+        (saved)="onImportSaved($event)"
+        (cancelled)="closeImport()"
       />
     </ng-container>
   </nz-modal>

@@ -32,6 +32,9 @@ export const ERROR_MESSAGES: Readonly<Record<string, string>> = {
   SESSION_MODULE_INVALID: 'Un module n’est pas valide. Vérifiez sa durée et sa consigne.',
   SESSION_DISCIPLINE_UNKNOWN: 'La discipline de la séance n’existe pas dans le référentiel.',
   SESSION_NOT_FOUND: 'Séance introuvable. Elle a peut-être été supprimée.',
+  SESSION_IMPORT_INVALID:
+    'Le fichier contient des erreurs : aucune séance n’a été créée. Corrigez les champs indiqués.',
+  SESSION_IMPORT_ALREADY_DONE: 'Ce fichier a déjà été importé : aucune séance n’a été créée.',
   SESSION_ALREADY_COMPLETED: 'Cette séance est réalisée : elle ne peut plus être modifiée.',
   WEEKLY_REVIEW_INVALID_WEEK: 'La semaine demandée n’est pas valide.',
   WEEKLY_REVIEW_INVALID_OUTPUT: 'Le bilan généré est incomplet. Réessayez la génération.',

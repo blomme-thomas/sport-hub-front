@@ -4,6 +4,13 @@ import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../core/config/api-base-url.token';
 import type { PlanSeanceModule } from '../../../shared/plan-seances/plan-seances.model';
 
+/** Réponse de `POST /api/sessions/import` : nombre de séances créées et leurs identifiants. */
+export interface ImportSessionsResultApi {
+  importId: string;
+  createdCount: number;
+  sessionIds: string[];
+}
+
 /** Corps de `POST /api/sessions` tel que le calendrier l'envoie. */
 export interface CreateSessionRequestApi {
   date: string;
@@ -30,6 +37,14 @@ export class SessionsWriteApi {
   /** Crée la séance et renvoie son identifiant. */
   create(body: CreateSessionRequestApi): Observable<{ id: string }> {
     return this.http.post<{ id: string }>(`${this.baseUrl}/sessions`, body);
+  }
+
+  /**
+   * Importe un fichier `plan-seances` (une ou plusieurs séances, créées de façon atomique). Le contenu part tel quel ;
+   * le back valide chaque séance et refuse le fichier entier en cas d'erreur.
+   */
+  importPlan(content: unknown): Observable<ImportSessionsResultApi> {
+    return this.http.post<ImportSessionsResultApi>(`${this.baseUrl}/sessions/import`, content);
   }
 
   /** Déplace une seule occurrence d'une série. `date` est la date de programmation de l'occurrence. */
