@@ -1,6 +1,6 @@
 {
   "name": "sport-hub-front",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Dashboard Angular de sport-hub : données Garmin et entraînements planifiés.",
   "private": true,
   "license": "UNLICENSED",
