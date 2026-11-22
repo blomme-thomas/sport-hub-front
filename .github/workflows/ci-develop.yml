@@ -1,0 +1,54 @@
+name: ci-develop
+
+# Validation complète quand une PR est fusionnée dans develop : tests, e2e, build.
+on:
+  push:
+    branches:
+      - develop
+
+concurrency:
+  group: ci-develop
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # --no-watch : sans lui, le runner reste en mode watch.
+      - name: Tests unitaires et composants
+        run: npm test -- --no-watch
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # L'API est simulée (MSW / page.route) ; les tests @live restent hors CI.
+      - name: Tests e2e
+        run: npm run e2e
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build

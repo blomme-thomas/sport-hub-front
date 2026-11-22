@@ -1,0 +1,81 @@
+<article
+  class="review"
+  aria-labelledby="weekly-review-heading"
+  [attr.aria-busy]="state.isLoading() || state.generating()"
+>
+  <header class="review__header">
+    <h2 id="weekly-review-heading" class="review__title">
+      <sh-icon name="flag" color="var(--sh-accent-text)" />
+      <span>{{ t.dashboard.review.heading }}</span>
+    </h2>
+    <div class="review__nav" role="group" [attr.aria-label]="t.dashboard.review.chooseWeek">
+      <button
+        nz-button
+        type="button"
+        [attr.aria-label]="t.dashboard.review.previous"
+        (click)="state.previousWeek()"
+      >
+        ‹
+      </button>
+      <button nz-button type="button" (click)="state.currentWeek()">
+        {{ t.dashboard.review.current }}
+      </button>
+      <button
+        nz-button
+        type="button"
+        [attr.aria-label]="t.dashboard.review.next"
+        (click)="state.nextWeek()"
+      >
+        ›
+      </button>
+    </div>
+  </header>
+
+  <p class="review__week" aria-live="polite">{{ state.weekLabel() }}</p>
+
+  @if (state.error(); as failure) {
+    <div class="review__error" role="alert">
+      <p>{{ failure.userMessage }}</p>
+      <button nz-button type="button" (click)="state.reload()">{{ t.common.retry }}</button>
+    </div>
+  } @else if (state.review(); as review) {
+    @if (review.generic) {
+      <p class="review__generic">{{ t.dashboard.review.generic }}</p>
+    }
+    <dl class="review__parts">
+      <dt>{{ t.dashboard.review.follow }}</dt>
+      <dd>{{ review.suivi }}</dd>
+      <dt>{{ t.dashboard.review.attention }}</dt>
+      <dd>{{ review.pointAttention }}</dd>
+      <dt>{{ t.dashboard.review.advice }}</dt>
+      <dd>{{ review.conseil }}</dd>
+    </dl>
+    <footer class="review__footer">
+      <span class="review__meta">{{
+        fill(t.dashboard.review.generatedOn, { date: generatedLabel() })
+      }}</span>
+      <button nz-button type="button" [disabled]="state.generating()" (click)="confirmRegenerate()">
+        {{ t.dashboard.review.regenerate }}
+      </button>
+    </footer>
+  } @else if (state.missing()) {
+    <div class="review__empty">
+      <p>{{ t.dashboard.review.none }}</p>
+      <button
+        nz-button
+        nzType="primary"
+        type="button"
+        [disabled]="state.generating()"
+        (click)="state.generate()"
+      >
+        {{ t.dashboard.review.generate }}
+      </button>
+    </div>
+  } @else {
+    <p class="review__status">{{ t.common.loading }}</p>
+  }
+
+  @if (state.generating()) {
+    <p class="review__status" role="status">{{ t.dashboard.review.generating }}</p>
+  }
+</article>

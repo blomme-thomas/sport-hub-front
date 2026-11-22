@@ -1,0 +1,34 @@
+:host {
+  display: block;
+}
+
+.goals__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.goals__title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.goals__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.goals__empty {
+  margin: 0;
+}
+
+.goals__error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}

@@ -1,0 +1,128 @@
+<ol class="modules" [attr.aria-label]="t.seances.moduleList">
+  @for (row of rows(); track row.module.key; let index = $index) {
+    <li
+      class="module"
+      [class.module--invalid]="row.invalid"
+      [class.module--dragged]="draggedKey() === row.module.key"
+      [class.module--over]="overKey() === row.module.key && draggedKey() !== row.module.key"
+      [draggable]="!readOnly() && armedKey() === row.module.key"
+      (dragstart)="dragStart($event, row.module.key)"
+      (dragover)="dragOver($event, row.module.key)"
+      (drop)="drop($event, index)"
+      (dragend)="endDrag()"
+    >
+      @if (!readOnly()) {
+        <span
+          class="module__handle"
+          aria-hidden="true"
+          [attr.title]="t.seances.modules.handle"
+          (pointerdown)="arm(row.module.key)"
+          (pointerup)="disarm()"
+        >
+          ⋮⋮
+        </span>
+      }
+      <span class="module__position" aria-hidden="true">{{ index + 1 }}</span>
+
+      @if (readOnly()) {
+        <div class="module__body">
+          <p class="module__title">
+            <strong>{{ row.typeLabel }}</strong>
+            <span>{{ row.module.durationMinutes }} min</span>
+          </p>
+          <p class="module__instruction">{{ row.module.instruction }}</p>
+          @if (row.zones) {
+            <p class="module__meta">{{ fill(t.seances.modules.zones, { zones: row.zones }) }}</p>
+          }
+          @if (row.module.perceivedEffort !== null) {
+            <p class="module__meta">
+              {{ fill(t.seances.modules.effort, { effort: row.module.perceivedEffort }) }}
+            </p>
+          }
+        </div>
+      } @else {
+        <div class="module__body">
+          <div class="module__fields">
+            <div class="module__field">
+              <label [attr.for]="'module-type-' + row.module.key">{{
+                t.seances.modules.type
+              }}</label>
+              <select
+                nz-input
+                [id]="'module-type-' + row.module.key"
+                [value]="row.module.type"
+                (change)="typeChanged.emit({ key: row.module.key, type: typeOf($event) })"
+              >
+                @for (option of typeOptions; track option.value) {
+                  <option [value]="option.value" [selected]="option.value === row.module.type">
+                    {{ option.label }}
+                  </option>
+                }
+              </select>
+            </div>
+
+            <div class="module__field">
+              <label [attr.for]="'module-duration-' + row.module.key">{{
+                t.seances.modules.duration
+              }}</label>
+              <input
+                nz-input
+                type="number"
+                min="1"
+                max="1440"
+                step="1"
+                [id]="'module-duration-' + row.module.key"
+                [value]="row.module.durationMinutes"
+                (input)="durationChanged.emit({ key: row.module.key, minutes: +valueOf($event) })"
+              />
+            </div>
+          </div>
+
+          <div class="module__field">
+            <label [attr.for]="'module-instruction-' + row.module.key">{{
+              t.seances.modules.instruction
+            }}</label>
+            <input
+              nz-input
+              type="text"
+              [maxLength]="maxInstructionLength"
+              [id]="'module-instruction-' + row.module.key"
+              [value]="row.module.instruction"
+              (input)="
+                instructionChanged.emit({ key: row.module.key, instruction: valueOf($event) })
+              "
+            />
+          </div>
+
+          @if (row.zones) {
+            <p class="module__meta">{{ fill(t.seances.modules.zones, { zones: row.zones }) }}</p>
+          }
+          @if (row.module.perceivedEffort !== null) {
+            <p class="module__meta">
+              {{ fill(t.seances.modules.effort, { effort: row.module.perceivedEffort }) }}
+            </p>
+          }
+          @if (row.invalid) {
+            <p class="module__error" role="alert">
+              {{ t.seances.modules.invalid }}
+            </p>
+          }
+        </div>
+        <button
+          nz-button
+          nzType="text"
+          nzDanger
+          type="button"
+          class="module__delete"
+          [attr.aria-label]="fill(t.seances.modules.remove, { n: index + 1 })"
+          [attr.title]="t.seances.modules.removeTitle"
+          (click)="removed.emit(row.module.key)"
+        >
+          <sh-icon name="trash" />
+        </button>
+      }
+    </li>
+  } @empty {
+    <li class="modules__empty">{{ t.seances.modules.empty }}</li>
+  }
+</ol>

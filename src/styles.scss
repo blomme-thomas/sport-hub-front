@@ -1,0 +1,53 @@
+/* Styles globaux. Le thème sombre Ant Design (ng-zorro-antd) est chargé via angular.json. */
+
+@use './app/shared/ui/modal/modal';
+@use './app/shared/ui/controls/controls';
+
+/* Pas de barre de défilement globale : la page reste défilante (molette, tactile, clavier), mais la barre est masquée. */
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--sh-bg);
+  color: var(--sh-text);
+  font-family: var(--sh-font-family);
+}
+
+/* Focus visible sur tous les contrôles (clavier), sans le retirer pour la souris. */
+:focus-visible {
+  outline: 2px solid var(--sh-accent-text);
+  outline-offset: 2px;
+}
+
+/* Réduction des mouvements : transitions et animations CSS (anneaux, barres, apparitions) quasi instantanées. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+}

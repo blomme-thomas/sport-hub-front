@@ -1,0 +1,52 @@
+<form class="session-import" (submit)="submit($event)">
+  <p class="session-import__intro">
+    {{ t.creneaux.sessionImport.helpBefore }} <code>plan-seances</code>.
+    {{ t.creneaux.sessionImport.helpAfter }}
+  </p>
+
+  <sh-json-file-input
+    [label]="t.creneaux.sessionImport.fileLabel"
+    [disabled]="submitting()"
+    (contentChange)="onContent($event)"
+  />
+
+  @if (result(); as result) {
+    @if (result.ok) {
+      <p class="session-import__count" aria-live="polite">
+        {{ fill(t.creneaux.sessionImport.count, { count: result.count }) }}
+      </p>
+    } @else {
+      <p class="session-import__alert" role="alert">
+        {{ fill(t.creneaux.sessionImport.unusable, { message: result.message }) }}
+      </p>
+    }
+  }
+
+  @if (serverError(); as failure) {
+    <div class="session-import__alert" role="alert">
+      <p>{{ failure.userMessage }}</p>
+      @if (failure.fieldErrors.length > 0) {
+        <ul class="session-import__issues">
+          @for (issue of failure.fieldErrors; track $index) {
+            <li>
+              <code>{{ issue.field }}</code> : {{ issue.message }}
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  <div class="session-import__actions">
+    <button nz-button type="button" (click)="cancelled.emit()">{{ t.common.cancel }}</button>
+    <button
+      nz-button
+      nzType="primary"
+      type="submit"
+      [disabled]="!canSubmit()"
+      [attr.aria-busy]="submitting()"
+    >
+      {{ t.creneaux.sessionImport.submit }}
+    </button>
+  </div>
+</form>

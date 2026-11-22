@@ -1,0 +1,177 @@
+@if (serverError(); as failure) {
+  <div class="session-form__alert" role="alert">
+    <p>{{ failure.userMessage }}</p>
+  </div>
+}
+
+@if (disciplines().length === 0) {
+  <p class="session-form__hint">
+    {{ t.creneaux.sessionForm.noDiscipline }}
+  </p>
+}
+
+<section class="session-form__import" aria-labelledby="session-import-heading">
+  <h3 id="session-import-heading" class="session-form__heading">
+    {{ t.creneaux.sessionForm.importHeading }}
+  </h3>
+  <sh-json-file-input
+    [label]="t.creneaux.sessionForm.fileLabel"
+    [disabled]="submitting()"
+    (contentChange)="onJsonChange($event)"
+  />
+  @if (importIssues().length > 0) {
+    <div class="session-form__alert" role="alert">
+      <p>{{ t.creneaux.sessionForm.invalidFile }}</p>
+      <ul class="session-form__issues">
+        @for (issue of importIssues(); track $index) {
+          <li>
+            <code>{{ issue.path }}</code> : {{ issue.message }}
+          </li>
+        }
+      </ul>
+    </div>
+  }
+  @if (importSummary(); as summary) {
+    <p class="session-form__hint" aria-live="polite">{{ summary }}</p>
+  }
+</section>
+
+<form class="session-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="session-form__body">
+    <div class="session-form__main">
+      <div class="session-form__row">
+        <div class="session-form__field">
+          <label for="session-date">{{ t.creneaux.slot.date }}</label>
+          <input id="session-date" type="date" formControlName="date" />
+        </div>
+        <div class="session-form__field">
+          <label for="session-start">{{ t.creneaux.sessionForm.startTime }}</label>
+          <input id="session-start" type="time" step="1800" formControlName="startTime" />
+        </div>
+      </div>
+
+      <div class="session-form__field">
+        <label for="session-discipline">{{ t.creneaux.sessionForm.discipline }}</label>
+        <select id="session-discipline" formControlName="disciplineTypeKey">
+          <option value="" disabled>{{ t.creneaux.sessionForm.chooseDiscipline }}</option>
+          @for (option of disciplines(); track option.typeKey) {
+            <option [value]="option.typeKey">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="session-form__row">
+        <div class="session-form__field">
+          <label for="session-duration">{{ t.creneaux.sessionForm.duration }}</label>
+          <input
+            id="session-duration"
+            type="number"
+            min="1"
+            [attr.max]="maxDuration"
+            step="1"
+            formControlName="durationMinutes"
+          />
+        </div>
+        <div class="session-form__field">
+          <label for="session-recurrence">{{ t.creneaux.sessionForm.recurrence }}</label>
+          <select id="session-recurrence" formControlName="recurrence">
+            <option value="aucune">{{ t.creneaux.sessionForm.none }}</option>
+            <option value="hebdomadaire">{{ t.creneaux.sessionForm.weekly }}</option>
+          </select>
+        </div>
+      </div>
+
+      <fieldset class="session-form__objectives">
+        <legend>{{ t.creneaux.sessionForm.objectives }}</legend>
+        <div class="session-form__field">
+          <label for="session-distance">{{ t.creneaux.sessionForm.distance }}</label>
+          <input
+            id="session-distance"
+            type="number"
+            min="0"
+            step="0.1"
+            formControlName="distanceKm"
+            [attr.aria-invalid]="!!objectiveErrors.distance"
+          />
+          @if (objectiveErrors.distance; as message) {
+            <p class="session-form__error" role="alert">{{ message }}</p>
+          }
+        </div>
+
+        <div class="session-form__zones" formGroupName="zones">
+          @for (zone of zoneFields; track zone.key) {
+            <div class="session-form__field">
+              <label [for]="'session-zone-' + zone.key">{{
+                fill(t.creneaux.sessionForm.zone, { label: zone.label })
+              }}</label>
+              <input
+                [id]="'session-zone-' + zone.key"
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                [formControlName]="zone.key"
+              />
+            </div>
+          }
+        </div>
+        <p
+          class="session-form__total"
+          [class.session-form__total--error]="zoneTotal !== 100"
+          aria-live="polite"
+        >
+          {{ fill(t.creneaux.sessionForm.totalZones, { total: zoneTotal }) }}
+        </p>
+        @if (objectiveErrors.zones; as message) {
+          <p class="session-form__error" role="alert">{{ message }}</p>
+        } @else if (objectiveErrors.zonesTotal; as message) {
+          <p class="session-form__error" role="alert">{{ message }}</p>
+        }
+      </fieldset>
+
+      @if (importedModules().length > 0) {
+        <sh-plan-modules-editor
+          [modules]="importedModules()"
+          (modulesChange)="importedModules.set($event)"
+        />
+        @if (modulesInvalid()) {
+          <p class="session-form__error" role="alert">
+            Corrigez les modules : durée de 1 à 1440 minutes et consigne obligatoire.
+          </p>
+        }
+      }
+    </div>
+
+    <section class="session-form__aside" aria-labelledby="session-description-heading">
+      <div class="session-form__field">
+        <label for="session-title">{{ t.creneaux.sessionForm.titleLabel }}</label>
+        <input id="session-title" type="text" maxlength="200" formControlName="title" />
+      </div>
+      <h3 id="session-description-heading" class="session-form__heading">
+        {{ t.creneaux.sessionForm.description }}
+      </h3>
+      <label class="visually-hidden" for="session-description">{{
+        t.creneaux.sessionForm.descriptionLabel
+      }}</label>
+      <textarea
+        id="session-description"
+        class="session-form__textarea"
+        rows="3"
+        maxlength="2000"
+        formControlName="description"
+      ></textarea>
+    </section>
+  </div>
+
+  <div class="session-form__actions">
+    <button nz-button type="button" (click)="cancelled.emit()">{{ t.common.cancel }}</button>
+    <button
+      nz-button
+      nzType="primary"
+      type="submit"
+      [disabled]="submitting() || disciplines().length === 0 || modulesInvalid()"
+    >
+      {{ t.creneaux.sessionForm.create }}
+    </button>
+  </div>
+</form>

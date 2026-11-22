@@ -1,0 +1,46 @@
+<section class="goal" aria-labelledby="weekly-goal-heading" [attr.aria-busy]="loading()">
+  <h2 id="weekly-goal-heading" class="goal__heading">
+    <sh-icon name="flag" color="var(--sh-accent-text)" />
+    <span>{{ t.dashboard.weeklyGoal.heading }}</span>
+  </h2>
+
+  @if (errorMessage(); as message) {
+    <div class="goal__error" role="alert">
+      <p>{{ message }}</p>
+      <button nz-button type="button" (click)="retry.emit()">{{ t.common.retry }}</button>
+    </div>
+  } @else if (view(); as value) {
+    @if (value.targetLabel === null) {
+      <div class="goal__body goal__body--empty">
+        <div class="goal__ring goal__ring--empty" aria-hidden="true">
+          <strong>— %</strong>
+        </div>
+        <div class="goal__figures">
+          <p class="goal__value">— / —</p>
+          <p class="goal__status">{{ t.dashboard.weeklyGoal.none }}</p>
+          <a nz-button nzType="primary" routerLink="/parametres">{{
+            t.dashboard.weeklyGoal.define
+          }}</a>
+        </div>
+      </div>
+    } @else {
+      <div class="goal__body">
+        <div
+          class="goal__ring"
+          [style.--goal-percent]="ringPercent() + '%'"
+          role="img"
+          [attr.aria-label]="fill(t.dashboard.weeklyGoal.reached, { percent: value.percent })"
+        >
+          <strong>{{ value.percent }} %</strong>
+        </div>
+
+        <div class="goal__figures">
+          <p class="goal__value">{{ value.doneLabel }} / {{ value.targetLabel }}</p>
+          <p class="goal__status" role="status">{{ value.statusMessage }}</p>
+        </div>
+      </div>
+    }
+  } @else {
+    <p class="goal__status" role="status">{{ t.dashboard.weeklyGoal.loading }}</p>
+  }
+</section>

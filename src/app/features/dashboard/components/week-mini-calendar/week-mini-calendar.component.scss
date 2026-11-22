@@ -1,0 +1,251 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.week-mini {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+  color: var(--sh-text);
+}
+
+.week-mini__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sh-space-2) var(--sh-space-3);
+  margin-bottom: var(--sh-space-3);
+}
+
+.week-mini__title {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+  margin: 0;
+  font-size: 1.125rem;
+
+  sh-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.week-mini__nav {
+  display: flex;
+  gap: var(--sh-space-2);
+}
+
+.week-mini__status {
+  margin: 0 0 var(--sh-space-3);
+  color: var(--sh-text-muted);
+}
+
+.week-mini__error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sh-space-3);
+  color: var(--sh-error);
+}
+
+.week-mini__error p {
+  margin: 0;
+}
+
+.week-mini__grid {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-auto-rows: minmax(0, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--sh-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* En-têtes des jours (vue mois) : une case par colonne, alignée sur la grille. */
+.week-mini__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--sh-space-2);
+  margin: 0 0 var(--sh-space-2);
+  padding: 0;
+  list-style: none;
+  color: var(--sh-text-muted);
+  font-size: 0.75rem;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.week-mini__day {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-2);
+  min-width: 0;
+}
+
+.week-mini__day-label {
+  color: var(--sh-text-muted);
+  font-size: 0.75rem;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.week-mini__sessions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--sh-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-height: 2.5rem;
+}
+
+.week-mini__session {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 2px solid var(--sh-border);
+  border-radius: 50%;
+  background: var(--sh-surface-raised);
+  cursor: pointer;
+
+  sh-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  &:hover {
+    filter: brightness(1.15);
+  }
+
+  &:focus-visible {
+    outline: var(--sh-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Vue mois : six semaines dans la hauteur commune, icônes un peu plus petites. */
+.week-mini__grid--month .week-mini__session {
+  width: 2.6rem;
+  height: 2.6rem;
+
+  sh-icon {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+}
+
+/* Activité réalisée : repère plein, non interactif, à côté des séances planifiées. */
+.week-mini__realized {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+
+  sh-icon {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+}
+
+/* Vue mois : cases en carte, week-ends teintés, jours hors période atténués ; semaine en cours et aujourd'hui surlignés. */
+.week-mini__grid--month .week-mini__day {
+  padding: var(--sh-space-1) var(--sh-space-1) var(--sh-space-2);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface-raised);
+}
+
+.week-mini__grid--month .week-mini__day--weekend {
+  background: var(--sh-surface);
+}
+
+.week-mini__grid--month .week-mini__day--outside {
+  opacity: 0.4;
+}
+
+/* Semaine en cours : teinte légère sur ses sept cases. */
+.week-mini__grid--month .week-mini__day--current-week {
+  border-color: var(--sh-accent-text);
+  background: color-mix(in srgb, var(--sh-accent) 12%, var(--sh-surface-raised));
+}
+
+/* Aujourd'hui : case pleine en accent, plus marquée que la semaine. */
+.week-mini__grid--month .week-mini__day--today {
+  border-color: var(--sh-border);
+  background: var(--sh-accent);
+}
+
+.week-mini__day--today .week-mini__day-label {
+  color: var(--sh-text-on-accent);
+  font-weight: 700;
+}
+
+/* Vue mois : numéro du jour dans le coin haut-gauche, hors du flux, pour laisser toute la case aux séances. */
+.week-mini__grid--month .week-mini__day {
+  position: relative;
+}
+
+.week-mini__grid--month .week-mini__day-label {
+  position: absolute;
+  pointer-events: none;
+  top: var(--sh-space-1);
+  left: var(--sh-space-2);
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.week-mini__grid--month .week-mini__sessions {
+  flex: 1;
+  align-content: center;
+  justify-content: center;
+}
+
+/* Survol d'une case du mois : bordure et teinte neutres, distinctes de la semaine en cours (accent) ; la case d'aujourd'hui reste inchangée. */
+.week-mini__grid--month .week-mini__day:not(.week-mini__day--today):hover {
+  border-color: var(--sh-text-muted);
+  background: color-mix(in srgb, var(--sh-text) 10%, var(--sh-surface-raised));
+}
+
+/* Vue mois : la case entière est un bouton (sous les séances), pour ouvrir le jour au clic ou au clavier. */
+.week-mini__grid--month .week-mini__day-hit {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: none;
+  cursor: pointer;
+}
+
+/* Le conteneur des séances laisse passer les clics vers le bouton de la case ; seuls les pictogrammes restent cliquables. */
+.week-mini__grid--month .week-mini__sessions {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.week-mini__grid--month .week-mini__session {
+  pointer-events: auto;
+}

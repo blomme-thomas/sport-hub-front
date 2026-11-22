@@ -1,0 +1,37 @@
+<section class="next-event" aria-labelledby="next-event-heading" [attr.aria-busy]="loading()">
+  <h2 id="next-event-heading" class="next-event__heading">
+    <sh-icon name="flag" color="var(--sh-orange)" />
+    <span>{{ t.dashboard.nextEvent.heading }}</span>
+  </h2>
+
+  @if (error(); as failure) {
+    <div class="next-event__error" role="alert">
+      <p>{{ failure.userMessage }}</p>
+      <button nz-button nzType="primary" type="button" (click)="retry.emit()">
+        {{ t.common.retry }}
+      </button>
+    </div>
+  } @else if (event() === undefined) {
+    <p class="next-event__status">{{ t.common.loading }}</p>
+  } @else {
+    @if (event(); as nextEvent) {
+      <p class="next-event__countdown">{{ daysLabel() }}</p>
+      <h3 class="next-event__title">{{ nextEvent.title }}</h3>
+      <dl class="next-event__details">
+        <div class="next-event__detail">
+          <dt>{{ t.dashboard.nextEvent.format }}</dt>
+          <dd>{{ nextEvent.formatLabel ?? t.dashboard.nextEvent.noFormat }}</dd>
+        </div>
+        <div class="next-event__detail">
+          <dt>{{ t.dashboard.nextEvent.targetTime }}</dt>
+          <dd>{{ nextEvent.targetTimeLabel ?? t.dashboard.nextEvent.noTargetTime }}</dd>
+        </div>
+      </dl>
+    } @else {
+      <p class="next-event__status">
+        {{ t.dashboard.nextEvent.none }}
+        <a routerLink="/goals">{{ t.dashboard.nextEvent.create }}</a>
+      </p>
+    }
+  }
+</section>

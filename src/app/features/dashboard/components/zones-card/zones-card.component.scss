@@ -1,0 +1,171 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  /* Même hauteur que les autres cartes de la rangée (étirées par la grille). */
+  height: 100%;
+  /* Repère du bouton « Agrandir » (positionné en absolu). */
+  position: relative;
+}
+
+.zones {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-3);
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+}
+
+.zones__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+
+  sh-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.zones__ring {
+  --zones-optimal: 0%;
+
+  position: relative;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  background: conic-gradient(var(--sh-success) var(--zones-optimal), var(--sh-border) 0);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0.6rem;
+    border-radius: 50%;
+    background: var(--sh-surface);
+  }
+
+  strong,
+  span {
+    position: relative;
+  }
+
+  strong {
+    font-size: 1.25rem;
+    color: var(--sh-text);
+  }
+
+  span {
+    color: var(--sh-text-muted);
+    font-size: 0.75rem;
+  }
+}
+
+/* Cercle et légende côte à côte, sous la barre ; la légende passe dessous sur étroit. */
+.zones__body {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sh-space-4);
+}
+
+.zones__name {
+  color: var(--sh-text-muted);
+}
+
+.zones__bar {
+  display: flex;
+  height: 0.75rem;
+  overflow: hidden;
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-border);
+}
+
+.zones__segment {
+  display: block;
+  height: 100%;
+}
+
+.zones__legend {
+  /* Largeur du contenu (et non de la rangée) : le couple cercle + légende reste centré. */
+  flex: 0 1 auto;
+  width: max-content;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    align-items: center;
+    gap: var(--sh-space-2);
+  }
+}
+
+.zones__swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.zones__label {
+  color: var(--sh-text);
+}
+
+.zones__percent {
+  color: var(--sh-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.zones__status {
+  margin: 0;
+  color: var(--sh-text-muted);
+}
+
+/* Bouton « Agrandir » de la carte : en haut à droite, la carte sert de repère. */
+.card-expand {
+  position: absolute;
+  top: var(--sh-space-3, 0.75rem);
+  right: var(--sh-space-3, 0.75rem);
+  z-index: 1;
+}
+
+/* Vide : barre en grisé, anneau en pointillés et légende grisée. */
+.zones__bar--empty {
+  gap: 2px;
+  background: transparent;
+
+  .zones__segment {
+    flex: 1;
+    background: var(--sh-border);
+  }
+}
+
+.zones__ring--empty {
+  background: none;
+  border: 2px dashed var(--sh-border);
+}
+
+.zones__swatch--empty {
+  background: var(--sh-border);
+}
+
+.zones__body:has(.zones__ring--empty) {
+  opacity: 0.6;
+}

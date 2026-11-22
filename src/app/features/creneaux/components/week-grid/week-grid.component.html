@@ -1,0 +1,146 @@
+<div class="week-grid" role="region" [attr.aria-label]="t.creneaux.grid.label">
+  <div class="week-grid__inner">
+    <div class="week-grid__head" aria-hidden="true">
+      <span class="week-grid__corner"></span>
+      @for (column of columns(); track column.date) {
+        <span class="week-grid__day-title">{{ column.shortLabel }}</span>
+      }
+    </div>
+
+    <div class="week-grid__body" [style.height.px]="gridHeight()">
+      <div class="week-grid__hours" aria-hidden="true">
+        @for (hour of hours(); track hour.top) {
+          <span class="week-grid__hour" [style.top.px]="hour.top">{{ hour.label }}</span>
+        }
+      </div>
+
+      @for (column of columns(); track column.date) {
+        <div
+          class="week-grid__column"
+          role="group"
+          [attr.data-date]="column.date"
+          [attr.aria-label]="column.longLabel"
+          (pointerdown)="onColumnPointerDown($event, column.date)"
+          (pointermove)="onColumnPointerMove($event)"
+          (pointerup)="onColumnPointerUp($event)"
+          (pointercancel)="onColumnPointerCancel()"
+        >
+          @for (hour of hours(); track hour.top) {
+            <span class="week-grid__hline" [style.top.px]="hour.top" aria-hidden="true"></span>
+          }
+          @for (block of column.blocks; track block.key) {
+            <div
+              class="week-grid__item"
+              [style.top.px]="block.top"
+              [style.height.px]="block.height"
+              [style.left.%]="block.left"
+              [style.width.%]="block.width"
+            >
+              <button
+                type="button"
+                class="week-grid__slot"
+                [class.week-grid__slot--occupe]="block.slot?.type === 'occupe'"
+                [class.week-grid__slot--cancelled]="block.cancelled"
+                [class.week-grid__slot--done]="block.done"
+                [class.week-grid__slot--session]="block.kind === 'session'"
+                [class.week-grid__slot--locked]="block.kind === 'session' && !block.movable"
+                [style.border-left-color]="block.kind === 'session' ? block.color : null"
+                [attr.aria-label]="block.label"
+                (click)="onBlockClick(block)"
+                (pointerdown)="onBlockPointerDown($event, block)"
+                (pointermove)="onBlockPointerMove($event)"
+                (pointerup)="onBlockPointerUp($event)"
+                (pointercancel)="onBlockPointerUp($event)"
+              >
+                @if (block.kind === 'session' && block.icon) {
+                  <span class="week-grid__slot-head">
+                    <sh-icon [name]="block.icon" [color]="block.color" />
+                  </span>
+                }
+                @if (block.done) {
+                  <span class="week-grid__done" aria-hidden="true">
+                    <sh-icon name="check" color="var(--sh-success)" />
+                  </span>
+                }
+                @if (block.session; as session) {
+                  @if (session.title) {
+                    <span class="week-grid__slot-title">{{ session.title }}</span>
+                  }
+                }
+                <span class="week-grid__slot-time">{{ block.timeRange }}</span>
+                @if (block.slot?.recurrence === 'hebdomadaire') {
+                  <span class="week-grid__slot-tag">{{ t.creneaux.session.recurrence }}</span>
+                }
+                @if (block.done) {
+                  <span class="week-grid__slot-tag">{{ t.creneaux.session.realized }}</span>
+                }
+              </button>
+              @if (block.editable) {
+                <button
+                  type="button"
+                  class="week-grid__duration"
+                  [attr.aria-label]="
+                    fill(t.creneaux.session.editDuration, { time: block.timeRange })
+                  "
+                  (click)="onDurationClick(block)"
+                >
+                  {{ t.creneaux.session.duration }}
+                </button>
+              }
+              @if (block.session; as session) {
+                <div class="week-grid__actions">
+                  @if (session.recurrence === 'hebdomadaire') {
+                    <button
+                      type="button"
+                      class="week-grid__action"
+                      [attr.aria-label]="
+                        fill(
+                          session.status === 'annulee'
+                            ? t.creneaux.session.restoreWeekLabel
+                            : t.creneaux.session.cancelWeekLabel,
+                          { time: block.timeRange }
+                        )
+                      "
+                      [attr.title]="
+                        session.status === 'annulee'
+                          ? t.creneaux.session.restoreWeek
+                          : t.creneaux.session.cancelWeek
+                      "
+                      (click)="onOccurrenceClick(block)"
+                    >
+                      <sh-icon [name]="session.status === 'annulee' ? 'undo' : 'ban'" />
+                    </button>
+                  }
+                  <button
+                    type="button"
+                    class="week-grid__action week-grid__action--danger"
+                    [attr.aria-label]="
+                      fill(t.creneaux.session.deleteLabel, { time: block.timeRange })
+                    "
+                    [attr.title]="t.creneaux.session.delete"
+                    (click)="onDeleteClick(block)"
+                  >
+                    <sh-icon name="trash" />
+                  </button>
+                </div>
+              }
+            </div>
+          }
+
+          @if (preview(); as draft) {
+            @if (draft.date === column.date) {
+              <div
+                class="week-grid__preview"
+                aria-hidden="true"
+                [style.top.px]="draft.top"
+                [style.height.px]="draft.height"
+              >
+                {{ draft.label }}
+              </div>
+            }
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

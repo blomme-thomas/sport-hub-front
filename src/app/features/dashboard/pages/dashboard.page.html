@@ -1,0 +1,133 @@
+<header class="dashboard__header">
+  <div class="dashboard__heading">
+    <h1 class="dashboard__title">{{ t.dashboard.title }}</h1>
+  </div>
+  <sh-period-selector [value]="state.period()" (changed)="state.setPeriod($event)" />
+</header>
+
+<p class="visually-hidden" aria-live="polite">{{ statusMessage() }}</p>
+
+<sh-next-event-card
+  class="dashboard__next-event"
+  [event]="nextEvent.event()"
+  [today]="nextEvent.today()"
+  [error]="nextEvent.error()"
+  [loading]="nextEvent.isLoading()"
+  (retry)="nextEvent.reload()"
+/>
+
+<section
+  class="dashboard__kpis"
+  [attr.aria-label]="t.dashboard.kpisLabel"
+  [attr.aria-busy]="kpis.isLoading()"
+>
+  @if (kpis.error(); as failure) {
+    <div class="dashboard__error" role="alert">
+      <p>{{ failure.userMessage }}</p>
+      <button nz-button nzType="primary" type="button" (click)="kpis.reload()">
+        {{ t.common.retry }}
+      </button>
+    </div>
+  } @else if (kpis.kpis(); as list) {
+    @for (kpi of list; track kpi.id) {
+      <sh-kpi-card [kpi]="kpi" (expand)="openKpi(kpi)" />
+    }
+  } @else {
+    <p class="dashboard__loading">{{ t.common.loading }}</p>
+  }
+</section>
+
+@if (aiEnabled) {
+  <sh-dashboard-advice-card
+    class="dashboard__advice"
+    [advice]="advice.advice()"
+    [loading]="advice.isLoading()"
+    [generating]="advice.generating()"
+    [errorMessage]="advice.errorMessage()"
+    (generate)="advice.regenerate()"
+    (retry)="advice.reload()"
+  />
+}
+
+<section class="dashboard__content" [attr.aria-busy]="state.isLoading()">
+  <div class="dashboard__row">
+    <!-- Une erreur de statistiques ne touche que les cartes qui en dépendent : les autres restent affichées. -->
+    @if (state.error(); as error) {
+      <div class="dashboard__error" role="alert">
+        <p>{{ error.userMessage }}</p>
+        <button nz-button nzType="primary" type="button" (click)="state.reload()">
+          {{ t.common.retry }}
+        </button>
+      </div>
+    } @else if (state.view(); as view) {
+      @if (state.isEmpty()) {
+        <p class="dashboard__empty">{{ t.dashboard.empty }}</p>
+      } @else {
+        <sh-recent-activities-card
+          class="dashboard__recent"
+          [activities]="recent.activities()"
+          [error]="recent.error()"
+          [loading]="recent.isLoading()"
+          (retry)="recent.reload()"
+          (opened)="openActivity($event)"
+        />
+      }
+    } @else {
+      <p class="dashboard__loading">{{ t.common.loading }}</p>
+    }
+
+    <sh-week-mini-calendar
+      class="dashboard__week"
+      [days]="miniCalendar.days()"
+      [title]="miniCalendar.title()"
+      [legend]="miniCalendar.legend()"
+      [loading]="miniCalendar.isLoading()"
+      [error]="miniCalendar.error()"
+      (previous)="miniCalendar.previous()"
+      (next)="miniCalendar.next()"
+      (current)="miniCalendar.today()"
+      (retry)="miniCalendar.reload()"
+      (sessionSelected)="openSession($event)"
+      (daySelected)="openDay($event)"
+    />
+  </div>
+
+  @if (state.view(); as view) {
+    @if (!state.isEmpty()) {
+      <div class="dashboard__charts">
+        <sh-weekly-goal-card
+          [view]="weeklyGoal.view()"
+          [loading]="weeklyGoal.isLoading()"
+          [errorMessage]="weeklyGoal.errorMessage()"
+          (retry)="weeklyGoal.reload()"
+        />
+        <sh-performance-card />
+        <sh-sport-split-card
+          [split]="kpis.sportSplit()"
+          [loading]="kpis.isLoading()"
+          [errorMessage]="kpis.error()?.userMessage ?? null"
+          (retry)="kpis.reload()"
+          (expand)="openSplit()"
+        />
+        <sh-zones-card
+          [view]="kpis.zones()"
+          [loading]="kpis.isLoading()"
+          [errorMessage]="kpis.error()?.userMessage ?? null"
+          (retry)="kpis.reload()"
+          (expand)="openZones()"
+        />
+      </div>
+    }
+  }
+</section>
+
+@if (weeklyReviewEnabled) {
+  <sh-weekly-review-card class="dashboard__review" />
+}
+
+<ng-template #activityDetailTitle>
+  <h2 class="sh-modal__title">
+    <sh-icon name="list" color="var(--sh-success)" />
+    <span>{{ t.dashboard.detailTitle }}</span>
+  </h2>
+</ng-template>

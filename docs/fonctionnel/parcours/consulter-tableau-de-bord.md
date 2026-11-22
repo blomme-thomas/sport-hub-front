@@ -1,0 +1,150 @@
+# Consulter le tableau de bord
+
+> Statut : implémenté (issues #7 et #13). Tests unitaires livrés (mapper, états, composants, page) pour le volume d'entraînement et pour le bloc « Prochain événement ». Le test e2e du parcours n'est pas encore écrit.
+
+## But
+
+Voir d'un coup d'œil, sur la page d'accueil, le prochain événement à venir et le temps qui reste avant lui, puis le volume d'entraînement (nombre de séances et durée) de la période en cours, sa variation par rapport à la période précédente, et son évolution sur la plage affichée.
+
+## Point d'entrée
+
+- Route `/`, chargée en lazy (`features/dashboard/dashboard.routes.ts`). Titre de page : « Tableau de bord ».
+- Utilisateur unique, sans authentification.
+
+## Étapes
+
+1. Ouvrir `/`. La page affiche le titre, la bascule Semaine / Mois (Semaine par défaut), puis le bloc « Prochain événement », et le chargement des statistiques.
+2. Lire le bloc « Prochain événement », en tête de page : nombre de jours restants jusqu'au prochain événement à venir, titre, format et temps cible. Sans événement à venir, le bloc invite à en créer un (voir « Prochain événement » ci-dessous).
+3. Lire les chiffres clés de la période en cours : nombre de séances et durée (en heures), chacun avec sa variation.
+4. Lire la note sur la comparaison, puis les trois cartes : séances par période, durée par période, répartition par type (dernière période).
+5. Choisir la période dans le sélecteur (7 jours, 30 jours, 3 mois) : les indicateurs et les cartes sont mis à jour, et une annonce `aria-live` indique la période affichée. Le bouton calendrier à droite est présent mais désactivé (sélection de dates hors périmètre). Le bloc « Prochain événement » n'est pas rechargé.
+6. Agrandir une carte avec son bouton « Agrandir » : une modale affiche le graphique en grand, avec son titre, la bascule de granularité et le tableau des valeurs.
+7. Fermer la modale avec le bouton « Fermer » ou la touche Échap.
+
+## Prochain événement
+
+Bloc en tête de page, sous le titre et la bascule, avant les chiffres clés. Il est indépendant du volume d'entraînement : une erreur sur l'un n'empêche pas l'affichage de l'autre.
+
+- **Événement retenu** : parmi les objectifs de type « Événement » dont la date est aujourd'hui ou plus tard (jour UTC), le plus proche. Les objectifs « Volume » ou « Régularité », et ceux sans date, sont ignorés. À date égale, l'ordre renvoyé par l'API est conservé. Voir `docs/technique/integration-api.md`.
+- **Compte à rebours** : le nombre de jours entiers entre aujourd'hui et la date de l'événement. Libellés : « Aujourd'hui » (0), « 1 jour restant » (1), « n jours restants » (n).
+- **Titre, format, temps cible** : le titre de l'objectif, puis le format (« Sprint », « Olympique », « Half (semi-distance) », « Full (distance complète) », « Autre ») et le temps cible au format « H h M min S s ». Si le format ou le temps cible n'est pas renseigné, le bloc affiche « Format non défini » ou « Temps cible non défini ».
+- **Jour de référence** : le jour UTC, figé à l'ouverture de la page. Une page laissée ouverte au-delà de minuit ne recalcule pas le compte à rebours tant qu'elle n'est pas rechargée.
+- **Décalage horaire** : le jour est lu en UTC, comme le reste du tableau de bord. À Paris, entre minuit et 1 h (heure d'hiver) ou entre minuit et 2 h (heure d'été), le jour UTC est encore la veille. Pendant ces heures, le compte à rebours affiche donc un jour de plus que le calendrier local, et un événement de la veille locale peut afficher « Aujourd'hui ». Le formulaire d'objectifs enregistre la date en calendrier local (voir `docs/fonctionnel/parcours/gerer-objectifs-et-evenements.md`, « Limites connues »).
+
+### États du bloc
+
+| État            | Déclencheur                                   | Affichage                                                                                                                                                                      |
+| --------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Chargement      | Premier chargement de `GET /api/goals`        | Texte « Chargement… » dans une zone `aria-busy="true"`.                                                                                                                        |
+| Événement       | Au moins un événement à venir                 | Grand chiffre « N jours restants » (ou « Aujourd'hui »), titre en titre de niveau 3, puis format et temps cible.                                                               |
+| Aucun événement | Aucun événement à venir (liste vide comprise) | Texte « Aucun événement à venir. » suivi d'un lien « Créer un événement » vers `/goals`. Pas d'erreur, pas de `role="alert"`.                                                  |
+| Erreur          | Échec de `GET /api/goals`                     | Bloc `role="alert"` affichant le message utilisateur de l'API, et un bouton « Réessayer » qui relance uniquement le chargement de ce bloc. Les statistiques restent affichées. |
+
+Le bloc n'est pas relancé par la bascule Semaine / Mois. La section porte le titre « Prochain événement » (`h2`), relié à la section par `aria-labelledby`.
+
+## Plage de dates et requête
+
+- La plage est glissante et calculée en UTC à partir de la date du jour :
+  - Semaine : 8 semaines ISO (lundi au dimanche), la semaine en cours incluse.
+  - Mois : 6 mois calendaires, le mois en cours inclus.
+- Une seule requête par granularité : `GET /api/stats` avec `granularity`, `from` et `to`. Le tableau de bord n'envoie pas de filtre par type.
+- Aucun calcul de statistique côté front : totaux, périodes et variations viennent du back (voir `docs/technique/integration-api.md`).
+
+## Règles d'affichage
+
+- **Période en cours** : la dernière période de la plage (la semaine ou le mois en cours). Les chiffres clés, les variations et la répartition par type en proviennent. Les graphiques d'évolution (séances, durée) couvrent toutes les périodes de la plage.
+- **Séances** : chaque activité compte pour une séance, dans la période qui contient sa date de début (UTC). Une période sans activité affiche zéro, elle n'est pas omise.
+- **Durée** : affichée en heures (par exemple « 5,5 h ») ; les graphiques de durée utilisent les heures arrondies à deux décimales.
+- **Libellés des axes** : semaine = `S` suivi du numéro ISO, sans année ; mois = mois abrégé et année, au format `fr-FR`.
+- **Variation signée** : l'écart absolu et le pourcentage portent un signe `+` ou `−`. Une variation nulle n'a pas de signe et porte le libellé « Stable ».
+  - Hausse : libellé « En hausse », icône ▲.
+  - Baisse : libellé « En baisse », icône ▼.
+  - Le sens est donné par le texte et le libellé, jamais par la couleur seule.
+- **Variation « n/a »** : si la période précédente vaut zéro, le back renvoie un pourcentage absent (`null`). L'affichage est alors « +N (n/a) » (ou « −N (n/a) ») avec le libellé « Non comparable ». Le pourcentage n'est jamais affiché comme NaN.
+- **Comparaison à une période complète** : la variation compare la période en cours, souvent incomplète, à la période précédente complète. Une baisse peut donc être mécanique. Une note affichée sous les chiffres clés le précise.
+
+## États
+
+| État                           | Déclencheur                                                         | Affichage                                                                                                                                                                                                                                                                                       |
+| ------------------------------ | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chargement                     | Premier chargement, ou rechargement après changement de granularité | Titre et bascule visibles. Au premier chargement : texte « Chargement… » dans une zone `aria-busy="true"`. Annonce `aria-live` « Chargement des statistiques en cours ». Lors d'une bascule, la zone est `aria-busy="true"` et les dernières données restent affichées pendant le rechargement. |
+| Vide                           | Toutes les périodes de la plage ont zéro séance                     | Message « Aucune activité sur cette période ». Ni chiffres clés, ni cartes. La bascule reste disponible. Le message porte sur toute la plage affichée (8 semaines ou 6 mois), pas seulement sur la période en cours.                                                                            |
+| Période en cours sans activité | La période en cours est à zéro, les précédentes ne le sont pas      | Chiffres à zéro, variation et cartes affichées. Le graphique « Répartition par type » n'a pas de donnée et affiche « Aucune donnée à afficher ».                                                                                                                                                |
+| Erreur                         | Échec de `GET /api/stats`                                           | Le contenu est remplacé par un bloc `role="alert"` affichant le message utilisateur de l'API, et un bouton « Réessayer ». Le bouton relance le chargement de la granularité courante. Titre et bascule restent visibles.                                                                        |
+
+## Modale d'agrandissement
+
+- Ouverture : bouton « Agrandir » de la carte. Son nom accessible est « Agrandir le graphique : <titre du graphique> ». Le titre de la modale est celui du graphique.
+- Contenu : le graphique agrandi, la bascule Semaine / Mois, et le tableau des valeurs.
+- Aucun appel au back à l'ouverture : la modale réutilise les données chargées par la page. Changer la granularité dans la modale recharge les données partagées avec la page.
+- Fermeture : bouton « Fermer » ou touche Échap.
+- Pendant l'ouverture, le reste de la page est masqué aux lecteurs d'écran (`aria-hidden`), puis restauré à la fermeture.
+- Retour du focus sur la carte d'origine : attendu, mais non vérifié par un test à ce jour.
+
+## Accessibilité
+
+- Chaque graphique a un nom accessible (son titre) et un tableau des valeurs sous la carte : l'information ne repose pas sur la couleur.
+- La légende n'apparaît que pour un graphique à plusieurs séries. Aujourd'hui, chaque graphique n'en a qu'une : les libellés et le tableau portent l'information.
+- La bascule est un groupe de boutons radio « Granularité », libellés « Semaine » et « Mois ».
+
+## Calendrier du mois (story #18)
+
+En bas du tableau de bord, le bloc « Calendrier » affiche le mois civil : une grille lundi à dimanche avec les en-têtes des jours, toujours six semaines (42 cases), à partir du lundi de la semaine du 1er du mois. La hauteur ne dépend donc pas du mois affiché. Une icône par séance planifiée, placée dans la case de son jour ; l'icône et la couleur viennent de la discipline (correspondance unique dans `shared/ui/discipline`). Une discipline absente de la correspondance s'affiche en neutre, avec sa clé comme libellé, sans erreur.
+
+- **Navigation** : « ‹ » et « › » changent de mois. Le bouton central porte le nom du mois affiché (« Novembre 2026 ») et revient au mois courant. Le bloc se recharge à chaque changement.
+- **Aujourd’hui** : sa case est pleine, en couleur d'accent, avec `aria-current="date"` (jour local).
+- **Semaine en cours** : ses sept cases ont une teinte légère.
+- **Week-ends** : fond distinct. Les jours hors du mois affiché sont atténués, séances comprises.
+- **Clic sur une icône** : ouvre la fiche de la séance, en modale.
+- **Lecture seule** : rien ne se modifie depuis ce bloc. Les séances réalisées, manquées ou annulées ne sont pas affichées comme séances ; les activités réalisées sont des repères non interactifs.
+- **Indépendant du sélecteur** : la période « Semaine / Mois » du tableau de bord ne change pas ce bloc.
+- **Taille commune** : sur ordinateur, « Détails par activités » et le calendrier ont la même hauteur fixe ; les six semaines y tiennent.
+- **Détails par activités** : la liste affiche quatre lignes et défile au-delà ; la barre de défilement est masquée, le défilement reste possible à la molette, au tactile et au clavier.
+- **États** : chargement et erreur avec « Réessayer ». Sans séance sur le mois, le calendrier reste affiché, vide, sans message.
+
+Hors scope de ce bloc : détail de la séance (fiche #10), création ou déplacement (calendrier, #46), regroupement des disciplines en familles.
+
+## Sélecteur de période (story #24)
+
+L’en-tête affiche le titre « Tableau de bord » et le sélecteur de période. Le sélecteur propose trois périodes (`aria-pressed` sur le bouton actif) ; la granularité des graphiques en découle : semaines pour 7 et 30 jours, mois pour 3 mois.
+
+## Métriques liées à la temporalité
+
+Le sélecteur de période en haut à droite pilote les métriques du tableau de bord (7 jours, 30 jours, 3 mois) :
+
+- **Semaine** : bandeau d’indicateurs, « Vos performances » et répartition par sport sur 7 jours (`period=7d`) ; graphiques sur les 8 dernières semaines ISO.
+- **Mois** : bandeau d’indicateurs, « Vos performances » et répartition par sport sur 30 jours (`period=30d`) ; graphiques sur les 6 derniers mois.
+- **« Vos performances »** : en vue semaine, une courbe par jour. En vue mois, un point par semaine ISO (libellés « S45 », etc.), pour éviter une trentaine de libellés de jours redondants. Le graphique reste une courbe dans les deux vues : seules les données changent, animées, sans recréer le graphique. La grille est horizontale, fine et pointillée.
+- **Hors sélecteur** : « Détails par activités », le mini-calendrier (qui a son propre sélecteur de semaine ou de mois) et la zone de FC, qui ne dépendent pas de cette période.
+
+## Vues détaillées des cartes (story #91)
+
+Chaque carte d'indicateur, « Répartition par sport » et « Zones d’entraînement » a un bouton « Agrandir : <titre> » (en haut à droite). Il ouvre une modale avec le détail, fermable avec Échap ou « Fermer ». Le focus revient à la carte d'origine.
+
+- **Indicateur** : valeur complète et variation par rapport à la période précédente. Le back ne fournit la variation que pour la durée : pour les autres, la modale indique « — ».
+- **Répartition par sport** : tableau par sport avec la durée et la part, et le total.
+- **Zones d’entraînement** : tableau par zone (Z1 à Z5) avec le temps passé, la part et le seuil bas en bpm (depuis `GET /api/heart-rate-zones`). La zone optimale et le message de statut sont rappelés au-dessus.
+- **Sans donnée** : la modale affiche un état vide, jamais « 0 » pour une valeur absente.
+
+**Limites de cette story** :
+
+- **Instantané** : la modale reprend les données au moment de l'ouverture. Changer la période dans la modale ne met pas à jour la carte, et inversement.
+- **Carte Volume** : la carte « Volume » n'existe plus sur le tableau de bord (remplacée par « Performances »). Elle n'a donc pas de vue détaillée.
+- **Carte Performances** : hors périmètre de cette story.
+- **Pas de route dédiée** : la vue est une modale. Une route pourra être ajoutée plus tard pour partager une vue.
+
+## Objectif de la semaine (story #31)
+
+Carte « Objectif de la semaine » : anneau de progression, durée réalisée sur la cible (« 6h 42 / 8h 00 ») et message de statut. La mini-courbe des semaines précédentes a été retirée.
+
+- **Cible** : réglage personnel, saisi dans **Paramètres** (`/parametres`, `GET/PUT /api/settings`). Elle reste la même tant qu'elle n'est pas modifiée.
+- **Source** : `GET /api/settings/weekly-target/:week` (semaine ISO courante). Le back renvoie des secondes brutes : la cible (null si non définie), le réalisé de la semaine et l'historique (ce dernier n'est plus utilisé par le front). Le pourcentage et le statut sont calculés côté front.
+- **Pourcentage** : arrondi, sans plafond dans le texte (il peut dépasser 100 %) ; l'anneau est plafonné à 100 %.
+- **Statut** (seuils dans `config/weekly-goal-status.ts`) : « Objectif atteint ! » à partir de 100 %, « Très bien ! » à partir de 75 %, « En bonne voie » à partir de 50 %, « À renforcer » en dessous.
+- **Sans cible** : pas de pourcentage (jamais 0 %) ; la carte propose « Définir la cible » vers `/parametres`.
+- **Paramètres** : heures et minutes de la cible, « Enregistrer » (refuse une durée nulle) et « Retirer l’objectif » (envoie `null`).
+- **États** : chargement, erreur avec « Réessayer », sans objectif, valeurs affichées.
+
+## Hors périmètre
+
+Progression chiffrée des objectifs événement et volume, bilan hebdomadaire généré par l'IA, commentaire IA, calendrier et planning : stories à venir.

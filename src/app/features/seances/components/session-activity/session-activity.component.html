@@ -1,0 +1,50 @@
+@if (error(); as failure) {
+  <p class="activity__error" role="alert">{{ failure.userMessage }}</p>
+}
+
+@if (linked(); as link) {
+  <div class="activity__linked">
+    <p class="activity__origin">
+      {{ originLabel() }} · {{ link.linkedAt | date: 'dd/MM/yyyy HH:mm' : 'UTC' }}
+    </p>
+    @if (linkedDetail(); as detail) {
+      <dl class="activity__info">
+        <dt>{{ t.seances.activity.distance }}</dt>
+        <dd>{{ formatKm(detail.distanceMeters) }}</dd>
+        <dt>{{ t.seances.activity.duration }}</dt>
+        <dd>{{ formatDuration(detail.durationSeconds) }}</dd>
+        <dt>{{ t.seances.activity.heartRate }}</dt>
+        <dd>{{ detail.averageHeartRate === null ? '—' : detail.averageHeartRate + ' bpm' }}</dd>
+      </dl>
+    } @else {
+      <p class="activity__status">{{ t.seances.activity.loading }}</p>
+    }
+    <button nz-button type="button" [disabled]="busy()" (click)="unlink.emit()">
+      {{ t.seances.activity.unlink }}
+    </button>
+    <button nz-button type="button" [disabled]="exporting()" (click)="exportSession.emit()">
+      {{ exporting() ? t.seances.activity.exporting : t.seances.activity.export }}
+    </button>
+  </div>
+}
+
+<h3 class="activity__subheading">
+  {{ linked() ? t.seances.activity.changeActivity : t.seances.activity.sameDay }}
+</h3>
+@if (candidates().length === 0) {
+  <p class="activity__status">{{ t.seances.activity.none }}</p>
+} @else {
+  <ul class="activity__list" [attr.aria-label]="t.seances.activity.list">
+    @for (candidate of candidates(); track candidate.id) {
+      <li>
+        <span
+          >{{ formatDuration(candidate.durationSeconds) }} ·
+          {{ formatKm(candidate.distanceMeters) }}</span
+        >
+        <button nz-button type="button" [disabled]="busy()" (click)="link.emit(candidate.id)">
+          {{ t.seances.activity.link }}
+        </button>
+      </li>
+    }
+  </ul>
+}

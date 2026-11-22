@@ -1,0 +1,105 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.kpi {
+  --kpi-color: var(--sh-accent-text);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-2);
+  height: 100%;
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+  overflow: hidden;
+}
+
+.kpi--success {
+  --kpi-color: var(--sh-success);
+}
+
+.kpi--orange {
+  --kpi-color: var(--sh-orange);
+}
+
+.kpi--violet {
+  --kpi-color: var(--sh-violet);
+}
+
+.kpi--danger {
+  --kpi-color: var(--sh-danger);
+}
+
+.kpi__header {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+}
+
+.kpi__icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  color: var(--kpi-color);
+  background: color-mix(in srgb, var(--kpi-color) 18%, transparent);
+}
+
+.kpi__label {
+  margin: 0;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.kpi__figures {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sh-space-2);
+}
+
+.kpi__value {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi__unit {
+  margin-left: var(--sh-space-1);
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.kpi__spark {
+  --sh-chart-height: 3rem;
+  height: 3rem;
+  margin-top: auto;
+}
+
+.kpi__icon sh-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Bouton « Agrandir » de la carte : en haut à droite, la carte sert de repère. */
+:host {
+  position: relative;
+  display: block;
+}
+
+.card-expand {
+  position: absolute;
+  top: var(--sh-space-3, 0.75rem);
+  right: var(--sh-space-3, 0.75rem);
+  z-index: 1;
+}

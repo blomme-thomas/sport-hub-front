@@ -1,0 +1,109 @@
+<div class="day">
+  <dl class="day__summary" [attr.aria-label]="t.dashboard.day.summary">
+    <div class="day__stat">
+      <dt>{{ t.dashboard.day.sessionsPlanned }}</dt>
+      <dd>{{ sessions.length }}</dd>
+    </div>
+    <div class="day__stat">
+      <dt>{{ t.dashboard.day.activitiesDone }}</dt>
+      <dd>{{ activityRows.length }}</dd>
+    </div>
+    <div class="day__stat">
+      <dt>{{ t.dashboard.day.duration }}</dt>
+      <dd>{{ summary().duration }}</dd>
+    </div>
+    <div class="day__stat">
+      <dt>{{ t.dashboard.day.distance }}</dt>
+      <dd>{{ summary().distance }}</dd>
+    </div>
+    <div class="day__stat">
+      <dt>{{ t.dashboard.day.heartRate }}</dt>
+      <dd>{{ summary().heartRate }}</dd>
+    </div>
+  </dl>
+
+  <div class="day__columns">
+    <section class="day__section" aria-labelledby="day-sessions-heading">
+      <h3 id="day-sessions-heading" class="day__heading">{{ t.dashboard.day.sessionsPlanned }}</h3>
+      @if (sessions.length === 0) {
+        <p class="day__empty">{{ t.dashboard.day.noPlanned }}</p>
+      } @else {
+        <ul class="day__list">
+          @for (session of sessions; track session.id) {
+            <li>
+              <button type="button" class="day__row" (click)="openSession(session.id)">
+                <sh-icon
+                  [name]="styleOf(session.disciplineTypeKey).icon"
+                  [color]="styleOf(session.disciplineTypeKey).color"
+                />
+                <span class="day__row-main">
+                  <strong>{{ labelOf(session.disciplineTypeKey) }}</strong>
+                  <span class="day__muted">{{ timeOf(session) }}</span>
+                </span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="day__section" aria-labelledby="day-activities-heading">
+      <h3 id="day-activities-heading" class="day__heading">{{ t.dashboard.day.activitiesDone }}</h3>
+      @if (activityRows.length === 0) {
+        <p class="day__empty">{{ t.dashboard.day.noActivities }}</p>
+      } @else {
+        <ul class="day__list">
+          @for (item of activityRows; track item.id) {
+            <li>
+              <button type="button" class="day__row" (click)="openActivity(item.id)">
+                <span class="day__icon" aria-hidden="true">{{ item.typeIcon }}</span>
+                <span class="day__row-main">
+                  <strong>{{ item.typeLabel }}</strong>
+                  <span class="day__muted">
+                    {{ item.durationLabel }} · {{ item.distanceLabel }}
+                  </span>
+                </span>
+                <span class="day__hr">{{ item.heartRateLabel }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+
+  <section class="day__section" aria-labelledby="day-zones-heading">
+    <h3 id="day-zones-heading" class="day__heading">{{ t.dashboard.day.zonesHeading }}</h3>
+    @if (zonesLoading()) {
+      <p class="day__empty" role="status">{{ t.common.loading }}</p>
+    } @else if (!hasZones()) {
+      <p class="day__empty">{{ t.dashboard.day.noHeartRate }}</p>
+    } @else {
+      <div class="day__bar" aria-hidden="true">
+        @for (zone of zoneRows(); track zone.label) {
+          <span
+            class="day__segment"
+            [style.width]="zone.percent + '%'"
+            [style.background]="'var(' + zone.color + ')'"
+          ></span>
+        }
+      </div>
+      <ul class="day__zones" [attr.aria-label]="t.dashboard.day.legend">
+        @for (zone of zoneRows(); track zone.label) {
+          <li>
+            <span class="day__zone-head">
+              <span
+                class="day__swatch"
+                [style.background]="'var(' + zone.color + ')'"
+                aria-hidden="true"
+              ></span>
+              <span>{{ zone.label }} {{ zone.name }}</span>
+            </span>
+            <strong>{{ zone.percent }} %</strong>
+            <span class="day__muted">{{ zone.durationLabel }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>
