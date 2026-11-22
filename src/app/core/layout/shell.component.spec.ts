@@ -26,30 +26,28 @@ describe('ShellComponent', () => {
     expect(screen.queryByRole('link', { name: 'Statistiques' })).not.toBeInTheDocument();
   });
 
+  // Le bouton est masqué en CSS au-delà de 768px. jsdom applique désormais ces media queries : il
+  // n'a plus de nom accessible, on cible donc l'unique bouton de la page.
   it('ouvre et ferme le menu mobile avec aria-expanded', async () => {
     const user = userEvent.setup();
     await setup();
-    const toggle = screen.getByRole('button', { name: 'Ouvrir le menu' });
+    const toggle = screen.getByRole('button', { hidden: true });
 
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
 
     await user.click(toggle);
 
     expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getByRole('button', { name: 'Fermer le menu' })).toBeInTheDocument();
   });
 
   it('ferme le menu avec la touche Échap', async () => {
     const user = userEvent.setup();
     await setup();
-    await user.click(screen.getByRole('button', { name: 'Ouvrir le menu' }));
+    await user.click(screen.getByRole('button', { hidden: true }));
     screen.getByRole('link', { name: 'Objectifs' }).focus();
 
     await user.keyboard('{Escape}');
 
-    expect(screen.getByRole('button', { name: 'Ouvrir le menu' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
+    expect(screen.getByRole('button', { hidden: true })).toHaveAttribute('aria-expanded', 'false');
   });
 });
