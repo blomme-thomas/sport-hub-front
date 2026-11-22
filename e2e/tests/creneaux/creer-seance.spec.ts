@@ -52,6 +52,8 @@ test.describe('Calendrier : créer une séance', () => {
       recurrence: 'aucune',
       targetHrZonePercentages: [10, 20, 40, 20, 10],
     });
-    await expect(page).toHaveURL(/\/seances\/session-nouvelle$/);
+    // La fiche de la séance créée s'ouvre en modale, sans changer de page.
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page).toHaveURL(/\/creneaux$/);
   });
 });

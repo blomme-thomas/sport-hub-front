@@ -9,30 +9,32 @@
     </p>
     @if (linkedDetail(); as detail) {
       <dl class="activity__info">
-        <dt>Distance</dt>
+        <dt>{{ t.seances.activity.distance }}</dt>
         <dd>{{ formatKm(detail.distanceMeters) }}</dd>
-        <dt>Durée</dt>
+        <dt>{{ t.seances.activity.duration }}</dt>
         <dd>{{ formatDuration(detail.durationSeconds) }}</dd>
-        <dt>FC moyenne</dt>
+        <dt>{{ t.seances.activity.heartRate }}</dt>
         <dd>{{ detail.averageHeartRate === null ? '—' : detail.averageHeartRate + ' bpm' }}</dd>
       </dl>
     } @else {
-      <p class="activity__status">Chargement de l’activité…</p>
+      <p class="activity__status">{{ t.seances.activity.loading }}</p>
     }
-    <button nz-button type="button" [disabled]="busy()" (click)="unlink.emit()">Dissocier</button>
+    <button nz-button type="button" [disabled]="busy()" (click)="unlink.emit()">
+      {{ t.seances.activity.unlink }}
+    </button>
     <button nz-button type="button" [disabled]="exporting()" (click)="exportSession.emit()">
-      {{ exporting() ? 'Téléchargement…' : 'Exporter la séance (JSON)' }}
+      {{ exporting() ? t.seances.activity.exporting : t.seances.activity.export }}
     </button>
   </div>
 }
 
 <h3 class="activity__subheading">
-  {{ linked() ? 'Changer d’activité' : 'Activités du même jour' }}
+  {{ linked() ? t.seances.activity.changeActivity : t.seances.activity.sameDay }}
 </h3>
 @if (candidates().length === 0) {
-  <p class="activity__status">Aucune activité du même jour et de la même discipline.</p>
+  <p class="activity__status">{{ t.seances.activity.none }}</p>
 } @else {
-  <ul class="activity__list" aria-label="Activités associables">
+  <ul class="activity__list" [attr.aria-label]="t.seances.activity.list">
     @for (candidate of candidates(); track candidate.id) {
       <li>
         <span
@@ -40,7 +42,7 @@
           {{ formatKm(candidate.distanceMeters) }}</span
         >
         <button nz-button type="button" [disabled]="busy()" (click)="link.emit(candidate.id)">
-          Associer
+          {{ t.seances.activity.link }}
         </button>
       </li>
     }

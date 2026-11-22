@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
+import { currentWeekDay } from '../support/week-dates';
 
 export class SessionPage {
   readonly heading: Locator;
@@ -12,8 +13,36 @@ export class SessionPage {
     });
   }
 
+  /**
+   * Ouvre la fiche de la séance comme le fait l'utilisateur : depuis le calendrier, en cliquant sur la séance
+   * de la semaine courante. La fiche s'affiche en modale, sans changer de page.
+   */
   async goto(id: string): Promise<void> {
-    await this.page.goto(`/seances/${id}`);
+    await this.page.route(/\/api\/slots(\?.*)?$/, (route) =>
+      route.fulfill({ json: { from: '', to: '', items: [] } }),
+    );
+    await this.page.route(/\/api\/pauses(\?.*)?$/, (route) =>
+      route.fulfill({ json: { items: [] } }),
+    );
+    await this.page.route(/\/api\/sessions\?/, (route) =>
+      route.fulfill({
+        json: {
+          items: [
+            {
+              sessionId: id,
+              date: currentWeekDay(2),
+              startTime: '18:00',
+              durationMinutes: 45,
+              disciplineTypeKey: 'course_a_pied',
+              recurrence: 'aucune',
+              status: 'planifiee',
+            },
+          ],
+        },
+      }),
+    );
+    await this.page.goto('/creneaux');
+    await this.page.getByRole('button', { name: /^Séance .*Ouvrir la séance$/ }).click();
   }
 
   /** Champ de durée du module à la position donnée (1 à n). */

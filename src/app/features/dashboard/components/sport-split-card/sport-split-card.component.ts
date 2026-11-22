@@ -5,6 +5,7 @@ import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { ChartData, ChartOptions } from 'chart.js';
 import type { SportSplitView } from '../../models/sport-split.model';
+import { TEXTS } from '@shared/texts/texts';
 
 /**
  * Carte « Répartition par sport » : donut à quatre segments (course, cyclisme, natation, autres), durée totale
@@ -18,8 +19,9 @@ import type { SportSplitView } from '../../models/sport-split.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SportSplitCardComponent {
+  protected readonly t = TEXTS;
   /** Familles affichées en grisé quand aucune séance n'est enregistrée sur la période. */
-  protected readonly placeholderLabels = ['Course', 'Vélo', 'Natation', 'Autre'];
+  protected readonly placeholderLabels = TEXTS.dashboard.sportSplit.placeholders;
   /** Absent tant que la réponse n'est pas reçue : la carte affiche alors son état de chargement. */
   readonly split = input<SportSplitView | undefined>(undefined);
   readonly loading = input(false);

@@ -1,5 +1,5 @@
 <header class="reglages__header">
-  <h1 class="reglages__title">Paramètres</h1>
+  <h1 class="reglages__title">{{ t.reglages.title }}</h1>
 </header>
 
 <section
@@ -7,26 +7,26 @@
   aria-labelledby="weekly-target-heading"
   [attr.aria-busy]="state.isLoading()"
 >
-  <h2 id="weekly-target-heading" class="reglages__heading">Objectif de la semaine</h2>
-  <p class="reglages__help">
-    Le temps que vous visez chaque semaine. Il reste le même tant que vous ne le modifiez pas.
-  </p>
+  <h2 id="weekly-target-heading" class="reglages__heading">
+    {{ t.reglages.weeklyTarget.heading }}
+  </h2>
+  <p class="reglages__help">{{ t.reglages.weeklyTarget.help }}</p>
 
   @if (state.isLoading()) {
-    <p class="reglages__status" role="status">Chargement…</p>
+    <p class="reglages__status" role="status">{{ t.common.loading }}</p>
   } @else {
     <p class="reglages__current">
       @if (currentLabel(); as label) {
-        Cible actuelle : <strong>{{ label }}</strong>
+        {{ t.reglages.weeklyTarget.current }} <strong>{{ label }}</strong>
       } @else {
-        Aucun objectif hebdomadaire défini.
+        {{ t.reglages.weeklyTarget.none }}
       }
     </p>
 
     <form class="reglages__form" (submit)="$event.preventDefault(); submit()" novalidate>
       <div class="reglages__fields">
         <div class="reglages__field">
-          <label for="target-hours">Heures</label>
+          <label for="target-hours">{{ t.reglages.weeklyTarget.hours }}</label>
           <input
             id="target-hours"
             type="number"
@@ -41,7 +41,7 @@
           />
         </div>
         <div class="reglages__field">
-          <label for="target-minutes">Minutes</label>
+          <label for="target-minutes">{{ t.reglages.weeklyTarget.minutes }}</label>
           <input
             id="target-minutes"
             type="number"
@@ -63,7 +63,7 @@
 
       <div class="reglages__actions">
         <button nz-button nzType="primary" type="submit" [disabled]="state.saving()">
-          Enregistrer
+          {{ t.common.save }}
         </button>
         <button
           nz-button
@@ -71,20 +71,20 @@
           [disabled]="state.saving() || currentLabel() === null"
           (click)="clear()"
         >
-          Retirer l’objectif
+          {{ t.reglages.weeklyTarget.clear }}
         </button>
       </div>
     </form>
 
     @if (state.saved()) {
-      <p class="reglages__status" role="status">Cible enregistrée.</p>
+      <p class="reglages__status" role="status">{{ t.reglages.weeklyTarget.saved }}</p>
     }
   }
 
   @if (state.error(); as error) {
     <div class="reglages__error-block" role="alert">
       <p>{{ error.userMessage }}</p>
-      <button nz-button type="button" (click)="state.reload()">Réessayer</button>
+      <button nz-button type="button" (click)="state.reload()">{{ t.common.retry }}</button>
     </div>
   }
 </section>

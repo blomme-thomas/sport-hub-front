@@ -1,11 +1,11 @@
 <form class="session-import" (submit)="submit($event)">
   <p class="session-import__intro">
-    Le fichier doit être au format <code>plan-seances</code>. Toutes ses séances sont créées, ou
-    aucune en cas d’erreur.
+    {{ t.creneaux.sessionImport.helpBefore }} <code>plan-seances</code>.
+    {{ t.creneaux.sessionImport.helpAfter }}
   </p>
 
   <sh-json-file-input
-    label="Fichier de séances (.json)"
+    [label]="t.creneaux.sessionImport.fileLabel"
     [disabled]="submitting()"
     (contentChange)="onContent($event)"
   />
@@ -13,11 +13,11 @@
   @if (result(); as result) {
     @if (result.ok) {
       <p class="session-import__count" aria-live="polite">
-        {{ result.count }} séance(s) détectée(s) dans le fichier.
+        {{ fill(t.creneaux.sessionImport.count, { count: result.count }) }}
       </p>
     } @else {
       <p class="session-import__alert" role="alert">
-        Le fichier n’est pas utilisable : {{ result.message }}
+        {{ fill(t.creneaux.sessionImport.unusable, { message: result.message }) }}
       </p>
     }
   }
@@ -38,7 +38,7 @@
   }
 
   <div class="session-import__actions">
-    <button nz-button type="button" (click)="cancelled.emit()">Annuler</button>
+    <button nz-button type="button" (click)="cancelled.emit()">{{ t.common.cancel }}</button>
     <button
       nz-button
       nzType="primary"
@@ -46,7 +46,7 @@
       [disabled]="!canSubmit()"
       [attr.aria-busy]="submitting()"
     >
-      Importer les séances
+      {{ t.creneaux.sessionImport.submit }}
     </button>
   </div>
 </form>

@@ -1,14 +1,14 @@
 <section class="zones" aria-labelledby="zones-heading" [attr.aria-busy]="loading()">
   <h2 id="zones-heading" class="zones__heading">
     <sh-icon name="heart" color="var(--sh-danger)" />
-    <span>Zones d’entraînement</span>
+    <span>{{ t.dashboard.zones.heading }}</span>
   </h2>
   <button
     nz-button
     nzType="text"
     type="button"
     class="card-expand"
-    [attr.aria-label]="'Agrandir : Zones d’entraînement'"
+    [attr.aria-label]="t.dashboard.zones.expand"
     [disabled]="!view()"
     (click)="expand.emit()"
   >
@@ -18,7 +18,7 @@
   @if (errorMessage(); as message) {
     <div class="zones__error" role="alert">
       <p>{{ message }}</p>
-      <button nz-button type="button" (click)="retry.emit()">Réessayer</button>
+      <button nz-button type="button" (click)="retry.emit()">{{ t.common.retry }}</button>
     </div>
   } @else if (view()) {
     <div class="zones__bar" [class.zones__bar--empty]="isEmpty()" aria-hidden="true">
@@ -39,10 +39,10 @@
         aria-hidden="true"
       >
         <strong>{{ optimalLabel() }}</strong>
-        <span>Zone optimale</span>
+        <span>{{ t.dashboard.zones.optimal }}</span>
       </div>
 
-      <ul class="zones__legend" aria-label="Légende des zones cardiaques">
+      <ul class="zones__legend" [attr.aria-label]="t.dashboard.zones.legend">
         @for (row of rows(); track row.label) {
           <li>
             <span
@@ -60,6 +60,6 @@
 
     <p class="zones__status" role="status">{{ statusLabel() }}</p>
   } @else {
-    <p class="zones__status" role="status">Chargement…</p>
+    <p class="zones__status" role="status">{{ t.common.loading }}</p>
   }
 </section>

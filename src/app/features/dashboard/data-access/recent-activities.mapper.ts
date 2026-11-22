@@ -1,5 +1,6 @@
 import type { ActivitySummaryApi } from '../models/recent-activity.api-model';
 import type { RecentActivity } from '../models/recent-activity.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 const ABSENT = '—';
 const MILLISECONDS_PER_DAY = 86_400_000;
@@ -8,18 +9,18 @@ const SECONDS_PER_MINUTE = 60;
 const METERS_PER_KILOMETER = 1000;
 
 const TYPE_LABELS: Record<string, string> = {
-  running: 'Course à pied',
-  cycling: 'Cyclisme',
-  lap_swimming: 'Natation',
-  virtual_ride: 'Vélo virtuel',
-  walking: 'Marche',
+  running: TEXTS.dashboard.sports.running,
+  cycling: TEXTS.dashboard.sports.cycling,
+  lap_swimming: TEXTS.dashboard.sports.swimming,
+  virtual_ride: TEXTS.dashboard.sports.virtualRide,
+  walking: TEXTS.dashboard.sports.walking,
 };
 
 /** Libellé des familles de sport affichées ; les autres types gardent leur libellé par type. */
 const FAMILY_LABELS: Partial<Record<string, string>> = {
-  running: 'Course',
-  cycling: 'Vélo',
-  swimming: 'Natation',
+  running: TEXTS.dashboard.families.running,
+  cycling: TEXTS.dashboard.families.cycling,
+  swimming: TEXTS.dashboard.families.swimming,
 };
 
 const TYPE_ICONS: Record<string, string> = {
@@ -60,7 +61,12 @@ export function toRecentActivity(item: ActivitySummaryApi, now: Date): RecentAct
 export function formatDuration(totalSeconds: number): string {
   const hours = Math.floor(totalSeconds / SECONDS_PER_HOUR);
   const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
-  return hours === 0 ? `${minutes} min` : `${hours}h ${String(minutes).padStart(2, '0')}`;
+  return hours === 0
+    ? fill(TEXTS.dashboard.detail.minutes, { value: minutes })
+    : fill(TEXTS.dashboard.detail.hoursMinutes, {
+        hours,
+        minutes: String(minutes).padStart(2, '0'),
+      });
 }
 
 /** « 142 bpm », ou « — » si la fréquence cardiaque moyenne est absente ou nulle. */
@@ -85,7 +91,7 @@ export function toRelativeDateLabel(date: Date, now: Date): string {
     return "Aujourd'hui";
   }
   if (days === 1) {
-    return 'Hier';
+    return TEXTS.dashboard.recent.yesterday;
   }
   if (days > 1 && days < 7) {
     const weekday = date.toLocaleDateString('fr-FR', { weekday: 'long' });

@@ -8,9 +8,11 @@
 }
 
 .module {
+  position: relative;
   display: flex;
   gap: var(--sh-space-3);
   padding: var(--sh-space-3);
+  padding-right: 3rem;
   border: 1px solid var(--sh-border);
   border-radius: var(--sh-radius-sm);
   background: var(--sh-surface-raised);
@@ -94,4 +96,45 @@
 
 .modules__empty {
   color: var(--sh-text-muted);
+}
+
+/* Corbeille en haut à droite de la carte du module. */
+.module__delete {
+  position: absolute;
+  top: var(--sh-space-2);
+  right: var(--sh-space-2);
+
+  sh-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+/* Poignée de glisser-déposer : seul point d'appui pour déplacer un module. */
+.module__handle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-self: flex-start;
+  padding: 0 var(--sh-space-1);
+  color: var(--sh-text-muted);
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  letter-spacing: -0.1em;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.module[draggable='true'] {
+  cursor: grabbing;
+}
+
+.module--dragged {
+  opacity: 0.4;
+}
+
+/* Position où le module glissé sera déposé. */
+.module--over {
+  border-color: var(--sh-accent-text);
+  box-shadow: inset 0 3px 0 var(--sh-accent-text);
 }

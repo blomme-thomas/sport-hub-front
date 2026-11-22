@@ -1,21 +1,21 @@
 <form class="pause-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
   <div class="pause-form__dates">
     <label class="pause-form__field">
-      <span>Début</span>
+      <span>{{ t.creneaux.pause.start }}</span>
       <input type="date" formControlName="startDate" [attr.aria-invalid]="endsBeforeStart" />
     </label>
     <label class="pause-form__field">
-      <span>Fin</span>
+      <span>{{ t.creneaux.pause.end }}</span>
       <input type="date" formControlName="endDate" [attr.aria-invalid]="endsBeforeStart" />
     </label>
   </div>
 
   @if (endsBeforeStart) {
-    <p class="pause-form__error" role="alert">La date de fin ne peut pas précéder le début.</p>
+    <p class="pause-form__error" role="alert">{{ t.creneaux.pause.endBeforeStart }}</p>
   }
 
   <fieldset class="pause-form__reasons">
-    <legend>Motif</legend>
+    <legend>{{ t.creneaux.pause.reasonLabel }}</legend>
     @for (reason of reasons; track reason) {
       <label class="pause-form__reason">
         <input type="radio" formControlName="reason" [value]="reason" />
@@ -30,7 +30,7 @@
 
   <div class="pause-form__actions">
     <button nz-button type="button" [disabled]="submitting()" (click)="cancelled.emit()">
-      Annuler
+      {{ t.common.cancel }}
     </button>
     <button
       nz-button
@@ -39,7 +39,7 @@
       [disabled]="submitting() || endsBeforeStart"
       [nzLoading]="submitting()"
     >
-      Enregistrer
+      {{ t.common.save }}
     </button>
   </div>
 </form>

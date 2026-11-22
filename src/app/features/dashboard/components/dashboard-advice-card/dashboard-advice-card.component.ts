@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { DashboardAdvice } from '../../models/dashboard-advice.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 /**
  * Carte « Conseil IA personnalisé » : le dernier conseil stocké, sa date, et un bouton pour le régénérer.
@@ -16,6 +17,8 @@ import type { DashboardAdvice } from '../../models/dashboard-advice.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardAdviceCardComponent {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   readonly advice = input<DashboardAdvice | null>(null);
   readonly loading = input(false);
   readonly generating = input(false);

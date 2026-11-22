@@ -37,6 +37,7 @@ import type {
   SlotRecurrence,
   SlotType,
 } from '../../models/slot.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 type FormFieldName = 'type' | 'date' | 'startTime' | 'endTime' | 'recurrence';
 
@@ -48,8 +49,8 @@ const FORM_FIELDS: Readonly<Record<FormFieldName, true>> = {
   recurrence: true,
 };
 
-const REQUIRED_MESSAGE = 'Ce champ est obligatoire.';
-const END_BEFORE_START_MESSAGE = 'L’heure de fin doit être postérieure à l’heure de début.';
+const REQUIRED_MESSAGE = TEXTS.common.required;
+const END_BEFORE_START_MESSAGE = TEXTS.creneaux.slot.endAfterStart;
 
 /** Vrai quand la fin n'est pas strictement postérieure au début (comparaison de chaînes `HH:mm`). */
 const endAfterStart = (group: AbstractControl): ValidationErrors | null => {
@@ -90,6 +91,8 @@ const endAfterStart = (group: AbstractControl): ValidationErrors | null => {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SlotFormComponent implements OnInit {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   /** Créneau modifié ; `null` pour une création. */
   readonly slot = input<Slot | null>(null);
   /** Valeurs proposées pour une création (date, heure de début et de fin). */

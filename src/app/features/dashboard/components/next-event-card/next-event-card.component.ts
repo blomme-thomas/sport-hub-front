@@ -5,6 +5,7 @@ import { IconComponent } from '@shared/ui/icon/icon.component';
 import type { AppError } from '../../../../core/http/app-error';
 import { daysUntil } from '../../data-access/next-event.mapper';
 import type { NextEvent } from '../../models/next-event.model';
+import { TEXTS, fill } from '@shared/texts/texts';
 
 @Component({
   selector: 'sh-next-event-card',
@@ -14,6 +15,7 @@ import type { NextEvent } from '../../models/next-event.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NextEventCardComponent {
+  protected readonly t = TEXTS;
   /** `undefined` tant que la liste n'est pas chargée, `null` s'il n'y a aucun événement à venir. */
   readonly event = input.required<NextEvent | null | undefined>();
   /** Jour de référence au format `YYYY-MM-DD`. */
@@ -35,6 +37,8 @@ export class NextEventCardComponent {
     if (days === 0) {
       return "Aujourd'hui";
     }
-    return days === 1 ? '1 jour restant' : `${days} jours restants`;
+    return days === 1
+      ? TEXTS.dashboard.nextEvent.dayLeft
+      : fill(TEXTS.dashboard.nextEvent.daysLeft, { days });
   });
 }

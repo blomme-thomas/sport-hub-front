@@ -100,7 +100,8 @@ test.describe('Séances préparées en JSON', () => {
       description: 'Seuil',
       modules: [MODULE],
     });
-    await expect(page).toHaveURL(/\/seances\/session-json$/);
+    // La fiche de la séance créée s'ouvre en modale, sans changer de page.
+    await expect(page).toHaveURL(/\/creneaux$/);
   });
 
   test('importe plusieurs séances d’un coup puis affiche le nombre créé', async ({ page }) => {
@@ -256,14 +257,15 @@ test.describe('Séances préparées en JSON', () => {
     await fiche.goto('session-course');
     await expect(fiche.heading).toBeVisible();
     await page.getByRole('button', { name: 'Modifier la séance', exact: true }).click();
-    const dialog = page.getByRole('dialog');
+    const dialog = page.getByRole('dialog').last();
     await dropPlan(dialog, SINGLE_SESSION);
     await expect(dialog.getByLabel('Durée (min)')).toHaveValue('50');
     expect(patched).toBeUndefined();
 
     await dialog.getByRole('button', { name: 'Enregistrer', exact: true }).click();
 
-    await expect(dialog).toBeHidden();
+    // Seule la fiche reste ouverte, sous la modale d’édition fermée.
+    await expect(page.getByRole('dialog')).toHaveCount(1);
     await expect(page.getByText('50 min', { exact: true })).toBeVisible();
     expect(patched).toMatchObject({
       date: '2026-11-25',

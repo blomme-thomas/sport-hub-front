@@ -1,10 +1,12 @@
 @if (errorMessage(); as message) {
   <div class="detail__error" role="alert">
     <p>{{ message }}</p>
-    <button nz-button nzType="primary" type="button" (click)="detail.reload()">Réessayer</button>
+    <button nz-button nzType="primary" type="button" (click)="detail.reload()">
+      {{ t.common.retry }}
+    </button>
   </div>
 } @else if (!detail.hasValue()) {
-  <p class="detail__status" aria-busy="true">Chargement…</p>
+  <p class="detail__status" aria-busy="true">{{ t.common.loading }}</p>
 } @else {
   <header class="detail__header">
     <h2 class="detail__title">{{ typeLabel() }}</h2>
@@ -23,16 +25,18 @@
   <div class="detail__body">
     <section class="detail__panel detail__panel--chart" aria-labelledby="detail-chart-title">
       <div class="detail__panel-head">
-        <h3 id="detail-chart-title" class="detail__panel-title">Fréquence cardiaque</h3>
+        <h3 id="detail-chart-title" class="detail__panel-title">
+          {{ t.dashboard.detail.heartRate }}
+        </h3>
         @if (canUseDistance()) {
-          <div class="detail__axis" role="group" aria-label="Axe horizontal">
+          <div class="detail__axis" role="group" [attr.aria-label]="t.dashboard.detail.axisLabel">
             <button
               type="button"
               class="detail__axis-button"
               [attr.aria-pressed]="axis() === 'time'"
               (click)="selectAxis('time')"
             >
-              Durée
+              {{ t.dashboard.detail.time }}
             </button>
             <button
               type="button"
@@ -40,7 +44,7 @@
               [attr.aria-pressed]="axis() === 'distance'"
               (click)="selectAxis('distance')"
             >
-              Km
+              {{ t.dashboard.detail.distance }}
             </button>
           </div>
         }
@@ -52,17 +56,17 @@
             style="--sh-chart-height: 100%"
             [data]="chartData()"
             [options]="chartOptions()"
-            label="Fréquence cardiaque pendant l’activité"
+            [label]="t.dashboard.detail.heartRateChart"
           />
         </div>
       } @else {
-        <p class="detail__status">Pas de courbe de fréquence cardiaque pour cette activité.</p>
+        <p class="detail__status">{{ t.dashboard.detail.noCurve }}</p>
       }
     </section>
 
     <aside class="detail__side">
       <section class="detail__panel" aria-labelledby="detail-info-title">
-        <h3 id="detail-info-title" class="detail__panel-title">Détails de la séance</h3>
+        <h3 id="detail-info-title" class="detail__panel-title">{{ t.dashboard.detail.info }}</h3>
         <dl class="detail__list">
           @for (row of details(); track row.label) {
             <div class="detail__row">
@@ -75,7 +79,9 @@
 
       @if (zones().length > 0) {
         <section class="detail__panel" aria-labelledby="detail-zones-title">
-          <h3 id="detail-zones-title" class="detail__panel-title">Zones de fréquence cardiaque</h3>
+          <h3 id="detail-zones-title" class="detail__panel-title">
+            {{ t.dashboard.detail.zonesTitle }}
+          </h3>
           <ul class="detail__zones">
             @for (zone of zones(); track zone.label) {
               <li class="detail__zone">
@@ -92,8 +98,8 @@
       }
 
       <section class="detail__panel" aria-labelledby="detail-notes-title">
-        <h3 id="detail-notes-title" class="detail__panel-title">Commentaires</h3>
-        <p class="detail__notes">Aucun commentaire pour cette séance.</p>
+        <h3 id="detail-notes-title" class="detail__panel-title">{{ t.dashboard.detail.notes }}</h3>
+        <p class="detail__notes">{{ t.dashboard.detail.noNotes }}</p>
       </section>
     </aside>
   </div>

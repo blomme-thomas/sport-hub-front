@@ -3,6 +3,7 @@ import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { WeeklyReviewState } from '../../data-access/weekly-review.state';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 /**
  * Carte « Bilan de la semaine » : suivi, point d'attention et conseil de la semaine affichée.
@@ -16,6 +17,8 @@ import { WeeklyReviewState } from '../../data-access/weekly-review.state';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeeklyReviewCardComponent {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   protected readonly state = inject(WeeklyReviewState);
   private readonly modal = inject(NzModalService);
 
@@ -31,10 +34,11 @@ export class WeeklyReviewCardComponent {
 
   protected confirmRegenerate(): void {
     this.modal.confirm({
-      nzTitle: 'Régénérer le bilan ?',
-      nzContent: 'Le bilan actuel de cette semaine sera remplacé.',
-      nzOkText: 'Régénérer',
-      nzCancelText: 'Annuler',
+      nzClassName: 'sh-modal',
+      nzTitle: TEXTS.dashboard.review.confirmTitle,
+      nzContent: TEXTS.dashboard.review.confirmContent,
+      nzOkText: TEXTS.dashboard.review.regenerate,
+      nzCancelText: TEXTS.common.cancel,
       nzOnOk: () => this.state.generate(),
     });
   }

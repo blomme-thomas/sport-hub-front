@@ -1,4 +1,5 @@
 import type { SportFamily, SportShare, SportSplitView } from '../models/sport-split.model';
+import { TEXTS } from '@shared/texts/texts';
 
 /** Durée d'une famille de sport, telle que la fournit `bySport` de `GET /api/stats/dashboard`. */
 export interface SportDurationInput {
@@ -9,10 +10,10 @@ export interface SportDurationInput {
 const FAMILY_ORDER: readonly SportFamily[] = ['running', 'cycling', 'swimming', 'other'];
 
 const FAMILY_LABELS: Record<SportFamily, string> = {
-  running: 'Course à pied',
-  cycling: 'Cyclisme',
-  swimming: 'Natation',
-  other: 'Autres',
+  running: TEXTS.dashboard.sports.running,
+  cycling: TEXTS.dashboard.sports.cycling,
+  swimming: TEXTS.dashboard.sports.swimming,
+  other: TEXTS.dashboard.sports.other,
 };
 
 const FAMILY_COLORS: Record<SportFamily, string> = {

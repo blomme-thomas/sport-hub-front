@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { TEXTS } from '@shared/texts/texts';
 
 // Chaque feature s'ajoute ici en lazy :
 // { path: 'activities', loadChildren: () => import('./features/activities/activities.routes').then((m) => m.ACTIVITIES_ROUTES) }
@@ -19,17 +20,13 @@ export const routes: Routes = [
       import('./features/creneaux/creneaux.routes').then((m) => m.CRENEAUX_ROUTES),
   },
   {
-    path: 'seances',
-    loadChildren: () => import('./features/seances/seances.routes').then((m) => m.SEANCES_ROUTES),
-  },
-  {
     path: 'parametres',
     loadChildren: () =>
       import('./features/reglages/reglages.routes').then((m) => m.REGLAGES_ROUTES),
   },
   {
     path: '**',
-    title: 'Page introuvable',
+    title: TEXTS.shell.notFound.title,
     loadComponent: () => import('./core/layout/not-found.page').then((m) => m.NotFoundPage),
   },
 ];

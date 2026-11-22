@@ -1,49 +1,11 @@
+import { TEXTS } from '@shared/texts/texts';
+
 /** Message affiché pour un code inconnu ou non mappé. */
-export const DEFAULT_ERROR_MESSAGE = 'Une erreur inattendue est survenue. Réessayez plus tard.';
+export const DEFAULT_ERROR_MESSAGE = TEXTS.errors.default;
 
 /** Message utilisateur par code (contrat API puis codes internes). Ajout : voir `docs/technique/integration-api.md`. */
 export const ERROR_MESSAGES: Readonly<Record<string, string>> = {
-  VALIDATION_FAILED: 'Certaines informations saisies sont invalides.',
-  BAD_REQUEST: 'La requête est invalide.',
-  MALFORMED_REQUEST_BODY: 'Les données envoyées sont mal formées.',
-  NOT_FOUND: 'Élément introuvable.',
-  PAYLOAD_TOO_LARGE: 'Les données envoyées sont trop volumineuses.',
-  CLIENT_ERROR: 'La requête a été refusée par le serveur.',
-  SERVICE_UNAVAILABLE: 'Le service est momentanément indisponible. Réessayez plus tard.',
-  INTERNAL_ERROR: 'Une erreur interne est survenue. Réessayez plus tard.',
-  GARMIN_ACCESS_DENIED: "L'accès à Garmin a été refusé. Vérifiez la clé de l'API Garmin Personal.",
-  GARMIN_UNAVAILABLE: 'Garmin est momentanément indisponible. Réessayez plus tard.',
-  STATS_RANGE_TOO_LARGE: 'La plage demandée est trop étendue. Réduisez la plage de dates.',
-  STATS_RANGE_INVALID: 'La date de fin doit être postérieure ou égale à la date de début.',
-  WORKOUT_GENERATION_UNAVAILABLE:
-    'La génération de séance est momentanément indisponible. Réessayez plus tard.',
-  WORKOUT_GENERATION_ACCESS_DENIED:
-    "La génération de séance n'est pas autorisée par le service d'IA.",
-  WORKOUT_GENERATION_INVALID_OUTPUT: 'La séance générée ne respecte pas le format attendu.',
-  GOAL_INVALID: "L'objectif n'est pas valide. Vérifiez les informations saisies.",
-  GOAL_NOT_FOUND: 'Objectif introuvable. Il a peut-être déjà été supprimé.',
-  GOAL_TARGET_TIME_INVALID: 'Le temps cible doit être un nombre de secondes strictement positif.',
-  SLOT_INVALID: 'Le créneau n’est pas valide. Vérifiez les informations saisies.',
-  SLOT_END_NOT_AFTER_START: 'L’heure de fin doit être postérieure à l’heure de début.',
-  SLOT_PERIOD_INVALID: 'La période demandée n’est pas valide.',
-  SLOT_PERIOD_TOO_LARGE: 'La période demandée est trop étendue.',
-  SLOT_NOT_FOUND: 'Créneau introuvable. Il a peut-être déjà été supprimé.',
-  SESSION_INVALID: 'La séance n’est pas valide. Vérifiez les informations saisies.',
-  SESSION_MODULE_INVALID: 'Un module n’est pas valide. Vérifiez sa durée et sa consigne.',
-  SESSION_DISCIPLINE_UNKNOWN: 'La discipline de la séance n’existe pas dans le référentiel.',
-  SESSION_NOT_FOUND: 'Séance introuvable. Elle a peut-être été supprimée.',
-  SESSION_IMPORT_INVALID:
-    'Le fichier contient des erreurs : aucune séance n’a été créée. Corrigez les champs indiqués.',
-  SESSION_IMPORT_ALREADY_DONE: 'Ce fichier a déjà été importé : aucune séance n’a été créée.',
-  SESSION_ALREADY_COMPLETED: 'Cette séance est réalisée : elle ne peut plus être modifiée.',
-  WEEKLY_REVIEW_INVALID_WEEK: 'La semaine demandée n’est pas valide.',
-  WEEKLY_REVIEW_INVALID_OUTPUT: 'Le bilan généré est incomplet. Réessayez la génération.',
-  WEEKLY_REVIEW_UNAVAILABLE:
-    'Le bilan ne peut pas être généré pour le moment. Réessayez plus tard.',
-  WEEKLY_REVIEW_ACCESS_DENIED: 'La génération du bilan n’est pas autorisée par le service d’IA.',
-  NETWORK_ERROR: 'Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.',
-  TIMEOUT: 'Le serveur met trop de temps à répondre. Réessayez dans quelques instants.',
-  INVALID_RESPONSE: 'Le serveur a renvoyé une réponse inattendue. Réessayez plus tard.',
+  ...TEXTS.errors.messages,
   UNKNOWN: DEFAULT_ERROR_MESSAGE,
 };
 

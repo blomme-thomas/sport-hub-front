@@ -6,6 +6,7 @@ import type { ChartData, ChartOptions } from 'chart.js';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { PERFORMANCE_SERIES_LABEL } from '../../data-access/performance.mapper';
 import { PerformanceState } from '../../data-access/performance.state';
+import { TEXTS } from '@shared/texts/texts';
 
 /** Durée de la transition quand les données changent (jour ↔ semaine), sans recréer le graphique. */
 const UPDATE_ANIMATION_MS = 350;
@@ -51,6 +52,7 @@ const POINT_RADIUS = 3;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PerformanceCardComponent {
+  protected readonly t = TEXTS;
   protected readonly state = inject(PerformanceState);
   protected readonly chartOptions = performanceChartOptions();
 

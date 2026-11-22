@@ -1,6 +1,7 @@
 /** Occurrence d'une séance sur la période, telle que renvoyée par `GET /api/sessions?from&to`. */
 export interface SessionOccurrenceApi {
   sessionId: string;
+  title: string | null;
   date: string;
   /** Heure `HH:mm`, `null` si la séance n'a pas d'heure (elle n'apparaît pas sur la grille). */
   startTime: string | null;

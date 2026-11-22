@@ -33,6 +33,7 @@ import {
   type ObjectiveErrorKey,
 } from '../../../../shared/utils/session-objectives';
 import type { CreateSessionRequestApi } from '../../data-access/sessions-write.api';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 /** Durée proposée quand aucune plage n'est choisie sur la grille. */
 const DEFAULT_DURATION_MINUTES = 60;
@@ -68,6 +69,8 @@ export interface DisciplineOption {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionFormComponent implements OnInit {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   readonly defaults = input.required<SessionDefaults>();
   readonly disciplines = input<readonly DisciplineOption[]>([]);
   readonly submitting = input(false);
@@ -182,7 +185,7 @@ export class SessionFormComponent implements OnInit {
     });
     this.importedModules.set(prefill.modules);
     this.importSummary.set(
-      `Séance pré-remplie avec ${prefill.modules.length} module(s). Relisez les valeurs, puis créez la séance.`,
+      fill(TEXTS.creneaux.session.prefilled, { count: prefill.modules.length }),
     );
   }
 

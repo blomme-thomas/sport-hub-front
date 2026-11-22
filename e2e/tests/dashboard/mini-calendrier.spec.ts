@@ -79,7 +79,9 @@ test.describe('Tableau de bord : mini-calendrier de la semaine', () => {
     );
 
     await icons.click();
-    await expect(page).toHaveURL(/\/seances\/session-course$/);
+    // La fiche s'ouvre en modale, sans changer de page.
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page).toHaveURL(/\/$/);
   });
   test('la grille affiche le mois entier, avec aujourd’hui et la semaine en cours surlignés', async ({
     page,

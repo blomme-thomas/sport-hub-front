@@ -2,14 +2,18 @@
   <header class="week-mini__header">
     <h2 id="week-mini-title" class="week-mini__title">
       <sh-icon name="calendar" color="var(--sh-success)" />
-      <span>Calendrier</span>
+      <span>{{ t.dashboard.miniCalendar.heading }}</span>
     </h2>
-    <div class="week-mini__nav" role="group" aria-label="Choisir le mois">
+    <div
+      class="week-mini__nav"
+      role="group"
+      [attr.aria-label]="t.dashboard.miniCalendar.chooseMonth"
+    >
       <button
         nz-button
         nzSize="small"
         type="button"
-        aria-label="Précédent"
+        [attr.aria-label]="t.dashboard.miniCalendar.previous"
         (click)="previous.emit()"
       >
         ‹
@@ -17,7 +21,13 @@
       <button nz-button nzSize="small" type="button" (click)="current.emit()">
         {{ title() }}
       </button>
-      <button nz-button nzSize="small" type="button" aria-label="Suivant" (click)="next.emit()">
+      <button
+        nz-button
+        nzSize="small"
+        type="button"
+        [attr.aria-label]="t.dashboard.miniCalendar.next"
+        (click)="next.emit()"
+      >
         ›
       </button>
     </div>
@@ -26,10 +36,12 @@
   @if (error(); as err) {
     <div class="week-mini__error" role="alert">
       <p>{{ err.userMessage }}</p>
-      <button nz-button nzSize="small" type="button" (click)="retry.emit()">Réessayer</button>
+      <button nz-button nzSize="small" type="button" (click)="retry.emit()">
+        {{ t.common.retry }}
+      </button>
     </div>
   } @else if (loading()) {
-    <p class="week-mini__status" role="status">Chargement des séances…</p>
+    <p class="week-mini__status" role="status">{{ t.dashboard.miniCalendar.loading }}</p>
   } @else {
     <ng-template #slotItems let-sessions="sessions" let-realized="realized">
       <ul class="week-mini__sessions">
@@ -55,8 +67,8 @@
               class="week-mini__realized"
               role="img"
               [style.background-color]="activity.discipline.color"
-              [attr.aria-label]="'Réalisé : ' + activity.label"
-              [attr.title]="'Réalisé : ' + activity.label"
+              [attr.aria-label]="fill(t.dashboard.miniCalendar.realized, { label: activity.label })"
+              [attr.title]="fill(t.dashboard.miniCalendar.realized, { label: activity.label })"
             >
               <sh-icon [name]="activity.discipline.icon" color="var(--sh-surface)" />
             </span>
@@ -71,7 +83,10 @@
       }
     </ul>
 
-    <ol class="week-mini__grid week-mini__grid--month" aria-label="Séances du mois">
+    <ol
+      class="week-mini__grid week-mini__grid--month"
+      [attr.aria-label]="t.dashboard.miniCalendar.monthGrid"
+    >
       @for (day of days(); track day.date) {
         <li
           class="week-mini__day"
@@ -84,7 +99,7 @@
           <button
             type="button"
             class="week-mini__day-hit"
-            [attr.aria-label]="'Ouvrir le jour ' + day.date"
+            [attr.aria-label]="fill(t.dashboard.miniCalendar.openDay, { date: day.date })"
             (click)="daySelected.emit(day.date)"
           ></button>
           <span class="week-mini__day-label">{{ dayNumber(day.date) }}</span>

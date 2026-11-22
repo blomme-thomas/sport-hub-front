@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, input, output } fro
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { PAUSE_REASON_LABELS, type PauseInput, type PauseReason } from '../../models/pause.model';
+import { TEXTS } from '@shared/texts/texts';
 
 /** Valeurs initiales du formulaire : création (dates pré-remplies) ou modification d'une pause. */
 export interface PauseDraft {
@@ -24,6 +25,7 @@ const REASONS: readonly PauseReason[] = ['blessure', 'vacances', 'autre'];
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PauseFormComponent implements OnInit {
+  protected readonly t = TEXTS;
   private readonly fb = inject(FormBuilder);
 
   readonly draft = input.required<PauseDraft>();

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import type { DashboardPeriod } from '../../models/training-stats.model';
+import { TEXTS } from '@shared/texts/texts';
 
 interface PeriodOption {
   value: DashboardPeriod;
@@ -10,8 +11,16 @@ interface PeriodOption {
 }
 
 const OPTIONS: readonly PeriodOption[] = [
-  { value: 'week', label: 'Semaine', spokenLabel: 'Semaine en cours' },
-  { value: 'month', label: 'Mois', spokenLabel: 'Mois en cours' },
+  {
+    value: 'week',
+    label: TEXTS.dashboard.period.week,
+    spokenLabel: TEXTS.dashboard.period.spokenWeek,
+  },
+  {
+    value: 'month',
+    label: TEXTS.dashboard.period.month,
+    spokenLabel: TEXTS.dashboard.period.spokenMonth,
+  },
 ];
 
 /**
@@ -26,6 +35,7 @@ const OPTIONS: readonly PeriodOption[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PeriodSelectorComponent {
+  protected readonly t = TEXTS;
   readonly value = input.required<DashboardPeriod>();
   readonly changed = output<DashboardPeriod>();
 

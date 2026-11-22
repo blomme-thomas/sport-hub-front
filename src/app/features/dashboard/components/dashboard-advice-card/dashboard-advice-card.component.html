@@ -6,37 +6,39 @@
   <header class="advice__header">
     <h2 id="dashboard-advice-heading" class="advice__title">
       <sh-icon name="flag" color="var(--sh-accent-text)" />
-      <span>Conseil IA personnalisé</span>
+      <span>{{ t.dashboard.advice.heading }}</span>
     </h2>
   </header>
 
   @if (errorMessage(); as message) {
     <div class="advice__error" role="alert">
       <p>{{ message }}</p>
-      <button nz-button type="button" (click)="retry.emit()">Réessayer</button>
+      <button nz-button type="button" (click)="retry.emit()">{{ t.common.retry }}</button>
     </div>
   } @else if (advice(); as value) {
     @if (value.insufficient) {
-      <p class="advice__insufficient">Données insuffisantes pour un conseil cette semaine.</p>
+      <p class="advice__insufficient">{{ t.dashboard.advice.insufficient }}</p>
     } @else {
       <p class="advice__text">{{ value.text }}</p>
     }
     <footer class="advice__footer">
-      <span class="advice__meta">Généré le {{ generatedLabel() }}</span>
+      <span class="advice__meta">{{
+        fill(t.dashboard.advice.generatedOn, { date: generatedLabel() })
+      }}</span>
       <div class="advice__actions">
         <button nz-button type="button" [disabled]="generating()" (click)="generate.emit()">
-          Régénérer
+          {{ t.dashboard.advice.regenerate }}
         </button>
-        <button nz-button type="button" disabled title="Page du plan d'entraînement non disponible">
-          Voir le plan d’entraînement
+        <button nz-button type="button" disabled [attr.title]="t.dashboard.advice.planUnavailable">
+          {{ t.dashboard.advice.plan }}
         </button>
       </div>
     </footer>
   } @else if (loading()) {
-    <p class="advice__status">Chargement…</p>
+    <p class="advice__status">{{ t.common.loading }}</p>
   } @else {
     <div class="advice__empty">
-      <p>Aucun conseil pour cette semaine.</p>
+      <p>{{ t.dashboard.advice.none }}</p>
       <button
         nz-button
         nzType="primary"
@@ -44,12 +46,12 @@
         [disabled]="generating()"
         (click)="generate.emit()"
       >
-        Générer le conseil
+        {{ t.dashboard.advice.generate }}
       </button>
     </div>
   }
 
   @if (generating()) {
-    <p class="advice__status" role="status">Génération en cours…</p>
+    <p class="advice__status" role="status">{{ t.dashboard.advice.generating }}</p>
   }
 </article>

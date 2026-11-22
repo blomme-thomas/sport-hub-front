@@ -1,11 +1,11 @@
 <nz-radio-group
   role="radiogroup"
-  aria-label="Granularité"
+  [attr.aria-label]="t.dashboard.granularity.group"
   nzButtonStyle="solid"
   [formControl]="control"
 >
   <!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
-  <label nz-radio-button [nzValue]="'week'">Semaine</label>
-  <label nz-radio-button [nzValue]="'month'">Mois</label>
+  <label nz-radio-button [nzValue]="'week'">{{ t.dashboard.granularity.week }}</label>
+  <label nz-radio-button [nzValue]="'month'">{{ t.dashboard.granularity.month }}</label>
   <!-- eslint-enable @angular-eslint/template/label-has-associated-control -->
 </nz-radio-group>

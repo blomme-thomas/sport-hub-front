@@ -6,7 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { SessionModalService } from '@core/layout/session-modal.service';
 import { disciplineStyleOf } from '@shared/ui/discipline/discipline-style';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { firstValueFrom } from 'rxjs';
@@ -26,6 +26,7 @@ import {
   ActivityDetailModalComponent,
   type ActivityDetailModalData,
 } from '../activity-detail-modal/activity-detail-modal.component';
+import { TEXTS } from '@shared/texts/texts';
 
 export interface DayDetailModalData {
   /** Date du jour, `YYYY-MM-DD`. */
@@ -34,11 +35,11 @@ export interface DayDetailModalData {
 
 /** Zones cardiaques affichées, avec leur nom et leur couleur (mêmes tokens que la carte Zones). */
 const ZONES = [
-  { label: 'Z1', name: 'Récupération', color: '--sh-text-muted' },
-  { label: 'Z2', name: 'Endurance', color: '--sh-success' },
-  { label: 'Z3', name: 'Tempo', color: '--sh-orange' },
-  { label: 'Z4', name: 'Seuil', color: '--sh-danger' },
-  { label: 'Z5', name: 'Puissance', color: '--sh-violet' },
+  { label: 'Z1', name: TEXTS.dashboard.zones.names.z1, color: '--sh-text-muted' },
+  { label: 'Z2', name: TEXTS.dashboard.zones.names.z2, color: '--sh-success' },
+  { label: 'Z3', name: TEXTS.dashboard.zones.names.z3, color: '--sh-orange' },
+  { label: 'Z4', name: TEXTS.dashboard.zones.names.z4, color: '--sh-danger' },
+  { label: 'Z5', name: TEXTS.dashboard.zones.names.z5, color: '--sh-violet' },
 ] as const;
 
 const NO_VALUE = '—';
@@ -63,10 +64,11 @@ interface ZoneRow {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DayDetailModalComponent {
+  protected readonly t = TEXTS;
   private readonly data = inject<DayDetailModalData>(NZ_MODAL_DATA);
   private readonly state = inject(WeekMiniCalendarState);
   private readonly api = inject(RecentActivitiesApi);
-  private readonly router = inject(Router);
+  private readonly sessionModal = inject(SessionModalService);
   private readonly modals = inject(NzModalService);
   private readonly viewContainer = inject(ViewContainerRef);
   private readonly modalRef = inject(NzModalRef, { optional: true });
@@ -119,23 +121,22 @@ export class DayDetailModalComponent {
 
   /** Heure de début de la séance, ou « Sans heure ». */
   protected timeOf(session: WeekMiniSession): string {
-    return session.startTime ?? 'Sans heure';
+    return session.startTime ?? TEXTS.dashboard.detail.noSample;
   }
 
   protected openSession(id: string): void {
-    this.modalRef?.close();
-    void this.router.navigate(['/seances', id]);
+    this.sessionModal.open(id, { backToDay: true });
   }
 
   /** Ouvre le détail d'une activité par-dessus la modale du jour. */
   protected openActivity(id: string): void {
     this.modals.create({
-      nzTitle: 'Détail de la séance',
+      nzTitle: TEXTS.dashboard.detailTitle,
       nzContent: ActivityDetailModalComponent,
       nzData: { id } satisfies ActivityDetailModalData,
       nzViewContainerRef: this.viewContainer,
       nzWidth: 'min(1400px, 96vw)',
-      nzClassName: 'sh-activity-modal',
+      nzClassName: 'sh-modal',
       nzKeyboard: true,
       nzFooter: null,
     });

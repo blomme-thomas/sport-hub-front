@@ -1,4 +1,5 @@
 import type { ZonesCardView, ZoneShareView } from '../models/zones-card.model';
+import { TEXTS } from '@shared/texts/texts';
 
 /**
  * Index (0 à 4) des zones considérées comme « optimales » pour la carte : Z2 et Z3, zones aérobies de base.
@@ -9,13 +10,19 @@ export const OPTIMAL_ZONE_INDEXES: readonly number[] = [1, 2];
 /** Part minimale du temps en zone optimale pour le message « Bon équilibre ». */
 export const GOOD_BALANCE_THRESHOLD_PERCENT = 60;
 
-export const GOOD_BALANCE_MESSAGE = 'Bon équilibre en zone optimale';
-export const REBALANCE_MESSAGE = 'Zone optimale à renforcer';
+export const GOOD_BALANCE_MESSAGE = TEXTS.dashboard.zones.good;
+export const REBALANCE_MESSAGE = TEXTS.dashboard.zones.rebalance;
 
 const ZONE_LABELS = ['Z1', 'Z2', 'Z3', 'Z4', 'Z5'] as const;
 
 /** Noms des zones, repris de la maquette (voir `heart-rate-chart.config.ts`). */
-const ZONE_NAMES = ['Récupération', 'Endurance', 'Tempo', 'Seuil', 'Puissance'] as const;
+const ZONE_NAMES = [
+  TEXTS.dashboard.zones.names.z1,
+  TEXTS.dashboard.zones.names.z2,
+  TEXTS.dashboard.zones.names.z3,
+  TEXTS.dashboard.zones.names.z4,
+  TEXTS.dashboard.zones.names.z5,
+] as const;
 
 const ZONE_COLORS = [
   '--sh-text-muted',

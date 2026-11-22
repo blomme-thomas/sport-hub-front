@@ -6,19 +6,26 @@
   <header class="review__header">
     <h2 id="weekly-review-heading" class="review__title">
       <sh-icon name="flag" color="var(--sh-accent-text)" />
-      <span>Bilan de la semaine</span>
+      <span>{{ t.dashboard.review.heading }}</span>
     </h2>
-    <div class="review__nav" role="group" aria-label="Choisir la semaine">
+    <div class="review__nav" role="group" [attr.aria-label]="t.dashboard.review.chooseWeek">
       <button
         nz-button
         type="button"
-        aria-label="Semaine précédente"
+        [attr.aria-label]="t.dashboard.review.previous"
         (click)="state.previousWeek()"
       >
         ‹
       </button>
-      <button nz-button type="button" (click)="state.currentWeek()">Cette semaine</button>
-      <button nz-button type="button" aria-label="Semaine suivante" (click)="state.nextWeek()">
+      <button nz-button type="button" (click)="state.currentWeek()">
+        {{ t.dashboard.review.current }}
+      </button>
+      <button
+        nz-button
+        type="button"
+        [attr.aria-label]="t.dashboard.review.next"
+        (click)="state.nextWeek()"
+      >
         ›
       </button>
     </div>
@@ -29,29 +36,31 @@
   @if (state.error(); as failure) {
     <div class="review__error" role="alert">
       <p>{{ failure.userMessage }}</p>
-      <button nz-button type="button" (click)="state.reload()">Réessayer</button>
+      <button nz-button type="button" (click)="state.reload()">{{ t.common.retry }}</button>
     </div>
   } @else if (state.review(); as review) {
     @if (review.generic) {
-      <p class="review__generic">Semaine sans séance prévue : bilan générique.</p>
+      <p class="review__generic">{{ t.dashboard.review.generic }}</p>
     }
     <dl class="review__parts">
-      <dt>Suivi</dt>
+      <dt>{{ t.dashboard.review.follow }}</dt>
       <dd>{{ review.suivi }}</dd>
-      <dt>Point d’attention</dt>
+      <dt>{{ t.dashboard.review.attention }}</dt>
       <dd>{{ review.pointAttention }}</dd>
-      <dt>Conseil</dt>
+      <dt>{{ t.dashboard.review.advice }}</dt>
       <dd>{{ review.conseil }}</dd>
     </dl>
     <footer class="review__footer">
-      <span class="review__meta">Généré le {{ generatedLabel() }}</span>
+      <span class="review__meta">{{
+        fill(t.dashboard.review.generatedOn, { date: generatedLabel() })
+      }}</span>
       <button nz-button type="button" [disabled]="state.generating()" (click)="confirmRegenerate()">
-        Régénérer
+        {{ t.dashboard.review.regenerate }}
       </button>
     </footer>
   } @else if (state.missing()) {
     <div class="review__empty">
-      <p>Aucun bilan pour cette semaine.</p>
+      <p>{{ t.dashboard.review.none }}</p>
       <button
         nz-button
         nzType="primary"
@@ -59,14 +68,14 @@
         [disabled]="state.generating()"
         (click)="state.generate()"
       >
-        Générer le bilan
+        {{ t.dashboard.review.generate }}
       </button>
     </div>
   } @else {
-    <p class="review__status">Chargement…</p>
+    <p class="review__status">{{ t.common.loading }}</p>
   }
 
   @if (state.generating()) {
-    <p class="review__status" role="status">Génération en cours…</p>
+    <p class="review__status" role="status">{{ t.dashboard.review.generating }}</p>
   }
 </article>

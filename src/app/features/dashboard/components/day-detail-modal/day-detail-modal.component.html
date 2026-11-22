@@ -1,32 +1,32 @@
 <div class="day">
-  <dl class="day__summary" aria-label="Résumé du jour">
+  <dl class="day__summary" [attr.aria-label]="t.dashboard.day.summary">
     <div class="day__stat">
-      <dt>Séances planifiées</dt>
+      <dt>{{ t.dashboard.day.sessionsPlanned }}</dt>
       <dd>{{ sessions.length }}</dd>
     </div>
     <div class="day__stat">
-      <dt>Activités réalisées</dt>
+      <dt>{{ t.dashboard.day.activitiesDone }}</dt>
       <dd>{{ activityRows.length }}</dd>
     </div>
     <div class="day__stat">
-      <dt>Durée réalisée</dt>
+      <dt>{{ t.dashboard.day.duration }}</dt>
       <dd>{{ summary().duration }}</dd>
     </div>
     <div class="day__stat">
-      <dt>Distance</dt>
+      <dt>{{ t.dashboard.day.distance }}</dt>
       <dd>{{ summary().distance }}</dd>
     </div>
     <div class="day__stat">
-      <dt>FC moyenne</dt>
+      <dt>{{ t.dashboard.day.heartRate }}</dt>
       <dd>{{ summary().heartRate }}</dd>
     </div>
   </dl>
 
   <div class="day__columns">
     <section class="day__section" aria-labelledby="day-sessions-heading">
-      <h3 id="day-sessions-heading" class="day__heading">Séances planifiées</h3>
+      <h3 id="day-sessions-heading" class="day__heading">{{ t.dashboard.day.sessionsPlanned }}</h3>
       @if (sessions.length === 0) {
-        <p class="day__empty">Aucune séance planifiée</p>
+        <p class="day__empty">{{ t.dashboard.day.noPlanned }}</p>
       } @else {
         <ul class="day__list">
           @for (session of sessions; track session.id) {
@@ -48,9 +48,9 @@
     </section>
 
     <section class="day__section" aria-labelledby="day-activities-heading">
-      <h3 id="day-activities-heading" class="day__heading">Activités réalisées</h3>
+      <h3 id="day-activities-heading" class="day__heading">{{ t.dashboard.day.activitiesDone }}</h3>
       @if (activityRows.length === 0) {
-        <p class="day__empty">Aucune activité réalisée</p>
+        <p class="day__empty">{{ t.dashboard.day.noActivities }}</p>
       } @else {
         <ul class="day__list">
           @for (item of activityRows; track item.id) {
@@ -73,11 +73,11 @@
   </div>
 
   <section class="day__section" aria-labelledby="day-zones-heading">
-    <h3 id="day-zones-heading" class="day__heading">Zones de fréquence cardiaque</h3>
+    <h3 id="day-zones-heading" class="day__heading">{{ t.dashboard.day.zonesHeading }}</h3>
     @if (zonesLoading()) {
-      <p class="day__empty" role="status">Chargement…</p>
+      <p class="day__empty" role="status">{{ t.common.loading }}</p>
     } @else if (!hasZones()) {
-      <p class="day__empty">Pas de fréquence cardiaque sur ce jour</p>
+      <p class="day__empty">{{ t.dashboard.day.noHeartRate }}</p>
     } @else {
       <div class="day__bar" aria-hidden="true">
         @for (zone of zoneRows(); track zone.label) {
@@ -88,7 +88,7 @@
           ></span>
         }
       </div>
-      <ul class="day__zones" aria-label="Légende des zones cardiaques du jour">
+      <ul class="day__zones" [attr.aria-label]="t.dashboard.day.legend">
         @for (zone of zoneRows(); track zone.label) {
           <li>
             <span class="day__zone-head">

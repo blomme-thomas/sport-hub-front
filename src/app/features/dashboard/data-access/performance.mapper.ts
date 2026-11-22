@@ -1,7 +1,8 @@
 import { isoWeekOf } from '../../../shared/utils/iso-week';
 import type { DashboardKpisResponseApi } from '../models/dashboard-kpis.api-model';
+import { TEXTS } from '@shared/texts/texts';
 
-export const PERFORMANCE_SERIES_LABEL = 'Durée (h)';
+export const PERFORMANCE_SERIES_LABEL = TEXTS.dashboard.chart.durationSeries;
 const SECONDS_PER_HOUR = 3600;
 const HOURS_DECIMALS = 100;
 

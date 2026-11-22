@@ -1,4 +1,4 @@
-<a class="shell__skip-link" href="#contenu">Aller au contenu</a>
+<a class="shell__skip-link" href="#contenu">{{ t.shell.skipLink }}</a>
 
 <div class="shell">
   <button
@@ -8,7 +8,7 @@
     [attr.aria-expanded]="menuOpen()"
     (click)="toggleMenu()"
   >
-    <span class="visually-hidden">{{ menuOpen() ? 'Fermer le menu' : 'Ouvrir le menu' }}</span>
+    <span class="visually-hidden">{{ menuOpen() ? t.shell.menuClose : t.shell.menuOpen }}</span>
     <span aria-hidden="true">☰</span>
   </button>
 
@@ -16,7 +16,7 @@
     id="navigation-principale"
     class="shell__sidebar"
     [class.shell__sidebar--open]="menuOpen()"
-    aria-label="Navigation principale"
+    [attr.aria-label]="t.shell.navigation"
   >
     <a class="shell__brand" routerLink="/" (click)="closeMenu()">
       <svg class="shell__logo" viewBox="0 0 48 24" aria-hidden="true" focusable="false">
@@ -29,7 +29,7 @@
           stroke-linejoin="round"
         />
       </svg>
-      <span>Sport Hub</span>
+      <span>{{ t.shell.brand }}</span>
     </a>
 
     <nav>
@@ -43,7 +43,7 @@
             ariaCurrentWhenActive="page"
             (click)="closeMenu()"
           >
-            Tableau de bord
+            {{ t.shell.menu.dashboard }}
           </a>
         </li>
         <li>
@@ -54,7 +54,7 @@
             ariaCurrentWhenActive="page"
             (click)="closeMenu()"
           >
-            Objectifs
+            {{ t.shell.menu.goals }}
           </a>
         </li>
         <li>
@@ -65,7 +65,7 @@
             ariaCurrentWhenActive="page"
             (click)="closeMenu()"
           >
-            Calendrier
+            {{ t.shell.menu.calendar }}
           </a>
         </li>
         <li>
@@ -76,7 +76,7 @@
             ariaCurrentWhenActive="page"
             (click)="closeMenu()"
           >
-            Paramètres
+            {{ t.shell.menu.settings }}
           </a>
         </li>
         @for (label of comingSoon; track label) {
@@ -84,7 +84,7 @@
             <span
               class="shell__link shell__link--disabled"
               aria-disabled="true"
-              title="Bientôt disponible"
+              [attr.title]="t.shell.soon"
             >
               {{ label }}
             </span>

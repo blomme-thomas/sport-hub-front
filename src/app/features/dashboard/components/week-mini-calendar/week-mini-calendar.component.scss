@@ -239,7 +239,13 @@
   cursor: pointer;
 }
 
+/* Le conteneur des séances laisse passer les clics vers le bouton de la case ; seuls les pictogrammes restent cliquables. */
 .week-mini__grid--month .week-mini__sessions {
   position: relative;
   z-index: 1;
+  pointer-events: none;
+}
+
+.week-mini__grid--month .week-mini__session {
+  pointer-events: auto;
 }

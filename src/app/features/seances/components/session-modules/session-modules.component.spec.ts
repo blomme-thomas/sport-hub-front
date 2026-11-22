@@ -32,7 +32,7 @@ async function renderList(
     typeChanged: vi.fn(),
     durationChanged: vi.fn(),
     instructionChanged: vi.fn(),
-    moved: vi.fn(),
+    reordered: vi.fn(),
     removed: vi.fn(),
   };
   await render(SessionModulesComponent, {
@@ -93,22 +93,36 @@ describe('SessionModulesComponent', () => {
     expect(typeChanged).toHaveBeenCalledWith({ key: 1, type: 'educatifs' });
   });
 
-  it('désactive monter pour le premier module et descendre pour le dernier', async () => {
-    await renderList();
+  it('déplace un module par glisser-déposer depuis sa poignée', async () => {
+    const { reordered } = await renderList();
+    const items = screen.getByRole('list', { name: 'Modules de la séance' }).querySelectorAll('li');
+    const dataTransfer = { setData: vi.fn(), effectAllowed: '', dropEffect: '' };
 
-    expect(screen.getByRole('button', { name: 'Monter le module 1' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Descendre le module 2' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Descendre le module 1' })).toBeEnabled();
+    fireEvent.pointerDown(items[0]?.querySelector('.module__handle') as Element);
+    fireEvent.dragStart(items[0] as Element, { dataTransfer });
+    fireEvent.dragOver(items[1] as Element, { dataTransfer });
+    fireEvent.drop(items[1] as Element, { dataTransfer });
+
+    expect(reordered).toHaveBeenCalledWith({ key: 1, toIndex: 1 });
   });
 
-  it('émet le déplacement et la suppression demandés', async () => {
-    const user = userEvent.setup();
-    const { moved, removed } = await renderList();
+  it('n’autorise le glisser que depuis la poignée', async () => {
+    const { reordered } = await renderList();
+    const items = screen.getByRole('list', { name: 'Modules de la séance' }).querySelectorAll('li');
+    const dataTransfer = { setData: vi.fn(), effectAllowed: '', dropEffect: '' };
 
-    await user.click(screen.getByRole('button', { name: 'Descendre le module 1' }));
+    fireEvent.dragStart(items[0] as Element, { dataTransfer });
+    fireEvent.drop(items[1] as Element, { dataTransfer });
+
+    expect(reordered).not.toHaveBeenCalled();
+  });
+
+  it('émet la suppression demandée', async () => {
+    const user = userEvent.setup();
+    const { removed } = await renderList();
+
     await user.click(screen.getByRole('button', { name: 'Supprimer le module 2' }));
 
-    expect(moved).toHaveBeenCalledWith({ key: 1, delta: 1 });
     expect(removed).toHaveBeenCalledWith(2);
   });
 

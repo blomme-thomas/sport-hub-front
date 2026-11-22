@@ -10,7 +10,7 @@
       @if (data.detail.variation; as variation) {
         <sh-variation-badge [variation]="variation" />
       } @else {
-        <p class="detail__muted">Variation par rapport à la période précédente : —</p>
+        <p class="detail__muted">{{ t.dashboard.cardDetail.variationNone }}</p>
       }
       @if (chart; as line) {
         <div class="detail__chart">
@@ -21,19 +21,21 @@
   }
   @case ('split') {
     <div class="detail">
-      <p class="detail__muted">Total : {{ data.detail.totalLabel }}</p>
+      <p class="detail__muted">{{ t.dashboard.sportSplit.total }} : {{ data.detail.totalLabel }}</p>
       @if (data.detail.rows.length === 0) {
-        <p class="detail__muted">Aucune séance sur cette période</p>
+        <p class="detail__muted">{{ t.dashboard.cardDetail.noSession }}</p>
       } @else {
         <table class="detail__table">
           <caption class="visually-hidden">
-            Répartition détaillée par sport
+            {{
+              t.dashboard.cardDetail.splitCaption
+            }}
           </caption>
           <thead>
             <tr>
-              <th scope="col">Sport</th>
-              <th scope="col">Durée</th>
-              <th scope="col">Part</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.sport }}</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.duration }}</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.share }}</th>
             </tr>
           </thead>
           <tbody>
@@ -60,25 +62,27 @@
     <div class="detail">
       @if (data.detail.optimalPercent !== null) {
         <p class="detail__muted">
-          Zone optimale (Z2 et Z3) : {{ data.detail.optimalPercent }} %
+          {{ fill(t.dashboard.cardDetail.optimal, { percent: data.detail.optimalPercent }) }}
           @if (data.detail.statusMessage; as message) {
             · {{ message }}
           }
         </p>
       }
       @if (data.detail.rows.length === 0) {
-        <p class="detail__muted">Aucune donnée de zone sur cette période</p>
+        <p class="detail__muted">{{ t.dashboard.cardDetail.noZone }}</p>
       } @else {
         <table class="detail__table">
           <caption class="visually-hidden">
-            Temps passé par zone de fréquence cardiaque
+            {{
+              t.dashboard.cardDetail.zonesCaption
+            }}
           </caption>
           <thead>
             <tr>
-              <th scope="col">Zone</th>
-              <th scope="col">Seuil</th>
-              <th scope="col">Temps</th>
-              <th scope="col">Part</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.zone }}</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.threshold }}</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.time }}</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.share }}</th>
             </tr>
           </thead>
           <tbody>
@@ -94,7 +98,7 @@
                 </td>
                 <td>
                   @if (row.floorBpm !== null) {
-                    à partir de {{ row.floorBpm }} bpm
+                    {{ fill(t.dashboard.cardDetail.fromBpm, { bpm: row.floorBpm }) }}
                   } @else {
                     —
                   }
@@ -111,5 +115,5 @@
 }
 
 <div class="detail__footer">
-  <button nz-button nzType="primary" type="button" (click)="close()">Fermer</button>
+  <button nz-button nzType="primary" type="button" (click)="close()">{{ t.common.close }}</button>
 </div>

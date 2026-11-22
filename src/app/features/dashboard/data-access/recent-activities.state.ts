@@ -11,7 +11,7 @@ import { toRecentActivity } from './recent-activities.mapper';
 const PAGE_SIZE = 20;
 
 /**
- * État du bloc « Détails par séance » : les séances les plus récentes (au plus PAGE_SIZE).
+ * État du bloc « Détails par activités » : les séances les plus récentes (au plus PAGE_SIZE).
  * `activities` vaut `undefined` tant que la liste n'est pas chargée. La date de référence est figée à la création.
  * Fourni au niveau de la page, séparément de `DashboardState` pour que les erreurs restent indépendantes.
  */

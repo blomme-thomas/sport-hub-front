@@ -7,12 +7,13 @@ import {
   signal,
 } from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { TEXTS, fill } from '@shared/texts/texts';
 import { toHoursMinutes, toTotalSeconds } from '../data-access/weekly-target.format';
 import { UserSettingsState } from '../data-access/user-settings.state';
 
 const MAX_HOURS = 99;
 const MAX_MINUTES = 59;
-const INVALID_MESSAGE = 'Indiquez une durée d’au moins une minute, avec des minutes entre 0 et 59.';
+const INVALID_MESSAGE = TEXTS.reglages.weeklyTarget.invalid;
 
 @Component({
   selector: 'sh-reglages-page',
@@ -24,6 +25,7 @@ const INVALID_MESSAGE = 'Indiquez une durée d’au moins une minute, avec des m
 })
 export class ReglagesPage {
   protected readonly state = inject(UserSettingsState);
+  protected readonly t = TEXTS;
   protected readonly maxHours = MAX_HOURS;
   protected readonly maxMinutes = MAX_MINUTES;
 
@@ -55,7 +57,10 @@ export class ReglagesPage {
       return null;
     }
     const { hours, minutes } = toHoursMinutes(seconds);
-    return `${hours}h ${String(minutes).padStart(2, '0')}`;
+    return fill(TEXTS.reglages.weeklyTarget.format, {
+      hours,
+      minutes: String(minutes).padStart(2, '0'),
+    });
   });
 
   protected readonly touched = signal(false);

@@ -1,4 +1,4 @@
-<div class="week-grid" role="region" aria-label="Grille de la semaine">
+<div class="week-grid" role="region" [attr.aria-label]="t.creneaux.grid.label">
   <div class="week-grid__inner">
     <div class="week-grid__head" aria-hidden="true">
       <span class="week-grid__corner"></span>
@@ -25,6 +25,9 @@
           (pointerup)="onColumnPointerUp($event)"
           (pointercancel)="onColumnPointerCancel()"
         >
+          @for (hour of hours(); track hour.top) {
+            <span class="week-grid__hline" [style.top.px]="hour.top" aria-hidden="true"></span>
+          }
           @for (block of column.blocks; track block.key) {
             <div
               class="week-grid__item"
@@ -59,23 +62,67 @@
                     <sh-icon name="check" color="var(--sh-success)" />
                   </span>
                 }
+                @if (block.session; as session) {
+                  @if (session.title) {
+                    <span class="week-grid__slot-title">{{ session.title }}</span>
+                  }
+                }
                 <span class="week-grid__slot-time">{{ block.timeRange }}</span>
                 @if (block.slot?.recurrence === 'hebdomadaire') {
-                  <span class="week-grid__slot-tag">Chaque semaine</span>
+                  <span class="week-grid__slot-tag">{{ t.creneaux.session.recurrence }}</span>
                 }
                 @if (block.done) {
-                  <span class="week-grid__slot-tag">Réalisée, déplacement impossible</span>
+                  <span class="week-grid__slot-tag">{{ t.creneaux.session.realized }}</span>
                 }
               </button>
               @if (block.editable) {
                 <button
                   type="button"
                   class="week-grid__duration"
-                  [attr.aria-label]="'Modifier la durée de la séance ' + block.timeRange"
+                  [attr.aria-label]="
+                    fill(t.creneaux.session.editDuration, { time: block.timeRange })
+                  "
                   (click)="onDurationClick(block)"
                 >
-                  Durée
+                  {{ t.creneaux.session.duration }}
                 </button>
+              }
+              @if (block.session; as session) {
+                <div class="week-grid__actions">
+                  @if (session.recurrence === 'hebdomadaire') {
+                    <button
+                      type="button"
+                      class="week-grid__action"
+                      [attr.aria-label]="
+                        fill(
+                          session.status === 'annulee'
+                            ? t.creneaux.session.restoreWeekLabel
+                            : t.creneaux.session.cancelWeekLabel,
+                          { time: block.timeRange }
+                        )
+                      "
+                      [attr.title]="
+                        session.status === 'annulee'
+                          ? t.creneaux.session.restoreWeek
+                          : t.creneaux.session.cancelWeek
+                      "
+                      (click)="onOccurrenceClick(block)"
+                    >
+                      <sh-icon [name]="session.status === 'annulee' ? 'undo' : 'ban'" />
+                    </button>
+                  }
+                  <button
+                    type="button"
+                    class="week-grid__action week-grid__action--danger"
+                    [attr.aria-label]="
+                      fill(t.creneaux.session.deleteLabel, { time: block.timeRange })
+                    "
+                    [attr.title]="t.creneaux.session.delete"
+                    (click)="onDeleteClick(block)"
+                  >
+                    <sh-icon name="trash" />
+                  </button>
+                </div>
               }
             </div>
           }

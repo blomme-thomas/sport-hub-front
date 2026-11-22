@@ -12,6 +12,7 @@ const TUESDAY = '2026-11-10';
 
 const planifiee: SessionOccurrence = {
   id: 'session-course',
+  title: null,
   date: TUESDAY,
   startTime: '18:00',
   durationMinutes: 45,

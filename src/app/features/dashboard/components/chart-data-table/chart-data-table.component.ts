@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import type { ChartModel } from '../../models/training-stats.model';
+import { TEXTS } from '@shared/texts/texts';
 
 const EMPTY_CELL = '—';
 const NUMBER_FORMAT = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 });
@@ -15,6 +16,7 @@ interface TableRow {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChartDataTableComponent {
+  protected readonly t = TEXTS;
   readonly model = input.required<ChartModel>();
 
   protected readonly hasData = computed(() =>

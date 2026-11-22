@@ -1,4 +1,5 @@
 import type { SlotRecurrence, SlotType } from './slot.model';
+import { TEXTS } from '@shared/texts/texts';
 
 export interface SlotOption<T extends string> {
   value: T;
@@ -6,13 +7,13 @@ export interface SlotOption<T extends string> {
 }
 
 export const SLOT_TYPE_OPTIONS: readonly SlotOption<SlotType>[] = [
-  { value: 'libre', label: 'Libre' },
-  { value: 'occupe', label: 'Occupé' },
+  { value: 'libre', label: TEXTS.creneaux.slot.free },
+  { value: 'occupe', label: TEXTS.creneaux.slot.busy },
 ];
 
 export const SLOT_RECURRENCE_OPTIONS: readonly SlotOption<SlotRecurrence>[] = [
-  { value: 'aucune', label: 'Aucune (ponctuel)' },
-  { value: 'hebdomadaire', label: 'Chaque semaine' },
+  { value: 'aucune', label: TEXTS.creneaux.slot.none },
+  { value: 'hebdomadaire', label: TEXTS.creneaux.slot.weekly },
 ];
 
 export function slotTypeLabel(type: SlotType): string {

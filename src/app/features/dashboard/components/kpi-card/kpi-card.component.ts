@@ -6,6 +6,7 @@ import type { ChartData, ChartOptions } from 'chart.js';
 import type { DashboardKpi, KpiTone } from '../../models/dashboard-kpi.model';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { VariationBadgeComponent } from '../variation-badge/variation-badge.component';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 export const TONE_VARIABLES: Record<KpiTone, string> = {
   accent: '--sh-accent-text',
@@ -43,6 +44,8 @@ const SPARKLINE_OPTIONS: ChartOptions<'line'> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KpiCardComponent {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   readonly kpi = input.required<DashboardKpi>();
   readonly expand = output<void>();
 

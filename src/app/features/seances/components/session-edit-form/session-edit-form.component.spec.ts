@@ -70,7 +70,7 @@ describe('SessionEditFormComponent', () => {
     expect(screen.getByLabelText('Heure de début')).toHaveValue('18:00');
     expect(screen.getByLabelText('Durée (min)')).toHaveValue(45);
     expect(screen.getByLabelText('Discipline')).toHaveValue('course_a_pied');
-    expect(screen.getByLabelText('Description')).toHaveValue('Fond');
+    expect(screen.getByLabelText('Description de la séance')).toHaveValue('Fond');
   });
 
   it('émet les champs modifiés, sans modules, quand aucun fichier n’est importé', async () => {
@@ -79,7 +79,7 @@ describe('SessionEditFormComponent', () => {
 
     await user.clear(screen.getByLabelText('Durée (min)'));
     await user.type(screen.getByLabelText('Durée (min)'), '60');
-    await user.clear(screen.getByLabelText('Description'));
+    await user.clear(screen.getByLabelText('Description de la séance'));
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }));
 
     expect(saved).toHaveBeenCalledWith({
@@ -106,7 +106,7 @@ describe('SessionEditFormComponent', () => {
     expect(screen.getByLabelText('Durée (min)')).toHaveValue(70);
     expect(screen.getByLabelText('Discipline')).toHaveValue('velo');
     expect(screen.getByLabelText('Heure de début')).toHaveValue('18:00');
-    expect(screen.getByLabelText('Description')).toHaveValue('Fond');
+    expect(screen.getByLabelText('Description de la séance')).toHaveValue('Fond');
     expect(saved).not.toHaveBeenCalled();
 
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }));

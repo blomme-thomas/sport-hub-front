@@ -1,3 +1,4 @@
+import { TEXTS } from '@shared/texts/texts';
 /** Motif d'une pause, tel qu'accepté par le back. */
 export type PauseReason = 'blessure' | 'vacances' | 'autre';
 
@@ -17,7 +18,7 @@ export interface PauseInput {
 }
 
 export const PAUSE_REASON_LABELS: Readonly<Record<PauseReason, string>> = {
-  blessure: 'Blessure',
-  vacances: 'Vacances',
-  autre: 'Autre',
+  blessure: TEXTS.creneaux.pause.reasons.blessure,
+  vacances: TEXTS.creneaux.pause.reasons.vacances,
+  autre: TEXTS.creneaux.pause.reasons.autre,
 };

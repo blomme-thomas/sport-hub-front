@@ -4,6 +4,7 @@ import { IconComponent } from '@shared/ui/icon/icon.component';
 import type { AppError } from '../../../../core/http/app-error';
 import { RecentActivityRowComponent } from '../recent-activity-row/recent-activity-row.component';
 import type { RecentActivity } from '../../models/recent-activity.model';
+import { TEXTS } from '@shared/texts/texts';
 
 @Component({
   selector: 'sh-recent-activities-card',
@@ -13,6 +14,7 @@ import type { RecentActivity } from '../../models/recent-activity.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecentActivitiesCardComponent {
+  protected readonly t = TEXTS;
   /** `undefined` tant que la liste n'est pas chargée, tableau vide s'il n'y a aucune séance. */
   readonly activities = input.required<RecentActivity[] | undefined>();
   readonly error = input<AppError | null>(null);

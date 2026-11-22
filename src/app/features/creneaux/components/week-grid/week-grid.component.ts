@@ -15,10 +15,12 @@ import { slotTypeLabel } from '../../models/slot-options';
 import type { SessionOccurrence } from '../../models/session-occurrence.model';
 import type { Slot, SlotDefaults } from '../../models/slot.model';
 import type { WeekDay } from '../../models/week-day.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 /** Hauteur d'une heure dans la grille, en pixels. */
 const PX_PER_HOUR = 72;
-const HOURS = 24;
+/** Fin de la grille : la dernière case est 21:00–22:00 (la plage 22:00–24:00 n'est pas utilisée). */
+const HOURS = 22;
 const MINUTES_PER_HOUR = 60;
 const DAY_MINUTES = HOURS * MINUTES_PER_HOUR;
 /** Pas de la sélection et du déplacement à la souris, en minutes : le quart d'heure. */
@@ -28,8 +30,8 @@ const DEFAULT_DURATION_MINUTES = SNAP_MINUTES;
 /** Hauteur minimale d'un bloc, pour que son libellé reste lisible. */
 const MIN_BLOCK_HEIGHT_PX = 20;
 const BLOCK_GAP_PX = 2;
-/** Première heure affichée par défaut : pas d'intérêt à montrer minuit à 6 h. */
-const DEFAULT_FIRST_HOUR = 6;
+/** Première heure affichée par défaut : pas d'intérêt à montrer minuit à 7 h. */
+const DEFAULT_FIRST_HOUR = 7;
 /** Distance à partir de laquelle un appui devient un déplacement (et non un clic). */
 const MOVE_THRESHOLD_PX = 5;
 
@@ -107,6 +109,8 @@ interface GridColumn {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeekGridComponent {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   readonly days = input.required<readonly WeekDay[]>();
   /** Libellés des disciplines, par clé. Une clé absente s'affiche telle quelle. */
   readonly labels = input<ReadonlyMap<string, string>>(new Map());
@@ -117,6 +121,10 @@ export class WeekGridComponent {
   readonly moved = output<GridMove>();
   /** Demande de modification rapide de la durée, depuis la vignette d'une séance planifiée. */
   readonly durationRequested = output<SessionOccurrence>();
+  /** Demande de suppression depuis la corbeille de la vignette. */
+  readonly sessionDeleteRequested = output<SessionOccurrence>();
+  /** Annulation de cette occurrence, ou restauration si elle est déjà annulée (séances récurrentes). */
+  readonly occurrenceToggled = output<SessionOccurrence>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -186,8 +194,11 @@ export class WeekGridComponent {
           slot: null,
           session: item.session,
           label: done
-            ? `Séance ${disciplineLabel}, ${timeRange}, réalisée. Ouvrir la séance`
-            : `Séance ${disciplineLabel}, ${timeRange}. Ouvrir la séance`,
+            ? fill(TEXTS.creneaux.session.realizedLabel, {
+                discipline: disciplineLabel,
+                time: timeRange,
+              })
+            : fill(TEXTS.creneaux.session.label, { discipline: disciplineLabel, time: timeRange }),
           timeRange,
           movable: item.session.status !== 'annulee' && !done,
           cancelled: item.session.status === 'annulee',
@@ -304,6 +315,18 @@ export class WeekGridComponent {
     }
   }
 
+  protected onDeleteClick(block: PositionedBlock): void {
+    if (block.session !== null) {
+      this.sessionDeleteRequested.emit(block.session);
+    }
+  }
+
+  protected onOccurrenceClick(block: PositionedBlock): void {
+    if (block.session !== null) {
+      this.occurrenceToggled.emit(block.session);
+    }
+  }
+
   protected onColumnPointerDown(event: PointerEvent, date: string): void {
     if (event.button !== 0 || isOnBlock(event)) {
       return;
@@ -408,8 +431,12 @@ function isOnBlock(event: PointerEvent): boolean {
 }
 
 function describeSlot(slot: Slot, timeRange: string): string {
-  const recurrence = slot.recurrence === 'hebdomadaire' ? ', chaque semaine' : '';
-  return `${slotTypeLabel(slot.type)}, ${timeRange}${recurrence}. Modifier`;
+  const recurrence = slot.recurrence === 'hebdomadaire' ? TEXTS.creneaux.grid.recurrenceSuffix : '';
+  return fill(TEXTS.creneaux.grid.slotEdit, {
+    type: slotTypeLabel(slot.type),
+    range: timeRange,
+    recurrence,
+  });
 }
 
 function formatShortDay(iso: string): string {

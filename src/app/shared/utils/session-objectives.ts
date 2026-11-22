@@ -1,3 +1,4 @@
+import { TEXTS, fill } from '@shared/texts/texts';
 /** Nombre de zones cardiaques (Z1 à Z5) de la répartition cible et des écarts. */
 export const HR_ZONE_COUNT = 5;
 
@@ -37,18 +38,21 @@ export function validateObjectives(
   const errors: Partial<Record<ObjectiveErrorKey, string>> = {};
 
   if (draft.distanceMeters !== null && !(draft.distanceMeters > 0)) {
-    errors.distance = 'La distance cible doit être supérieure à 0.';
+    errors.distance = TEXTS.shared.objectives.distance;
   }
 
   if (
     draft.zonePercentages.length !== HR_ZONE_COUNT ||
     draft.zonePercentages.some((value) => value === null)
   ) {
-    errors.zones = 'Renseigne le pourcentage des cinq zones.';
+    errors.zones = TEXTS.shared.objectives.zonesMissing;
   } else {
     const total = draft.zonePercentages.reduce<number>((sum, value) => sum + (value ?? 0), 0);
     if (total !== ZONE_TOTAL_PERCENT) {
-      errors.zonesTotal = `La répartition doit totaliser ${ZONE_TOTAL_PERCENT} % (actuellement ${total} %).`;
+      errors.zonesTotal = fill(TEXTS.shared.objectives.zonesTotal, {
+        total: ZONE_TOTAL_PERCENT,
+        current: total,
+      });
     }
   }
 

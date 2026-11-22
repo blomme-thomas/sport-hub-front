@@ -4,6 +4,7 @@ import { IconComponent, type IconName } from '@shared/ui/icon/icon.component';
 import type { ChartModel } from '../../models/training-stats.model';
 import { ChartDataTableComponent } from '../chart-data-table/chart-data-table.component';
 import { ChartKind, chartDataOf, chartOptionsOf } from '../../config/chart-config';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 @Component({
   selector: 'sh-chart-card',
@@ -21,5 +22,7 @@ export class ChartCardComponent {
 
   protected readonly data = computed(() => chartDataOf(this.model()));
   protected readonly options = computed(() => chartOptionsOf(this.model(), this.kind()));
-  protected readonly expandLabel = computed(() => `Agrandir le graphique : ${this.model().title}`);
+  protected readonly expandLabel = computed(() =>
+    fill(TEXTS.dashboard.chart.expand, { title: this.model().title }),
+  );
 }

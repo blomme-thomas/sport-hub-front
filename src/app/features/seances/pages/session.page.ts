@@ -3,13 +3,15 @@ import {
   Component,
   OnInit,
   computed,
+  effect,
   inject,
   input,
   signal,
 } from '@angular/core';
+import { SessionModalService } from '@core/layout/session-modal.service';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalComponent, NzModalContentDirective } from 'ng-zorro-antd/modal';
+import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { ActivityCommentComponent } from '../components/activity-comment/activity-comment.component';
 import {
   SessionEditFormComponent,
@@ -21,11 +23,12 @@ import { SessionObjectivesComponent } from '../components/session-objectives/ses
 import { ActivityCommentState } from '../data-access/activity-comment.state';
 import { SessionState } from '../data-access/session.state';
 import type { ModuleType, SessionStatus } from '../models/session.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 const STATUS_LABELS: Record<SessionStatus, string> = {
-  planifiee: 'Planifiée',
-  realisee: 'Réalisée',
-  manquee: 'Manquée',
+  planifiee: TEXTS.seances.statusLabels.planifiee,
+  realisee: TEXTS.seances.statusLabels.realisee,
+  manquee: TEXTS.seances.statusLabels.manquee,
 };
 
 /**
@@ -36,8 +39,7 @@ const STATUS_LABELS: Record<SessionStatus, string> = {
   selector: 'sh-session-page',
   imports: [
     NzButtonComponent,
-    NzModalComponent,
-    NzModalContentDirective,
+    ModalComponent,
     ActivityCommentComponent,
     SessionActivityComponent,
     SessionEditFormComponent,
@@ -50,11 +52,14 @@ const STATUS_LABELS: Record<SessionStatus, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionPage implements OnInit {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   readonly id = input.required<string>();
 
   protected readonly state = inject(SessionState);
   protected readonly comments = inject(ActivityCommentState);
   private readonly messages = inject(NzMessageService);
+  private readonly sessionModal = inject(SessionModalService);
 
   protected readonly dateLabel = computed(() => {
     const session = this.state.session();
@@ -64,6 +69,16 @@ export class SessionPage implements OnInit {
     const status = this.state.session()?.status;
     return status === undefined ? '' : STATUS_LABELS[status];
   });
+
+  constructor() {
+    // Titre de la modale de la fiche : le titre de la séance, à défaut sa discipline.
+    effect(() => {
+      const session = this.state.session();
+      this.sessionModal.title.set(
+        session === null ? null : (session.title ?? session.disciplineLabel),
+      );
+    });
+  }
 
   ngOnInit(): void {
     void this.state.load(this.id());
@@ -81,36 +96,32 @@ export class SessionPage implements OnInit {
     this.state.setInstruction(event.key, event.instruction);
   }
 
-  protected move(event: { key: number; delta: -1 | 1 }): void {
-    if (event.delta === -1) {
-      this.state.moveUp(event.key);
-    } else {
-      this.state.moveDown(event.key);
-    }
+  protected reorder(event: { key: number; toIndex: number }): void {
+    this.state.moveTo(event.key, event.toIndex);
   }
 
   protected async linkActivity(activityId: string): Promise<void> {
     if (await this.state.linkActivity(activityId)) {
-      this.messages.success('Activité associée. La séance est marquée réalisée.');
+      this.messages.success(TEXTS.seances.activity.linked);
     }
   }
 
   protected async unlinkActivity(): Promise<void> {
     if (await this.state.unlinkActivity()) {
-      this.messages.success('Activité dissociée.');
+      this.messages.success(TEXTS.seances.activity.unlinked);
     }
   }
 
   protected async saveComment(): Promise<void> {
     if (await this.comments.save()) {
-      this.messages.success('Commentaire enregistré.');
+      this.messages.success(TEXTS.seances.comment.saved);
     }
   }
 
   protected async save(): Promise<void> {
     const saved = await this.state.save();
     if (saved) {
-      this.messages.success('Séance modifiée.');
+      this.messages.success(TEXTS.seances.messages.modified);
     }
   }
 
@@ -128,7 +139,7 @@ export class SessionPage implements OnInit {
   protected async saveDetails(event: SessionDetailsSave): Promise<void> {
     if (await this.state.saveDetails(event.details, event.modules)) {
       this.editOpen.set(false);
-      this.messages.success('Séance modifiée.');
+      this.messages.success(TEXTS.seances.messages.modified);
     }
   }
 }

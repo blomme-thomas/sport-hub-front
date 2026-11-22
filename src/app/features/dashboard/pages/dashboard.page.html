@@ -1,6 +1,6 @@
 <header class="dashboard__header">
   <div class="dashboard__heading">
-    <h1 class="dashboard__title">Tableau de bord</h1>
+    <h1 class="dashboard__title">{{ t.dashboard.title }}</h1>
   </div>
   <sh-period-selector [value]="state.period()" (changed)="state.setPeriod($event)" />
 </header>
@@ -18,20 +18,22 @@
 
 <section
   class="dashboard__kpis"
-  aria-label="Indicateurs de la période"
+  [attr.aria-label]="t.dashboard.kpisLabel"
   [attr.aria-busy]="kpis.isLoading()"
 >
   @if (kpis.error(); as failure) {
     <div class="dashboard__error" role="alert">
       <p>{{ failure.userMessage }}</p>
-      <button nz-button nzType="primary" type="button" (click)="kpis.reload()">Réessayer</button>
+      <button nz-button nzType="primary" type="button" (click)="kpis.reload()">
+        {{ t.common.retry }}
+      </button>
     </div>
   } @else if (kpis.kpis(); as list) {
     @for (kpi of list; track kpi.id) {
       <sh-kpi-card [kpi]="kpi" (expand)="openKpi(kpi)" />
     }
   } @else {
-    <p class="dashboard__loading">Chargement…</p>
+    <p class="dashboard__loading">{{ t.common.loading }}</p>
   }
 </section>
 
@@ -53,11 +55,13 @@
     @if (state.error(); as error) {
       <div class="dashboard__error" role="alert">
         <p>{{ error.userMessage }}</p>
-        <button nz-button nzType="primary" type="button" (click)="state.reload()">Réessayer</button>
+        <button nz-button nzType="primary" type="button" (click)="state.reload()">
+          {{ t.common.retry }}
+        </button>
       </div>
     } @else if (state.view(); as view) {
       @if (state.isEmpty()) {
-        <p class="dashboard__empty">Aucune activité sur cette période</p>
+        <p class="dashboard__empty">{{ t.dashboard.empty }}</p>
       } @else {
         <sh-recent-activities-card
           class="dashboard__recent"
@@ -69,7 +73,7 @@
         />
       }
     } @else {
-      <p class="dashboard__loading">Chargement…</p>
+      <p class="dashboard__loading">{{ t.common.loading }}</p>
     }
 
     <sh-week-mini-calendar
@@ -122,8 +126,8 @@
 }
 
 <ng-template #activityDetailTitle>
-  <h2 class="sh-activity-modal__title">
+  <h2 class="sh-modal__title">
     <sh-icon name="list" color="var(--sh-success)" />
-    <span>Détail de la séance</span>
+    <span>{{ t.dashboard.detailTitle }}</span>
   </h2>
 </ng-template>

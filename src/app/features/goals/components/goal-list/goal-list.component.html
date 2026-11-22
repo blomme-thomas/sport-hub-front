@@ -17,19 +17,19 @@
             <button
               nz-button
               type="button"
-              [attr.aria-label]="'Modifier ' + row.goal.title"
+              [attr.aria-label]="fill(t.goals.list.editLabel, { title: row.goal.title })"
               (click)="edit.emit(row.goal)"
             >
-              Modifier
+              {{ t.goals.list.edit }}
             </button>
             <button
               nz-button
               nzDanger
               type="button"
-              [attr.aria-label]="'Supprimer ' + row.goal.title"
+              [attr.aria-label]="fill(t.goals.list.deleteLabel, { title: row.goal.title })"
               (click)="delete.emit(row.goal)"
             >
-              Supprimer
+              {{ t.goals.list.delete }}
             </button>
           </div>
         </li>

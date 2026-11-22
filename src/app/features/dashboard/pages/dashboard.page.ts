@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
-import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import {
   CardDetailModalComponent,
@@ -50,11 +49,13 @@ import { WeeklyReviewState } from '../data-access/weekly-review.state';
 import { RecentActivitiesState } from '../data-access/recent-activities.state';
 import { WeekMiniCalendarState } from '../data-access/week-mini-calendar.state';
 import type { DashboardPeriod } from '../models/training-stats.model';
+import { SessionModalService } from '@core/layout/session-modal.service';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 /** Libellé de la période dans le message d'état lu par les lecteurs d'écran. */
 const PERIOD_WORDS: Record<DashboardPeriod, string> = {
-  week: 'la semaine en cours',
-  month: 'le mois en cours',
+  week: TEXTS.dashboard.periodWords.week,
+  month: TEXTS.dashboard.periodWords.month,
 };
 
 /** Unité affichée sur l'axe du graphique agrandi, pour les indicateurs qui en ont une. */
@@ -97,11 +98,13 @@ const AXIS_UNITS: Partial<Record<DashboardKpi['id'], string>> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   /** Bilan de la semaine masqué tant que le token IA n'est pas disponible (story #16). */
   protected readonly weeklyReviewEnabled = inject(AI_FEATURES);
   /** Conseil du tableau de bord : fonctionnalité IA, masquée tant qu'elle est désactivée. */
   protected readonly aiEnabled = inject(AI_FEATURES);
-  /** Titre de la modale de détail : icône de la carte « Détails par séance » et libellé. */
+  /** Titre de la modale de détail : icône de la carte « Détails par activités » et libellé. */
   protected readonly activityDetailTitle =
     viewChild.required<TemplateRef<object>>('activityDetailTitle');
   protected readonly state = inject(DashboardState);
@@ -114,17 +117,17 @@ export class DashboardPage {
 
   protected readonly miniCalendar = inject(WeekMiniCalendarState);
 
-  private readonly router = inject(Router);
+  private readonly sessionModal = inject(SessionModalService);
 
   private readonly modal = inject(NzModalService);
   private readonly viewContainer = inject(ViewContainerRef);
 
   protected readonly statusMessage = computed(() => {
     if (this.state.isLoading()) {
-      return 'Chargement des statistiques en cours';
+      return TEXTS.dashboard.status.loading;
     }
     return this.state.view()
-      ? `Statistiques affichées sur ${PERIOD_WORDS[this.state.period()]}`
+      ? fill(TEXTS.dashboard.status.period, { period: PERIOD_WORDS[this.state.period()] })
       : '';
   });
 
@@ -157,7 +160,7 @@ export class DashboardPage {
     }
     this.openDetail({
       kind: 'split',
-      title: 'Répartition par sport',
+      title: TEXTS.dashboard.sportSplit.heading,
       totalLabel: split.totalLabel,
       rows: split.shares.map((share) => ({
         label: share.label,
@@ -177,7 +180,7 @@ export class DashboardPage {
     const floors = this.heartZones.floors();
     this.openDetail({
       kind: 'zones',
-      title: 'Zones d’entraînement',
+      title: TEXTS.dashboard.zones.heading,
       optimalPercent: zones.optimalPercent,
       statusMessage: zones.statusMessage,
       rows: zones.zones.map((zone) => ({
@@ -198,7 +201,7 @@ export class DashboardPage {
       nzData: { detail } satisfies CardDetailModalData,
       nzViewContainerRef: this.viewContainer,
       nzWidth: 'min(720px, 96vw)',
-      nzClassName: 'sh-activity-modal sh-card-detail-modal',
+      nzClassName: 'sh-modal sh-card-detail-modal',
       nzKeyboard: true,
       nzFooter: null,
     });
@@ -208,7 +211,7 @@ export class DashboardPage {
   protected openActivity(id: string): void {
     this.modal.create({
       nzTitle: this.activityDetailTitle(),
-      nzClassName: 'sh-activity-modal',
+      nzClassName: 'sh-modal',
       nzWidth: 'min(1400px, 96vw)',
       nzContent: ActivityDetailModalComponent,
       nzData: { id } satisfies ActivityDetailModalData,
@@ -226,7 +229,7 @@ export class DashboardPage {
       nzData: { date: iso } satisfies DayDetailModalData,
       nzViewContainerRef: this.viewContainer,
       nzWidth: 'min(860px, 96vw)',
-      nzClassName: 'sh-activity-modal',
+      nzClassName: 'sh-modal',
       nzKeyboard: true,
       nzFooter: null,
     });
@@ -234,7 +237,7 @@ export class DashboardPage {
 
   /** Ouvre la fiche d'une séance depuis le mini-calendrier (lecture seule ailleurs). */
   protected openSession(id: string): void {
-    void this.router.navigate(['/seances', id]);
+    this.sessionModal.open(id);
   }
 }
 

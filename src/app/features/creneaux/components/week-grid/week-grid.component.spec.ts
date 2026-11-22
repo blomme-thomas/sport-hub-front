@@ -105,19 +105,19 @@ describe('WeekGridComponent', () => {
     expect(slotSelected).toHaveBeenCalledWith(libre);
   });
 
-  it('émet une plage de 30 minutes au pas, de 08:00 à 09:00 selon le glisser (la grille commence à 06:00)', async () => {
+  it('émet une plage au pas du quart d’heure, de 09:00 à 10:00 selon le glisser (la grille commence à 07:00)', async () => {
     const { rangeSelected } = await renderGrid([]);
     const column = screen.getByRole('group', { name: 'mardi 10 novembre 2026' });
 
-    // Hauteur d'une heure = 48 px ; la grille commence à 06:00 : 96 px = 08:00, 144 px = 09:00.
+    // Hauteur d'une heure = 72 px ; la grille commence à 07:00 : 144 px = 09:00, 216 px = 10:00.
     fireEvent.pointerDown(column, { clientY: 144, button: 0, pointerId: 1 });
     fireEvent.pointerMove(column, { clientY: 216, pointerId: 1 });
     fireEvent.pointerUp(column, { clientY: 216, pointerId: 1 });
 
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,
-      startTime: '08:00',
-      endTime: '09:00',
+      startTime: '09:00',
+      endTime: '10:00',
     });
   });
 
@@ -130,12 +130,12 @@ describe('WeekGridComponent', () => {
 
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,
-      startTime: '08:00',
-      endTime: '08:15',
+      startTime: '09:00',
+      endTime: '09:15',
     });
   });
 
-  it('ne propose jamais de fin à 24:00 : la plage finit à 23:59 au plus', async () => {
+  it('ne propose jamais de fin après 22:00 : la plage finit à 22:00 au plus', async () => {
     const { rangeSelected } = await renderGrid([]);
     const column = screen.getByRole('group', { name: 'mardi 10 novembre 2026' });
 
@@ -144,8 +144,8 @@ describe('WeekGridComponent', () => {
 
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,
-      startTime: '23:45',
-      endTime: '23:59',
+      startTime: '21:45',
+      endTime: '22:00',
     });
   });
 
@@ -153,11 +153,11 @@ describe('WeekGridComponent', () => {
     const { rangeSelected } = await renderGrid([]);
     const column = screen.getByRole('group', { name: 'mardi 10 novembre 2026' });
 
-    // Grille à partir de 6 h, 48 px par heure : 9 h 00 = 144 px, 9 h 20 = 160 px (arrondi à 9 h 15).
-    fireEvent.pointerDown(column, { clientY: 216, button: 0, pointerId: 1 });
-    fireEvent.pointerMove(column, { clientY: 240, pointerId: 1 });
+    // Grille à partir de 7 h, 72 px par heure : 9 h 00 = 144 px, 9 h 20 = 168 px (arrondi à 9 h 15).
+    fireEvent.pointerDown(column, { clientY: 144, button: 0, pointerId: 1 });
+    fireEvent.pointerMove(column, { clientY: 168, pointerId: 1 });
     expect(screen.getByText('09:00 – 09:15')).toBeInTheDocument();
-    fireEvent.pointerUp(column, { clientY: 240, pointerId: 1 });
+    fireEvent.pointerUp(column, { clientY: 168, pointerId: 1 });
 
     expect(rangeSelected).toHaveBeenCalledWith({
       date: TUESDAY,

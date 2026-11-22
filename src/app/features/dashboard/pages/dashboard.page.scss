@@ -2,7 +2,7 @@
   display: block;
   /* Espace unique entre toutes les cartes du tableau de bord. */
   --dashboard-gap: 1rem;
-  /* Hauteur commune de Détails par séance et du mini-calendrier, sur ordinateur. */
+  /* Hauteur commune de Détails par activités et du mini-calendrier, sur ordinateur. */
   --dashboard-row-height: 34rem;
   /* Hauteur minimale des cartes Objectif, Performance, Répartition et Zones : la taille ne dépend pas des données. */
   --dashboard-chart-row-height: 19rem;
@@ -51,7 +51,7 @@
   width: 100%;
 }
 
-/* Détails par séance et mini-calendrier : même taille fixe sur ordinateur, quelle que soit la vue. */
+/* Détails par activités et mini-calendrier : même taille fixe sur ordinateur, quelle que soit la vue. */
 .dashboard__row {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

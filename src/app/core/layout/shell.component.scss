@@ -138,6 +138,14 @@
   .shell__menu-toggle {
     display: none;
   }
+
+  /* La sidebar reste fixe pendant le défilement de la page. */
+  .shell__sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
 }
 
 @media (max-width: 767px) {
