@@ -35,3 +35,20 @@
   font-size: 0.875rem;
   resize: vertical;
 }
+
+.json-input {
+  padding: var(--sh-space-3);
+  border: 1px dashed var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+}
+
+.json-input--dragging {
+  border-color: var(--sh-accent-text);
+  background: var(--sh-surface-raised);
+}
+
+.json-input__help {
+  margin: 0;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+}

@@ -1,10 +1,8 @@
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 
-let nextId = 0;
-
 /**
- * Zone de saisie d'un contenu JSON : fichier `.json` à choisir, ou texte collé. Le contenu brut est émis à chaque
- * changement ; la validation revient au parent. Sert aux imports de séances (création, édition, import multiple).
+ * Zone de dépôt d'un fichier `.json` pour un import de séance. Seul le nom du fichier s'affiche, jamais son
+ * contenu ; le contenu brut est émis au parent, qui valide. Sert aux imports de séances.
  */
 @Component({
   selector: 'sh-json-file-input',
@@ -18,28 +16,34 @@ export class JsonFileInputComponent {
 
   readonly contentChange = output<string>();
 
-  private readonly baseId = `sh-json-input-${nextId++}`;
-  protected readonly fileInputId = `${this.baseId}-file`;
-  protected readonly textareaId = `${this.baseId}-text`;
   protected readonly fileName = signal<string | null>(null);
-  protected readonly text = signal('');
+  protected readonly dragging = signal(false);
 
-  protected async onFile(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.item(0);
+  protected onDragOver(event: DragEvent): void {
+    if (this.disabled()) {
+      return;
+    }
+    event.preventDefault();
+    this.dragging.set(true);
+  }
+
+  protected onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.dragging.set(false);
+  }
+
+  protected async onDrop(event: DragEvent): Promise<void> {
+    event.preventDefault();
+    this.dragging.set(false);
+    if (this.disabled()) {
+      return;
+    }
+    const file = event.dataTransfer?.files.item(0) ?? null;
     if (!file) {
       return;
     }
     const content = await file.text();
     this.fileName.set(file.name);
-    this.text.set(content);
-    this.contentChange.emit(content);
-  }
-
-  protected onText(event: Event): void {
-    const content = (event.target as HTMLTextAreaElement).value;
-    this.fileName.set(null);
-    this.text.set(content);
     this.contentChange.emit(content);
   }
 }
