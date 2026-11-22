@@ -32,6 +32,7 @@ function toOccurrence(api: SessionOccurrenceApi): SessionOccurrence[] {
   return [
     {
       id: api.sessionId,
+      title: api.title,
       date: api.date,
       startTime: api.startTime,
       durationMinutes: api.durationMinutes,

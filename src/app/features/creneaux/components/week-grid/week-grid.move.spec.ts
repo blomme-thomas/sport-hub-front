@@ -18,6 +18,7 @@ const libre: Slot = {
 
 const seancePonctuelle: SessionOccurrence = {
   id: 'session-course',
+  title: null,
   date: TUESDAY,
   startTime: '18:00',
   durationMinutes: 45,

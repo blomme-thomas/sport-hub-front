@@ -7,12 +7,12 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalComponent, NzModalContentDirective, NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 import { AI_FEATURES } from '../../../core/config/ai-features';
 import { AppError } from '../../../core/http/app-error';
@@ -33,6 +33,8 @@ import { SlotsState } from '../data-access/slots.state';
 import type { SessionOccurrence } from '../models/session-occurrence.model';
 import type { Pause, PauseInput } from '../models/pause.model';
 import type { SlotDefaults } from '../models/slot.model';
+import { SessionModalService } from '@core/layout/session-modal.service';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 const DEFAULT_START = '09:00';
 const DEFAULT_END = '10:00';
@@ -54,8 +56,7 @@ const QUICK_DURATION_STEP = 5;
     IconComponent,
     NzButtonComponent,
     NzInputNumberComponent,
-    NzModalComponent,
-    NzModalContentDirective,
+    ModalComponent,
     PauseBannersComponent,
     PauseFormComponent,
     SessionFormComponent,
@@ -68,6 +69,8 @@ const QUICK_DURATION_STEP = 5;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreneauxPage {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   protected readonly state = inject(SlotsState);
   protected readonly pausesState = inject(PausesState);
 
@@ -87,7 +90,7 @@ export class CreneauxPage {
 
   private readonly modal = inject(NzModalService);
   private readonly messages = inject(NzMessageService);
-  private readonly router = inject(Router);
+  private readonly sessionModal = inject(SessionModalService);
   private readonly sessionsWrite = inject(SessionsWriteApi);
   private readonly planningApi = inject(PlanningApi);
 
@@ -110,8 +113,6 @@ export class CreneauxPage {
   protected readonly sessionSaving = signal(false);
   /** Déplacement d'une séance hebdomadaire en attente : cette occurrence seulement, ou toute la série. */
   protected readonly pendingMove = signal<(GridMove & { kind: 'session' }) | null>(null);
-  /** Séance dont le choix est ouvert : fiche, suppression, et annulation ou restauration pour une récurrente. */
-  protected readonly occurrenceChoice = signal<SessionOccurrence | null>(null);
   /** Séance dont la durée est modifiée depuis sa vignette, `null` quand la modale est fermée. */
   protected readonly durationTarget = signal<SessionOccurrence | null>(null);
   /** Durée saisie dans la modale de modification rapide, en minutes. */
@@ -170,7 +171,7 @@ export class CreneauxPage {
     try {
       const result = await firstValueFrom(this.sessionsWrite.importPlan(content));
       this.importOpen.set(false);
-      this.messages.success(`${result.createdCount} séance(s) importée(s).`);
+      this.messages.success(fill(TEXTS.creneaux.session.imported, { count: result.createdCount }));
       this.state.reload();
     } catch (error) {
       this.importError.set(error instanceof AppError ? error : toAppError(error));
@@ -186,8 +187,8 @@ export class CreneauxPage {
     try {
       const created = await firstValueFrom(this.sessionsWrite.create(body));
       this.sessionDraft.set(null);
-      this.messages.success('Séance créée.');
-      void this.router.navigate(['/seances', created.id]);
+      this.messages.success(TEXTS.creneaux.session.created);
+      this.sessionModal.open(created.id);
     } catch (error) {
       this.sessionError.set(error instanceof AppError ? error : toAppError(error));
     } finally {
@@ -212,7 +213,7 @@ export class CreneauxPage {
         firstValueFrom(
           this.sessionsWrite.move(move.session.id, { date: move.date, startTime: move.startTime }),
         ),
-      'Séance déplacée.',
+      TEXTS.creneaux.session.moved,
     );
   }
 
@@ -231,7 +232,7 @@ export class CreneauxPage {
             startTime: move.startTime,
           }),
         ),
-      'Cette occurrence a été déplacée.',
+      TEXTS.creneaux.session.movedOccurrence,
     );
   }
 
@@ -247,7 +248,7 @@ export class CreneauxPage {
         firstValueFrom(
           this.sessionsWrite.move(move.session.id, { date: move.date, startTime: move.startTime }),
         ),
-      'La série a été déplacée.',
+      TEXTS.creneaux.session.movedSeries,
     );
   }
 
@@ -256,52 +257,37 @@ export class CreneauxPage {
     this.state.reload();
   }
 
-  /** Annule cette occurrence seulement. */
-  protected async cancelThisOccurrence(): Promise<void> {
-    const session = this.occurrenceChoice();
-    this.occurrenceChoice.set(null);
-    if (session === null) {
+  /** Annule cette occurrence seulement, ou la restaure si elle est déjà annulée. */
+  protected async toggleOccurrence(session: SessionOccurrence): Promise<void> {
+    if (session.status === 'annulee') {
+      await this.runOccurrenceAction(
+        () => firstValueFrom(this.sessionsWrite.restoreOccurrence(session.id, session.date)),
+        TEXTS.creneaux.session.restored,
+      );
       return;
     }
     await this.runOccurrenceAction(
       () => firstValueFrom(this.sessionsWrite.cancelOccurrence(session.id, session.date)),
-      'Cette occurrence est annulée.',
-    );
-  }
-
-  /** Restaure cette occurrence à sa programmation initiale. */
-  protected async restoreThisOccurrence(): Promise<void> {
-    const session = this.occurrenceChoice();
-    this.occurrenceChoice.set(null);
-    if (session === null) {
-      return;
-    }
-    await this.runOccurrenceAction(
-      () => firstValueFrom(this.sessionsWrite.restoreOccurrence(session.id, session.date)),
-      'Cette occurrence est restaurée.',
+      TEXTS.creneaux.session.cancelled,
     );
   }
 
   /** Demande confirmation puis supprime la séance ; une séance récurrente efface toute sa série. */
-  protected confirmDeleteSession(): void {
-    const session = this.occurrenceChoice();
-    this.occurrenceChoice.set(null);
-    if (session === null) {
-      return;
-    }
+  protected confirmDeleteSession(session: SessionOccurrence): void {
     this.modal.confirm({
-      nzTitle: 'Supprimer cette séance ?',
+      nzClassName: 'sh-modal',
+      nzTitle: TEXTS.creneaux.session.deleteTitle,
       nzContent:
         session.recurrence === 'hebdomadaire'
-          ? 'La suppression efface toute la série, qui se répète chaque semaine.'
-          : 'Cette action est définitive.',
-      nzOkText: 'Supprimer',
+          ? TEXTS.creneaux.session.deleteSeries
+          : TEXTS.creneaux.session.deleteOne,
+      nzOkText: TEXTS.common.delete,
       nzOkDanger: true,
-      nzCancelText: 'Annuler',
+      nzCancelText: TEXTS.common.cancel,
       nzOnOk: () =>
         this.runOccurrenceAction(
           () => firstValueFrom(this.sessionsWrite.delete(session.id)),
-          'Séance supprimée.',
+          TEXTS.creneaux.session.deleted,
         ),
     });
   }
@@ -342,10 +328,10 @@ export class CreneauxPage {
     try {
       if (editing === null) {
         await this.pausesState.create(body);
-        this.messages.success('Pause créée.');
+        this.messages.success(TEXTS.creneaux.pause.created);
       } else {
         await this.pausesState.update(editing.id, body);
-        this.messages.success('Pause modifiée.');
+        this.messages.success(TEXTS.creneaux.pause.edited);
       }
       this.closePauseForm();
     } catch (error) {
@@ -355,18 +341,24 @@ export class CreneauxPage {
     }
   }
 
+  /** Libellé du référentiel pour une clé de discipline, ou la clé brute si le référentiel ne la connaît pas. */
+  protected disciplineLabel(typeKey: string): string {
+    return this.state.labels().get(typeKey) ?? typeKey;
+  }
+
   /** Demande confirmation avant de supprimer une pause. Les séances existantes sont conservées. */
   protected confirmDeletePause(pause: Pause): void {
     this.modal.confirm({
-      nzTitle: 'Supprimer cette pause ?',
-      nzContent: 'Les séances existantes sont conservées.',
-      nzOkText: 'Supprimer',
+      nzClassName: 'sh-modal',
+      nzTitle: TEXTS.creneaux.pause.deleteTitle,
+      nzContent: TEXTS.creneaux.pause.deleteContent,
+      nzOkText: TEXTS.common.delete,
       nzOkDanger: true,
-      nzCancelText: 'Annuler',
+      nzCancelText: TEXTS.common.cancel,
       nzOnOk: async () => {
         try {
           await this.pausesState.remove(pause.id);
-          this.messages.success('Pause supprimée.');
+          this.messages.success(TEXTS.creneaux.pause.deleted);
         } catch {
           // Message déjà affiché par l'intercepteur d'erreurs.
         }
@@ -410,7 +402,7 @@ export class CreneauxPage {
     }
     const end = body.to ?? this.events().find((event) => event.id === body.goalId)?.targetDate;
     if (end !== undefined && end < localIsoDate()) {
-      this.planningError.set('Impossible de générer un planning sur une période passée.');
+      this.planningError.set(TEXTS.creneaux.planning.past);
       return;
     }
     this.planningError.set(null);
@@ -420,8 +412,8 @@ export class CreneauxPage {
       this.planningOpen.set(false);
       this.messages.success(
         planning.items.length === 0
-          ? 'Aucune séance générée : pas de créneau libre sur la période.'
-          : `${planning.items.length} séance(s) générée(s).`,
+          ? TEXTS.creneaux.planning.none
+          : fill(TEXTS.creneaux.planning.created, { count: planning.items.length }),
       );
       this.state.reload();
     } catch (error) {
@@ -470,22 +462,13 @@ export class CreneauxPage {
     }
     await this.runOccurrenceAction(
       () => firstValueFrom(this.sessionsWrite.updateDuration(session.id, minutes)),
-      'Durée modifiée.',
+      TEXTS.creneaux.duration.saved,
     );
   }
 
-  /** Ouvre la fiche de la séance depuis le choix. */
-  protected openSessionFromChoice(): void {
-    const session = this.occurrenceChoice();
-    this.occurrenceChoice.set(null);
-    if (session !== null) {
-      void this.router.navigate(['/seances', session.id]);
-    }
-  }
-
-  /** Un clic sur une séance ouvre le choix : fiche, suppression, et pour une récurrente annulation ou restauration. */
+  /** Un clic sur une séance ouvre sa fiche dans une modale (sortie nommée « modal », affichée par le shell). */
   protected openSession(session: SessionOccurrence): void {
-    this.occurrenceChoice.set(session);
+    this.sessionModal.open(session.id);
   }
 
   /** Exécute une action, puis recharge la semaine. L'erreur est notifiée par l'intercepteur. */

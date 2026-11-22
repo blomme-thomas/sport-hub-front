@@ -3,6 +3,7 @@ import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { AppError } from '../../../../core/http/app-error';
 import { countSessions } from '../../../../shared/plan-seances/plan-seances.parser';
 import { JsonFileInputComponent } from '../../../../shared/ui/json-file-input/json-file-input.component';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 /**
  * Import de plusieurs séances depuis un fichier `plan-seances`. Le front compte les séances sans les valider :
@@ -16,6 +17,8 @@ import { JsonFileInputComponent } from '../../../../shared/ui/json-file-input/js
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionImportComponent {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   readonly submitting = input(false);
   readonly serverError = input<AppError | null>(null);
 

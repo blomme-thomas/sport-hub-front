@@ -6,22 +6,22 @@
 
 @if (disciplines().length === 0) {
   <p class="session-form__hint">
-    Aucune discipline dans le référentiel. Il se remplit avec la synchronisation Garmin.
+    {{ t.creneaux.sessionForm.noDiscipline }}
   </p>
 }
 
 <section class="session-form__import" aria-labelledby="session-import-heading">
   <h3 id="session-import-heading" class="session-form__heading">
-    Pré-remplir depuis un fichier JSON
+    {{ t.creneaux.sessionForm.importHeading }}
   </h3>
   <sh-json-file-input
-    label="Fichier de séance (.json)"
+    [label]="t.creneaux.sessionForm.fileLabel"
     [disabled]="submitting()"
     (contentChange)="onJsonChange($event)"
   />
   @if (importIssues().length > 0) {
     <div class="session-form__alert" role="alert">
-      <p>Le fichier n’est pas valide, le formulaire n’a pas été modifié :</p>
+      <p>{{ t.creneaux.sessionForm.invalidFile }}</p>
       <ul class="session-form__issues">
         @for (issue of importIssues(); track $index) {
           <li>
@@ -41,19 +41,19 @@
     <div class="session-form__main">
       <div class="session-form__row">
         <div class="session-form__field">
-          <label for="session-date">Date</label>
+          <label for="session-date">{{ t.creneaux.slot.date }}</label>
           <input id="session-date" type="date" formControlName="date" />
         </div>
         <div class="session-form__field">
-          <label for="session-start">Heure de début</label>
+          <label for="session-start">{{ t.creneaux.sessionForm.startTime }}</label>
           <input id="session-start" type="time" step="1800" formControlName="startTime" />
         </div>
       </div>
 
       <div class="session-form__field">
-        <label for="session-discipline">Discipline</label>
+        <label for="session-discipline">{{ t.creneaux.sessionForm.discipline }}</label>
         <select id="session-discipline" formControlName="disciplineTypeKey">
-          <option value="" disabled>Choisir une discipline</option>
+          <option value="" disabled>{{ t.creneaux.sessionForm.chooseDiscipline }}</option>
           @for (option of disciplines(); track option.typeKey) {
             <option [value]="option.typeKey">{{ option.label }}</option>
           }
@@ -62,7 +62,7 @@
 
       <div class="session-form__row">
         <div class="session-form__field">
-          <label for="session-duration">Durée (min)</label>
+          <label for="session-duration">{{ t.creneaux.sessionForm.duration }}</label>
           <input
             id="session-duration"
             type="number"
@@ -73,18 +73,18 @@
           />
         </div>
         <div class="session-form__field">
-          <label for="session-recurrence">Récurrence</label>
+          <label for="session-recurrence">{{ t.creneaux.sessionForm.recurrence }}</label>
           <select id="session-recurrence" formControlName="recurrence">
-            <option value="aucune">Aucune (ponctuelle)</option>
-            <option value="hebdomadaire">Chaque semaine</option>
+            <option value="aucune">{{ t.creneaux.sessionForm.none }}</option>
+            <option value="hebdomadaire">{{ t.creneaux.sessionForm.weekly }}</option>
           </select>
         </div>
       </div>
 
       <fieldset class="session-form__objectives">
-        <legend>Objectifs</legend>
+        <legend>{{ t.creneaux.sessionForm.objectives }}</legend>
         <div class="session-form__field">
-          <label for="session-distance">Distance cible (km)</label>
+          <label for="session-distance">{{ t.creneaux.sessionForm.distance }}</label>
           <input
             id="session-distance"
             type="number"
@@ -101,7 +101,9 @@
         <div class="session-form__zones" formGroupName="zones">
           @for (zone of zoneFields; track zone.key) {
             <div class="session-form__field">
-              <label [for]="'session-zone-' + zone.key">{{ zone.label }} (%)</label>
+              <label [for]="'session-zone-' + zone.key">{{
+                fill(t.creneaux.sessionForm.zone, { label: zone.label })
+              }}</label>
               <input
                 [id]="'session-zone-' + zone.key"
                 type="number"
@@ -118,7 +120,7 @@
           [class.session-form__total--error]="zoneTotal !== 100"
           aria-live="polite"
         >
-          Total des zones : {{ zoneTotal }} %
+          {{ fill(t.creneaux.sessionForm.totalZones, { total: zoneTotal }) }}
         </p>
         @if (objectiveErrors.zones; as message) {
           <p class="session-form__error" role="alert">{{ message }}</p>
@@ -142,11 +144,15 @@
 
     <section class="session-form__aside" aria-labelledby="session-description-heading">
       <div class="session-form__field">
-        <label for="session-title">Titre</label>
+        <label for="session-title">{{ t.creneaux.sessionForm.titleLabel }}</label>
         <input id="session-title" type="text" maxlength="200" formControlName="title" />
       </div>
-      <h3 id="session-description-heading" class="session-form__heading">Description</h3>
-      <label class="visually-hidden" for="session-description">Description de la séance</label>
+      <h3 id="session-description-heading" class="session-form__heading">
+        {{ t.creneaux.sessionForm.description }}
+      </h3>
+      <label class="visually-hidden" for="session-description">{{
+        t.creneaux.sessionForm.descriptionLabel
+      }}</label>
       <textarea
         id="session-description"
         class="session-form__textarea"
@@ -158,14 +164,14 @@
   </div>
 
   <div class="session-form__actions">
-    <button nz-button type="button" (click)="cancelled.emit()">Annuler</button>
+    <button nz-button type="button" (click)="cancelled.emit()">{{ t.common.cancel }}</button>
     <button
       nz-button
       nzType="primary"
       type="submit"
       [disabled]="submitting() || disciplines().length === 0 || modulesInvalid()"
     >
-      Créer la séance
+      {{ t.creneaux.sessionForm.create }}
     </button>
   </div>
 </form>

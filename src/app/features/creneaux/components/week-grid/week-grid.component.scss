@@ -60,13 +60,6 @@ $day-min-width: 7.5rem;
   border-left: 1px solid var(--sh-border);
   touch-action: none;
   cursor: crosshair;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent calc(48px - 1px),
-    var(--sh-border) calc(48px - 1px),
-    var(--sh-border) 48px
-  );
 }
 
 /* Conteneur de la vignette : porte la position, pour que le bouton « Durée » reste un frère du bouton de la vignette. */
@@ -203,4 +196,65 @@ $day-min-width: 7.5rem;
     outline: var(--sh-focus-ring);
     outline-offset: 2px;
   }
+}
+
+/* Actions directes sur la vignette d'une séance : corbeille, et annulation de la semaine pour une récurrente. */
+.week-grid__actions {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 1;
+  display: flex;
+  gap: 2px;
+}
+
+.week-grid__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface);
+  color: var(--sh-text-muted);
+  cursor: pointer;
+
+  sh-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  &:hover {
+    color: var(--sh-text);
+  }
+
+  &--danger:hover {
+    color: var(--sh-error);
+  }
+
+  &:focus-visible {
+    outline: var(--sh-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Titre de la séance sur sa vignette : une ligne, tronqué si besoin. */
+.week-grid__slot-title {
+  display: block;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Trait d'heure : un élément de 1 px à position entière, plutôt qu'un dégradé répété (qui perd des traits selon l'échelle d'affichage). */
+.week-grid__hline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--sh-border);
+  pointer-events: none;
 }

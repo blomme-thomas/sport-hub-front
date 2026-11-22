@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { PAUSE_REASON_LABELS, type Pause } from '../../models/pause.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 /**
  * Bandeaux des pauses de la semaine affichée, au-dessus de la grille. Modifier ou supprimer une pause se fait
@@ -14,6 +15,8 @@ import { PAUSE_REASON_LABELS, type Pause } from '../../models/pause.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PauseBannersComponent {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   readonly pauses = input.required<readonly Pause[]>();
 
   readonly edited = output<Pause>();
@@ -22,7 +25,10 @@ export class PauseBannersComponent {
   protected readonly reasonLabels = PAUSE_REASON_LABELS;
 
   protected rangeLabel(pause: Pause): string {
-    return `du ${formatDay(pause.startDate)} au ${formatDay(pause.endDate)}`;
+    return fill(TEXTS.creneaux.pause.range, {
+      start: formatDay(pause.startDate),
+      end: formatDay(pause.endDate),
+    });
   }
 }
 
