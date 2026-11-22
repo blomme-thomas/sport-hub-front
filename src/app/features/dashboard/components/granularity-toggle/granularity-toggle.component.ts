@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NzRadioComponent, NzRadioGroupComponent } from 'ng-zorro-antd/radio';
 import type { Granularity } from '../../models/training-stats.model';
+import { TEXTS } from '@shared/texts/texts';
 
 @Component({
   selector: 'sh-granularity-toggle',
@@ -11,6 +12,7 @@ import type { Granularity } from '../../models/training-stats.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GranularityToggleComponent implements OnChanges {
+  protected readonly t = TEXTS;
   readonly value = input.required<Granularity>();
   readonly changed = output<Granularity>();
 

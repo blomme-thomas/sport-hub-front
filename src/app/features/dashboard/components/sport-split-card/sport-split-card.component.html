@@ -1,14 +1,14 @@
 <section class="split" aria-labelledby="sport-split-heading" [attr.aria-busy]="loading()">
   <h2 id="sport-split-heading" class="split__heading">
     <sh-icon name="pie" color="var(--sh-violet)" />
-    <span>Répartition par sport</span>
+    <span>{{ t.dashboard.sportSplit.heading }}</span>
   </h2>
   <button
     nz-button
     nzType="text"
     type="button"
     class="card-expand"
-    [attr.aria-label]="'Agrandir : Répartition par sport'"
+    [attr.aria-label]="t.dashboard.sportSplit.expand"
     [disabled]="!split()"
     (click)="expand.emit()"
   >
@@ -18,7 +18,7 @@
   @if (errorMessage(); as message) {
     <div class="split__error" role="alert">
       <p>{{ message }}</p>
-      <button nz-button type="button" (click)="retry.emit()">Réessayer</button>
+      <button nz-button type="button" (click)="retry.emit()">{{ t.common.retry }}</button>
     </div>
   } @else if (split(); as value) {
     @if (value.shares.length === 0) {
@@ -26,7 +26,7 @@
         <div class="split__chart">
           <div class="split__ring-empty">
             <strong>0 h</strong>
-            <span>Total</span>
+            <span>{{ t.dashboard.sportSplit.total }}</span>
           </div>
         </div>
         <ul class="split__legend">
@@ -39,7 +39,7 @@
           }
         </ul>
       </div>
-      <p class="split__status">Aucune séance sur cette période</p>
+      <p class="split__status">{{ t.dashboard.sportSplit.none }}</p>
     } @else {
       <div class="split__body">
         <div class="split__chart">
@@ -47,15 +47,15 @@
             type="doughnut"
             [data]="chartData()"
             [options]="chartOptions"
-            label="Répartition du temps d’entraînement par sport"
+            [label]="t.dashboard.sportSplit.chart"
           />
           <div class="split__total" aria-hidden="true">
             <strong>{{ value.totalLabel }}</strong>
-            <span>Total</span>
+            <span>{{ t.dashboard.sportSplit.total }}</span>
           </div>
         </div>
 
-        <ul class="split__legend" aria-label="Légende de la répartition">
+        <ul class="split__legend" [attr.aria-label]="t.dashboard.sportSplit.legend">
           @for (share of value.shares; track share.family) {
             <li>
               <span
@@ -71,6 +71,6 @@
       </div>
     }
   } @else {
-    <p class="split__status" role="status">Chargement…</p>
+    <p class="split__status" role="status">{{ t.common.loading }}</p>
   }
 </section>

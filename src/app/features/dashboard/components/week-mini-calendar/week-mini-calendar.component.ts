@@ -8,6 +8,7 @@ import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { AppError } from '../../../../core/http/app-error';
 import type { WeekMiniDay } from '../../data-access/week-mini-calendar.state';
 import type { WeekMiniLegendEntry, WeekMiniSession } from '../../models/week-mini-calendar.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 const DAYS_PER_WEEK = 7;
 
@@ -24,9 +25,11 @@ const DAYS_PER_WEEK = 7;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeekMiniCalendarComponent {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   readonly days = input.required<readonly WeekMiniDay[]>();
   /** Nom du mois affiché (« Novembre 2026 »), porté par le bouton qui revient au mois courant. */
-  readonly title = input('Ce mois');
+  readonly title = input(TEXTS.dashboard.miniCalendar.title);
   readonly legend = input<readonly WeekMiniLegendEntry[]>([]);
   readonly loading = input(false);
   readonly error = input<AppError | null>(null);
@@ -65,8 +68,8 @@ export class WeekMiniCalendarComponent {
   /** Libellé accessible d'une séance : discipline, heure, puis action. */
   protected labelOf(session: WeekMiniSession): string {
     const discipline = session.disciplineLabel ?? this.labelOfKey(session.disciplineTypeKey);
-    const time = session.startTime ?? 'sans heure';
-    return `Séance ${discipline}, ${time}. Ouvrir la séance`;
+    const time = session.startTime ?? TEXTS.dashboard.miniCalendar.noTime;
+    return fill(TEXTS.dashboard.miniCalendar.session, { discipline, time });
   }
 
   /** Libellé du référentiel pour une clé, ou la clé brute si la légende ne la connaît pas. */
@@ -74,7 +77,7 @@ export class WeekMiniCalendarComponent {
     return this.legend().find((entry) => entry.typeKey === typeKey)?.label ?? typeKey;
   }
 
-  protected readonly weekdayNames = ['Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.'];
+  protected readonly weekdayNames = TEXTS.dashboard.miniCalendar.weekdays;
 
   /** Numéro du jour dans la case. */
   protected dayNumber(iso: string): string {

@@ -1,4 +1,5 @@
 import type { DisciplineStyle } from '../../../shared/ui/discipline/discipline-style';
+import { TEXTS } from '@shared/texts/texts';
 
 /** Séance planifiée affichée dans le mini-calendrier. `startTime` est `null` si la séance n'a pas d'heure. */
 export interface WeekMiniSession {
@@ -18,10 +19,10 @@ export interface WeekMiniDiscipline {
 
 /** Libellés des familles affichés dans la légende. */
 export const FAMILY_LABELS: Readonly<Record<string, string>> = {
-  running: 'Course à pied',
-  cycling: 'Vélo',
-  swimming: 'Natation',
-  other: 'Autres',
+  running: TEXTS.dashboard.sports.running,
+  cycling: TEXTS.dashboard.families.cycling,
+  swimming: TEXTS.dashboard.families.swimming,
+  other: TEXTS.dashboard.sports.other,
 };
 
 /** Activité réalisée affichée dans le mini-calendrier, en lecture seule. */

@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { WeeklyGoalView } from '../../models/weekly-goal.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 /**
  * Carte « Objectif de la semaine » : anneau de progression (plafonné visuellement à 100 %), durée réalisée sur la
@@ -17,6 +18,8 @@ import type { WeeklyGoalView } from '../../models/weekly-goal.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeeklyGoalCardComponent {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   /** Absente tant que la réponse n'est pas reçue. */
   readonly view = input<WeeklyGoalView | null>(null);
   readonly loading = input(false);

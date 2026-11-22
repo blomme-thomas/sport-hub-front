@@ -14,6 +14,7 @@ import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { TONE_VARIABLES } from '../kpi-card/kpi-card.component';
 import { VariationBadgeComponent } from '../variation-badge/variation-badge.component';
 import type { CardDetail } from '../../models/card-detail.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 export interface CardDetailModalData {
   detail: CardDetail;
@@ -32,6 +33,8 @@ export interface CardDetailModalData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardDetailModalComponent {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   protected readonly data = inject<CardDetailModalData>(NZ_MODAL_DATA);
   /** Graphique agrandi d'un indicateur à série ; `null` pour les autres vues. */
   protected readonly chart = lineChartOf(this.data.detail);
@@ -69,7 +72,7 @@ function lineChartOf(detail: CardDetail): LineChartView | null {
   const grid = readCssVar('--sh-chart-grid');
   const color = readCssVar(TONE_VARIABLES[tone]);
   return {
-    label: `${detail.title} sur la période`,
+    label: fill(TEXTS.dashboard.kpi.onPeriod, { label: detail.title }),
     data: {
       labels,
       datasets: [

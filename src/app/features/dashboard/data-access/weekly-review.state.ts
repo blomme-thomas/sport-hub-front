@@ -7,6 +7,7 @@ import { isoWeekOf, mondayOfIsoWeek, shiftIsoWeek } from '../../../shared/utils/
 import { AI_FEATURES } from '../../../core/config/ai-features';
 import type { WeeklyReview } from '../models/weekly-review.model';
 import { WeeklyReviewApiService } from './weekly-review.api';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 const NOT_FOUND = 404;
 
@@ -128,5 +129,8 @@ function formatWeek(week: string): string {
     year: 'numeric',
     timeZone: 'UTC',
   });
-  return `Semaine du ${format.format(new Date(`${monday}T00:00:00Z`))} au ${format.format(new Date(`${sunday}T00:00:00Z`))}`;
+  return fill(TEXTS.dashboard.review.week, {
+    from: format.format(new Date(`${monday}T00:00:00Z`)),
+    to: format.format(new Date(`${sunday}T00:00:00Z`)),
+  });
 }

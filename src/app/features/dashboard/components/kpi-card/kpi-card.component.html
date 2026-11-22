@@ -7,7 +7,7 @@
       nzType="text"
       type="button"
       class="card-expand"
-      [attr.aria-label]="'Agrandir : ' + kpi().label"
+      [attr.aria-label]="fill(t.dashboard.kpi.expand, { label: kpi().label })"
       [disabled]="false"
       (click)="expand.emit()"
     >
@@ -31,7 +31,7 @@
         type="line"
         [data]="data"
         [options]="sparkOptions"
-        [label]="kpi().label + ' sur la période'"
+        [label]="fill(t.dashboard.kpi.onPeriod, { label: kpi().label })"
       />
     </div>
   }

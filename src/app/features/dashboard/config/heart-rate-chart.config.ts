@@ -3,6 +3,7 @@ import type { ChartData, ChartOptions } from 'chart.js';
 import type { ZoneFloors } from '../models/heart-rate-zones.model';
 import { zoneOf } from '../models/heart-rate-zones.model';
 import type { HeartRateSampleApi } from '../models/recent-activity.api-model';
+import { TEXTS } from '@shared/texts/texts';
 
 /** Tokens de couleur des zones 1 à 5, repris de la maquette (Récupération, Endurance, Tempo, Seuil, Puissance). */
 const ZONE_TOKENS = [
@@ -33,7 +34,9 @@ export function hasDistanceAxis(samples: readonly HeartRateSampleApi[]): boolean
 
 /** Libellé de l'axe horizontal selon l'axe choisi. */
 export function axisTitle(axis: HeartRateAxis): string {
-  return axis === 'distance' ? 'Distance (km)' : 'Durée (min)';
+  return axis === 'distance'
+    ? TEXTS.dashboard.detail.distanceAxis
+    : TEXTS.dashboard.detail.timeAxis;
 }
 
 /**

@@ -12,6 +12,7 @@ import type {
   VariationDirection,
   VariationView,
 } from '../models/training-stats.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 const SECONDS_PER_HOUR = 3600;
 const MILLISECONDS_PER_DAY = 86_400_000;
@@ -26,10 +27,10 @@ const MONTH_FORMAT = new Intl.DateTimeFormat('fr-FR', {
 });
 
 const DIRECTION_LABELS: Record<VariationDirection, string> = {
-  up: 'En hausse',
-  down: 'En baisse',
-  flat: 'Stable',
-  unknown: 'Non comparable',
+  up: TEXTS.dashboard.variation.up,
+  down: TEXTS.dashboard.variation.down,
+  flat: TEXTS.dashboard.variation.flat,
+  unknown: TEXTS.dashboard.chart.notAvailable,
 };
 
 /**
@@ -71,26 +72,26 @@ function summaryOf(count: number, durationSeconds: number): PeriodSummaryView {
 
 function sessionsChart(granularity: Granularity, periods: PeriodStatsApi[]): ChartModel {
   return {
-    title: `Séances par ${unitWordOf(granularity)}`,
+    title: fill(TEXTS.dashboard.chart.sessions, { unit: unitWordOf(granularity) }),
     labels: periodLabels(granularity, periods),
     series: [
       {
-        label: 'Séances',
+        label: TEXTS.dashboard.kpi.sessions,
         values: periods.map((period) => period.totals.count),
         cssVar: '--sh-chart-series-1',
       },
     ],
-    unit: 'séances',
+    unit: TEXTS.dashboard.chart.unitSessions,
   };
 }
 
 function durationChart(granularity: Granularity, periods: PeriodStatsApi[]): ChartModel {
   return {
-    title: `Durée par ${unitWordOf(granularity)}`,
+    title: fill(TEXTS.dashboard.chart.duration, { unit: unitWordOf(granularity) }),
     labels: periodLabels(granularity, periods),
     series: [
       {
-        label: 'Durée (h)',
+        label: TEXTS.dashboard.chart.durationSeries,
         values: periods.map((period) => roundHours(period.totals.durationSeconds)),
         cssVar: '--sh-chart-series-2',
       },
@@ -102,15 +103,15 @@ function durationChart(granularity: Granularity, periods: PeriodStatsApi[]): Cha
 function byTypeChart(current: PeriodStatsApi | undefined): ChartModel {
   const types = [...(current?.byType ?? [])].sort((a, b) => a.type.localeCompare(b.type));
   const series: ChartSeries = {
-    label: 'Séances',
+    label: TEXTS.dashboard.kpi.sessions,
     values: types.map((item) => item.count),
     cssVar: '--sh-chart-series-1',
   };
   return {
-    title: 'Répartition par type (dernière période)',
+    title: TEXTS.dashboard.chart.byType,
     labels: types.map((item) => item.type),
     series: [series],
-    unit: 'séances',
+    unit: TEXTS.dashboard.chart.unitSessions,
   };
 }
 
@@ -156,7 +157,7 @@ function signOf(value: number): string {
 }
 
 function formatSessions(count: number): string {
-  return `${NUMBER_FORMAT.format(count)} ${count === 1 ? 'séance' : 'séances'}`;
+  return `${NUMBER_FORMAT.format(count)} ${count === 1 ? TEXTS.dashboard.chart.unitSession : TEXTS.dashboard.chart.unitSessions}`;
 }
 
 /** Durée en heures à une décimale près, « 6,7 h » : utilisée aussi par la carte Répartition par sport. */
@@ -169,7 +170,7 @@ function roundHours(durationSeconds: number): number {
 }
 
 function unitWordOf(granularity: Granularity): string {
-  return granularity === 'week' ? 'semaine' : 'mois';
+  return granularity === 'week' ? TEXTS.dashboard.chart.week : TEXTS.dashboard.chart.month;
 }
 
 function periodLabels(granularity: Granularity, periods: PeriodStatsApi[]): string[] {

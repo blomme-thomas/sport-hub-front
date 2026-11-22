@@ -1,16 +1,17 @@
 import type { NextEventFormatApi, NextEventGoalApi } from '../models/next-event.api-model';
 import type { NextEvent } from '../models/next-event.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 const MILLISECONDS_PER_DAY = 86_400_000;
 const SECONDS_PER_HOUR = 3600;
 const SECONDS_PER_MINUTE = 60;
 
 const FORMAT_LABELS: Record<NextEventFormatApi, string> = {
-  sprint: 'Sprint',
-  olympique: 'Olympique',
-  half: 'Half (semi-distance)',
-  full: 'Full (distance complète)',
-  autre: 'Autre',
+  sprint: TEXTS.dashboard.nextEvent.formats.sprint,
+  olympique: TEXTS.dashboard.nextEvent.formats.olympique,
+  half: TEXTS.dashboard.nextEvent.formats.half,
+  full: TEXTS.dashboard.nextEvent.formats.full,
+  autre: TEXTS.dashboard.nextEvent.formats.autre,
 };
 
 type UpcomingEventApi = NextEventGoalApi & { targetDate: string };
@@ -56,7 +57,7 @@ function formatTargetTime(totalSeconds: number): string {
   const hours = Math.floor(totalSeconds / SECONDS_PER_HOUR);
   const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
   const seconds = totalSeconds % SECONDS_PER_MINUTE;
-  return `${hours} h ${minutes} min ${seconds} s`;
+  return fill(TEXTS.dashboard.nextEvent.time, { hours, minutes, seconds });
 }
 
 function utcMidnight(iso: string): number {

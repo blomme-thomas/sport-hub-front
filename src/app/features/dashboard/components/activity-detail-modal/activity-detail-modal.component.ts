@@ -25,6 +25,7 @@ import {
   heartRateChartData,
   type HeartRateAxis,
 } from '../../config/heart-rate-chart.config';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 /** Donnée transmise à la modale : identifiant de l'activité. */
 export interface ActivityDetailModalData {
@@ -53,6 +54,8 @@ export interface DetailKpi {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivityDetailModalComponent {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   private readonly data = inject<ActivityDetailModalData>(NZ_MODAL_DATA);
   private readonly api = inject(RecentActivitiesApi);
   private readonly heartZones = inject(HeartRateZonesState);
@@ -88,14 +91,20 @@ export class ActivityDetailModalComponent {
     }
     const activity = this.detail.value();
     return [
-      { label: 'Distance', value: formatDistance(activity.distanceMeters) },
-      { label: 'Durée', value: formatDuration(activity.durationSeconds) },
       {
-        label: 'Allure moyenne',
+        label: TEXTS.dashboard.detail.distanceLabel,
+        value: formatDistance(activity.distanceMeters),
+      },
+      { label: TEXTS.dashboard.detail.time, value: formatDuration(activity.durationSeconds) },
+      {
+        label: TEXTS.dashboard.detail.avgPace,
         value: paceLabel(activity.durationSeconds, activity.distanceMeters),
       },
-      { label: 'Calories', value: formatCalories(activity.calories) },
-      { label: 'FC moyenne', value: formatHeartRate(activity.averageHeartRate) },
+      { label: TEXTS.dashboard.detail.calories, value: formatCalories(activity.calories) },
+      {
+        label: TEXTS.dashboard.detail.avgHeartRate,
+        value: formatHeartRate(activity.averageHeartRate),
+      },
     ];
   });
 
@@ -106,10 +115,16 @@ export class ActivityDetailModalComponent {
     }
     const activity = this.detail.value();
     return [
-      { label: 'Type', value: toRecentActivity(activity, new Date()).typeLabel },
+      {
+        label: TEXTS.dashboard.detail.typeLabel,
+        value: toRecentActivity(activity, new Date()).typeLabel,
+      },
       { label: 'Date', value: formatStart(activity.startedAt) },
-      { label: 'Dénivelé positif', value: formatMeters(activity.elevationGainMeters) },
-      { label: 'FC maximale', value: formatHeartRate(activity.maxHeartRate) },
+      {
+        label: TEXTS.dashboard.detail.elevation,
+        value: formatMeters(activity.elevationGainMeters),
+      },
+      { label: TEXTS.dashboard.detail.maxHeartRate, value: formatHeartRate(activity.maxHeartRate) },
     ];
   });
 
@@ -153,8 +168,10 @@ export class ActivityDetailModalComponent {
             ? []
             : [
                 {
-                  label: `Zone ${index + 1}`,
-                  value: `${Math.round(seconds / SECONDS_PER_MINUTE)} min`,
+                  label: fill(TEXTS.dashboard.detail.zoneLabel, { n: index + 1 }),
+                  value: fill(TEXTS.dashboard.detail.minutes, {
+                    value: Math.round(seconds / SECONDS_PER_MINUTE),
+                  }),
                   share: total > 0 ? Math.round((seconds / total) * 100) : 0,
                 },
               ],
@@ -170,11 +187,11 @@ function formatStart(iso: string): string {
 }
 
 function formatMeters(meters: number | null): string {
-  return meters === null ? '—' : `${Math.round(meters)} m`;
+  return meters === null ? '—' : fill(TEXTS.dashboard.detail.meters, { value: Math.round(meters) });
 }
 
 function formatCalories(kcal: number | null): string {
-  return kcal === null ? '—' : `${Math.round(kcal)} kcal`;
+  return kcal === null ? '—' : fill(TEXTS.dashboard.detail.kcal, { value: Math.round(kcal) });
 }
 
 /** Allure en « m:ss /km », ou « — » sans distance. */
@@ -185,5 +202,7 @@ function paceLabel(durationSeconds: number, distanceMeters: number | null): stri
   const secondsPerKm = durationSeconds / (distanceMeters / METERS_PER_KILOMETER);
   const minutes = Math.floor(secondsPerKm / SECONDS_PER_MINUTE);
   const seconds = Math.round(secondsPerKm % SECONDS_PER_MINUTE);
-  return `${minutes}:${String(seconds).padStart(2, '0')} /km`;
+  return fill(TEXTS.dashboard.detail.perKm, {
+    value: `${minutes}:${String(seconds).padStart(2, '0')}`,
+  });
 }

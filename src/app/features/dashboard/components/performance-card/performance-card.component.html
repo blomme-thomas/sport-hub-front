@@ -2,19 +2,21 @@
   <header class="perf__header">
     <h2 id="perf-heading" class="perf__title">
       <sh-icon name="bars" color="var(--sh-accent-text)" />
-      <span>Performances</span>
+      <span>{{ t.dashboard.performance.heading }}</span>
     </h2>
   </header>
 
   @if (state.error(); as failure) {
     <div class="perf__error" role="alert">
       <p>{{ failure.userMessage }}</p>
-      <button nz-button nzType="primary" type="button" (click)="state.reload()">Réessayer</button>
+      <button nz-button nzType="primary" type="button" (click)="state.reload()">
+        {{ t.common.retry }}
+      </button>
     </div>
   } @else if (state.series(); as series) {
     @if (series.totalSeconds === 0) {
       <div class="perf__placeholder" aria-hidden="true"></div>
-      <p class="perf__status">Aucune séance sur cette période</p>
+      <p class="perf__status">{{ t.dashboard.cardDetail.noSession }}</p>
     } @else {
       <div class="perf__chart">
         <sh-chart
@@ -23,13 +25,13 @@
           [options]="chartOptions"
           [label]="
             state.grouping() === 'week'
-              ? 'Durée par semaine sur la période'
-              : 'Durée par jour sur la période'
+              ? t.dashboard.performance.byWeek
+              : t.dashboard.performance.byDay
           "
         />
       </div>
     }
   } @else {
-    <p class="perf__status">Chargement…</p>
+    <p class="perf__status">{{ t.common.loading }}</p>
   }
 </article>

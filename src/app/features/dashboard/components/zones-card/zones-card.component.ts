@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { ZonesCardView } from '../../models/zones-card.model';
+import { TEXTS } from '@shared/texts/texts';
 
 /** Ligne de la carte : une zone réelle, ou une zone de repère grisée quand la période n'a pas de donnée. */
 interface ZoneRow {
@@ -16,15 +17,15 @@ interface ZoneRow {
 
 /** Zones de repère affichées sans donnée : mêmes noms et même ordre que la légende réelle (Z5 en premier). */
 const PLACEHOLDER_ZONES: readonly { label: string; name: string }[] = [
-  { label: 'Z5', name: 'Puissance' },
-  { label: 'Z4', name: 'Seuil' },
-  { label: 'Z3', name: 'Tempo' },
-  { label: 'Z2', name: 'Endurance' },
-  { label: 'Z1', name: 'Récupération' },
+  { label: 'Z5', name: TEXTS.dashboard.zones.names.z5 },
+  { label: 'Z4', name: TEXTS.dashboard.zones.names.z4 },
+  { label: 'Z3', name: TEXTS.dashboard.zones.names.z3 },
+  { label: 'Z2', name: TEXTS.dashboard.zones.names.z2 },
+  { label: 'Z1', name: TEXTS.dashboard.zones.names.z1 },
 ];
 const NO_VALUE = '—';
 const PLACEHOLDER_COLOR = '--sh-border';
-const EMPTY_STATUS = 'Aucune donnée de zone cardiaque sur cette période';
+const EMPTY_STATUS = TEXTS.dashboard.zones.empty;
 
 /**
  * Carte « Zones d'entraînement » : barre segmentée des zones cardiaques, anneau du temps en zone optimale,
@@ -40,6 +41,7 @@ const EMPTY_STATUS = 'Aucune donnée de zone cardiaque sur cette période';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ZonesCardComponent {
+  protected readonly t = TEXTS;
   /** Absente tant que la réponse n'est pas reçue. */
   readonly view = input<ZonesCardView | undefined>(undefined);
   readonly loading = input(false);

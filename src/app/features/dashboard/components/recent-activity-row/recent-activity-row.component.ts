@@ -18,6 +18,7 @@ import {
   heartRateChartData,
   heartRateColor,
 } from '../../config/heart-rate-chart.config';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 /**
  * Une séance récente : titre, jour, durée, distance, fréquence cardiaque moyenne au-dessus d'une courbe de FC.
@@ -32,6 +33,8 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecentActivityRowComponent {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   readonly activity = input.required<RecentActivity>();
   readonly opened = output<string>();
 

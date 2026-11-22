@@ -4,6 +4,7 @@ import type { SportSplitView } from '../models/sport-split.model';
 import type { VariationDirection, VariationView } from '../models/training-stats.model';
 import { toSportSplit } from './sport-split.mapper';
 import { formatHours } from './training-stats.mapper';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 const ABSENT = '—';
 const DAY_LABEL = new Intl.DateTimeFormat('fr-FR', {
@@ -19,10 +20,10 @@ const NUMBER_FORMAT = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 
 const INTEGER_FORMAT = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
 
 const DIRECTION_LABELS: Record<VariationDirection, string> = {
-  up: 'En hausse',
-  down: 'En baisse',
-  flat: 'Stable',
-  unknown: 'Non disponible',
+  up: TEXTS.dashboard.variation.up,
+  down: TEXTS.dashboard.variation.down,
+  flat: TEXTS.dashboard.variation.flat,
+  unknown: TEXTS.dashboard.variation.unknown,
 };
 
 /** Convertit la réponse du back en cinq indicateurs d'affichage, dans l'ordre du bandeau. */
@@ -31,7 +32,7 @@ export function toDashboardKpis(api: DashboardKpisResponseApi): DashboardKpi[] {
   return [
     {
       id: 'sessions',
-      label: 'Séances',
+      label: TEXTS.dashboard.kpi.sessions,
       value: INTEGER_FORMAT.format(totals.count),
       unit: null,
       tone: 'accent',
@@ -41,7 +42,7 @@ export function toDashboardKpis(api: DashboardKpisResponseApi): DashboardKpi[] {
     },
     {
       id: 'duration',
-      label: 'Durée totale',
+      label: TEXTS.dashboard.kpi.duration,
       value: formatHoursMinutes(totals.durationSeconds),
       unit: null,
       tone: 'success',
@@ -51,7 +52,7 @@ export function toDashboardKpis(api: DashboardKpisResponseApi): DashboardKpi[] {
     },
     {
       id: 'calories',
-      label: 'Calories brûlées',
+      label: TEXTS.dashboard.kpi.calories,
       value: formatInteger(totals.calories),
       unit: totals.calories === null ? null : 'kcal',
       tone: 'orange',
@@ -61,7 +62,7 @@ export function toDashboardKpis(api: DashboardKpisResponseApi): DashboardKpi[] {
     },
     {
       id: 'elevation',
-      label: 'Dénivelé positif',
+      label: TEXTS.dashboard.kpi.elevation,
       value: formatInteger(totals.elevationGainMeters),
       unit: totals.elevationGainMeters === null ? null : 'm',
       tone: 'violet',
@@ -70,7 +71,7 @@ export function toDashboardKpis(api: DashboardKpisResponseApi): DashboardKpi[] {
     },
     {
       id: 'heartRate',
-      label: 'FC moyenne',
+      label: TEXTS.dashboard.kpi.heartRate,
       value: formatInteger(averageHeartRate),
       unit: averageHeartRate === null ? null : 'bpm',
       tone: 'danger',
@@ -89,7 +90,12 @@ export function toSportSplitView(api: DashboardKpisResponseApi): SportSplitView 
 export function formatHoursMinutes(totalSeconds: number): string {
   const hours = Math.floor(totalSeconds / SECONDS_PER_HOUR);
   const minutes = Math.floor((totalSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
-  return hours === 0 ? `${minutes} min` : `${hours}h ${String(minutes).padStart(2, '0')}`;
+  return hours === 0
+    ? fill(TEXTS.dashboard.detail.minutes, { value: minutes })
+    : fill(TEXTS.dashboard.detail.hoursMinutes, {
+        hours,
+        minutes: String(minutes).padStart(2, '0'),
+      });
 }
 
 function formatInteger(value: number | null): string {

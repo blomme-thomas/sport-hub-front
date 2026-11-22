@@ -1,21 +1,23 @@
 <section class="recent" aria-labelledby="recent-heading" [attr.aria-busy]="loading()">
   <h2 id="recent-heading" class="recent__heading">
     <sh-icon name="list" color="var(--sh-success)" />
-    <span>Détails par séance</span>
+    <span>{{ t.dashboard.recent.heading }}</span>
   </h2>
 
   @if (error(); as failure) {
     <div class="recent__error" role="alert">
       <p>{{ failure.userMessage }}</p>
-      <button nz-button nzType="primary" type="button" (click)="retry.emit()">Réessayer</button>
+      <button nz-button nzType="primary" type="button" (click)="retry.emit()">
+        {{ t.common.retry }}
+      </button>
     </div>
   } @else if (activities() === undefined) {
-    <p class="recent__status">Chargement…</p>
+    <p class="recent__status">{{ t.common.loading }}</p>
   } @else if (activities(); as list) {
     @if (list.length === 0) {
-      <p class="recent__status">Aucune séance récente</p>
+      <p class="recent__status">{{ t.dashboard.recent.none }}</p>
     } @else {
-      <ul class="recent__list" tabindex="0" aria-label="Séances récentes, défilables">
+      <ul class="recent__list" tabindex="0" [attr.aria-label]="t.dashboard.recent.list">
         @for (activity of list; track activity.id) {
           <li>
             <sh-recent-activity-row [activity]="activity" (opened)="opened.emit($event)" />

@@ -1,7 +1,9 @@
 <button
   type="button"
   class="row"
-  [attr.aria-label]="'Détail de la séance ' + activity().typeLabel + ', ' + activity().dateLabel"
+  [attr.aria-label]="
+    fill(t.dashboard.recent.detailLabel, { type: activity().typeLabel, date: activity().dateLabel })
+  "
   (click)="opened.emit(activity().id)"
 >
   <span class="row__icon" aria-hidden="true">{{ activity().typeIcon }}</span>
@@ -22,7 +24,7 @@
           type="line"
           [data]="chartData()"
           [options]="sparkOptions"
-          [label]="'Fréquence cardiaque, ' + activity().typeLabel"
+          [label]="fill(t.dashboard.recent.heartRateLabel, { type: activity().typeLabel })"
         />
       </span>
     } @else {
