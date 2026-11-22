@@ -27,6 +27,7 @@ import { NzDatePickerComponent } from 'ng-zorro-antd/date-picker';
 import { NzInputDirective } from 'ng-zorro-antd/input';
 import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
 import { NzOptionComponent, NzSelectComponent } from 'ng-zorro-antd/select';
+import { TEXTS } from '@shared/texts/texts';
 import { AppError } from '../../../../core/http/app-error';
 import { SelectComboboxDirective } from '../../../../shared/directives/select-combobox.directive';
 import { EVENT_FORMATS, GOAL_TYPES } from '../../models/goal-options';
@@ -43,7 +44,7 @@ const FORM_FIELDS: Readonly<Record<FormFieldName, true>> = {
 };
 
 const EVENT_TYPE: GoalType = 'evenement';
-const REQUIRED_MESSAGE = 'Ce champ est obligatoire.';
+const REQUIRED_MESSAGE = TEXTS.goals.form.required;
 
 const notBlank = (control: AbstractControl): ValidationErrors | null =>
   typeof control.value === 'string' && control.value.trim() === '' ? { required: true } : null;
@@ -84,6 +85,7 @@ export class GoalFormComponent implements OnInit {
 
   private readonly fb = inject(FormBuilder).nonNullable;
 
+  protected readonly t = TEXTS;
   protected readonly typeOptions = GOAL_TYPES;
   protected readonly formatOptions = EVENT_FORMATS;
 

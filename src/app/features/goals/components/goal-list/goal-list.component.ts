@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { TEXTS, fill } from '@shared/texts/texts';
 import { EVENT_FORMATS, GOAL_TYPES } from '../../models/goal-options';
 import type { Goal, TargetTime } from '../../models/goal.model';
 
@@ -26,6 +27,8 @@ export class GoalListComponent {
   readonly edit = output<Goal>();
   readonly delete = output<Goal>();
 
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   protected readonly headingId = `goal-list-heading-${++nextListId}`;
 
   protected readonly rows = computed<GoalRow[]>(() =>
@@ -50,5 +53,5 @@ function formatDay(iso: string): string {
 }
 
 function formatTime({ hours, minutes, seconds }: TargetTime): string {
-  return `${hours} h ${minutes} min ${seconds} s`;
+  return fill(TEXTS.goals.list.time, { hours, minutes, seconds });
 }

@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalComponent, NzModalContentDirective, NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { TEXTS } from '@shared/texts/texts';
+import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import { GoalFormComponent } from '../components/goal-form/goal-form.component';
@@ -12,19 +14,14 @@ import type { Goal, GoalInput } from '../models/goal.model';
 /** Écran des objectifs : sections à venir, passés et sans date, création, modification et suppression. */
 @Component({
   selector: 'sh-goals-page',
-  imports: [
-    NzButtonComponent,
-    NzModalComponent,
-    NzModalContentDirective,
-    GoalFormComponent,
-    GoalListComponent,
-  ],
+  imports: [NzButtonComponent, ModalComponent, GoalFormComponent, GoalListComponent],
   templateUrl: './goals.page.html',
   styleUrl: './goals.page.scss',
   providers: [GoalsState],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GoalsPage {
+  protected readonly t = TEXTS;
   protected readonly state = inject(GoalsState);
 
   private readonly modal = inject(NzModalService);
@@ -37,7 +34,7 @@ export class GoalsPage {
     return target === null || target === 'new' ? null : target;
   });
   protected readonly formTitle = computed(() =>
-    this.editing() === 'new' ? 'Nouvel objectif' : 'Modifier l’objectif',
+    this.editing() === 'new' ? TEXTS.goals.form.newTitle : TEXTS.goals.form.editTitle,
   );
   protected readonly formError = signal<AppError | null>(null);
 
@@ -57,11 +54,12 @@ export class GoalsPage {
 
   protected confirmDelete(goal: Goal): void {
     this.modal.confirm({
-      nzTitle: 'Supprimer cet objectif ?',
-      nzContent: 'Cette action est définitive.',
-      nzOkText: 'Supprimer',
+      nzClassName: 'sh-modal',
+      nzTitle: TEXTS.goals.confirmDelete.title,
+      nzContent: TEXTS.goals.confirmDelete.content,
+      nzOkText: TEXTS.common.delete,
       nzOkDanger: true,
-      nzCancelText: 'Annuler',
+      nzCancelText: TEXTS.common.cancel,
       nzOnOk: () => this.remove(goal),
     });
   }
@@ -85,7 +83,9 @@ export class GoalsPage {
     }
 
     this.closeForm();
-    this.messages.success(target === 'new' ? 'Objectif créé.' : 'Objectif modifié.');
+    this.messages.success(
+      target === 'new' ? TEXTS.goals.messages.created : TEXTS.goals.messages.updated,
+    );
   }
 
   private async remove(goal: Goal): Promise<void> {
@@ -94,6 +94,6 @@ export class GoalsPage {
     } catch {
       return;
     }
-    this.messages.success('Objectif supprimé.');
+    this.messages.success(TEXTS.goals.messages.deleted);
   }
 }
