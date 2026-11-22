@@ -45,11 +45,11 @@ test.describe('Calendrier : une occurrence de séance hebdomadaire', () => {
     const calendrier = new CreneauxPage(page);
     await calendrier.goto();
 
-    await page.getByRole('button', { name: /^Séance Piscine, 18:00/ }).click();
     const cancelRequest = page.waitForRequest(
       (request) => request.method() === 'POST' && CANCEL_URL.test(request.url()),
     );
-    await page.getByRole('button', { name: 'Annuler cette semaine', exact: true }).click();
+    // L'annulation de cette semaine se fait depuis la carte, par son icône.
+    await page.getByRole('button', { name: /^Annuler cette semaine, séance/ }).click();
 
     await cancelRequest;
     expect(cancelled).toBe(true);
