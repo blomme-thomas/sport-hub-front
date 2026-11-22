@@ -7,11 +7,12 @@ import type {
   ActivityCommentApi,
   ActivityCommentSourceApi,
 } from '../../models/activity-comment.api-model';
+import { TEXTS } from '@shared/texts/texts';
 
 const SOURCE_LABELS: Record<ActivityCommentSourceApi, string> = {
-  ia: 'Généré par l’IA',
-  generique: 'Commentaire générique',
-  'saisie-manuelle': 'Saisi à la main',
+  ia: TEXTS.seances.comment.sourceIa,
+  generique: TEXTS.seances.comment.sourceGeneric,
+  'saisie-manuelle': TEXTS.seances.comment.sourceManual,
 };
 
 /**
@@ -26,6 +27,7 @@ const SOURCE_LABELS: Record<ActivityCommentSourceApi, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivityCommentComponent {
+  protected readonly t = TEXTS;
   readonly comment = input<ActivityCommentApi | null>(null);
   readonly loading = input(false);
   readonly error = input<AppError | null>(null);

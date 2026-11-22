@@ -116,9 +116,10 @@ describe('SessionState', () => {
   it('réordonne les modules et ajoute ou supprime un module', async () => {
     const state = await loaded();
     const [first, second] = state.draft();
-    state.moveDown(first?.key ?? -1);
+    state.moveTo(first?.key ?? -1, 1);
 
     expect(state.draft()[0]?.key).toBe(second?.key);
+    expect(state.draft()[1]?.key).toBe(first?.key);
 
     state.add();
     expect(state.draft()).toHaveLength(4);

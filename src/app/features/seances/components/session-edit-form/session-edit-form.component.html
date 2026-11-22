@@ -1,15 +1,15 @@
 <section class="session-edit__import" aria-labelledby="session-edit-import-heading">
   <h3 id="session-edit-import-heading" class="session-edit__heading">
-    Pré-remplir depuis un fichier JSON
+    {{ t.seances.edit.importHeading }}
   </h3>
   <sh-json-file-input
-    label="Fichier de séance (.json)"
+    [label]="t.seances.edit.fileLabel"
     [disabled]="saving()"
     (contentChange)="onJsonChange($event)"
   />
   @if (importIssues().length > 0) {
     <div class="session-edit__alert" role="alert">
-      <p>Le fichier n’est pas valide, le formulaire n’a pas été modifié :</p>
+      <p>{{ t.seances.edit.invalidFile }}</p>
       <ul class="session-edit__issues">
         @for (issue of importIssues(); track $index) {
           <li>
@@ -25,8 +25,8 @@
   @if (editedModules(); as modules) {
     <sh-plan-modules-editor [modules]="modules" (modulesChange)="onModulesChange($event)" />
     @if (modulesInvalid()) {
-      <p class="session-edit__alert" role="alert">
-        Au moins un module est requis, avec une durée de 1 à 1440 minutes et une consigne.
+      <p class="session-edit__error" role="alert">
+        {{ t.seances.edit.modulesRequired }}
       </p>
     }
   }
@@ -39,89 +39,99 @@
     </div>
   }
 
-  <div class="session-edit__row">
-    <div class="session-edit__field">
-      <label for="session-edit-date">Date</label>
-      <input id="session-edit-date" type="date" formControlName="date" />
-    </div>
-    <div class="session-edit__field">
-      <label for="session-edit-start">Heure de début</label>
-      <input id="session-edit-start" type="time" step="1800" formControlName="startTime" />
-    </div>
-  </div>
+  <div class="session-edit__body">
+    <div class="session-edit__main">
+      <div class="session-edit__row">
+        <div class="session-edit__field">
+          <label for="session-edit-date">{{ t.seances.edit.date }}</label>
+          <input id="session-edit-date" type="date" formControlName="date" />
+        </div>
+        <div class="session-edit__field">
+          <label for="session-edit-start">{{ t.seances.edit.startTime }}</label>
+          <input id="session-edit-start" type="time" step="1800" formControlName="startTime" />
+        </div>
+      </div>
 
-  <div class="session-edit__row">
-    <div class="session-edit__field">
-      <label for="session-edit-duration">Durée (min)</label>
-      <input
-        id="session-edit-duration"
-        type="number"
-        [attr.min]="durationMin"
-        [attr.max]="durationMax"
-        step="1"
-        formControlName="durationMinutes"
-      />
-    </div>
-    <div class="session-edit__field">
-      <label for="session-edit-discipline">Discipline</label>
-      <select id="session-edit-discipline" formControlName="disciplineTypeKey">
-        @for (option of disciplineOptions(); track option.typeKey) {
-          <option [value]="option.typeKey">{{ option.label }}</option>
-        }
-      </select>
-    </div>
-  </div>
-
-  <div class="session-edit__field">
-    <label for="session-edit-title">Titre</label>
-    <input id="session-edit-title" type="text" maxlength="200" formControlName="title" />
-  </div>
-
-  <div class="session-edit__field">
-    <label for="session-edit-distance">Distance cible (km)</label>
-    <input
-      id="session-edit-distance"
-      type="number"
-      min="0"
-      step="0.1"
-      formControlName="distanceKm"
-    />
-  </div>
-
-  <fieldset class="session-edit__zones" formGroupName="zones">
-    <legend>Répartition cible par zone de FC (%)</legend>
-    @for (zone of zoneFields; track zone.key) {
       <div class="session-edit__field">
-        <label [for]="'session-edit-zone-' + zone.key">{{ zone.label }}</label>
+        <label for="session-edit-discipline">{{ t.seances.edit.discipline }}</label>
+        <select id="session-edit-discipline" formControlName="disciplineTypeKey">
+          @for (option of disciplineOptions(); track option.typeKey) {
+            <option [value]="option.typeKey">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="session-edit__field">
+        <label for="session-edit-duration">{{ t.seances.edit.duration }}</label>
         <input
-          [id]="'session-edit-zone-' + zone.key"
+          id="session-edit-duration"
           type="number"
-          min="0"
-          max="100"
+          [attr.min]="durationMin"
+          [attr.max]="durationMax"
           step="1"
-          [formControlName]="zone.key"
+          formControlName="durationMinutes"
         />
       </div>
-    }
-  </fieldset>
-  @if (zonesInvalid()) {
-    <p class="session-edit__alert" role="alert">
-      Les zones doivent totaliser 100 % (ou rester à 0).
-    </p>
-  }
 
-  <div class="session-edit__field">
-    <label for="session-edit-description">Description</label>
-    <textarea
-      id="session-edit-description"
-      rows="3"
-      [attr.maxlength]="descriptionMax"
-      formControlName="description"
-    ></textarea>
+      <fieldset class="session-edit__objectives">
+        <legend>{{ t.seances.edit.objectives }}</legend>
+        <div class="session-edit__field">
+          <label for="session-edit-distance">{{ t.seances.edit.distance }}</label>
+          <input
+            id="session-edit-distance"
+            type="number"
+            min="0"
+            step="0.1"
+            formControlName="distanceKm"
+          />
+        </div>
+
+        <div class="session-edit__zones" formGroupName="zones">
+          @for (zone of zoneFields; track zone.key) {
+            <div class="session-edit__field">
+              <label [for]="'session-edit-zone-' + zone.key">{{ zone.label }} (%)</label>
+              <input
+                [id]="'session-edit-zone-' + zone.key"
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                [formControlName]="zone.key"
+              />
+            </div>
+          }
+        </div>
+        @if (zonesInvalid()) {
+          <p class="session-edit__error" role="alert">
+            {{ t.seances.edit.zonesInvalid }}
+          </p>
+        }
+      </fieldset>
+    </div>
+
+    <section class="session-edit__aside" aria-labelledby="session-edit-description-heading">
+      <div class="session-edit__field">
+        <label for="session-edit-title">{{ t.seances.edit.title }}</label>
+        <input id="session-edit-title" type="text" maxlength="200" formControlName="title" />
+      </div>
+      <h3 id="session-edit-description-heading" class="session-edit__heading">
+        {{ t.seances.edit.description }}
+      </h3>
+      <label class="visually-hidden" for="session-edit-description">{{
+        t.seances.edit.descriptionLabel
+      }}</label>
+      <textarea
+        id="session-edit-description"
+        class="session-edit__textarea"
+        rows="3"
+        [attr.maxlength]="descriptionMax"
+        formControlName="description"
+      ></textarea>
+    </section>
   </div>
 
   <div class="session-edit__actions">
-    <button nz-button type="button" (click)="cancelled.emit()">Annuler</button>
+    <button nz-button type="button" (click)="cancelled.emit()">{{ t.common.cancel }}</button>
     <button
       nz-button
       nzType="primary"
@@ -129,7 +139,7 @@
       [disabled]="saving() || form.invalid || modulesInvalid()"
       [attr.aria-busy]="saving()"
     >
-      Enregistrer
+      {{ t.common.save }}
     </button>
   </div>
 </form>

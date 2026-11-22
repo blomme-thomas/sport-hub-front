@@ -48,6 +48,33 @@
   margin-bottom: var(--sh-space-6);
 }
 
+/* Deux colonnes : infos, objectifs et activité à gauche, modules à droite. Une colonne sous la largeur moyenne. */
+.session__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sh-space-6);
+  align-items: start;
+}
+
+.session__column {
+  min-width: 0;
+}
+
+.session__section--modules {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .session__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .session__section--modules {
+    margin-bottom: var(--sh-space-6);
+  }
+}
+
 .session__section-header {
   display: flex;
   flex-wrap: wrap;

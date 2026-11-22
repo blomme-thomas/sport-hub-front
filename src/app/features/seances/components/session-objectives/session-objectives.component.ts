@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { HR_ZONES, displayedRate, formatZoneGap } from '@shared/utils/session-objectives';
 import type { SessionAchievement, SessionObjectives } from '../../models/session.model';
+import { TEXTS } from '@shared/texts/texts';
 
 const NUMBER_FORMAT = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 });
 
@@ -16,6 +17,7 @@ const NUMBER_FORMAT = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionObjectivesComponent {
+  protected readonly t = TEXTS;
   readonly objectives = input.required<SessionObjectives>();
   readonly achievement = input<SessionAchievement | null>(null);
 

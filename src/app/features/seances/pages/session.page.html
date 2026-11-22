@@ -1,134 +1,156 @@
 @if (state.isLoading() && state.session() === null) {
-  <p class="session__status" aria-busy="true">Chargement…</p>
+  <p class="session__status" aria-busy="true">{{ t.common.loading }}</p>
 } @else if (state.error(); as failure) {
   <div class="session__error" role="alert">
     <p>{{ failure.userMessage }}</p>
-    <button nz-button nzType="primary" type="button" (click)="state.load(id())">Réessayer</button>
+    <button nz-button nzType="primary" type="button" (click)="state.load(id())">
+      {{ t.common.retry }}
+    </button>
   </div>
 } @else if (state.session(); as session) {
-  <header class="session__header">
-    <p class="session__date">
-      {{ dateLabel() }}
-      @if (session.startTime) {
-        · {{ session.startTime }}
-      }
-    </p>
-    <h1 class="session__title">{{ session.disciplineLabel }}</h1>
-    <div class="session__badges">
-      <span class="session__badge">{{ statusLabel() }}</span>
-      @if (session.modifiedManually) {
-        <span class="session__badge session__badge--modified">Modifiée</span>
-      }
-    </div>
-    @if (!state.readOnly()) {
-      <div class="session__header-actions">
-        <button nz-button type="button" (click)="openEdit()">Modifier la séance</button>
-      </div>
-    }
-  </header>
-
   @if (state.readOnly()) {
     <p class="session__readonly" role="status">
-      Séance réalisée : elle est affichée en lecture seule.
+      {{ t.seances.readOnly }}
     </p>
   }
 
   @if (editOpen()) {
-    <nz-modal
-      [nzVisible]="true"
-      nzTitle="Modifier la séance"
-      nzWidth="min(720px, 96vw)"
-      [nzFooter]="null"
-      (nzOnCancel)="closeEdit()"
+    <sh-modal
+      title="{{ t.seances.actions.edit }}"
+      icon="calendar"
+      width="min(960px, 96vw)"
+      (closed)="closeEdit()"
     >
-      <ng-container *nzModalContent>
-        <sh-session-edit-form
-          [session]="session"
-          [disciplines]="state.disciplines()"
-          [saving]="state.saving()"
-          [serverError]="state.saveError()"
-          (saved)="saveDetails($event)"
-          (cancelled)="closeEdit()"
-        />
-      </ng-container>
-    </nz-modal>
+      <sh-session-edit-form
+        [session]="session"
+        [disciplines]="state.disciplines()"
+        [saving]="state.saving()"
+        [serverError]="state.saveError()"
+        (saved)="saveDetails($event)"
+        (cancelled)="closeEdit()"
+      />
+    </sh-modal>
   }
 
-  <section class="session__section" aria-labelledby="session-info-heading">
-    <h2 id="session-info-heading" class="session__heading">Informations</h2>
-    <dl class="session__info">
-      <dt>Durée prévue</dt>
-      <dd>{{ session.durationMinutes }} min</dd>
-      @if (session.title) {
-        <dt>Titre</dt>
-        <dd>{{ session.title }}</dd>
-      }
-      @if (session.description) {
-        <dt>Description</dt>
-        <dd>{{ session.description }}</dd>
-      }
-    </dl>
-  </section>
+  <div class="session__layout">
+    <div class="session__column">
+      <header class="session__header">
+        <p class="session__date">
+          {{ dateLabel() }}
+          @if (session.startTime) {
+            · {{ session.startTime }}
+          }
+        </p>
+        <h1 class="session__title">{{ session.disciplineLabel }}</h1>
+        <div class="session__badges">
+          <span class="session__badge">{{ statusLabel() }}</span>
+          @if (session.modifiedManually) {
+            <span class="session__badge session__badge--modified">{{
+              t.seances.badgeModified
+            }}</span>
+          }
+        </div>
+        @if (!state.readOnly()) {
+          <div class="session__header-actions">
+            <button nz-button type="button" (click)="openEdit()">
+              {{ t.seances.actions.edit }}
+            </button>
+          </div>
+        }
+      </header>
 
-  <section class="session__section" aria-labelledby="session-objectives-heading">
-    <h2 id="session-objectives-heading" class="session__heading">Objectifs</h2>
-    <sh-session-objectives [objectives]="session.objectives" [achievement]="session.achievement" />
-  </section>
+      <section class="session__section" aria-labelledby="session-info-heading">
+        <h2 id="session-info-heading" class="session__heading">{{ t.seances.info.heading }}</h2>
+        <dl class="session__info">
+          <dt>{{ t.seances.info.duration }}</dt>
+          <dd>{{ session.durationMinutes }} min</dd>
+          @if (session.title) {
+            <dt>{{ t.seances.info.title }}</dt>
+            <dd>{{ session.title }}</dd>
+          }
+          @if (session.description) {
+            <dt>{{ t.seances.info.description }}</dt>
+            <dd>{{ session.description }}</dd>
+          }
+        </dl>
+      </section>
 
-  <section class="session__section" aria-labelledby="session-activity-heading">
-    <h2 id="session-activity-heading" class="session__heading">Activité réalisée</h2>
-    <sh-session-activity
-      [linked]="session.linkedActivity"
-      [linkedDetail]="state.linkedActivityDetail()"
-      [candidates]="state.activityCandidates()"
-      [busy]="state.activityBusy()"
-      [error]="state.activityError()"
-      (link)="linkActivity($event)"
-      (unlink)="unlinkActivity()"
-      [exporting]="state.exporting()"
-      (exportSession)="state.exportLinkedSession()"
-    />
-    @if (session.linkedActivity) {
-      <sh-activity-comment
-        [comment]="comments.comment()"
-        [loading]="comments.isLoading()"
-        [error]="comments.error()"
-        [editing]="comments.editing()"
-        [draft]="comments.draft()"
-        [saving]="comments.saving()"
-        [saveError]="comments.saveError()"
-        [canSave]="comments.canSave()"
-        (edit)="comments.startEdit()"
-        (cancelEdit)="comments.cancel()"
-        (save)="saveComment()"
-        (draftChange)="comments.setDraft($event)"
-      />
-    }
-  </section>
+      <section class="session__section" aria-labelledby="session-objectives-heading">
+        <h2 id="session-objectives-heading" class="session__heading">
+          {{ t.seances.objectives.heading }}
+        </h2>
+        <sh-session-objectives
+          [objectives]="session.objectives"
+          [achievement]="session.achievement"
+        />
+      </section>
 
-  <section class="session__section" aria-labelledby="session-modules-heading">
-    <div class="session__section-header">
-      <h2 id="session-modules-heading" class="session__heading">
-        Modules ({{ state.draft().length }}) · {{ state.totalMinutes() }} min
-      </h2>
-      @if (!state.readOnly()) {
-        <button nz-button type="button" [disabled]="!state.canAddModule()" (click)="state.add()">
-          Ajouter un module
-        </button>
-      }
+      <section class="session__section" aria-labelledby="session-activity-heading">
+        <h2 id="session-activity-heading" class="session__heading">
+          {{ t.seances.activity.heading }}
+        </h2>
+        <sh-session-activity
+          [linked]="session.linkedActivity"
+          [linkedDetail]="state.linkedActivityDetail()"
+          [candidates]="state.activityCandidates()"
+          [busy]="state.activityBusy()"
+          [error]="state.activityError()"
+          (link)="linkActivity($event)"
+          (unlink)="unlinkActivity()"
+          [exporting]="state.exporting()"
+          (exportSession)="state.exportLinkedSession()"
+        />
+        @if (session.linkedActivity) {
+          <sh-activity-comment
+            [comment]="comments.comment()"
+            [loading]="comments.isLoading()"
+            [error]="comments.error()"
+            [editing]="comments.editing()"
+            [draft]="comments.draft()"
+            [saving]="comments.saving()"
+            [saveError]="comments.saveError()"
+            [canSave]="comments.canSave()"
+            (edit)="comments.startEdit()"
+            (cancelEdit)="comments.cancel()"
+            (save)="saveComment()"
+            (draftChange)="comments.setDraft($event)"
+          />
+        }
+      </section>
     </div>
 
-    <sh-session-modules
-      [modules]="state.draft()"
-      [invalidKeys]="state.invalidKeys()"
-      [readOnly]="state.readOnly()"
-      (typeChanged)="setType($event)"
-      (durationChanged)="setDuration($event)"
-      (instructionChanged)="setInstruction($event)"
-      (moved)="move($event)"
-      (removed)="state.remove($event)"
-    />
-  </section>
+    <section
+      class="session__section session__section--modules"
+      aria-labelledby="session-modules-heading"
+    >
+      <div class="session__section-header">
+        <h2 id="session-modules-heading" class="session__heading">
+          {{
+            fill(t.seances.modules.heading, {
+              count: state.draft().length,
+              minutes: state.totalMinutes(),
+            })
+          }}
+        </h2>
+        @if (!state.readOnly()) {
+          <button nz-button type="button" [disabled]="!state.canAddModule()" (click)="state.add()">
+            {{ t.seances.modules.add }}
+          </button>
+        }
+      </div>
+
+      <sh-session-modules
+        [modules]="state.draft()"
+        [invalidKeys]="state.invalidKeys()"
+        [readOnly]="state.readOnly()"
+        (typeChanged)="setType($event)"
+        (durationChanged)="setDuration($event)"
+        (instructionChanged)="setInstruction($event)"
+        (reordered)="reorder($event)"
+        (removed)="state.remove($event)"
+      />
+    </section>
+  </div>
 
   @if (!state.readOnly()) {
     @if (state.saveError(); as failure) {
@@ -143,7 +165,7 @@
         [disabled]="!state.dirty() || state.saving()"
         (click)="state.revert()"
       >
-        Annuler les modifications
+        {{ t.seances.actions.revert }}
       </button>
       <button
         nz-button
@@ -153,7 +175,7 @@
         [attr.aria-busy]="state.saving()"
         (click)="save()"
       >
-        Enregistrer les modifications
+        {{ t.seances.actions.save }}
       </button>
     </footer>
   }

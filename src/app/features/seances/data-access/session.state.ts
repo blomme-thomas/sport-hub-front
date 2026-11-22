@@ -136,12 +136,21 @@ export class SessionState {
     this.updateModule(key, { type });
   }
 
-  moveUp(key: number): void {
-    this.move(key, -1);
-  }
-
-  moveDown(key: number): void {
-    this.move(key, 1);
+  /** Place le module `key` à la position `toIndex` (0 = premier) ; les autres glissent pour lui faire place. */
+  moveTo(key: number, toIndex: number): void {
+    this.draftValue.update((modules) => {
+      const fromIndex = modules.findIndex((module) => module.key === key);
+      if (fromIndex < 0 || toIndex < 0 || toIndex >= modules.length || fromIndex === toIndex) {
+        return modules;
+      }
+      const next = [...modules];
+      const [moved] = next.splice(fromIndex, 1);
+      if (moved === undefined) {
+        return modules;
+      }
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
   }
 
   remove(key: number): void {
@@ -326,25 +335,6 @@ export class SessionState {
     this.draftValue.update((modules) =>
       modules.map((module) => (module.key === key ? { ...module, ...changes } : module)),
     );
-  }
-
-  private move(key: number, delta: -1 | 1): void {
-    this.draftValue.update((modules) => {
-      const index = modules.findIndex((module) => module.key === key);
-      const target = index + delta;
-      if (index < 0 || target < 0 || target >= modules.length) {
-        return modules;
-      }
-      const next = [...modules];
-      const moved = next[index];
-      const other = next[target];
-      if (moved === undefined || other === undefined) {
-        return modules;
-      }
-      next[index] = other;
-      next[target] = moved;
-      return next;
-    });
   }
 }
 

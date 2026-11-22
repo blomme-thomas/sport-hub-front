@@ -4,10 +4,11 @@ import { NzButtonComponent } from 'ng-zorro-antd/button';
 import type { AppError } from '../../../../core/http/app-error';
 import type { SessionActivityApi } from '../../models/session-activity.api-model';
 import type { LinkedActivity } from '../../models/session.model';
+import { TEXTS, fill } from '@shared/texts/texts';
 
 const ORIGIN_LABELS: Record<LinkedActivity['origin'], string> = {
-  automatique: 'Rapprochée automatiquement',
-  manuel: 'Associée manuellement',
+  automatique: TEXTS.seances.activity.automatic,
+  manuel: TEXTS.seances.activity.manual,
 };
 
 const NUMBER_FORMAT = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 });
@@ -25,6 +26,7 @@ const NUMBER_FORMAT = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionActivityComponent {
+  protected readonly t = TEXTS;
   readonly linked = input<LinkedActivity | null>(null);
   readonly linkedDetail = input<SessionActivityApi | null>(null);
   readonly candidates = input<readonly SessionActivityApi[]>([]);
@@ -48,6 +50,11 @@ export class SessionActivityComponent {
   protected formatDuration(seconds: number): string {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    return hours === 0 ? `${minutes} min` : `${hours}h ${String(minutes).padStart(2, '0')}`;
+    return hours === 0
+      ? fill(TEXTS.seances.activity.minutes, { value: minutes })
+      : fill(TEXTS.seances.activity.hoursMinutes, {
+          hours,
+          minutes: String(minutes).padStart(2, '0'),
+        });
   }
 }

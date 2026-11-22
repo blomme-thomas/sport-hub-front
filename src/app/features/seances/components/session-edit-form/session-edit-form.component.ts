@@ -29,6 +29,7 @@ import {
 } from '../../../../shared/utils/session-limits';
 import type { UpdateSessionRequestApi } from '../../models/session.api-model';
 import type { Session } from '../../models/session.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 const DESCRIPTION_MAX_LENGTH = 2000;
 const TITLE_MAX_LENGTH = 200;
@@ -74,6 +75,8 @@ export interface SessionDetailsSave {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionEditFormComponent implements OnInit {
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   readonly session = input.required<Session>();
   readonly disciplines = input<readonly SessionDisciplineOption[]>([]);
   readonly saving = input(false);
@@ -110,11 +113,11 @@ export class SessionEditFormComponent implements OnInit {
   });
 
   protected readonly zoneFields = [
-    { key: 'z1', label: 'Z1 (%)' },
-    { key: 'z2', label: 'Z2 (%)' },
-    { key: 'z3', label: 'Z3 (%)' },
-    { key: 'z4', label: 'Z4 (%)' },
-    { key: 'z5', label: 'Z5 (%)' },
+    { key: 'z1', label: TEXTS.seances.edit.zones.z1 },
+    { key: 'z2', label: TEXTS.seances.edit.zones.z2 },
+    { key: 'z3', label: TEXTS.seances.edit.zones.z3 },
+    { key: 'z4', label: TEXTS.seances.edit.zones.z4 },
+    { key: 'z5', label: TEXTS.seances.edit.zones.z5 },
   ] as const;
 
   /** Total des zones saisies : 0 (inchangées) ou 100 (valide). */
@@ -210,9 +213,7 @@ export class SessionEditFormComponent implements OnInit {
       }),
     });
     this.importedModules.set(prefill.modules);
-    this.importSummary.set(
-      `Valeurs pré-remplies, avec ${prefill.modules.length} module(s). Relisez puis enregistrez.`,
-    );
+    this.importSummary.set(fill(TEXTS.seances.edit.prefilled, { count: prefill.modules.length }));
   }
 
   protected submit(): void {
