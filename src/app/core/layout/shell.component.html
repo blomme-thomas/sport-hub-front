@@ -1,0 +1,100 @@
+<a class="shell__skip-link" href="#contenu">{{ t.shell.skipLink }}</a>
+
+<div class="shell">
+  <button
+    class="shell__menu-toggle"
+    type="button"
+    aria-controls="navigation-principale"
+    [attr.aria-expanded]="menuOpen()"
+    (click)="toggleMenu()"
+  >
+    <span class="visually-hidden">{{ menuOpen() ? t.shell.menuClose : t.shell.menuOpen }}</span>
+    <span aria-hidden="true">☰</span>
+  </button>
+
+  <aside
+    id="navigation-principale"
+    class="shell__sidebar"
+    [class.shell__sidebar--open]="menuOpen()"
+    [attr.aria-label]="t.shell.navigation"
+  >
+    <a class="shell__brand" routerLink="/" (click)="closeMenu()">
+      <svg class="shell__logo" viewBox="0 0 48 24" aria-hidden="true" focusable="false">
+        <path
+          d="M0 12H10C13 12 14 5 17.5 5C21 5 21.5 19 25 19C28.5 19 28.5 8 31.5 8C33.5 8 34 12 36 12H48"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span>{{ t.shell.brand }}</span>
+    </a>
+
+    <nav>
+      <ul class="shell__nav">
+        <li>
+          <a
+            class="shell__link"
+            routerLink="/"
+            routerLinkActive="shell__link--active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            ariaCurrentWhenActive="page"
+            (click)="closeMenu()"
+          >
+            {{ t.shell.menu.dashboard }}
+          </a>
+        </li>
+        <li>
+          <a
+            class="shell__link"
+            routerLink="/goals"
+            routerLinkActive="shell__link--active"
+            ariaCurrentWhenActive="page"
+            (click)="closeMenu()"
+          >
+            {{ t.shell.menu.goals }}
+          </a>
+        </li>
+        <li>
+          <a
+            class="shell__link"
+            routerLink="/creneaux"
+            routerLinkActive="shell__link--active"
+            ariaCurrentWhenActive="page"
+            (click)="closeMenu()"
+          >
+            {{ t.shell.menu.calendar }}
+          </a>
+        </li>
+        <li>
+          <a
+            class="shell__link"
+            routerLink="/parametres"
+            routerLinkActive="shell__link--active"
+            ariaCurrentWhenActive="page"
+            (click)="closeMenu()"
+          >
+            {{ t.shell.menu.settings }}
+          </a>
+        </li>
+        @for (label of comingSoon; track label) {
+          <li>
+            <span
+              class="shell__link shell__link--disabled"
+              aria-disabled="true"
+              [attr.title]="t.shell.soon"
+            >
+              {{ label }}
+            </span>
+          </li>
+        }
+      </ul>
+    </nav>
+  </aside>
+
+  <main id="contenu" class="shell__main" tabindex="-1">
+    <router-outlet />
+  </main>
+</div>

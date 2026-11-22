@@ -1,0 +1,16 @@
+<div
+  class="json-input"
+  role="group"
+  [attr.aria-label]="label()"
+  [class.json-input--dragging]="dragging()"
+  (dragenter)="onDragOver($event)"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+>
+  <p class="json-input__label">{{ label() }}</p>
+  <p class="json-input__help">{{ t.shared.json.drop }}</p>
+  @if (fileName(); as name) {
+    <p class="json-input__hint" aria-live="polite">{{ fill(t.shared.json.loaded, { name }) }}</p>
+  }
+</div>

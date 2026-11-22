@@ -1,0 +1,114 @@
+<section class="week-mini" aria-labelledby="week-mini-title">
+  <header class="week-mini__header">
+    <h2 id="week-mini-title" class="week-mini__title">
+      <sh-icon name="calendar" color="var(--sh-success)" />
+      <span>{{ t.dashboard.miniCalendar.heading }}</span>
+    </h2>
+    <div
+      class="week-mini__nav"
+      role="group"
+      [attr.aria-label]="t.dashboard.miniCalendar.chooseMonth"
+    >
+      <button
+        nz-button
+        nzSize="small"
+        type="button"
+        [attr.aria-label]="t.dashboard.miniCalendar.previous"
+        (click)="previous.emit()"
+      >
+        ‹
+      </button>
+      <button nz-button nzSize="small" type="button" (click)="current.emit()">
+        {{ title() }}
+      </button>
+      <button
+        nz-button
+        nzSize="small"
+        type="button"
+        [attr.aria-label]="t.dashboard.miniCalendar.next"
+        (click)="next.emit()"
+      >
+        ›
+      </button>
+    </div>
+  </header>
+
+  @if (error(); as err) {
+    <div class="week-mini__error" role="alert">
+      <p>{{ err.userMessage }}</p>
+      <button nz-button nzSize="small" type="button" (click)="retry.emit()">
+        {{ t.common.retry }}
+      </button>
+    </div>
+  } @else if (loading()) {
+    <p class="week-mini__status" role="status">{{ t.dashboard.miniCalendar.loading }}</p>
+  } @else {
+    <ng-template #slotItems let-sessions="sessions" let-realized="realized">
+      <ul class="week-mini__sessions">
+        @for (session of sessions; track session.id) {
+          <li>
+            <button
+              type="button"
+              class="week-mini__session"
+              [style.border-color]="styleOf(session.disciplineTypeKey).color"
+              [attr.aria-label]="labelOf(session)"
+              (click)="$event.stopPropagation(); sessionSelected.emit(session.id)"
+            >
+              <sh-icon
+                [name]="styleOf(session.disciplineTypeKey).icon"
+                [color]="styleOf(session.disciplineTypeKey).color"
+              />
+            </button>
+          </li>
+        }
+        @for (activity of realized; track activity.id) {
+          <li>
+            <span
+              class="week-mini__realized"
+              role="img"
+              [style.background-color]="activity.discipline.color"
+              [attr.aria-label]="fill(t.dashboard.miniCalendar.realized, { label: activity.label })"
+              [attr.title]="fill(t.dashboard.miniCalendar.realized, { label: activity.label })"
+            >
+              <sh-icon [name]="activity.discipline.icon" color="var(--sh-surface)" />
+            </span>
+          </li>
+        }
+      </ul>
+    </ng-template>
+
+    <ul class="week-mini__weekdays" aria-hidden="true">
+      @for (name of weekdayNames; track name) {
+        <li>{{ name }}</li>
+      }
+    </ul>
+
+    <ol
+      class="week-mini__grid week-mini__grid--month"
+      [attr.aria-label]="t.dashboard.miniCalendar.monthGrid"
+    >
+      @for (day of days(); track day.date) {
+        <li
+          class="week-mini__day"
+          [class.week-mini__day--outside]="!day.inPeriod"
+          [class.week-mini__day--weekend]="isWeekend(day.date)"
+          [class.week-mini__day--current-week]="isInCurrentWeek(day.date)"
+          [class.week-mini__day--today]="day.date === todayIso"
+          [attr.aria-current]="day.date === todayIso ? 'date' : null"
+        >
+          <button
+            type="button"
+            class="week-mini__day-hit"
+            [attr.aria-label]="fill(t.dashboard.miniCalendar.openDay, { date: day.date })"
+            (click)="daySelected.emit(day.date)"
+          ></button>
+          <span class="week-mini__day-label">{{ dayNumber(day.date) }}</span>
+          <ng-container
+            [ngTemplateOutlet]="slotItems"
+            [ngTemplateOutletContext]="{ sessions: day.sessions, realized: day.realized }"
+          />
+        </li>
+      }
+    </ol>
+  }
+</section>

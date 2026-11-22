@@ -1,0 +1,44 @@
+<dl class="objectives">
+  <dt>{{ t.seances.objectives.distance }}</dt>
+  <dd>{{ distanceLabel() }}</dd>
+  <dt>{{ t.seances.objectives.zones }}</dt>
+  <dd>
+    <ul class="objectives__zones" [attr.aria-label]="t.seances.objectives.zonesLabel">
+      @for (zone of zones; track zone.label; let i = $index) {
+        <li>
+          <span
+            class="objectives__swatch"
+            [style.background]="'var(' + zone.colorVariable + ')'"
+            aria-hidden="true"
+          ></span>
+          {{ zone.label }} · {{ objectives().zonePercentages?.[i] ?? '—' }} %
+        </li>
+      }
+    </ul>
+  </dd>
+</dl>
+
+@if (achievement(); as data) {
+  <dl class="objectives objectives--achieved">
+    <dt>{{ t.seances.objectives.rateDistance }}</dt>
+    <dd>{{ formatRate(distanceRate()) }}</dd>
+    <dt>{{ t.seances.objectives.rateDuration }}</dt>
+    <dd>{{ formatRate(durationRate()) }}</dd>
+  </dl>
+
+  @if (zoneGaps(); as gaps) {
+    <ul class="objectives__gaps" [attr.aria-label]="t.seances.objectives.gapLabel">
+      @for (gap of gaps; track gap.label) {
+        <li>
+          <span
+            class="objectives__swatch"
+            [style.background]="'var(' + gap.colorVariable + ')'"
+            aria-hidden="true"
+          ></span>
+          <span>{{ gap.label }}</span>
+          <strong>{{ gap.text }}</strong>
+        </li>
+      }
+    </ul>
+  }
+}

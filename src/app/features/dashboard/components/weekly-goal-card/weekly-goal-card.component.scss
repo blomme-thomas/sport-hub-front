@@ -1,0 +1,106 @@
+:host {
+  display: block;
+}
+
+.goal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-3, 0.75rem);
+  height: 100%;
+  padding: var(--sh-space-4, 1rem);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+  box-sizing: border-box;
+}
+
+.goal__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+
+  sh-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.goal__body {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sh-space-4, 1rem);
+}
+
+.goal__ring {
+  --goal-percent: 0%;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 50%;
+  background: conic-gradient(var(--sh-accent-text) var(--goal-percent), var(--sh-border) 0);
+
+  strong {
+    display: grid;
+    place-items: center;
+    width: 8.5rem;
+    height: 8.5rem;
+    border-radius: 50%;
+    background: var(--sh-surface);
+    font-size: 1.5rem;
+  }
+}
+
+.goal__figures {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sh-space-1, 0.25rem);
+  text-align: left;
+}
+
+.goal__value {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.goal__status {
+  margin: 0;
+  color: var(--sh-text-muted);
+}
+
+.goal__empty,
+.goal__error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sh-space-2);
+
+  p {
+    margin: 0;
+    color: var(--sh-text-muted);
+  }
+}
+
+/* Sans cible : anneau vide en pointillés, à côté du texte et du bouton. */
+.goal__ring--empty {
+  background: none;
+  border: 2px dashed var(--sh-border);
+
+  strong {
+    color: var(--sh-text-muted);
+  }
+}
+
+.goal__body--empty {
+  opacity: 0.85;
+}

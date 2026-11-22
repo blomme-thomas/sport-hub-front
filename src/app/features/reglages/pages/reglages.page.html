@@ -1,0 +1,90 @@
+<header class="reglages__header">
+  <h1 class="reglages__title">{{ t.reglages.title }}</h1>
+</header>
+
+<section
+  class="reglages__section"
+  aria-labelledby="weekly-target-heading"
+  [attr.aria-busy]="state.isLoading()"
+>
+  <h2 id="weekly-target-heading" class="reglages__heading">
+    {{ t.reglages.weeklyTarget.heading }}
+  </h2>
+  <p class="reglages__help">{{ t.reglages.weeklyTarget.help }}</p>
+
+  @if (state.isLoading()) {
+    <p class="reglages__status" role="status">{{ t.common.loading }}</p>
+  } @else {
+    <p class="reglages__current">
+      @if (currentLabel(); as label) {
+        {{ t.reglages.weeklyTarget.current }} <strong>{{ label }}</strong>
+      } @else {
+        {{ t.reglages.weeklyTarget.none }}
+      }
+    </p>
+
+    <form class="reglages__form" (submit)="$event.preventDefault(); submit()" novalidate>
+      <div class="reglages__fields">
+        <div class="reglages__field">
+          <label for="target-hours">{{ t.reglages.weeklyTarget.hours }}</label>
+          <input
+            id="target-hours"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            [max]="maxHours"
+            step="1"
+            [value]="hours()"
+            (input)="onHours($event)"
+            [attr.aria-invalid]="touched() && invalid()"
+            [attr.aria-describedby]="touched() && invalid() ? 'target-error' : null"
+          />
+        </div>
+        <div class="reglages__field">
+          <label for="target-minutes">{{ t.reglages.weeklyTarget.minutes }}</label>
+          <input
+            id="target-minutes"
+            type="number"
+            inputmode="numeric"
+            min="0"
+            [max]="maxMinutes"
+            step="1"
+            [value]="minutes()"
+            (input)="onMinutes($event)"
+            [attr.aria-invalid]="touched() && invalid()"
+            [attr.aria-describedby]="touched() && invalid() ? 'target-error' : null"
+          />
+        </div>
+      </div>
+
+      @if (touched() && invalid()) {
+        <p id="target-error" class="reglages__error">{{ invalidMessage }}</p>
+      }
+
+      <div class="reglages__actions">
+        <button nz-button nzType="primary" type="submit" [disabled]="state.saving()">
+          {{ t.common.save }}
+        </button>
+        <button
+          nz-button
+          type="button"
+          [disabled]="state.saving() || currentLabel() === null"
+          (click)="clear()"
+        >
+          {{ t.reglages.weeklyTarget.clear }}
+        </button>
+      </div>
+    </form>
+
+    @if (state.saved()) {
+      <p class="reglages__status" role="status">{{ t.reglages.weeklyTarget.saved }}</p>
+    }
+  }
+
+  @if (state.error(); as error) {
+    <div class="reglages__error-block" role="alert">
+      <p>{{ error.userMessage }}</p>
+      <button nz-button type="button" (click)="state.reload()">{{ t.common.retry }}</button>
+    </div>
+  }
+</section>

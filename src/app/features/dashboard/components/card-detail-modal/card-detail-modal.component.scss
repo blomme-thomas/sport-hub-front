@@ -1,0 +1,53 @@
+.detail {
+  display: grid;
+  gap: var(--sh-space-3, 0.75rem);
+}
+
+.detail__value {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.detail__unit {
+  margin-left: var(--sh-space-1, 0.25rem);
+  color: var(--sh-text-muted);
+  font-size: 1rem;
+}
+
+.detail__muted {
+  margin: 0;
+  color: var(--sh-text-muted);
+}
+
+.detail__table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--sh-space-2, 0.5rem);
+    border-bottom: 1px solid var(--sh-border);
+    text-align: left;
+  }
+}
+
+.detail__swatch {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-right: var(--sh-space-2, 0.5rem);
+  border-radius: 50%;
+}
+
+.detail__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--sh-space-4, 1rem);
+}
+
+/* Graphique agrandi d'un indicateur : toute la largeur de la modale, hauteur généreuse pour lire les échelles. */
+.detail__chart {
+  --sh-chart-height: 18rem;
+  width: 100%;
+}

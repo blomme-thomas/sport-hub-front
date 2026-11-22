@@ -1,0 +1,76 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  /* Même hauteur que les autres cartes de la rangée (étirées par la grille). */
+  height: 100%;
+}
+
+.perf {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-3);
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+}
+
+.perf__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sh-space-2);
+}
+
+.perf__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.perf__chart {
+  --sh-chart-height: 14rem;
+}
+
+.perf__max {
+  margin: 0;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+}
+
+.perf__status {
+  margin: 0;
+  color: var(--sh-text-muted);
+}
+
+.perf__error {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-2);
+  align-items: flex-start;
+}
+
+.perf__title {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+}
+
+.perf__title sh-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Vide : même hauteur que le graphique, avec une grille en pointillés et une ligne de base. */
+.perf__placeholder {
+  flex: 1;
+  min-height: 0;
+  border-bottom: 2px dashed var(--sh-border);
+  background-image: linear-gradient(var(--sh-border) 1px, transparent 1px);
+  background-size: 100% 25%;
+  opacity: 0.6;
+}

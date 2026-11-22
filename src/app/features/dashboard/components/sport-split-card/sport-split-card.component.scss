@@ -1,0 +1,146 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  /* Même hauteur que les autres cartes de la rangée (étirées par la grille). */
+  height: 100%;
+  /* Repère du bouton « Agrandir » (positionné en absolu). */
+  position: relative;
+}
+
+.split {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-3);
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+}
+
+.split__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+
+  sh-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+.split__status {
+  margin: 0;
+  color: var(--sh-text-muted);
+}
+
+.split__body {
+  flex: 1;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sh-space-5, 1.25rem);
+}
+
+.split__chart {
+  position: relative;
+  width: 11rem;
+  flex-shrink: 0;
+  --sh-chart-height: 11rem;
+}
+
+.split__total {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  strong {
+    font-size: 1.25rem;
+    color: var(--sh-text);
+  }
+
+  span {
+    color: var(--sh-text-muted);
+    font-size: 0.875rem;
+  }
+}
+
+.split__legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-3);
+  width: 12rem;
+  flex-shrink: 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--sh-space-2);
+  }
+}
+
+.split__swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.split__label {
+  color: var(--sh-text);
+}
+
+.split__percent {
+  color: var(--sh-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bouton « Agrandir » de la carte : en haut à droite, la carte sert de repère. */
+.card-expand {
+  position: absolute;
+  top: var(--sh-space-3, 0.75rem);
+  right: var(--sh-space-3, 0.75rem);
+  z-index: 1;
+}
+
+/* Vide : anneau en pointillés et légende grisée, à la place des parts. */
+.split__body--empty {
+  opacity: 0.6;
+}
+
+.split__ring-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 11rem;
+  height: 11rem;
+  border: 2px dashed var(--sh-border);
+  border-radius: 50%;
+
+  strong {
+    font-size: 1.25rem;
+    color: var(--sh-text-muted);
+  }
+
+  span {
+    color: var(--sh-text-muted);
+    font-size: 0.875rem;
+  }
+}
+
+.split__swatch--empty {
+  background: var(--sh-border);
+}

@@ -1,0 +1,43 @@
+@if (pauses().length > 0) {
+  <ul class="pause-banners" [attr.aria-label]="t.creneaux.pause.banners">
+    @for (pause of pauses(); track pause.id) {
+      <li class="pause-banners__item">
+        <span class="pause-banners__label">
+          <strong>{{ reasonLabels[pause.reason] }}</strong>
+          <span class="pause-banners__range">{{ rangeLabel(pause) }}</span>
+        </span>
+        <span class="pause-banners__actions">
+          <button
+            nz-button
+            nzSize="small"
+            type="button"
+            [attr.aria-label]="
+              fill(t.creneaux.pause.editLabel, {
+                reason: reasonLabels[pause.reason],
+                range: rangeLabel(pause),
+              })
+            "
+            (click)="edited.emit(pause)"
+          >
+            {{ t.common.edit }}
+          </button>
+          <button
+            nz-button
+            nzSize="small"
+            nzDanger
+            type="button"
+            [attr.aria-label]="
+              fill(t.creneaux.pause.deleteLabel, {
+                reason: reasonLabels[pause.reason],
+                range: rangeLabel(pause),
+              })
+            "
+            (click)="removed.emit(pause)"
+          >
+            {{ t.common.delete }}
+          </button>
+        </span>
+      </li>
+    }
+  </ul>
+}

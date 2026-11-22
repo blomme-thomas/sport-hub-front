@@ -1,0 +1,19 @@
+@if (chartView(); as chart) {
+  <div class="chart-modal">
+    <div class="chart-modal__toolbar">
+      <sh-granularity-toggle
+        [value]="state.granularity()"
+        (changed)="state.setGranularity($event)"
+      />
+    </div>
+    <div class="chart-modal__chart">
+      <sh-chart
+        type="bar"
+        [data]="chart.data"
+        [options]="chart.options"
+        [label]="chart.model.title"
+      />
+    </div>
+    <sh-chart-data-table [model]="chart.model" />
+  </div>
+}

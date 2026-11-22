@@ -1,0 +1,57 @@
+/* Tokens de design (chargés avant styles.scss). */
+
+/*
+ * Tokens de design : une seule source de vérité pour les couleurs, rayons, ombres et espacements.
+ * Les composants consomment ces variables ; aucune valeur hexadécimale ne doit apparaître hors de ce fichier.
+ * Contrastes vérifiés (WCAG AA, texte normal ≥ 4.5:1) : voir theme-tokens.spec.ts.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Fonds */
+  --sh-bg: #0b1020;
+  --sh-surface: #121a2e;
+  --sh-surface-raised: #1a2440;
+  --sh-border: #26324f;
+
+  /* Texte */
+  --sh-text: #e8eefb;
+  --sh-text-muted: #a3b1cc;
+  --sh-text-on-accent: #ffffff;
+
+  /* Accents */
+  --sh-accent: #2563eb;
+  --sh-accent-text: #7fb1ff;
+  --sh-success: #34d399;
+  --sh-warning: #fbbf24;
+  --sh-danger: #f87171;
+  --sh-violet: #a78bfa;
+  --sh-orange: #fb923c;
+  --sh-teal: #2dd4bf;
+
+  /* Formes et ombres */
+  --sh-radius-sm: 6px;
+  --sh-radius: 12px;
+  --sh-shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 30%);
+  --sh-focus-ring: 2px solid var(--sh-accent-text);
+
+  /* Espacements */
+  --sh-space-1: 0.25rem;
+  --sh-space-2: 0.5rem;
+  --sh-space-3: 0.75rem;
+  --sh-space-4: 1rem;
+  --sh-space-6: 1.5rem;
+  --sh-space-8: 2rem;
+
+  /* Typographie */
+  --sh-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Graphiques (alias des accents, lus par Chart.js via les composants sh-chart) */
+  --sh-chart-series-1: var(--sh-accent-text);
+  --sh-chart-series-2: var(--sh-orange);
+  --sh-chart-series-3: var(--sh-violet);
+  --sh-chart-series-4: var(--sh-teal);
+  --sh-chart-text: var(--sh-text-muted);
+  --sh-chart-grid: var(--sh-border);
+  --sh-error: var(--sh-danger);
+}

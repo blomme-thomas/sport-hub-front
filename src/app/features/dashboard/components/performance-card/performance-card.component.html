@@ -1,0 +1,37 @@
+<article class="perf" aria-labelledby="perf-heading" [attr.aria-busy]="state.isLoading()">
+  <header class="perf__header">
+    <h2 id="perf-heading" class="perf__title">
+      <sh-icon name="bars" color="var(--sh-accent-text)" />
+      <span>{{ t.dashboard.performance.heading }}</span>
+    </h2>
+  </header>
+
+  @if (state.error(); as failure) {
+    <div class="perf__error" role="alert">
+      <p>{{ failure.userMessage }}</p>
+      <button nz-button nzType="primary" type="button" (click)="state.reload()">
+        {{ t.common.retry }}
+      </button>
+    </div>
+  } @else if (state.series(); as series) {
+    @if (series.totalSeconds === 0) {
+      <div class="perf__placeholder" aria-hidden="true"></div>
+      <p class="perf__status">{{ t.dashboard.cardDetail.noSession }}</p>
+    } @else {
+      <div class="perf__chart">
+        <sh-chart
+          type="line"
+          [data]="chartData()"
+          [options]="chartOptions"
+          [label]="
+            state.grouping() === 'week'
+              ? t.dashboard.performance.byWeek
+              : t.dashboard.performance.byDay
+          "
+        />
+      </div>
+    }
+  } @else {
+    <p class="perf__status">{{ t.common.loading }}</p>
+  }
+</article>

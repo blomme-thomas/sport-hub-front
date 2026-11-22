@@ -1,0 +1,54 @@
+<section class="comment" aria-labelledby="activity-comment-heading" [attr.aria-busy]="loading()">
+  <h3 id="activity-comment-heading" class="comment__heading">{{ t.seances.comment.heading }}</h3>
+
+  @if (error(); as failure) {
+    <p class="comment__error" role="alert">{{ failure.userMessage }}</p>
+  } @else if (loading()) {
+    <p class="comment__status">{{ t.seances.comment.loading }}</p>
+  } @else if (editing()) {
+    <form class="comment__form" (submit)="$event.preventDefault(); save.emit()">
+      <label class="comment__label" for="activity-comment-input">{{
+        t.seances.comment.markdown
+      }}</label>
+      <textarea
+        id="activity-comment-input"
+        class="comment__input"
+        rows="8"
+        [value]="draft()"
+        [disabled]="saving()"
+        (input)="onDraftInput($event)"
+      ></textarea>
+
+      @if (draft().trim()) {
+        <div class="comment__preview" [attr.aria-label]="t.seances.comment.preview">
+          <p class="comment__label">{{ t.seances.comment.preview }}</p>
+          <div class="comment__rendered" [innerHTML]="renderedDraft()"></div>
+        </div>
+      }
+
+      @if (saveError(); as failure) {
+        <p class="comment__error" role="alert">{{ failure.userMessage }}</p>
+      }
+
+      <div class="comment__actions">
+        <button nz-button nzType="primary" type="submit" [disabled]="!canSave()">
+          {{ saving() ? t.seances.comment.saving : t.common.save }}
+        </button>
+        <button nz-button type="button" [disabled]="saving()" (click)="cancelEdit.emit()">
+          {{ t.common.cancel }}
+        </button>
+      </div>
+    </form>
+  } @else if (comment(); as value) {
+    <p class="comment__meta">
+      {{ sourceLabel() }} · {{ value.generatedAt | date: 'dd/MM/yyyy HH:mm' : 'UTC' }}
+    </p>
+    <div class="comment__rendered" [innerHTML]="renderedComment()"></div>
+    <button nz-button type="button" (click)="edit.emit()">{{ t.common.edit }}</button>
+  } @else {
+    <p class="comment__status">{{ t.seances.comment.none }}</p>
+    <button nz-button nzType="primary" type="button" (click)="edit.emit()">
+      {{ t.seances.comment.add }}
+    </button>
+  }
+</section>

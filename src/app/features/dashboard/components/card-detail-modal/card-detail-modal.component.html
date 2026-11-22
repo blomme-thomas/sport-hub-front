@@ -1,0 +1,119 @@
+@switch (data.detail.kind) {
+  @case ('kpi') {
+    <div class="detail">
+      <p class="detail__value">
+        {{ data.detail.value }}
+        @if (data.detail.unit; as unit) {
+          <span class="detail__unit">{{ unit }}</span>
+        }
+      </p>
+      @if (data.detail.variation; as variation) {
+        <sh-variation-badge [variation]="variation" />
+      } @else {
+        <p class="detail__muted">{{ t.dashboard.cardDetail.variationNone }}</p>
+      }
+      @if (chart; as line) {
+        <div class="detail__chart">
+          <sh-chart type="line" [data]="line.data" [options]="line.options" [label]="line.label" />
+        </div>
+      }
+    </div>
+  }
+  @case ('split') {
+    <div class="detail">
+      <p class="detail__muted">{{ t.dashboard.sportSplit.total }} : {{ data.detail.totalLabel }}</p>
+      @if (data.detail.rows.length === 0) {
+        <p class="detail__muted">{{ t.dashboard.cardDetail.noSession }}</p>
+      } @else {
+        <table class="detail__table">
+          <caption class="visually-hidden">
+            {{
+              t.dashboard.cardDetail.splitCaption
+            }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.sport }}</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.duration }}</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.share }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of data.detail.rows; track row.label) {
+              <tr>
+                <td>
+                  <span
+                    class="detail__swatch"
+                    [style.background]="'var(' + row.colorVariable + ')'"
+                    aria-hidden="true"
+                  ></span>
+                  {{ row.label }}
+                </td>
+                <td>{{ row.durationLabel }}</td>
+                <td>{{ row.percent }} %</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+  @case ('zones') {
+    <div class="detail">
+      @if (data.detail.optimalPercent !== null) {
+        <p class="detail__muted">
+          {{ fill(t.dashboard.cardDetail.optimal, { percent: data.detail.optimalPercent }) }}
+          @if (data.detail.statusMessage; as message) {
+            · {{ message }}
+          }
+        </p>
+      }
+      @if (data.detail.rows.length === 0) {
+        <p class="detail__muted">{{ t.dashboard.cardDetail.noZone }}</p>
+      } @else {
+        <table class="detail__table">
+          <caption class="visually-hidden">
+            {{
+              t.dashboard.cardDetail.zonesCaption
+            }}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.zone }}</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.threshold }}</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.time }}</th>
+              <th scope="col">{{ t.dashboard.cardDetail.columns.share }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of data.detail.rows; track row.label) {
+              <tr>
+                <td>
+                  <span
+                    class="detail__swatch"
+                    [style.background]="'var(' + row.colorVariable + ')'"
+                    aria-hidden="true"
+                  ></span>
+                  {{ row.label }} · {{ row.name }}
+                </td>
+                <td>
+                  @if (row.floorBpm !== null) {
+                    {{ fill(t.dashboard.cardDetail.fromBpm, { bpm: row.floorBpm }) }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>{{ row.durationLabel }}</td>
+                <td>{{ row.percent }} %</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+}
+
+<div class="detail__footer">
+  <button nz-button nzType="primary" type="button" (click)="close()">{{ t.common.close }}</button>
+</div>

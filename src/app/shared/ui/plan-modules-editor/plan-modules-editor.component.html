@@ -1,0 +1,62 @@
+<section class="modules-editor" aria-labelledby="modules-editor-heading">
+  <h3 id="modules-editor-heading" class="modules-editor__heading">
+    {{ fill(t.shared.modulesEditor.heading, { count: modules().length, minutes: totalMinutes() }) }}
+  </h3>
+  <ul class="modules-editor__list">
+    @for (module of modules(); track $index) {
+      <li class="modules-editor__row" [class.modules-editor__row--invalid]="!isValid(module)">
+        <span class="modules-editor__index" aria-hidden="true">{{ $index + 1 }}</span>
+        <label class="modules-editor__sr" [for]="'module-type-' + $index">
+          {{ fill(t.shared.modulesEditor.type, { n: $index + 1 }) }}
+        </label>
+        <select
+          class="modules-editor__type"
+          [id]="'module-type-' + $index"
+          [value]="module.type"
+          (change)="typeChanged($index, $any($event.target).value)"
+        >
+          @for (option of typeOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+        <label class="modules-editor__sr" [for]="'module-duration-' + $index">
+          {{ fill(t.shared.modulesEditor.duration, { n: $index + 1 }) }}
+        </label>
+        <input
+          class="modules-editor__duration"
+          [id]="'module-duration-' + $index"
+          type="number"
+          [attr.min]="durationMin"
+          [attr.max]="durationMax"
+          step="1"
+          [value]="module.durationMinutes"
+          (change)="durationChanged($index, $any($event.target).value)"
+        />
+        <label class="modules-editor__sr" [for]="'module-instruction-' + $index">
+          {{ fill(t.shared.modulesEditor.instruction, { n: $index + 1 }) }}
+        </label>
+        <input
+          class="modules-editor__instruction"
+          [id]="'module-instruction-' + $index"
+          type="text"
+          [attr.maxlength]="instructionMax"
+          [value]="module.instruction"
+          (change)="instructionChanged($index, $any($event.target).value)"
+        />
+        <button
+          nz-button
+          nzDanger
+          nzSize="small"
+          type="button"
+          [attr.aria-label]="fill(t.shared.modulesEditor.remove, { n: $index + 1 })"
+          (click)="remove($index)"
+        >
+          ✕
+        </button>
+      </li>
+    }
+  </ul>
+  @if (hasInvalid()) {
+    <p class="modules-editor__error" role="alert">{{ t.shared.modulesEditor.invalid }}</p>
+  }
+</section>

@@ -1,0 +1,185 @@
+/*
+ * Boutons et champs de l'application, habillés avec les tokens --sh-* quel que soit le thème Ant Design.
+ * Couvre les composants ng-zorro (nz-button, nz-input, nz-input-number, nz-select, nz-date-picker) et les
+ * champs natifs (input, select, textarea) rendus sans classe ng-zorro.
+ */
+
+/* ---- Boutons ---- */
+
+.ant-btn {
+  font: inherit;
+  font-weight: 500;
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface-raised);
+  color: var(--sh-text);
+  box-shadow: none;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+
+  &:not(:disabled):hover {
+    border-color: var(--sh-accent-text);
+    background: var(--sh-surface-raised);
+    color: var(--sh-text);
+  }
+
+  &:focus-visible {
+    outline: var(--sh-focus-ring);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.ant-btn-primary {
+  border-color: var(--sh-accent);
+  background: var(--sh-accent);
+  color: var(--sh-text-on-accent);
+
+  &:not(:disabled):hover {
+    border-color: var(--sh-accent-text);
+    background: var(--sh-accent);
+    color: var(--sh-text-on-accent);
+    filter: brightness(1.12);
+  }
+}
+
+.ant-btn-dangerous {
+  border-color: var(--sh-danger);
+  color: var(--sh-danger);
+
+  &:not(:disabled):hover {
+    border-color: var(--sh-danger);
+    color: var(--sh-danger);
+    filter: brightness(1.15);
+  }
+}
+
+.ant-btn-primary.ant-btn-dangerous {
+  border-color: var(--sh-danger);
+  background: var(--sh-danger);
+  color: var(--sh-text-on-accent);
+
+  &:not(:disabled):hover {
+    background: var(--sh-danger);
+    color: var(--sh-text-on-accent);
+  }
+}
+
+.ant-btn-text {
+  border-color: transparent;
+  background: transparent;
+
+  &:not(:disabled):hover {
+    background: var(--sh-surface-raised);
+  }
+}
+
+.ant-btn-sm {
+  height: 28px;
+  padding: 0 var(--sh-space-2);
+  font-size: 0.875rem;
+}
+
+/* ---- Champs : conteneurs ng-zorro ---- */
+
+.ant-input,
+.ant-input-number,
+.ant-picker,
+.ant-select-selector,
+.ant-input-affix-wrapper {
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface-raised);
+  color: var(--sh-text);
+  font: inherit;
+  box-shadow: none;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: var(--sh-accent-text);
+  }
+}
+
+.ant-input-focused,
+.ant-input:focus,
+.ant-input-number-focused,
+.ant-picker-focused,
+.ant-select-focused .ant-select-selector,
+.ant-input-affix-wrapper-focused {
+  border-color: var(--sh-accent-text);
+  outline: none;
+  box-shadow: none;
+}
+
+/* Texte à l'intérieur des conteneurs : pas de bordure propre, fond transparent. */
+.ant-input-number-input,
+.ant-picker-input > input,
+.ant-select-selection-search-input,
+.ant-input-affix-wrapper > input.ant-input {
+  border: 0;
+  background: transparent;
+  color: var(--sh-text);
+  font: inherit;
+  box-shadow: none;
+}
+
+.ant-select-selection-item,
+.ant-select-selection-placeholder {
+  color: var(--sh-text);
+}
+
+.ant-select-selection-placeholder {
+  color: var(--sh-text-muted);
+}
+
+.ant-select-dropdown {
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface-raised);
+  color: var(--sh-text);
+}
+
+.ant-select-item {
+  color: var(--sh-text);
+}
+
+.ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background: var(--sh-surface);
+}
+
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background: var(--sh-surface);
+  color: var(--sh-accent-text);
+  font-weight: 600;
+}
+
+/* ---- Champs natifs (hors ng-zorro) ---- */
+
+input:not([type='checkbox']):not([type='radio']):not([type='range']):not([class*='ant-']),
+select:not([class*='ant-']),
+textarea:not([class*='ant-']) {
+  padding: var(--sh-space-2);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface-raised);
+  color: var(--sh-text);
+  font: inherit;
+
+  &:hover {
+    border-color: var(--sh-accent-text);
+  }
+
+  &:focus-visible {
+    outline: var(--sh-focus-ring);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}

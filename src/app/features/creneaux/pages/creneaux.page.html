@@ -1,0 +1,270 @@
+<header class="creneaux__header">
+  <h1 class="creneaux__title">{{ t.creneaux.title }}</h1>
+  <div class="creneaux__actions">
+    <button nz-button type="button" [disabled]="planningBusy()" (click)="openPauseCreate()">
+      {{ t.creneaux.actions.pause }}
+    </button>
+    @if (aiEnabled) {
+      <button nz-button type="button" [disabled]="planningBusy()" (click)="openPlanning()">
+        {{ t.creneaux.actions.planning }}
+      </button>
+    }
+    <button nz-button type="button" [disabled]="planningBusy()" (click)="openImport()">
+      {{ t.creneaux.actions.import }}
+    </button>
+    <button
+      nz-button
+      nzType="primary"
+      type="button"
+      [disabled]="planningBusy()"
+      (click)="openSessionCreate()"
+    >
+      {{ t.creneaux.actions.session }}
+    </button>
+  </div>
+</header>
+
+<div class="creneaux__toolbar">
+  <div class="creneaux__nav" role="group" [attr.aria-label]="t.creneaux.nav.group">
+    <button
+      nz-button
+      type="button"
+      [attr.aria-label]="t.creneaux.nav.previous"
+      (click)="state.previousWeek()"
+    >
+      ‹
+    </button>
+    <button nz-button type="button" (click)="state.currentWeek()">
+      {{ t.creneaux.nav.today }}
+    </button>
+    <button
+      nz-button
+      type="button"
+      [attr.aria-label]="t.creneaux.nav.next"
+      (click)="state.nextWeek()"
+    >
+      ›
+    </button>
+  </div>
+
+  <p class="creneaux__week" aria-live="polite">{{ weekLabel() }}</p>
+
+  <ul class="creneaux__legend" [attr.aria-label]="t.creneaux.legend">
+    @for (entry of state.legend(); track entry.typeKey) {
+      <li><sh-icon [name]="entry.style.icon" [color]="entry.style.color" />{{ entry.label }}</li>
+    }
+  </ul>
+</div>
+
+<sh-pause-banners
+  [pauses]="pausesState.pauses()"
+  (edited)="openPauseEdit($event)"
+  (removed)="confirmDeletePause($event)"
+/>
+
+@if (state.error(); as error) {
+  <div class="creneaux__error" role="alert">
+    <p>{{ error.userMessage }}</p>
+    <button nz-button type="button" (click)="state.reload()">{{ t.common.retry }}</button>
+  </div>
+} @else {
+  <div
+    class="creneaux__content"
+    [class.creneaux__content--locked]="planningBusy()"
+    [attr.aria-busy]="state.isLoading() || planningBusy()"
+  >
+    <sh-week-grid
+      [days]="state.days()"
+      [labels]="state.labels()"
+      (sessionSelected)="openSession($event)"
+      (rangeSelected)="chooseRange($event)"
+      (moved)="onMoved($event)"
+      (durationRequested)="openDuration($event)"
+      (sessionDeleteRequested)="confirmDeleteSession($event)"
+      (occurrenceToggled)="toggleOccurrence($event)"
+    />
+  </div>
+}
+
+@if (sessionDraft(); as draft) {
+  <sh-modal
+    title="{{ t.creneaux.actions.session }}"
+    icon="calendar"
+    width="min(960px, 96vw)"
+    (closed)="closeSessionForm()"
+  >
+    <sh-session-form
+      [defaults]="draft"
+      [disciplines]="disciplines()"
+      [submitting]="sessionSaving()"
+      [serverError]="sessionError()"
+      (saved)="onSessionSaved($event)"
+      (cancelled)="closeSessionForm()"
+    />
+  </sh-modal>
+}
+
+@if (importOpen()) {
+  <sh-modal
+    title="{{ t.creneaux.actions.import }}"
+    width="min(640px, 96vw)"
+    (closed)="closeImport()"
+  >
+    <sh-session-import
+      [submitting]="importSaving()"
+      [serverError]="importError()"
+      (saved)="onImportSaved($event)"
+      (cancelled)="closeImport()"
+    />
+  </sh-modal>
+}
+
+@if (pendingMove(); as move) {
+  <sh-modal title="{{ t.creneaux.modals.move }}" (closed)="cancelPendingMove()">
+    <p class="creneaux__choice-text">
+      {{ fill(t.creneaux.move.text, { date: move.date, time: move.startTime }) }}
+    </p>
+    <div class="creneaux__choice">
+      <button nz-button type="button" (click)="cancelPendingMove()">{{ t.common.cancel }}</button>
+      <button nz-button type="button" (click)="moveWholeSeries()">
+        {{ t.creneaux.move.whole }}
+      </button>
+      <button nz-button nzType="primary" type="button" (click)="moveThisOccurrence()">
+        {{ t.creneaux.move.thisWeek }}
+      </button>
+    </div>
+  </sh-modal>
+}
+
+@if (pauseDraft(); as draft) {
+  <sh-modal
+    [title]="pauseEditing() ? t.creneaux.modals.pauseEdit : t.creneaux.modals.pauseCreate"
+    (closed)="closePauseForm()"
+  >
+    <sh-pause-form
+      [draft]="draft"
+      [submitting]="pauseSaving()"
+      [serverError]="pauseError()"
+      (saved)="savePause($event)"
+      (cancelled)="closePauseForm()"
+    />
+  </sh-modal>
+}
+
+@if (planningOpen()) {
+  <sh-modal title="{{ t.creneaux.actions.planning }}" (closed)="closePlanning()">
+    <fieldset class="creneaux__choice-text" [disabled]="planningBusy()">
+      <legend>{{ t.creneaux.planning.period }}</legend>
+      <label
+        ><input
+          type="radio"
+          name="planning-period"
+          value="semaine"
+          [checked]="planningPeriod() === 'semaine'"
+          (change)="planningPeriod.set('semaine')"
+        />
+        {{ t.creneaux.planning.week }}</label
+      >
+      <label
+        ><input
+          type="radio"
+          name="planning-period"
+          value="mois"
+          [checked]="planningPeriod() === 'mois'"
+          (change)="planningPeriod.set('mois')"
+        />
+        {{ t.creneaux.planning.month }}</label
+      >
+      <label
+        ><input
+          type="radio"
+          name="planning-period"
+          value="evenement"
+          [checked]="planningPeriod() === 'evenement'"
+          (change)="planningPeriod.set('evenement')"
+        />
+        {{ t.creneaux.planning.event }}</label
+      >
+    </fieldset>
+
+    @if (planningPeriod() === 'evenement') {
+      @if (eventsError(); as message) {
+        <p class="creneaux__error" role="alert">{{ message }}</p>
+      } @else if (events().length === 0) {
+        <p class="creneaux__choice-text">{{ t.creneaux.planning.noEvent }}</p>
+      } @else {
+        <label class="creneaux__choice-text" for="planning-goal">{{
+          t.creneaux.planning.eventLabel
+        }}</label>
+        <select
+          id="planning-goal"
+          [disabled]="planningBusy()"
+          [value]="planningGoalId() ?? ''"
+          (change)="planningGoalId.set($any($event.target).value || null)"
+        >
+          <option value="">{{ t.creneaux.planning.chooseEvent }}</option>
+          @for (event of events(); track event.id) {
+            <option [value]="event.id">{{ event.title }} ({{ event.targetDate }})</option>
+          }
+        </select>
+      }
+    }
+
+    @if (planningError(); as message) {
+      <p class="creneaux__error" role="alert">{{ message }}</p>
+    }
+
+    <div class="creneaux__choice">
+      <button nz-button type="button" [disabled]="planningBusy()" (click)="closePlanning()">
+        {{ t.common.cancel }}
+      </button>
+      <button
+        nz-button
+        nzType="primary"
+        type="button"
+        [disabled]="
+          planningBusy() || (planningPeriod() === 'evenement' && planningGoalId() === null)
+        "
+        [nzLoading]="planningBusy()"
+        (click)="generatePlanning()"
+      >
+        {{ t.creneaux.planning.generate }}
+      </button>
+    </div>
+  </sh-modal>
+}
+
+@if (durationTarget(); as session) {
+  <sh-modal title="{{ t.creneaux.modals.duration }}" (closed)="closeDuration()">
+    <p class="creneaux__choice-text">
+      {{
+        fill(t.creneaux.duration.summary, {
+          discipline: disciplineLabel(session.disciplineTypeKey),
+          date: session.date,
+          time: session.startTime,
+        })
+      }}
+      @if (session.recurrence === 'hebdomadaire') {
+        {{ t.creneaux.duration.series }}
+      }
+    </p>
+    <label class="creneaux__choice-text" for="duration-minutes">{{
+      t.creneaux.duration.minutes
+    }}</label>
+    <nz-input-number
+      nzId="duration-minutes"
+      [ngModel]="durationValue()"
+      (ngModelChange)="durationValue.set($event)"
+      [nzMin]="durationMin"
+      [nzMax]="durationMax"
+      [nzStep]="durationStep"
+      [nzPrecision]="0"
+    />
+    <div class="creneaux__choice">
+      <button nz-button type="button" (click)="closeDuration()">{{ t.common.cancel }}</button>
+      <button nz-button nzType="primary" type="button" (click)="saveDuration()">
+        {{ t.common.save }}
+      </button>
+    </div>
+  </sh-modal>
+}

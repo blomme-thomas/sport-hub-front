@@ -1,0 +1,256 @@
+$hour-column-width: 3.5rem;
+$day-min-width: 7.5rem;
+
+.week-grid {
+  /* Glisser pour créer une séance ne sélectionne pas le texte de la grille (libellés, horaires). */
+  user-select: none;
+  -webkit-user-select: none;
+  overflow-x: auto;
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+}
+
+.week-grid__inner {
+  min-width: calc(#{$hour-column-width} + 7 * #{$day-min-width});
+}
+
+.week-grid__head,
+.week-grid__body {
+  display: grid;
+  grid-template-columns: $hour-column-width repeat(7, minmax($day-min-width, 1fr));
+}
+
+.week-grid__head {
+  border-bottom: 1px solid var(--sh-border);
+}
+
+.week-grid__corner {
+  border-right: 1px solid var(--sh-border);
+}
+
+.week-grid__day-title {
+  padding: var(--sh-space-2) var(--sh-space-1);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--sh-text-muted);
+  border-left: 1px solid var(--sh-border);
+}
+
+.week-grid__body {
+  position: relative;
+}
+
+.week-grid__hours {
+  position: relative;
+  border-right: 1px solid var(--sh-border);
+}
+
+.week-grid__hour {
+  position: absolute;
+  left: var(--sh-space-1);
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: var(--sh-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.week-grid__column {
+  position: relative;
+  border-left: 1px solid var(--sh-border);
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* Conteneur de la vignette : porte la position, pour que le bouton « Durée » reste un frère du bouton de la vignette. */
+.week-grid__item {
+  position: absolute;
+}
+
+.week-grid__slot {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  overflow: hidden;
+  padding: var(--sh-space-1) var(--sh-space-2);
+  border: 1px solid color-mix(in srgb, var(--sh-success) 60%, transparent);
+  border-left: 3px solid var(--sh-success);
+  border-radius: var(--sh-radius-sm);
+  background: color-mix(in srgb, var(--sh-success) 22%, var(--sh-surface));
+  color: var(--sh-text);
+  font: inherit;
+  font-size: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+
+  &--occupe {
+    border-color: color-mix(in srgb, var(--sh-orange) 60%, transparent);
+    border-left-color: var(--sh-orange);
+    background: color-mix(in srgb, var(--sh-orange) 22%, var(--sh-surface));
+  }
+
+  &:hover {
+    filter: brightness(1.15);
+  }
+
+  &:focus-visible {
+    outline: var(--sh-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.week-grid__slot-time {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.week-grid__slot-tag {
+  color: var(--sh-text-muted);
+}
+
+.week-grid__preview {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--sh-accent-text);
+  border-radius: var(--sh-radius-sm);
+  background: color-mix(in srgb, var(--sh-accent) 25%, transparent);
+  color: var(--sh-text);
+  /* Le rectangle garde son surlignage ; l'horaire est du texte simple, centré, sur une ligne, sans débordement. */
+  overflow: hidden;
+  padding: 0 4px;
+  font-weight: 400;
+  font-size: 0.7rem;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.week-grid__slot--session {
+  background: var(--sh-surface-raised);
+  border-left-width: 4px;
+}
+
+.week-grid__slot-head {
+  display: inline-flex;
+
+  sh-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+}
+
+.week-grid__slot--cancelled {
+  opacity: 0.55;
+  text-decoration: line-through;
+  border-style: dashed;
+}
+
+.week-grid__slot--locked {
+  cursor: not-allowed;
+}
+
+.week-grid__slot--done {
+  opacity: 0.8;
+}
+
+/* Coche verte d'une séance réalisée, en haut à droite du bloc. */
+.week-grid__done {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 1;
+  width: 1rem;
+  height: 1rem;
+}
+
+.week-grid__done sh-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.week-grid__duration {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  z-index: 1;
+  padding: 0 var(--sh-space-1);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface);
+  color: var(--sh-text);
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--sh-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Actions directes sur la vignette d'une séance : corbeille, et annulation de la semaine pour une récurrente. */
+.week-grid__actions {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 1;
+  display: flex;
+  gap: 2px;
+}
+
+.week-grid__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface);
+  color: var(--sh-text-muted);
+  cursor: pointer;
+
+  sh-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  &--danger:hover {
+    color: var(--sh-error);
+  }
+
+  &:focus-visible {
+    outline: var(--sh-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Titre de la séance sur sa vignette : une ligne, tronqué si besoin. */
+.week-grid__slot-title {
+  display: block;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Trait d'heure : un élément de 1 px à position entière, plutôt qu'un dégradé répété (qui perd des traits selon l'échelle d'affichage). */
+.week-grid__hline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--sh-border);
+  pointer-events: none;
+}

@@ -1,0 +1,127 @@
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+
+/** Pictogrammes du tableau de bord, dessinés en SVG (trait, couleur héritée du parent). */
+export type IconName =
+  | 'calendar'
+  | 'clock'
+  | 'flame'
+  | 'mountain'
+  | 'heart'
+  | 'bars'
+  | 'pie'
+  | 'list'
+  | 'flag'
+  | 'check'
+  | 'trash'
+  | 'ban'
+  | 'arrow-left'
+  | 'undo'
+  | 'expand'
+  | 'run'
+  | 'bike'
+  | 'swim'
+  | 'strength';
+
+/** Icône décorative : le libellé qui l'accompagne porte l'information, donc elle est masquée aux lecteurs d'écran. */
+@Component({
+  selector: 'sh-icon',
+  template: `
+    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+      @switch (name()) {
+        @case ('calendar') {
+          <rect x="3" y="4" width="18" height="17" rx="2" />
+          <path d="M3 9h18M8 2v4M16 2v4" />
+        }
+        @case ('clock') {
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        }
+        @case ('flame') {
+          <path d="M12 3c1 3 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 0-8z" />
+        }
+        @case ('mountain') {
+          <path d="M3 20l6-10 4 6 3-4 5 8z" />
+        }
+        @case ('heart') {
+          <path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z" />
+        }
+        @case ('bars') {
+          <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+        }
+        @case ('pie') {
+          <path d="M21 12A9 9 0 1 1 12 3v9z" />
+          <path d="M15 3.5A9 9 0 0 1 20.5 9H15z" />
+        }
+        @case ('list') {
+          <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+        }
+        @case ('check') {
+          <path d="M5 12.5l4.5 4.5L19 7.5" />
+        }
+        @case ('arrow-left') {
+          <path d="M19 12H5M11 6l-6 6 6 6" />
+        }
+        @case ('ban') {
+          <circle cx="12" cy="12" r="9" />
+          <path d="M5.6 5.6l12.8 12.8" />
+        }
+        @case ('undo') {
+          <path d="M9 14L4 9l5-5" />
+          <path d="M4 9h10a6 6 0 0 1 0 12h-3" />
+        }
+        @case ('trash') {
+          <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />
+        }
+        @case ('flag') {
+          <path d="M5 21V4M5 4h12l-2 4 2 4H5" />
+        }
+        @case ('run') {
+          <circle cx="14" cy="4" r="2" />
+          <path d="M7 21l3-6 3 2 2-4 4 3M9 15l-2-4 4-2 3 2" />
+        }
+        @case ('bike') {
+          <circle cx="6" cy="16" r="4" />
+          <circle cx="18" cy="16" r="4" />
+          <path d="M6 16l4-7h6l2 7M10 9l3 7h5" />
+        }
+        @case ('swim') {
+          <path
+            d="M2 16c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2M2 20c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2"
+          />
+          <circle cx="16" cy="6" r="2" />
+          <path d="M8 11l4-3 4 2" />
+        }
+        @case ('strength') {
+          <path d="M3 10v4M6 8v8M18 8v8M21 10v4M6 12h12" />
+        }
+        @case ('expand') {
+          <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+        }
+      }
+    </svg>
+  `,
+  styles: `
+    :host {
+      display: inline-flex;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  `,
+  host: { '[style.color]': 'color()' },
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class IconComponent {
+  readonly name = input.required<IconName>();
+  /** Couleur CSS (ex. `var(--sh-violet)`) ; `null` = couleur héritée du parent. */
+  readonly color = input<string | null>(null);
+}

@@ -1,0 +1,52 @@
+<header class="goals__header">
+  <h1 class="goals__title">{{ t.goals.title }}</h1>
+  <button nz-button nzType="primary" type="button" (click)="openForm('new')">
+    {{ t.goals.new }}
+  </button>
+</header>
+
+@if (state.error(); as error) {
+  <div class="goals__error" role="alert">
+    <p>{{ error.userMessage }}</p>
+    <button nz-button type="button" (click)="state.reload()">{{ t.common.retry }}</button>
+  </div>
+} @else {
+  <div class="goals__content" [attr.aria-busy]="state.isLoading()">
+    @if (state.isEmpty()) {
+      <p class="goals__empty">{{ t.goals.empty }}</p>
+    }
+    <sh-goal-list
+      [heading]="t.goals.sections.upcoming.heading"
+      [emptyMessage]="t.goals.sections.upcoming.empty"
+      [goals]="state.upcoming()"
+      (edit)="openForm($event)"
+      (delete)="confirmDelete($event)"
+    />
+    <sh-goal-list
+      [heading]="t.goals.sections.past.heading"
+      [emptyMessage]="t.goals.sections.past.empty"
+      [goals]="state.past()"
+      (edit)="openForm($event)"
+      (delete)="confirmDelete($event)"
+    />
+    <sh-goal-list
+      [heading]="t.goals.sections.undated.heading"
+      [emptyMessage]="t.goals.sections.undated.empty"
+      [goals]="state.undated()"
+      (edit)="openForm($event)"
+      (delete)="confirmDelete($event)"
+    />
+  </div>
+}
+
+@if (editing() !== null) {
+  <sh-modal [title]="formTitle()" (closed)="closeForm()">
+    <sh-goal-form
+      [goal]="formGoal()"
+      [submitting]="state.saving()"
+      [serverError]="formError()"
+      (saved)="onSaved($event)"
+      (cancelled)="closeForm()"
+    />
+  </sh-modal>
+}

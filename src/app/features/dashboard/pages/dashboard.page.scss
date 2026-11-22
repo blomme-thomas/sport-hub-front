@@ -1,0 +1,96 @@
+:host {
+  display: block;
+  /* Espace unique entre toutes les cartes du tableau de bord. */
+  --dashboard-gap: 1rem;
+  /* Hauteur commune de Détails par activités et du mini-calendrier, sur ordinateur. */
+  --dashboard-row-height: 34rem;
+  /* Hauteur minimale des cartes Objectif, Performance, Répartition et Zones : la taille ne dépend pas des données. */
+  --dashboard-chart-row-height: 19rem;
+}
+
+.dashboard__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dashboard-gap);
+  margin-bottom: var(--dashboard-gap);
+}
+
+.dashboard__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dashboard__title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.dashboard__next-event {
+  margin-bottom: var(--dashboard-gap);
+}
+
+.dashboard__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dashboard-gap);
+}
+
+.dashboard__kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  /* Hauteur fixe des indicateurs, quelle que soit la période (variation et courbe ou non). */
+  grid-auto-rows: 13rem;
+  gap: var(--dashboard-gap);
+  margin-bottom: var(--dashboard-gap);
+}
+
+.dashboard__recent {
+  width: 100%;
+}
+
+/* Détails par activités et mini-calendrier : même taille fixe sur ordinateur, quelle que soit la vue. */
+.dashboard__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--dashboard-gap);
+}
+
+.dashboard__recent,
+.dashboard__week {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+@media (min-width: 768px) {
+  .dashboard__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: var(--dashboard-row-height);
+  }
+}
+
+/* Objectif, Performance, Répartition et Zones : sur une seule rangée sur grand écran, toutes de la même hauteur. */
+.dashboard__charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  grid-auto-rows: var(--dashboard-chart-row-height);
+  align-items: stretch;
+  gap: var(--dashboard-gap);
+}
+
+@media (min-width: 1200px) {
+  .dashboard__charts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.dashboard__error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--dashboard-gap);
+}
