@@ -108,7 +108,7 @@ Une séance réalisée (liée à une activité) affiche une coche verte en haut 
 
 ## Créer une séance depuis un fichier JSON (story #132)
 
-Dans la modale « Nouvelle séance », la section « Pré-remplir depuis un fichier JSON » accepte un fichier `plan-seances` (une seule séance) ou son contenu collé. Un JSON valide renseigne la date, l'heure, la durée, la discipline et la description présentes dans le fichier, et reprend ses modules, listés en récapitulatif sous les objectifs. Rien n'est enregistré avant « Créer la séance », qui envoie `POST /api/sessions` avec ces modules.
+Dans la modale « Nouvelle séance », la section « Pré-remplir depuis un fichier JSON » accepte un fichier `plan-seances` (une seule séance), glissé-déposé dans sa zone. Un JSON valide renseigne la date, l'heure, la durée, la discipline et la description présentes dans le fichier, et reprend ses modules, listés en récapitulatif sous les objectifs. Rien n'est enregistré avant « Créer la séance », qui envoie `POST /api/sessions` avec ces modules.
 
 - Un JSON invalide affiche chaque erreur avec son chemin, et le formulaire reste inchangé.
 - Un fichier de plusieurs séances est refusé avec un renvoi vers « Importer des séances ».
