@@ -3,6 +3,7 @@ import { TimeoutError } from 'rxjs';
 import { AppError, FieldError } from './app-error';
 import { hasErrorMessage, messageForCode } from './error-messages';
 import { FieldErrorApi, ProblemDetailsApi } from './problem-details.api-model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 const PROBLEM_JSON_MEDIA_TYPE = 'application/problem+json';
 const CORRELATION_ID_HEADER = 'x-correlation-id';
@@ -72,7 +73,9 @@ function build({ code, status, detail, correlationId, fieldErrors, cause }: Buil
   const message = messageForCode(code);
   const isUnexpected = status >= 500 || !hasErrorMessage(code);
   const userMessage =
-    isUnexpected && correlationId ? `${message} Référence : ${correlationId}` : message;
+    isUnexpected && correlationId
+      ? `${message} ${fill(TEXTS.errors.reference, { id: correlationId })}`
+      : message;
 
   return new AppError({ code, status, userMessage, detail, correlationId, fieldErrors, cause });
 }

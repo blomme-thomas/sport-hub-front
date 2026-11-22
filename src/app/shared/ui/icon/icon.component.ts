@@ -12,6 +12,10 @@ export type IconName =
   | 'list'
   | 'flag'
   | 'check'
+  | 'trash'
+  | 'ban'
+  | 'arrow-left'
+  | 'undo'
   | 'expand'
   | 'run'
   | 'bike'
@@ -53,6 +57,20 @@ export type IconName =
         }
         @case ('check') {
           <path d="M5 12.5l4.5 4.5L19 7.5" />
+        }
+        @case ('arrow-left') {
+          <path d="M19 12H5M11 6l-6 6 6 6" />
+        }
+        @case ('ban') {
+          <circle cx="12" cy="12" r="9" />
+          <path d="M5.6 5.6l12.8 12.8" />
+        }
+        @case ('undo') {
+          <path d="M9 14L4 9l5-5" />
+          <path d="M4 9h10a6 6 0 0 1 0 12h-3" />
+        }
+        @case ('trash') {
+          <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />
         }
         @case ('flag') {
           <path d="M5 21V4M5 4h12l-2 4 2 4H5" />

@@ -1,0 +1,59 @@
+/*
+ * Style commun des modales (composant sh-modal, et modales ouvertes par le service ng-zorro avec la classe sh-modal).
+ * Même fond, bordures et rayon que les cartes du tableau de bord, quel que soit le thème Ant Design sombre.
+ */
+.sh-modal .ant-modal-content {
+  overflow: hidden;
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+}
+
+.sh-modal .ant-modal-header {
+  border-bottom-color: var(--sh-border);
+  background: var(--sh-surface);
+}
+
+.sh-modal .ant-modal-footer {
+  border-top-color: var(--sh-border);
+  background: var(--sh-surface);
+}
+
+.sh-modal .ant-modal-body {
+  background: var(--sh-surface);
+}
+
+.sh-modal .ant-modal-title,
+.sh-modal .ant-modal-close {
+  color: var(--sh-text);
+}
+
+.sh-modal__title {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+
+  sh-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+/* Flèche « retour » à gauche du titre, vers la vue précédente (ex. la journée). */
+.sh-modal__back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+
+  sh-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}

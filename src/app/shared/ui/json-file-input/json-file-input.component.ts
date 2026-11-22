@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { TEXTS, fill } from '@shared/texts/texts';
 
 /**
  * Zone de dépôt d'un fichier `.json` pour un import de séance. Seul le nom du fichier s'affiche, jamais son
@@ -16,6 +17,8 @@ export class JsonFileInputComponent {
 
   readonly contentChange = output<string>();
 
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   protected readonly fileName = signal<string | null>(null);
   protected readonly dragging = signal(false);
 

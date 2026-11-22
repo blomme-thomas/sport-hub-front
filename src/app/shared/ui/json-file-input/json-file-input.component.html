@@ -9,8 +9,8 @@
   (drop)="onDrop($event)"
 >
   <p class="json-input__label">{{ label() }}</p>
-  <p class="json-input__help">Glissez-déposez ici un fichier .json.</p>
+  <p class="json-input__help">{{ t.shared.json.drop }}</p>
   @if (fileName(); as name) {
-    <p class="json-input__hint" aria-live="polite">Fichier chargé : {{ name }}</p>
+    <p class="json-input__hint" aria-live="polite">{{ fill(t.shared.json.loaded, { name }) }}</p>
   }
 </div>

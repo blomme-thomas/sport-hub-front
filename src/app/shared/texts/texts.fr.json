@@ -1,0 +1,710 @@
+{
+  "common": {
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "retry": "Réessayer",
+    "loading": "Chargement…",
+    "edit": "Modifier",
+    "required": "Ce champ est obligatoire.",
+    "delete": "Supprimer"
+  },
+  "shell": {
+    "skipLink": "Aller au contenu",
+    "menuOpen": "Ouvrir le menu",
+    "menuClose": "Fermer le menu",
+    "navigation": "Navigation principale",
+    "brand": "Sport Hub",
+    "soon": "Bientôt disponible",
+    "menu": {
+      "dashboard": "Tableau de bord",
+      "goals": "Objectifs",
+      "calendar": "Calendrier",
+      "settings": "Paramètres"
+    },
+    "comingSoon": ["Entraînements", "Statistiques", "Conseils IA"],
+    "notFound": {
+      "title": "Page introuvable",
+      "home": "Retour à l'accueil"
+    }
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "status": {
+      "loading": "Chargement des statistiques en cours",
+      "period": "Statistiques affichées sur {period}"
+    },
+    "periodWords": {
+      "week": "la semaine en cours",
+      "month": "le mois en cours"
+    },
+    "empty": "Aucune activité sur cette période",
+    "detailTitle": "Détail de la séance",
+    "period": {
+      "group": "Période affichée",
+      "week": "Semaine",
+      "month": "Mois",
+      "spokenWeek": "Semaine en cours",
+      "spokenMonth": "Mois en cours",
+      "calendar": "Choisir des dates (bientôt disponible)",
+      "soon": "Bientôt disponible"
+    },
+    "granularity": {
+      "group": "Granularité",
+      "week": "Semaine",
+      "month": "Mois"
+    },
+    "nextEvent": {
+      "heading": "Prochain événement",
+      "format": "Format",
+      "targetTime": "Temps cible",
+      "noFormat": "Format non défini",
+      "noTargetTime": "Temps cible non défini",
+      "none": "Aucun événement à venir.",
+      "create": "Créer un événement",
+      "dayLeft": "1 jour restant",
+      "daysLeft": "{days} jours restants",
+      "time": "{hours} h {minutes} min {seconds} s",
+      "formats": {
+        "half": "Half (semi-distance)",
+        "full": "Full (distance complète)",
+        "sprint": "Sprint",
+        "olympique": "Olympique",
+        "autre": "Autre"
+      }
+    },
+    "kpi": {
+      "expand": "Agrandir : {label}",
+      "sessions": "Séances",
+      "duration": "Durée totale",
+      "calories": "Calories brûlées",
+      "elevation": "Dénivelé positif",
+      "heartRate": "FC moyenne",
+      "onPeriod": "{label} sur la période"
+    },
+    "variation": {
+      "up": "En hausse",
+      "down": "En baisse",
+      "unknown": "Non disponible",
+      "flat": "Stable",
+      "none": "Variation par rapport à la période précédente : —"
+    },
+    "advice": {
+      "heading": "Conseil IA personnalisé",
+      "insufficient": "Données insuffisantes pour un conseil cette semaine.",
+      "generatedOn": "Généré le {date}",
+      "regenerate": "Régénérer",
+      "plan": "Voir le plan d’entraînement",
+      "planUnavailable": "Page du plan d'entraînement non disponible",
+      "none": "Aucun conseil pour cette semaine.",
+      "generate": "Générer le conseil",
+      "generating": "Génération en cours…"
+    },
+    "review": {
+      "heading": "Bilan de la semaine",
+      "chooseWeek": "Choisir la semaine",
+      "previous": "Semaine précédente",
+      "next": "Semaine suivante",
+      "current": "Cette semaine",
+      "generic": "Semaine sans séance prévue : bilan générique.",
+      "follow": "Suivi",
+      "attention": "Point d’attention",
+      "advice": "Conseil",
+      "generatedOn": "Généré le {date}",
+      "regenerate": "Régénérer",
+      "none": "Aucun bilan pour cette semaine.",
+      "generate": "Générer le bilan",
+      "generating": "Génération en cours…",
+      "confirmTitle": "Régénérer le bilan ?",
+      "confirmContent": "Le bilan actuel de cette semaine sera remplacé.",
+      "week": "Semaine du {from} au {to}"
+    },
+    "sportSplit": {
+      "heading": "Répartition par sport",
+      "expand": "Agrandir : Répartition par sport",
+      "none": "Aucune séance sur cette période",
+      "total": "Total",
+      "legend": "Légende de la répartition",
+      "chart": "Répartition du temps d’entraînement par sport",
+      "placeholders": ["Course", "Vélo", "Natation", "Autre"]
+    },
+    "zones": {
+      "heading": "Zones d’entraînement",
+      "expand": "Agrandir : Zones d’entraînement",
+      "optimal": "Zone optimale",
+      "legend": "Légende des zones cardiaques",
+      "empty": "Aucune donnée de zone cardiaque sur cette période",
+      "good": "Bon équilibre en zone optimale",
+      "rebalance": "Zone optimale à renforcer",
+      "names": {
+        "z1": "Récupération",
+        "z2": "Endurance",
+        "z3": "Tempo",
+        "z4": "Seuil",
+        "z5": "Puissance"
+      }
+    },
+    "miniCalendar": {
+      "heading": "Calendrier",
+      "chooseMonth": "Choisir le mois",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "loading": "Chargement des séances…",
+      "monthGrid": "Séances du mois",
+      "realized": "Réalisé : {label}",
+      "openDay": "Ouvrir le jour {date}",
+      "session": "Séance {discipline}, {time}. Ouvrir la séance",
+      "noTime": "sans heure",
+      "weekdays": ["Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim."],
+      "title": "Ce mois"
+    },
+    "weeklyGoal": {
+      "heading": "Objectif de la semaine",
+      "none": "Aucune cible hebdomadaire définie.",
+      "define": "Définir la cible",
+      "reached": "Objectif atteint à {percent} %",
+      "loading": "Chargement…",
+      "status": {
+        "reached": "Objectif atteint !",
+        "veryGood": "Très bien !",
+        "onTrack": "En bonne voie",
+        "toStrengthen": "À renforcer"
+      }
+    },
+    "recent": {
+      "heading": "Détails par activités",
+      "detailLabel": "Détail de la séance {type}, {date}",
+      "yesterday": "Hier",
+      "heartRateLabel": "Fréquence cardiaque, {type}",
+      "list": "Séances récentes, défilables",
+      "none": "Aucune séance récente"
+    },
+    "chart": {
+      "expand": "Agrandir le graphique : {title}",
+      "sessions": "Séances par {unit}",
+      "duration": "Durée par {unit}",
+      "byType": "Répartition par type (dernière période)",
+      "durationSeries": "Durée (h)",
+      "week": "semaine",
+      "month": "mois",
+      "unitSession": "séance",
+      "unitSessions": "séances",
+      "notAvailable": "Non comparable",
+      "label": "Libellé"
+    },
+    "detail": {
+      "heartRate": "Fréquence cardiaque",
+      "axisLabel": "Axe horizontal",
+      "time": "Durée",
+      "distance": "Km",
+      "heartRateChart": "Fréquence cardiaque pendant l’activité",
+      "noCurve": "Pas de courbe de fréquence cardiaque pour cette activité.",
+      "info": "Détails de la séance",
+      "zonesTitle": "Zones de fréquence cardiaque",
+      "notes": "Commentaires",
+      "noNotes": "Aucun commentaire pour cette séance.",
+      "distanceAxis": "Distance (km)",
+      "timeAxis": "Durée (min)",
+      "avgPace": "Allure moyenne",
+      "avgHeartRate": "FC moyenne",
+      "maxHeartRate": "FC maximale",
+      "elevation": "Dénivelé positif",
+      "zoneLabel": "Zone {n}",
+      "minutes": "{value} min",
+      "meters": "{value} m",
+      "kcal": "{value} kcal",
+      "distanceLabel": "Distance",
+      "calories": "Calories",
+      "typeLabel": "Type",
+      "perKm": "{value} /km",
+      "noSample": "Sans heure",
+      "hoursMinutes": "{hours}h {minutes}"
+    },
+    "day": {
+      "summary": "Résumé du jour",
+      "sessionsPlanned": "Séances planifiées",
+      "activitiesDone": "Activités réalisées",
+      "duration": "Durée réalisée",
+      "distance": "Distance",
+      "heartRate": "FC moyenne",
+      "plannedHeading": "Séances planifiées",
+      "noPlanned": "Aucune séance planifiée",
+      "activitiesHeading": "Activités réalisées",
+      "noActivities": "Aucune activité réalisée",
+      "zonesHeading": "Zones de fréquence cardiaque",
+      "noHeartRate": "Pas de fréquence cardiaque sur ce jour",
+      "legend": "Légende des zones cardiaques du jour"
+    },
+    "cardDetail": {
+      "variationNone": "Variation par rapport à la période précédente : —",
+      "noSession": "Aucune séance sur cette période",
+      "splitCaption": "Répartition détaillée par sport",
+      "zonesCaption": "Temps passé par zone de fréquence cardiaque",
+      "noZone": "Aucune donnée de zone sur cette période",
+      "optimal": "Zone optimale (Z2 et Z3) : {percent} %",
+      "fromBpm": "à partir de {bpm} bpm",
+      "close": "Fermer",
+      "columns": {
+        "sport": "Sport",
+        "duration": "Durée",
+        "share": "Part",
+        "zone": "Zone",
+        "threshold": "Seuil",
+        "time": "Temps"
+      }
+    },
+    "performance": {
+      "heading": "Performances",
+      "byWeek": "Durée par semaine sur la période",
+      "byDay": "Durée par jour sur la période"
+    },
+    "sports": {
+      "running": "Course à pied",
+      "cycling": "Cyclisme",
+      "swimming": "Natation",
+      "other": "Autres",
+      "virtualRide": "Vélo virtuel",
+      "walking": "Marche"
+    },
+    "families": {
+      "running": "Course",
+      "cycling": "Vélo",
+      "swimming": "Natation"
+    },
+    "kpisLabel": "Indicateurs de la période"
+  },
+  "creneaux": {
+    "title": "Calendrier",
+    "legend": "Légende",
+    "actions": {
+      "pause": "Nouvelle pause",
+      "planning": "Générer le planning",
+      "import": "Importer des séances",
+      "session": "Nouvelle séance"
+    },
+    "nav": {
+      "group": "Choisir la semaine",
+      "previous": "Semaine précédente",
+      "next": "Semaine suivante",
+      "today": "Aujourd’hui"
+    },
+    "modals": {
+      "session": "Nouvelle séance",
+      "import": "Importer des séances",
+      "move": "Déplacer la séance",
+      "pauseCreate": "Nouvelle pause",
+      "pauseEdit": "Modifier la pause",
+      "planning": "Générer le planning",
+      "duration": "Modifier la durée"
+    },
+    "move": {
+      "text": "Cette séance se répète chaque semaine. Déplacer au {date} à {time} :",
+      "whole": "Toute la série",
+      "thisWeek": "Cette semaine seulement"
+    },
+    "planning": {
+      "period": "Période à planifier",
+      "week": "Cette semaine",
+      "month": "Jusqu’à la fin du mois",
+      "event": "Jusqu’à un événement",
+      "noEvent": "Aucun événement avec une date cible.",
+      "eventLabel": "Événement",
+      "chooseEvent": "Choisir un événement",
+      "generate": "Générer",
+      "past": "Impossible de générer un planning sur une période passée.",
+      "none": "Aucune séance générée : pas de créneau libre sur la période.",
+      "created": "{count} séance(s) générée(s)."
+    },
+    "duration": {
+      "minutes": "Durée en minutes",
+      "summary": "{discipline}, {date} à {time}.",
+      "series": "La nouvelle durée s’applique à toute la série.",
+      "saved": "Durée modifiée."
+    },
+    "session": {
+      "created": "Séance créée.",
+      "moved": "Séance déplacée.",
+      "movedOccurrence": "Cette occurrence a été déplacée.",
+      "movedSeries": "La série a été déplacée.",
+      "restored": "Cette occurrence est restaurée.",
+      "cancelled": "Cette occurrence est annulée.",
+      "deleteTitle": "Supprimer cette séance ?",
+      "deleteSeries": "La suppression efface toute la série, qui se répète chaque semaine.",
+      "deleteOne": "Cette action est définitive.",
+      "deleted": "Séance supprimée.",
+      "imported": "{count} séance(s) importée(s).",
+      "prefilled": "Séance pré-remplie avec {count} module(s). Relisez les valeurs, puis créez la séance.",
+      "recurrence": "Chaque semaine",
+      "realized": "Réalisée, déplacement impossible",
+      "realizedLabel": "Séance {discipline}, {time}, réalisée. Ouvrir la séance",
+      "label": "Séance {discipline}, {time}. Ouvrir la séance",
+      "editDuration": "Modifier la durée de la séance {time}",
+      "duration": "Durée",
+      "cancelWeek": "Annuler cette semaine",
+      "restoreWeek": "Restaurer cette semaine",
+      "cancelWeekLabel": "Annuler cette semaine, séance {time}",
+      "restoreWeekLabel": "Restaurer cette semaine, séance {time}",
+      "deleteLabel": "Supprimer la séance {time}",
+      "delete": "Supprimer la séance"
+    },
+    "pause": {
+      "created": "Pause créée.",
+      "edited": "Pause modifiée.",
+      "deleted": "Pause supprimée.",
+      "deleteTitle": "Supprimer cette pause ?",
+      "deleteContent": "Les séances existantes sont conservées.",
+      "range": "du {start} au {end}",
+      "banners": "Pauses de la semaine",
+      "editLabel": "Modifier la pause {reason} {range}",
+      "deleteLabel": "Supprimer la pause {reason} {range}",
+      "reasonLabel": "Motif",
+      "start": "Début",
+      "end": "Fin",
+      "endBeforeStart": "La date de fin ne peut pas précéder le début.",
+      "reasons": {
+        "blessure": "Blessure",
+        "vacances": "Vacances",
+        "autre": "Autre"
+      }
+    },
+    "grid": {
+      "label": "Grille de la semaine",
+      "slotEdit": "{type}, {range}{recurrence}. Modifier",
+      "recurrenceSuffix": ", chaque semaine",
+      "slotLabel": "{type}, {range}",
+      "range": "{start} – {end}"
+    },
+    "slot": {
+      "free": "Libre",
+      "busy": "Occupé",
+      "none": "Aucune (ponctuel)",
+      "weekly": "Chaque semaine",
+      "type": "Type",
+      "date": "Date",
+      "start": "Début",
+      "end": "Fin",
+      "recurrence": "Récurrence",
+      "series": "Toute modification ou suppression vaut pour toute la série.",
+      "endAfterStart": "L’heure de fin doit être postérieure à l’heure de début.",
+      "heading": "Plage",
+      "weeklyHint": "Le créneau se répète chaque semaine, à partir de cette date, sans date de fin."
+    },
+    "sessionForm": {
+      "importHeading": "Pré-remplir depuis un fichier JSON",
+      "invalidFile": "Le fichier n’est pas valide, le formulaire n’a pas été modifié :",
+      "chooseDiscipline": "Choisir une discipline",
+      "startTime": "Heure de début",
+      "discipline": "Discipline",
+      "recurrence": "Récurrence",
+      "none": "Aucune (ponctuelle)",
+      "weekly": "Chaque semaine",
+      "objectives": "Objectifs",
+      "distance": "Distance cible (km)",
+      "zone": "{label} (%)",
+      "titleLabel": "Titre",
+      "description": "Description",
+      "descriptionLabel": "Description de la séance",
+      "noDiscipline": "Aucune discipline dans le référentiel. Il se remplit avec la synchronisation Garmin.",
+      "totalZones": "Total des zones : {total} %",
+      "create": "Créer la séance",
+      "fileLabel": "Fichier de séance (.json)",
+      "duration": "Durée (min)"
+    },
+    "sessionImport": {
+      "helpBefore": "Le fichier doit être au format",
+      "helpAfter": "Toutes ses séances sont créées, ou aucune en cas d’erreur.",
+      "fileLabel": "Fichier de séances (.json)",
+      "count": "{count} séance(s) détectée(s) dans le fichier.",
+      "unusable": "Le fichier n’est pas utilisable : {message}",
+      "submit": "Importer les séances"
+    }
+  },
+  "seances": {
+    "statusLabels": {
+      "planifiee": "Planifiée",
+      "realisee": "Réalisée",
+      "manquee": "Manquée"
+    },
+    "title": "Séance",
+    "moduleList": "Modules de la séance",
+    "badgeModified": "Modifiée",
+    "readOnly": "Séance réalisée : elle est affichée en lecture seule.",
+    "actions": {
+      "edit": "Modifier la séance",
+      "revert": "Annuler les modifications",
+      "save": "Enregistrer les modifications"
+    },
+    "info": {
+      "heading": "Informations",
+      "duration": "Durée prévue",
+      "title": "Titre",
+      "description": "Description"
+    },
+    "objectives": {
+      "heading": "Objectifs",
+      "distance": "Distance cible",
+      "zones": "Répartition cible",
+      "zonesLabel": "Répartition cible par zone de FC",
+      "rateDistance": "Taux distance",
+      "rateDuration": "Taux durée",
+      "gapLabel": "Écart par zone, en points de pourcentage"
+    },
+    "activity": {
+      "heading": "Activité réalisée",
+      "distance": "Distance",
+      "duration": "Durée",
+      "heartRate": "FC moyenne",
+      "bpm": "{value} bpm",
+      "minutes": "{value} min",
+      "hoursMinutes": "{hours}h {minutes}",
+      "unlink": "Dissocier",
+      "export": "Exporter la séance (JSON)",
+      "exporting": "Téléchargement…",
+      "loading": "Chargement de l’activité…",
+      "changeActivity": "Changer d’activité",
+      "sameDay": "Activités du même jour",
+      "none": "Aucune activité du même jour et de la même discipline.",
+      "list": "Activités associables",
+      "link": "Associer",
+      "automatic": "Rapprochée automatiquement",
+      "manual": "Associée manuellement",
+      "linked": "Activité associée. La séance est marquée réalisée.",
+      "unlinked": "Activité dissociée."
+    },
+    "comment": {
+      "heading": "Commentaire",
+      "loading": "Chargement du commentaire…",
+      "markdown": "Texte (markdown)",
+      "preview": "Aperçu",
+      "saving": "Enregistrement…",
+      "edit": "Modifier",
+      "add": "Ajouter un commentaire",
+      "none": "Aucun commentaire pour cette activité.",
+      "sourceIa": "Généré par l’IA",
+      "sourceGeneric": "Commentaire générique",
+      "sourceManual": "Saisi à la main",
+      "saved": "Commentaire enregistré."
+    },
+    "modules": {
+      "heading": "Modules ({count}) · {minutes} min",
+      "add": "Ajouter un module",
+      "empty": "Aucun module pour cette séance.",
+      "type": "Type",
+      "duration": "Durée (min)",
+      "instruction": "Consigne",
+      "zones": "Zones cibles : {zones}",
+      "effort": "Effort visé : {effort}/10",
+      "invalid": "La durée doit être comprise entre 1 et 1440 minutes, et la consigne ne peut pas être vide.",
+      "remove": "Supprimer le module {n}",
+      "removeTitle": "Supprimer le module",
+      "handle": "Glisser pour changer l'ordre",
+      "zoneLabels": {
+        "heartRate": "FC",
+        "pace": "Allure",
+        "power": "Puissance"
+      }
+    },
+    "edit": {
+      "importHeading": "Pré-remplir depuis un fichier JSON",
+      "fileLabel": "Fichier de séance (.json)",
+      "invalidFile": "Le fichier n’est pas valide, le formulaire n’a pas été modifié :",
+      "modulesRequired": "Au moins un module est requis, avec une durée de 1 à 1440 minutes et une consigne.",
+      "prefilled": "Valeurs pré-remplies, avec {count} module(s). Relisez puis enregistrez.",
+      "date": "Date",
+      "startTime": "Heure de début",
+      "discipline": "Discipline",
+      "duration": "Durée (min)",
+      "objectives": "Objectifs",
+      "distance": "Distance cible (km)",
+      "zones": {
+        "z1": "Z1 (%)",
+        "z2": "Z2 (%)",
+        "z3": "Z3 (%)",
+        "z4": "Z4 (%)",
+        "z5": "Z5 (%)"
+      },
+      "zonesInvalid": "Les zones doivent totaliser 100 % (ou rester à 0).",
+      "title": "Titre",
+      "description": "Description",
+      "descriptionLabel": "Description de la séance",
+      "cancel": "Annuler",
+      "save": "Enregistrer"
+    },
+    "messages": {
+      "modified": "Séance modifiée."
+    }
+  },
+  "goals": {
+    "title": "Objectifs",
+    "new": "Nouvel objectif",
+    "empty": "Aucun objectif pour l’instant. Créez votre premier objectif.",
+    "sections": {
+      "upcoming": { "heading": "À venir", "empty": "Aucun objectif à venir." },
+      "past": { "heading": "Passés", "empty": "Aucun objectif passé." },
+      "undated": { "heading": "Sans date", "empty": "Aucun objectif sans date." }
+    },
+    "form": {
+      "newTitle": "Nouvel objectif",
+      "editTitle": "Modifier l’objectif",
+      "title": "Titre",
+      "type": "Type",
+      "date": "Date",
+      "format": "Format",
+      "time": "Temps cible",
+      "hours": "Heures",
+      "minutes": "Minutes",
+      "seconds": "Secondes",
+      "required": "Ce champ est obligatoire."
+    },
+    "types": {
+      "evenement": "Événement",
+      "volume": "Volume",
+      "regularite": "Régularité"
+    },
+    "formats": {
+      "sprint": "Sprint",
+      "olympique": "Olympique",
+      "half": "Half (semi-distance)",
+      "full": "Full (distance complète)",
+      "autre": "Autre"
+    },
+    "list": {
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "editLabel": "Modifier {title}",
+      "deleteLabel": "Supprimer {title}",
+      "time": "{hours} h {minutes} min {seconds} s"
+    },
+    "confirmDelete": {
+      "title": "Supprimer cet objectif ?",
+      "content": "Cette action est définitive."
+    },
+    "messages": {
+      "created": "Objectif créé.",
+      "updated": "Objectif modifié.",
+      "deleted": "Objectif supprimé."
+    }
+  },
+  "reglages": {
+    "title": "Paramètres",
+    "weeklyTarget": {
+      "heading": "Objectif de la semaine",
+      "help": "Le temps que vous visez chaque semaine. Il reste le même tant que vous ne le modifiez pas.",
+      "current": "Cible actuelle :",
+      "none": "Aucun objectif hebdomadaire défini.",
+      "hours": "Heures",
+      "minutes": "Minutes",
+      "invalid": "Indiquez une durée d’au moins une minute, avec des minutes entre 0 et 59.",
+      "clear": "Retirer l’objectif",
+      "saved": "Cible enregistrée.",
+      "format": "{hours}h {minutes}"
+    }
+  },
+  "errors": {
+    "default": "Une erreur inattendue est survenue. Réessayez plus tard.",
+    "reference": "Référence : {id}",
+    "messages": {
+      "VALIDATION_FAILED": "Certaines informations saisies sont invalides.",
+      "BAD_REQUEST": "La requête est invalide.",
+      "MALFORMED_REQUEST_BODY": "Les données envoyées sont mal formées.",
+      "NOT_FOUND": "Élément introuvable.",
+      "PAYLOAD_TOO_LARGE": "Les données envoyées sont trop volumineuses.",
+      "CLIENT_ERROR": "La requête a été refusée par le serveur.",
+      "SERVICE_UNAVAILABLE": "Le service est momentanément indisponible. Réessayez plus tard.",
+      "INTERNAL_ERROR": "Une erreur interne est survenue. Réessayez plus tard.",
+      "GARMIN_ACCESS_DENIED": "L'accès à Garmin a été refusé. Vérifiez la clé de l'API Garmin Personal.",
+      "GARMIN_UNAVAILABLE": "Garmin est momentanément indisponible. Réessayez plus tard.",
+      "STATS_RANGE_TOO_LARGE": "La plage demandée est trop étendue. Réduisez la plage de dates.",
+      "STATS_RANGE_INVALID": "La date de fin doit être postérieure ou égale à la date de début.",
+      "WORKOUT_GENERATION_UNAVAILABLE": "La génération de séance est momentanément indisponible. Réessayez plus tard.",
+      "WORKOUT_GENERATION_ACCESS_DENIED": "La génération de séance n'est pas autorisée par le service d'IA.",
+      "WORKOUT_GENERATION_INVALID_OUTPUT": "La séance générée ne respecte pas le format attendu.",
+      "GOAL_INVALID": "L'objectif n'est pas valide. Vérifiez les informations saisies.",
+      "GOAL_NOT_FOUND": "Objectif introuvable. Il a peut-être déjà été supprimé.",
+      "GOAL_TARGET_TIME_INVALID": "Le temps cible doit être un nombre de secondes strictement positif.",
+      "SLOT_INVALID": "Le créneau n’est pas valide. Vérifiez les informations saisies.",
+      "SLOT_END_NOT_AFTER_START": "L’heure de fin doit être postérieure à l’heure de début.",
+      "SLOT_PERIOD_INVALID": "La période demandée n’est pas valide.",
+      "SLOT_PERIOD_TOO_LARGE": "La période demandée est trop étendue.",
+      "SLOT_NOT_FOUND": "Créneau introuvable. Il a peut-être déjà été supprimé.",
+      "SESSION_INVALID": "La séance n’est pas valide. Vérifiez les informations saisies.",
+      "SESSION_MODULE_INVALID": "Un module n’est pas valide. Vérifiez sa durée et sa consigne.",
+      "SESSION_DISCIPLINE_UNKNOWN": "La discipline de la séance n’existe pas dans le référentiel.",
+      "SESSION_NOT_FOUND": "Séance introuvable. Elle a peut-être été supprimée.",
+      "SESSION_IMPORT_INVALID": "Le fichier contient des erreurs : aucune séance n’a été créée. Corrigez les champs indiqués.",
+      "SESSION_IMPORT_ALREADY_DONE": "Ce fichier a déjà été importé : aucune séance n’a été créée.",
+      "SESSION_ALREADY_COMPLETED": "Cette séance est réalisée : elle ne peut plus être modifiée.",
+      "WEEKLY_REVIEW_INVALID_WEEK": "La semaine demandée n’est pas valide.",
+      "WEEKLY_REVIEW_INVALID_OUTPUT": "Le bilan généré est incomplet. Réessayez la génération.",
+      "WEEKLY_REVIEW_UNAVAILABLE": "Le bilan ne peut pas être généré pour le moment. Réessayez plus tard.",
+      "WEEKLY_REVIEW_ACCESS_DENIED": "La génération du bilan n’est pas autorisée par le service d’IA.",
+      "NETWORK_ERROR": "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.",
+      "TIMEOUT": "Le serveur met trop de temps à répondre. Réessayez dans quelques instants.",
+      "INVALID_RESPONSE": "Le serveur a renvoyé une réponse inattendue. Réessayez plus tard."
+    }
+  },
+  "shared": {
+    "json": {
+      "drop": "Glissez-déposez ici un fichier .json.",
+      "loaded": "Fichier chargé : {name}"
+    },
+    "modal": {
+      "back": "Revenir à la vue précédente"
+    },
+    "chart": {
+      "empty": "Aucune donnée à afficher"
+    },
+    "moduleTypes": {
+      "echauffement": "Échauffement",
+      "educatifs": "Éducatifs",
+      "series": "Séries",
+      "retour_au_calme": "Retour au calme",
+      "autre": "Autre"
+    },
+    "modulesEditor": {
+      "heading": "Modules ({count}) · {minutes} min",
+      "type": "Type du module {n}",
+      "duration": "Durée du module {n} (min)",
+      "instruction": "Consigne du module {n}",
+      "remove": "Supprimer le module {n}",
+      "invalid": "Un module a une durée hors de 1 à 1440 minutes ou une consigne vide."
+    },
+    "objectives": {
+      "distance": "La distance cible doit être supérieure à 0.",
+      "zonesMissing": "Renseigne le pourcentage des cinq zones.",
+      "zonesTotal": "La répartition doit totaliser {total} % (actuellement {current} %)."
+    },
+    "planSeances": {
+      "mustBe": "doit être {value}",
+      "seancesExpected": "au moins une séance est attendue",
+      "severalSeances": "le fichier contient {count} séances ; ce formulaire n’en accepte qu’une. Utilisez « Importer des séances » pour en ajouter plusieurs.",
+      "noSeancesList": "le fichier doit contenir une liste « seances ».",
+      "noSeance": "le fichier ne contient aucune séance.",
+      "malformed": "JSON mal formé ({reason})",
+      "readError": "erreur de lecture",
+      "seanceNotObject": "une séance doit être un objet",
+      "unknownDiscipline": "discipline absente du référentiel",
+      "mustBeList": "doit être une liste",
+      "modulesCount": "doit contenir de 1 à {max} modules",
+      "moduleNotObject": "un module doit être un objet",
+      "mustBeObject": "doit être un objet",
+      "zoneObject": "doit être un objet { min, max }",
+      "startTimeFormat": "doit être une heure au format HH:MM",
+      "dateFormat": "doit être une date au format AAAA-MM-JJ",
+      "mustBeString": "doit être une chaîne de caractères",
+      "empty": "ne doit pas être vide",
+      "maxLength": "ne doit pas dépasser {max} caractères",
+      "mustBeInteger": "doit être un nombre entier",
+      "bounds": {
+        "min": "au moins {min}",
+        "range": "de {min} à {max}"
+      },
+      "oneOf": "doit être une valeur parmi : {values}",
+      "zonesList": "doit être une liste de 5 entiers (Z1 à Z5)",
+      "zoneRange": "chaque zone doit être entre 0 et 100 %",
+      "zonesTotal": "les zones doivent totaliser 100 %",
+      "required": "champ obligatoire",
+      "unknownField": "champ absent du format plan-seances"
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import { TEXTS } from '@shared/texts/texts';
 /** Format de fichier `plan-seances` (forme JSON, identique au modèle renvoyé par le back). */
 export const PLAN_SEANCES_KIND = 'plan-seances';
 export const PLAN_SEANCES_SCHEMA_VERSION = 1;
@@ -54,10 +55,5 @@ export interface PlanSeanceIssue {
   message: string;
 }
 
-export const PLAN_MODULE_LABELS: Readonly<Record<PlanModuleType, string>> = {
-  echauffement: 'Échauffement',
-  educatifs: 'Éducatifs',
-  series: 'Séries',
-  retour_au_calme: 'Retour au calme',
-  autre: 'Autre',
-};
+export const PLAN_MODULE_LABELS: Readonly<Record<PlanModuleType, string>> =
+  TEXTS.shared.moduleTypes;

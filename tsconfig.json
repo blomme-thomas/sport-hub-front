@@ -14,6 +14,7 @@
     "target": "ES2022",
     "module": "preserve",
     "strict": true,
+    "resolveJsonModule": true,
     "paths": {
       "@core/*": ["./src/app/core/*"],
       "@shared/*": ["./src/app/shared/*"],

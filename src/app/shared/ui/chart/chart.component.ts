@@ -12,8 +12,9 @@ import {
 } from '@angular/core';
 import { Chart, type ChartData, type ChartOptions, type ChartType } from 'chart.js';
 import './chart-registry';
+import { TEXTS } from '@shared/texts/texts';
 
-const EMPTY_MESSAGE = 'Aucune donnée à afficher';
+const EMPTY_MESSAGE = TEXTS.shared.chart.empty;
 
 const DEFAULT_OPTIONS: ChartOptions = { responsive: true, maintainAspectRatio: false };
 

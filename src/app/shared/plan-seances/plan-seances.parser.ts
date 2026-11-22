@@ -7,6 +7,7 @@ import {
   type PlanSeanceModule,
   type PlanTargetZones,
 } from './plan-seances.model';
+import { fill, TEXTS } from '@shared/texts/texts';
 
 /** Bornes identiques au back : durée 1 à 1440, 30 modules au plus, consignes de 2000 caractères au plus. */
 const DURATION_MAX = 1440;
@@ -77,18 +78,24 @@ export function parseSingleSession(
 
   const issues: PlanSeanceIssue[] = [];
   if (root['kind'] !== PLAN_SEANCES_KIND) {
-    issues.push({ path: 'kind', message: `doit être ${PLAN_SEANCES_KIND}` });
+    issues.push({
+      path: 'kind',
+      message: fill(TEXTS.shared.planSeances.mustBe, { value: PLAN_SEANCES_KIND }),
+    });
   }
   if (root['schemaVersion'] !== PLAN_SEANCES_SCHEMA_VERSION) {
-    issues.push({ path: 'schemaVersion', message: `doit être ${PLAN_SEANCES_SCHEMA_VERSION}` });
+    issues.push({
+      path: 'schemaVersion',
+      message: fill(TEXTS.shared.planSeances.mustBe, { value: PLAN_SEANCES_SCHEMA_VERSION }),
+    });
   }
   const seances = root['seances'];
   if (!Array.isArray(seances) || seances.length === 0) {
-    issues.push({ path: 'seances', message: 'au moins une séance est attendue' });
+    issues.push({ path: 'seances', message: TEXTS.shared.planSeances.seancesExpected });
   } else if (seances.length > 1) {
     issues.push({
       path: 'seances',
-      message: `le fichier contient ${seances.length} séances ; ce formulaire n’en accepte qu’une. Utilisez « Importer des séances » pour en ajouter plusieurs.`,
+      message: fill(TEXTS.shared.planSeances.severalSeances, { count: seances.length }),
     });
   }
   if (issues.length > 0 || !Array.isArray(seances)) {
@@ -113,11 +120,11 @@ export function countSessions(text: string): PlanCountResult {
   }
   const root = parsed.value;
   if (!isRecord(root) || !Array.isArray(root['seances'])) {
-    return { ok: false, message: 'le fichier doit contenir une liste « seances ».' };
+    return { ok: false, message: TEXTS.shared.planSeances.noSeancesList };
   }
   const count = root['seances'].length;
   if (count === 0) {
-    return { ok: false, message: 'le fichier ne contient aucune séance.' };
+    return { ok: false, message: TEXTS.shared.planSeances.noSeance };
   }
   return { ok: true, count, content: root };
 }
@@ -158,8 +165,9 @@ function parseJson(text: string): { ok: true; value: unknown } | { ok: false; me
   try {
     return { ok: true, value: JSON.parse(text) };
   } catch (error) {
-    const reason = error instanceof SyntaxError ? error.message : 'erreur de lecture';
-    return { ok: false, message: `JSON mal formé (${reason})` };
+    const reason =
+      error instanceof SyntaxError ? error.message : TEXTS.shared.planSeances.readError;
+    return { ok: false, message: fill(TEXTS.shared.planSeances.malformed, { reason }) };
   }
 }
 
@@ -170,7 +178,7 @@ function validateSeance(
   issues: PlanSeanceIssue[],
 ): PlanSeance | null {
   if (!isRecord(raw)) {
-    issues.push({ path, message: 'une séance doit être un objet' });
+    issues.push({ path, message: TEXTS.shared.planSeances.seanceNotObject });
     return null;
   }
   const before = issues.length;
@@ -184,7 +192,7 @@ function validateSeance(
   if (disciplineTypeKey !== null && knownKeys !== undefined && !knownKeys.has(disciplineTypeKey)) {
     issues.push({
       path: `${path}.disciplineTypeKey`,
-      message: 'discipline absente du référentiel',
+      message: TEXTS.shared.planSeances.unknownDiscipline,
     });
   }
   const durationMinutes = readInteger(raw, 'durationMinutes', path, issues, {
@@ -233,15 +241,18 @@ function validateModules(
   issues: PlanSeanceIssue[],
 ): PlanSeanceModule[] {
   if (raw === undefined || raw === null) {
-    issues.push({ path, message: 'champ obligatoire' });
+    issues.push({ path, message: TEXTS.shared.planSeances.required });
     return [];
   }
   if (!Array.isArray(raw)) {
-    issues.push({ path, message: 'doit être une liste' });
+    issues.push({ path, message: TEXTS.shared.planSeances.mustBeList });
     return [];
   }
   if (raw.length === 0 || raw.length > MODULES_MAX) {
-    issues.push({ path, message: `doit contenir de 1 à ${MODULES_MAX} modules` });
+    issues.push({
+      path,
+      message: fill(TEXTS.shared.planSeances.modulesCount, { max: MODULES_MAX }),
+    });
     return [];
   }
   const modules: PlanSeanceModule[] = [];
@@ -260,7 +271,7 @@ function validateModule(
   issues: PlanSeanceIssue[],
 ): PlanSeanceModule | null {
   if (!isRecord(raw)) {
-    issues.push({ path, message: 'un module doit être un objet' });
+    issues.push({ path, message: TEXTS.shared.planSeances.moduleNotObject });
     return null;
   }
   const before = issues.length;
@@ -295,7 +306,7 @@ function readTargetZones(
     return null;
   }
   if (!isRecord(raw)) {
-    issues.push({ path, message: 'doit être un objet' });
+    issues.push({ path, message: TEXTS.shared.planSeances.mustBeObject });
     return null;
   }
   rejectUnknownFields(raw, [...ZONE_KEYS], path, issues);
@@ -307,7 +318,7 @@ function readTargetZones(
     }
     const zonePath = `${path}.${key}`;
     if (!isRecord(value)) {
-      issues.push({ path: zonePath, message: 'doit être un objet { min, max }' });
+      issues.push({ path: zonePath, message: TEXTS.shared.planSeances.zoneObject });
       continue;
     }
     const min = readInteger(value, 'min', zonePath, issues, { required: true, min: 1 });
@@ -325,7 +336,7 @@ function readStartTime(raw: Fields, path: string, issues: PlanSeanceIssue[]): st
     return null;
   }
   if (typeof value !== 'string' || !TIME_PATTERN.test(value)) {
-    issues.push({ path: `${path}.startTime`, message: 'doit être une heure au format HH:MM' });
+    issues.push({ path: `${path}.startTime`, message: TEXTS.shared.planSeances.startTimeFormat });
     return null;
   }
   return value;
@@ -342,7 +353,7 @@ function readDate(
     return null;
   }
   if (!DATE_PATTERN.test(value) || !isCalendarDate(value)) {
-    issues.push({ path: `${path}.${key}`, message: 'doit être une date au format AAAA-MM-JJ' });
+    issues.push({ path: `${path}.${key}`, message: TEXTS.shared.planSeances.dateFormat });
     return null;
   }
   return value;
@@ -365,20 +376,23 @@ function readText(
   const fieldPath = `${path}.${key}`;
   if (value === undefined || value === null) {
     if (rule.required) {
-      issues.push({ path: fieldPath, message: 'champ obligatoire' });
+      issues.push({ path: fieldPath, message: TEXTS.shared.planSeances.required });
     }
     return null;
   }
   if (typeof value !== 'string') {
-    issues.push({ path: fieldPath, message: 'doit être une chaîne de caractères' });
+    issues.push({ path: fieldPath, message: TEXTS.shared.planSeances.mustBeString });
     return null;
   }
   if (rule.notBlank && value.trim() === '') {
-    issues.push({ path: fieldPath, message: 'ne doit pas être vide' });
+    issues.push({ path: fieldPath, message: TEXTS.shared.planSeances.empty });
     return null;
   }
   if (rule.max !== undefined && value.length > rule.max) {
-    issues.push({ path: fieldPath, message: `ne doit pas dépasser ${rule.max} caractères` });
+    issues.push({
+      path: fieldPath,
+      message: fill(TEXTS.shared.planSeances.maxLength, { max: rule.max }),
+    });
     return null;
   }
   return value;
@@ -401,17 +415,23 @@ function readInteger(
   const fieldPath = `${path}.${key}`;
   if (value === undefined || value === null) {
     if (rule.required) {
-      issues.push({ path: fieldPath, message: 'champ obligatoire' });
+      issues.push({ path: fieldPath, message: TEXTS.shared.planSeances.required });
     }
     return null;
   }
   if (typeof value !== 'number' || !Number.isInteger(value)) {
-    issues.push({ path: fieldPath, message: 'doit être un nombre entier' });
+    issues.push({ path: fieldPath, message: TEXTS.shared.planSeances.mustBeInteger });
     return null;
   }
   if (value < rule.min || (rule.max !== undefined && value > rule.max)) {
-    const bounds = rule.max === undefined ? `au moins ${rule.min}` : `de ${rule.min} à ${rule.max}`;
-    issues.push({ path: fieldPath, message: `doit être ${bounds}` });
+    const bounds =
+      rule.max === undefined
+        ? fill(TEXTS.shared.planSeances.bounds.min, { min: rule.min })
+        : fill(TEXTS.shared.planSeances.bounds.range, { min: rule.min, max: rule.max });
+    issues.push({
+      path: fieldPath,
+      message: fill(TEXTS.shared.planSeances.mustBe, { value: bounds }),
+    });
     return null;
   }
   return value;
@@ -437,11 +457,14 @@ function readEnum<T extends string>(
   const value = raw[key];
   const fieldPath = `${path}.${key}`;
   if (value === undefined || value === null) {
-    issues.push({ path: fieldPath, message: 'champ obligatoire' });
+    issues.push({ path: fieldPath, message: TEXTS.shared.planSeances.required });
     return null;
   }
   if (typeof value !== 'string' || !(values as readonly string[]).includes(value)) {
-    issues.push({ path: fieldPath, message: `doit être une valeur parmi : ${values.join(', ')}` });
+    issues.push({
+      path: fieldPath,
+      message: fill(TEXTS.shared.planSeances.oneOf, { values: values.join(', ') }),
+    });
     return null;
   }
   return value as T;
@@ -455,7 +478,7 @@ function rejectUnknownFields(
 ): void {
   for (const key of Object.keys(raw)) {
     if (!allowed.includes(key)) {
-      issues.push({ path: `${path}.${key}`, message: 'champ absent du format plan-seances' });
+      issues.push({ path: `${path}.${key}`, message: TEXTS.shared.planSeances.unknownField });
     }
   }
 }
@@ -497,16 +520,16 @@ function readZonePercentages(
     value.length !== 5 ||
     !value.every((item) => Number.isInteger(item))
   ) {
-    issues.push({ path: fieldPath, message: 'doit être une liste de 5 entiers (Z1 à Z5)' });
+    issues.push({ path: fieldPath, message: TEXTS.shared.planSeances.zonesList });
     return null;
   }
   const numbers = value as number[];
   if (numbers.some((item) => item < 0 || item > 100)) {
-    issues.push({ path: fieldPath, message: 'chaque zone doit être entre 0 et 100 %' });
+    issues.push({ path: fieldPath, message: TEXTS.shared.planSeances.zoneRange });
     return null;
   }
   if (numbers.reduce((sum, item) => sum + item, 0) !== 100) {
-    issues.push({ path: fieldPath, message: 'les zones doivent totaliser 100 %' });
+    issues.push({ path: fieldPath, message: TEXTS.shared.planSeances.zonesTotal });
     return null;
   }
   return numbers;

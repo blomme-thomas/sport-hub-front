@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { TEXTS, fill } from '@shared/texts/texts';
 import { isPlanModuleValid } from '../../plan-seances/plan-seances.parser';
 import {
   PLAN_MODULE_LABELS,
@@ -28,6 +29,8 @@ export class PlanModulesEditorComponent {
 
   readonly modulesChange = output<PlanSeanceModule[]>();
 
+  protected readonly t = TEXTS;
+  protected readonly fill = fill;
   protected readonly typeOptions = PLAN_MODULE_TYPES.map((value) => ({
     value,
     label: PLAN_MODULE_LABELS[value],
