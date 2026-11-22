@@ -5,7 +5,6 @@ import { dashboardKpisResponse } from '../../../src/mocks/fixtures/dashboard-kpi
 const API_URL = /\/api\//;
 const STATS_URL = /\/api\/stats(\?.*)?$/;
 const KPIS_URL = /\/api\/stats\/dashboard(\?.*)?$/;
-const PROFILE_URL = /\/api\/profile$/;
 const SESSIONS_URL = /\/api\/sessions(\?.*)?$/;
 
 test.describe('Tableau de bord : navigation du calendrier et erreur partielle', () => {
@@ -14,7 +13,6 @@ test.describe('Tableau de bord : navigation du calendrier et erreur partielle', 
     await page.route(API_URL, (route) => route.fulfill({ json: { items: [] } }));
     await page.route(STATS_URL, (route) => route.fulfill({ json: normalStatsResponse }));
     await page.route(KPIS_URL, (route) => route.fulfill({ json: dashboardKpisResponse }));
-    await page.route(PROFILE_URL, (route) => route.fulfill({ json: { displayName: null } }));
   });
 
   test('Précédent charge la semaine d’avant, à sept jours du début de la semaine affichée', async ({

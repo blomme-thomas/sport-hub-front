@@ -10,7 +10,7 @@ import { SessionModalService } from '@core/layout/session-modal.service';
 import { disciplineStyleOf } from '@shared/ui/discipline/discipline-style';
 import { IconComponent } from '@shared/ui/icon/icon.component';
 import { firstValueFrom } from 'rxjs';
-import { NZ_MODAL_DATA, NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
+import { NZ_MODAL_DATA, NzModalService } from 'ng-zorro-antd/modal';
 import { RecentActivitiesApi } from '../../data-access/recent-activities.api';
 import {
   formatDistance,
@@ -71,7 +71,6 @@ export class DayDetailModalComponent {
   private readonly sessionModal = inject(SessionModalService);
   private readonly modals = inject(NzModalService);
   private readonly viewContainer = inject(ViewContainerRef);
-  private readonly modalRef = inject(NzModalRef, { optional: true });
 
   private readonly day = this.state.dayOf(this.data.date);
   protected readonly sessions: readonly WeekMiniSession[] = this.day.sessions;

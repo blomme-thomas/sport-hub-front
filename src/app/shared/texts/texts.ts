@@ -6,8 +6,6 @@ import texts from './texts.fr.json';
  */
 export const TEXTS = texts;
 
-export type Texts = typeof TEXTS;
-
 /**
  * Remplace les marqueurs `{nom}` d'un texte par les valeurs fournies. Une valeur absente (`null`) s'affiche « — ».
  * Exemple : fill('Fichier chargé : {name}', { name: 'plan.json' }).
