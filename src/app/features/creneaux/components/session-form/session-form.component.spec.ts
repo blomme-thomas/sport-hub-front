@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { AppError } from '../../../../core/http/app-error';
 import { ERROR_MESSAGES } from '../../../../core/http/error-messages';
+import { dropJsonFile, jsonFileDropZone } from '../../../../../mocks/json-file.testing';
 import { SessionFormComponent, type DisciplineOption } from './session-form.component';
 
 const DISCIPLINES: DisciplineOption[] = [{ typeKey: 'running', label: 'Course à pied' }];
@@ -148,16 +149,14 @@ describe('SessionFormComponent – fichier plan-seances', () => {
     ],
   });
 
-  async function pastePlan(user: ReturnType<typeof userEvent.setup>, text: string) {
-    await user.click(screen.getByLabelText('Ou collez le contenu JSON'));
-    await user.paste(text);
+  async function dropPlan(text: string) {
+    await dropJsonFile(jsonFileDropZone('Fichier de séance (.json)'), text);
   }
 
   it('pré-remplit les champs présents sans toucher aux autres', async () => {
-    const user = userEvent.setup();
     await renderForm();
 
-    await pastePlan(user, PLAN);
+    await dropPlan(PLAN);
 
     expect(screen.getByLabelText('Date')).toHaveValue('2026-11-25');
     expect(screen.getByLabelText('Durée (min)')).toHaveValue(50);
@@ -171,7 +170,7 @@ describe('SessionFormComponent – fichier plan-seances', () => {
     const user = userEvent.setup();
     const { saved } = await renderForm();
 
-    await pastePlan(user, PLAN);
+    await dropPlan(PLAN);
     await fillZones(user, [10, 20, 40, 20, 10]);
     await user.click(screen.getByRole('button', { name: 'Créer la séance' }));
 
@@ -194,28 +193,28 @@ describe('SessionFormComponent – fichier plan-seances', () => {
   });
 
   it('affiche le chemin de chaque erreur et ne modifie pas le formulaire', async () => {
-    const user = userEvent.setup();
     const { saved } = await renderForm();
     const invalid = JSON.parse(PLAN);
     invalid.seances[0].modules[0].durationMinutes = 0;
 
-    await pastePlan(user, JSON.stringify(invalid));
+    await dropPlan(JSON.stringify(invalid));
 
-    expect(screen.getByRole('alert')).toHaveTextContent('seances[0].modules[0].durationMinutes');
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'seances[0].modules[0].durationMinutes',
+    );
     expect(screen.getByLabelText('Durée (min)')).toHaveValue(60);
     expect(screen.getByLabelText('Date')).toHaveValue('2026-11-12');
     expect(saved).not.toHaveBeenCalled();
   });
 
   it('refuse un fichier de plusieurs séances et renvoie vers l’import multiple', async () => {
-    const user = userEvent.setup();
     await renderForm();
     const parsed = JSON.parse(PLAN);
     parsed.seances.push(parsed.seances[0]);
 
-    await pastePlan(user, JSON.stringify(parsed));
+    await dropPlan(JSON.stringify(parsed));
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Importer des séances');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Importer des séances');
     expect(screen.getByLabelText('Durée (min)')).toHaveValue(60);
   });
 });

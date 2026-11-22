@@ -15,6 +15,7 @@ import {
   sessionsTestProviders,
   trackModulesReplace,
 } from '../../../../mocks/sessions.testing';
+import { dropJsonFile, jsonFileDropZone } from '../../../../mocks/json-file.testing';
 import { server } from '../../../../mocks/server';
 import { SessionPage } from './session.page';
 
@@ -210,8 +211,7 @@ describe('SessionPage – modification par JSON (#134)', () => {
 
     await renderPage(SESSION_ID);
     await user.click(await screen.findByRole('button', { name: 'Modifier la séance' }));
-    await user.click(screen.getByLabelText('Ou collez le contenu JSON'));
-    await user.paste(PLAN);
+    await dropJsonFile(jsonFileDropZone('Fichier de séance (.json)'), PLAN);
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }));
 
     expect(await screen.findByText('70 min')).toBeInTheDocument();

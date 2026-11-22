@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { dropJsonFile, jsonFileDropZone } from '../../../../../mocks/json-file.testing';
 import type { Session } from '../../models/session.model';
 import {
   SessionEditFormComponent,
@@ -99,8 +100,7 @@ describe('SessionEditFormComponent', () => {
     const user = userEvent.setup();
     const { saved } = await renderEdit();
 
-    await user.click(screen.getByLabelText('Ou collez le contenu JSON'));
-    await user.paste(PLAN);
+    await dropJsonFile(jsonFileDropZone('Fichier de séance (.json)'), PLAN);
 
     expect(screen.getByLabelText('Date')).toHaveValue('2026-11-26');
     expect(screen.getByLabelText('Durée (min)')).toHaveValue(70);
@@ -134,15 +134,13 @@ describe('SessionEditFormComponent', () => {
   });
 
   it('affiche chaque erreur du fichier avec son chemin et ne modifie pas le formulaire', async () => {
-    const user = userEvent.setup();
     const { saved } = await renderEdit();
     const invalid = JSON.parse(PLAN);
     invalid.seances[0].durationMinutes = 'soixante';
 
-    await user.click(screen.getByLabelText('Ou collez le contenu JSON'));
-    await user.paste(JSON.stringify(invalid));
+    await dropJsonFile(jsonFileDropZone('Fichier de séance (.json)'), JSON.stringify(invalid));
 
-    expect(screen.getByRole('alert')).toHaveTextContent('seances[0].durationMinutes');
+    expect(await screen.findByRole('alert')).toHaveTextContent('seances[0].durationMinutes');
     expect(screen.getByLabelText('Durée (min)')).toHaveValue(45);
     expect(screen.getByLabelText('Date')).toHaveValue('2026-11-12');
     expect(saved).not.toHaveBeenCalled();

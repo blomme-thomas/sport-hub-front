@@ -115,7 +115,7 @@ Glisser-déposer sur le calendrier (story suivante), création de séance, journ
 
 ## Modifier une séance depuis un fichier JSON (story #134)
 
-Sur une séance planifiée, « Modifier la séance » ouvre une fenêtre avec les champs date, heure de début, durée, discipline et description. Une zone permet de déposer un fichier `.json` ou de coller son contenu, au format `plan-seances` (version 1) contenant **une seule** séance.
+Sur une séance planifiée, « Modifier la séance » ouvre une fenêtre avec les champs date, heure de début, durée, discipline et description. Une zone permet de glisser-déposer un fichier `.json`, au format `plan-seances` (version 1) contenant **une seule** séance.
 
 1. Un JSON valide pré-remplit les champs présents dans le fichier et remplace les modules du brouillon. Rien n'est enregistré à ce stade. Les champs absents (heure, description) gardent leur valeur actuelle.
 2. Un JSON invalide affiche chaque erreur avec son chemin, par exemple `seances[0].modules[1].durationMinutes`, et ne modifie pas le formulaire.

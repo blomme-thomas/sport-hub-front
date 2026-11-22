@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { CreneauxPage } from '../../pages/creneaux.page';
 import { SessionPage } from '../../pages/session.page';
 
@@ -34,6 +34,17 @@ const SINGLE_SESSION = planFile([
   },
 ]);
 
+/** Dépose un fichier `plan-seances` dans la zone de la boîte de dialogue ouverte. */
+async function dropPlan(dialog: Locator, content: string): Promise<void> {
+  const zone = dialog.getByRole('group', { name: /Fichier de séances? \(\.json\)/ });
+  const dataTransfer = await zone.evaluateHandle((_, text) => {
+    const transfer = new DataTransfer();
+    transfer.items.add(new File([text], 'plan.json', { type: 'application/json' }));
+    return transfer;
+  }, content);
+  await zone.dispatchEvent('drop', { dataTransfer });
+}
+
 async function mockCalendar(page: Page): Promise<void> {
   await page.route(SLOTS_URL, (route) => route.fulfill({ json: { from: '', to: '', items: [] } }));
   await page.route(PAUSES_URL, (route) => route.fulfill({ json: { items: [] } }));
@@ -61,7 +72,7 @@ test.describe('Séances préparées en JSON', () => {
     await calendrier.goto();
     await page.getByRole('button', { name: 'Nouvelle séance', exact: true }).click();
     const dialog = page.getByRole('dialog');
-    await dialog.getByLabel('Ou collez le contenu JSON').fill(SINGLE_SESSION);
+    await dropPlan(dialog, SINGLE_SESSION);
 
     await expect(dialog.getByLabel('Discipline')).toHaveValue('running');
     await expect(dialog.getByLabel('Durée (min)')).toHaveValue('50');
@@ -107,7 +118,8 @@ test.describe('Séances préparées en JSON', () => {
     await calendrier.goto();
     await page.getByRole('button', { name: 'Importer des séances', exact: true }).click();
     const dialog = page.getByRole('dialog');
-    await dialog.getByLabel('Ou collez le contenu JSON').fill(
+    await dropPlan(
+      dialog,
       planFile([
         {
           date: '2026-11-25',
@@ -163,7 +175,7 @@ test.describe('Séances préparées en JSON', () => {
     await calendrier.goto();
     await page.getByRole('button', { name: 'Importer des séances', exact: true }).click();
     const dialog = page.getByRole('dialog');
-    await dialog.getByLabel('Ou collez le contenu JSON').fill(SINGLE_SESSION);
+    await dropPlan(dialog, SINGLE_SESSION);
     await dialog.getByRole('button', { name: 'Importer les séances', exact: true }).click();
 
     await expect(dialog.getByRole('alert')).toContainText('aucune séance n’a été créée');
@@ -193,7 +205,7 @@ test.describe('Séances préparées en JSON', () => {
     await calendrier.goto();
     await page.getByRole('button', { name: 'Importer des séances', exact: true }).click();
     const dialog = page.getByRole('dialog');
-    await dialog.getByLabel('Ou collez le contenu JSON').fill(SINGLE_SESSION);
+    await dropPlan(dialog, SINGLE_SESSION);
     await dialog.getByRole('button', { name: 'Importer les séances', exact: true }).click();
 
     await expect(dialog.getByRole('alert')).toContainText('Ce fichier a déjà été importé');
@@ -245,7 +257,7 @@ test.describe('Séances préparées en JSON', () => {
     await expect(fiche.heading).toBeVisible();
     await page.getByRole('button', { name: 'Modifier la séance', exact: true }).click();
     const dialog = page.getByRole('dialog');
-    await dialog.getByLabel('Ou collez le contenu JSON').fill(SINGLE_SESSION);
+    await dropPlan(dialog, SINGLE_SESSION);
     await expect(dialog.getByLabel('Durée (min)')).toHaveValue('50');
     expect(patched).toBeUndefined();
 
