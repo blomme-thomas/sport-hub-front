@@ -1,7 +1,6 @@
 import type { SlotApi } from '../../app/features/creneaux/models/slot.api-model';
 
 /** Lundi de la semaine de référence des fixtures (9 au 15 novembre 2026). */
-export const WEEK_MONDAY = '2026-11-09';
 
 export const libreMardiApi: SlotApi = {
   id: 'slot-libre-mardi',

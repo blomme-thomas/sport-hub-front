@@ -5,7 +5,6 @@ import { dashboardKpisResponse } from '../../../src/mocks/fixtures/dashboard-kpi
 const API_URL = /\/api\//;
 const STATS_URL = /\/api\/stats(\?.*)?$/;
 const KPIS_URL = /\/api\/stats\/dashboard(\?.*)?$/;
-const PROFILE_URL = /\/api\/profile$/;
 
 /** Largeurs de la maquette : mobile étroit, mobile, tablette, desktop étroit, desktop large. */
 const WIDTHS = [360, 768, 1024, 1440];
@@ -16,7 +15,6 @@ test.describe('Tableau de bord : responsive', () => {
     await page.route(API_URL, (route) => route.fulfill({ json: { items: [] } }));
     await page.route(STATS_URL, (route) => route.fulfill({ json: normalStatsResponse }));
     await page.route(KPIS_URL, (route) => route.fulfill({ json: dashboardKpisResponse }));
-    await page.route(PROFILE_URL, (route) => route.fulfill({ json: { displayName: null } }));
   });
 
   for (const width of WIDTHS) {

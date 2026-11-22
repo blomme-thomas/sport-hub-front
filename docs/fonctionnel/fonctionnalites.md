@@ -17,4 +17,4 @@
 | Récupération (`recovery`) | Visualisation de la récupération                     | non démarré |
 | Séances (`workouts`)      | Gestion des entraînements planifiés / générés par IA | non démarré |
 
-Écrans : `/` (tableau de bord, voir le parcours), `/goals` (objectifs, voir le parcours), `/creneaux` (disponibilités, voir le parcours), `/seances/:id` (fiche de séance, voir le parcours), `/parametres` (cible hebdomadaire de la semaine, voir le parcours du tableau de bord). Les autres écrans sont à compléter.
+Écrans : `/` (tableau de bord, voir le parcours), `/goals` (objectifs, voir le parcours), `/creneaux` (disponibilités, voir le parcours), fiche de séance, ouverte en modale depuis le calendrier et le tableau de bord (voir le parcours), `/parametres` (cible hebdomadaire de la semaine, voir le parcours du tableau de bord). Les autres écrans sont à compléter.

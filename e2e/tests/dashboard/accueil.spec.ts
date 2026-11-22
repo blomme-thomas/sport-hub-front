@@ -4,7 +4,6 @@ import { dashboardKpisResponse } from '../../../src/mocks/fixtures/dashboard-kpi
 
 const STATS_URL = /\/api\/stats(\?.*)?$/;
 const KPIS_URL = /\/api\/stats\/dashboard(\?.*)?$/;
-const PROFILE_URL = /\/api\/profile$/;
 const API_URL = /\/api\//;
 
 test.describe('Tableau de bord : sélecteur de période', () => {
@@ -15,7 +14,6 @@ test.describe('Tableau de bord : sélecteur de période', () => {
   });
 
   test('le sélecteur marque la période active et change de période au clic', async ({ page }) => {
-    await page.route(PROFILE_URL, (route) => route.fulfill({ json: { displayName: null } }));
     await page.goto('/');
 
     const sevenDays = page.getByRole('button', { name: 'Semaine en cours' });
@@ -30,7 +28,6 @@ test.describe('Tableau de bord : sélecteur de période', () => {
   });
 
   test('le bouton calendrier est présent mais désactivé', async ({ page }) => {
-    await page.route(PROFILE_URL, (route) => route.fulfill({ json: { displayName: null } }));
     await page.goto('/');
 
     await expect(

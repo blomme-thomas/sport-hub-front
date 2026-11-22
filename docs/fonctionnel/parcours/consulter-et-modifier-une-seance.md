@@ -8,17 +8,16 @@ Ouvrir une séance planifiée pour voir tout ce qu'il faut faire pendant la séa
 
 ## Point d'entrée
 
-- Route `/seances/:id`, chargée en lazy (`features/seances/seances.routes.ts`). Le paramètre `id` est l'identifiant de la séance (`GET /api/sessions/:id`). Titre de page : « Séance ».
-- Pas encore de lien depuis le tableau de bord ni depuis un calendrier : la fiche s'ouvre par son adresse. Les points d'entrée viendront avec les stories de calendrier (#18) et de planning.
+- Ouverture en modale (`SessionModalService`), depuis le calendrier et le tableau de bord ; il n'y a pas de route dédiée. La fiche reçoit l'identifiant de la séance et la charge (`GET /api/sessions/:id`). Titre de la modale : le titre de la séance, à défaut sa discipline.
 - Utilisateur unique, sans authentification.
 
 ## Étapes
 
-1. Ouvrir `/seances/:id`. La page affiche le libellé de la discipline (ou sa clé si le référentiel ne la connaît pas), la date, l'heure de début si elle existe, et le statut (« Planifiée », « Réalisée » ou « Manquée »).
+1. Cliquer sur une séance du calendrier ou du tableau de bord. La fiche affiche le libellé de la discipline (ou sa clé si le référentiel ne la connaît pas), la date, l'heure de début si elle existe, et le statut (« Planifiée », « Réalisée » ou « Manquée »).
 2. Lire les informations : durée prévue, matériel, points d'attention, description.
 3. Lire les modules, dans l'ordre. Chaque module indique son type, sa durée, sa consigne, ses zones cibles (« FC 160–170 · Allure 290–310 ») et son effort visé (« Effort visé : 7/10 »).
 4. Modifier un module : changer son type, sa durée ou sa consigne dans les champs de la ligne.
-5. Réordonner : « Monter » et « Descendre » déplacent le module d'un rang. Le premier ne peut pas monter, le dernier ne peut pas descendre.
+5. Réordonner : glisser un module par sa poignée (⋮⋮) et le déposer à la position voulue. Seule la poignée permet de glisser, pour que les champs restent utilisables.
 6. Ajouter un module : « Ajouter un module » crée une ligne en fin de liste (type « Séries », 10 min, consigne vide à compléter). Jusqu'à 30 modules.
 7. Supprimer un module : « Supprimer » retire la ligne du brouillon.
 8. Enregistrer : « Enregistrer les modifications » envoie la liste complète des modules. Le bouton n'est actif que si la saisie a changé et qu'elle est valide. Au succès, la séance est remplacée par la réponse du back, le message « Séance modifiée. » apparaît et la mention « Modifiée » s'affiche dans l'en-tête.
@@ -50,7 +49,7 @@ Ouvrir une séance planifiée pour voir tout ce qu'il faut faire pendant la séa
 ## Accessibilité
 
 - La liste des modules est une `<ol>` nommée « Modules de la séance ».
-- Chaque champ a un libellé associé (« Type », « Durée (min) », « Consigne »). Les boutons de la ligne portent le numéro du module dans leur nom accessible (« Monter le module 2 »).
+- Chaque champ a un libellé associé (« Type », « Durée (min) », « Consigne »). La poignée de glisser est masquée aux lecteurs d’écran ; le bouton de suppression porte le numéro du module dans son nom accessible (« Supprimer le module 2 »).
 - La mention de lecture seule est un `role="status"`. Les erreurs d'enregistrement sont un `role="alert"`.
 - Le numéro de rang est masqué aux lecteurs d'écran : la position est donnée par l'ordre de la liste.
 
@@ -103,7 +102,6 @@ Quand une activité est liée à la séance, le bloc « Activité réalisée » 
 
 ## Limites connues
 
-- **Pas de lien vers la fiche** : l'ouverture se fait par l'adresse `/seances/:id`.
 - **Libellé de discipline** : chargé depuis `GET /api/disciplines` à l'ouverture. Si ce chargement échoue, la clé brute (par exemple `course_a_pied`) s'affiche.
 - **Unités des zones cibles** : les zones sont affichées sans unité (FC, Allure, Puissance), car le contrat ne précise pas l'unité de l'allure et de la puissance. À confirmer avant d'ajouter une unité.
 - **Consigne vide à la création** : le module ajouté est invalide tant que sa consigne n'est pas renseignée ; c'est le front qui le bloque, le back n'est pas sollicité.

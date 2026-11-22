@@ -41,10 +41,6 @@ export function slotProblem(status: number, code: string, errors?: FieldErrorApi
   );
 }
 
-export function slotValidationProblem(errors: FieldErrorApi[]): Response {
-  return slotProblem(400, 'VALIDATION_FAILED', errors);
-}
-
 /** Intercepte `GET /api/slots` et enregistre les périodes demandées ; par défaut, renvoie les fixtures. */
 export function trackSlotsList(respond?: () => Response | Promise<Response>): URL[] {
   const requests: URL[] = [];

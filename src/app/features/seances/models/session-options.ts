@@ -10,7 +10,6 @@ export const MODULE_TYPE_OPTIONS: readonly { value: ModuleType; label: string }[
 
 export const MAX_MODULES = 30;
 export const MAX_INSTRUCTION_LENGTH = 2000;
-export const MAX_PERCEIVED_EFFORT = 10;
 export {
   MIN_SESSION_DURATION_MINUTES as MIN_DURATION_MINUTES,
   MAX_SESSION_DURATION_MINUTES as MAX_DURATION_MINUTES,
