@@ -95,7 +95,7 @@ En bas du tableau de bord, le bloc « Calendrier » affiche le mois civil : une 
 - **Aujourd’hui** : sa case est pleine, en couleur d'accent, avec `aria-current="date"` (jour local).
 - **Semaine en cours** : ses sept cases ont une teinte légère.
 - **Week-ends** : fond distinct. Les jours hors du mois affiché sont atténués, séances comprises.
-- **Clic sur une icône** : ouvre la fiche de la séance (`/seances/:id`).
+- **Clic sur une icône** : ouvre la fiche de la séance, en modale.
 - **Lecture seule** : rien ne se modifie depuis ce bloc. Les séances réalisées, manquées ou annulées ne sont pas affichées comme séances ; les activités réalisées sont des repères non interactifs.
 - **Indépendant du sélecteur** : la période « Semaine / Mois » du tableau de bord ne change pas ce bloc.
 - **Taille commune** : sur ordinateur, « Détails par activités » et le calendrier ont la même hauteur fixe ; les six semaines y tiennent.
@@ -104,9 +104,9 @@ En bas du tableau de bord, le bloc « Calendrier » affiche le mois civil : une 
 
 Hors scope de ce bloc : détail de la séance (fiche #10), création ou déplacement (calendrier, #46), regroupement des disciplines en familles.
 
-## Message d’accueil et sélecteur de période (story #24)
+## Sélecteur de période (story #24)
 
-L’en-tête affiche « Bonjour {prénom} » (prénom de `GET /api/profile`, « Bonjour » seul si le prénom est absent ou si l’appel échoue), suivi du sous-titre « Voici un aperçu de vos entraînements et de votre progression. ». Le sélecteur propose trois périodes (`aria-pressed` sur le bouton actif) ; la granularité des graphiques en découle : semaines pour 7 et 30 jours, mois pour 3 mois.
+L’en-tête affiche le titre « Tableau de bord » et le sélecteur de période. Le sélecteur propose trois périodes (`aria-pressed` sur le bouton actif) ; la granularité des graphiques en découle : semaines pour 7 et 30 jours, mois pour 3 mois.
 
 ## Métriques liées à la temporalité
 

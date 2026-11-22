@@ -73,7 +73,7 @@ La page `/creneaux`, intitulée « Calendrier », affiche aussi les séances de 
 - Chaque séance avec une heure apparaît dans la case de son jour, à son heure de début, sur la durée prévue. Les séances sans heure ne sont pas placées sur la grille.
 - Une séance porte l'icône et la couleur de sa discipline (correspondance dans `models/discipline-style.ts`). Une discipline absente de la correspondance s'affiche avec une icône neutre. Les clés correspondent au référentiel alimenté par Garmin ; à confirmer sur les données réelles.
 - La légende liste les disciplines présentes sur la semaine, avec leur libellé.
-- Un clic sur une séance ouvre sa fiche (`/seances/:id`). La création, le déplacement et la modification au clic des séances viennent avec les stories #47 à #49.
+- Un clic sur une séance ouvre sa fiche, en modale. La création, le déplacement et la modification au clic des séances viennent avec les stories #47 à #49.
 - Les données viennent de `GET /api/sessions?from&to` (occurrences) et de `GET /api/disciplines`.
 
 ## Coche des séances réalisées (issue #126)
@@ -101,7 +101,7 @@ Une séance réalisée (liée à une activité) affiche une coche verte en haut 
 ## Déplacer ou annuler une seule occurrence d'une séance hebdomadaire (issue #49)
 
 - Glisser une séance hebdomadaire propose : « Cette semaine seulement » (déplacement de cette occurrence, les autres semaines ne bougent pas), « Toute la série » (déplacement de la date d'ancrage et de l'heure) ou « Annuler ».
-- Un clic sur une séance hebdomadaire ouvre un choix : « Ouvrir la fiche », « Annuler cette semaine », ou « Restaurer cette semaine » si elle est déjà annulée.
+- Une séance hebdomadaire porte une icône « Annuler cette semaine » (ou « Restaurer cette semaine » si elle est déjà annulée), à côté de sa corbeille. La corbeille supprime la séance, après confirmation.
 - Une occurrence annulée reste affichée, barrée et en pointillés.
 - Limite : les routes du back s'adressent à la date de programmation de l'occurrence. La liste ne renvoie que la date courante. Une occurrence déjà déplacée ne peut donc pas être annulée, restaurée ni redéplacée tant que la liste n'exposera pas cette date (champ à ajouter côté back).
 - Limite : l'affichage « Déplacée » n'est pas encore présent, faute d'information dans la liste.
