@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../../core/config/api-base-url.token';
 import type { PlanSeanceModule } from '../../../shared/plan-seances/plan-seances.model';
+import type { SessionCarbsUnit } from '../../../shared/nutrition/session-nutrition';
 
 /** Réponse de `POST /api/sessions/import` : nombre de séances créées et leurs identifiants. */
 export interface ImportSessionsResultApi {
@@ -26,6 +27,11 @@ export interface CreateSessionRequestApi {
   title?: string;
   /** Modules pré-remplis depuis un fichier `plan-seances` ; absents pour une création manuelle. */
   modules?: PlanSeanceModule[];
+  /** Cible de glucides en grammes, avec son unité ; absentes si non renseignées. */
+  carbsGrams?: number;
+  carbsUnit?: SessionCarbsUnit;
+  /** Hydratation visée en millilitres, facultative. */
+  hydrationMilliliters?: number;
 }
 
 /** Écriture des séances depuis le calendrier ; les erreurs remontent telles quelles (`AppError` via l'intercepteur). */

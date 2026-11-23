@@ -36,6 +36,11 @@ export function toSession(api: SessionApi, labelOf: (typeKey: string) => string)
     },
     achievement: api.achievement,
     linkedActivity: api.activity,
+    nutrition: {
+      carbsGrams: api.carbsGrams ?? null,
+      carbsUnit: api.carbsUnit ?? null,
+      hydrationMilliliters: api.hydrationMilliliters ?? null,
+    },
   };
 }
 

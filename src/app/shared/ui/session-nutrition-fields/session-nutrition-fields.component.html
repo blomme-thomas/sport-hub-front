@@ -1,0 +1,67 @@
+<fieldset class="session-nutrition" [formGroup]="group()">
+  <legend>{{ t.shared.sessionNutrition.legend }}</legend>
+  <div class="session-nutrition__grid">
+    <div class="session-nutrition__field">
+      <label [for]="idPrefix() + '-carbs-grams'">{{ t.shared.sessionNutrition.carbs }}</label>
+      <input
+        nz-input
+        type="number"
+        step="1"
+        [min]="carbsRange.min"
+        [max]="carbsRange.max"
+        [id]="idPrefix() + '-carbs-grams'"
+        formControlName="carbsGrams"
+        [attr.aria-describedby]="idPrefix() + '-carbs-hint'"
+      />
+      <p class="session-nutrition__hint" [id]="idPrefix() + '-carbs-hint'">
+        {{ t.shared.sessionNutrition.carbsHint }}
+      </p>
+    </div>
+
+    <div class="session-nutrition__field">
+      <label [for]="idPrefix() + '-carbs-unit'">{{ t.shared.sessionNutrition.carbsUnit }}</label>
+      <select
+        class="session-nutrition__select"
+        [id]="idPrefix() + '-carbs-unit'"
+        formControlName="carbsUnit"
+      >
+        <option [ngValue]="null">{{ t.shared.sessionNutrition.carbsUnitNone }}</option>
+        @for (unit of units; track unit) {
+          <option [ngValue]="unit">{{ t.shared.sessionNutrition.carbsUnits[unit] }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="session-nutrition__field">
+      <label [for]="idPrefix() + '-hydration'">{{ t.shared.sessionNutrition.hydration }}</label>
+      <input
+        nz-input
+        type="number"
+        step="1"
+        [min]="hydrationRange.min"
+        [max]="hydrationRange.max"
+        [id]="idPrefix() + '-hydration'"
+        formControlName="hydrationMilliliters"
+        [attr.aria-describedby]="idPrefix() + '-hydration-hint'"
+      />
+      <p class="session-nutrition__hint" [id]="idPrefix() + '-hydration-hint'">
+        {{ t.shared.sessionNutrition.hydrationHint }}
+      </p>
+    </div>
+  </div>
+
+  @if (group().hasError('carbsPair')) {
+    <p class="session-nutrition__error" role="alert">{{ t.shared.sessionNutrition.carbsPair }}</p>
+  }
+  @if (
+    group().controls.carbsGrams.hasError('range') || group().controls.carbsGrams.hasError('integer')
+  ) {
+    <p class="session-nutrition__error">{{ t.shared.sessionNutrition.carbsRange }}</p>
+  }
+  @if (
+    group().controls.hydrationMilliliters.hasError('range') ||
+    group().controls.hydrationMilliliters.hasError('integer')
+  ) {
+    <p class="session-nutrition__error">{{ t.shared.sessionNutrition.hydrationRange }}</p>
+  }
+</fieldset>

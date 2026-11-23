@@ -1,3 +1,5 @@
+import type { SessionNutrition } from '../../../shared/nutrition/session-nutrition';
+
 import type { TargetZonesApi } from './session.api-model';
 
 export type SessionStatus = 'planifiee' | 'realisee' | 'manquee';
@@ -35,6 +37,8 @@ export interface Session {
   objectives: SessionObjectives;
   achievement: SessionAchievement | null;
   linkedActivity: LinkedActivity | null;
+  /** Glucides et hydratation visés pour la séance. */
+  nutrition: SessionNutrition;
 }
 
 /** Objectifs saisis à la création : distance cible et répartition cible par zone (Z1 à Z5, en %). */

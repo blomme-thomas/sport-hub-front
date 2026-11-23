@@ -29,6 +29,7 @@ const SESSION: Session = {
   objectives: { distanceMeters: null, zonePercentages: null },
   achievement: null,
   linkedActivity: null,
+  nutrition: { carbsGrams: null, carbsUnit: null, hydrationMilliliters: null },
 };
 
 const PLAN = JSON.stringify({
@@ -92,6 +93,9 @@ describe('SessionEditFormComponent', () => {
         title: null,
         description: null,
         targetDistanceMeters: null,
+        carbsGrams: null,
+        carbsUnit: null,
+        hydrationMilliliters: null,
       },
       modules: null,
     });
@@ -121,6 +125,9 @@ describe('SessionEditFormComponent', () => {
         title: null,
         description: 'Fond',
         targetDistanceMeters: null,
+        carbsGrams: null,
+        carbsUnit: null,
+        hydrationMilliliters: null,
       },
       modules: [
         {

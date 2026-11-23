@@ -33,6 +33,12 @@ import {
   type ObjectiveErrorKey,
 } from '../../../../shared/utils/session-objectives';
 import type { CreateSessionRequestApi } from '../../data-access/sessions-write.api';
+import { SessionNutritionFieldsComponent } from '../../../../shared/ui/session-nutrition-fields/session-nutrition-fields.component';
+import {
+  createSessionNutritionForm,
+  readSessionNutrition,
+  type SessionNutrition,
+} from '../../../../shared/nutrition/session-nutrition';
 import { fill, TEXTS } from '@shared/texts/texts';
 
 /** Durée proposée quand aucune plage n'est choisie sur la grille. */
@@ -63,6 +69,7 @@ export interface DisciplineOption {
     NzButtonComponent,
     JsonFileInputComponent,
     PlanModulesEditorComponent,
+    SessionNutritionFieldsComponent,
   ],
   templateUrl: './session-form.component.html',
   styleUrl: './session-form.component.scss',
@@ -195,8 +202,15 @@ export class SessionFormComponent implements OnInit {
     return keys.length === 0 ? undefined : new Set(keys.map((option) => option.typeKey));
   }
 
+  /** Glucides et hydratation facultatifs : un groupe à part, lu à l'envoi. */
+  protected readonly nutritionForm = createSessionNutritionForm(inject(FormBuilder));
+
   protected submit(): void {
     this.submitted.set(true);
+    if (this.nutritionForm.invalid) {
+      this.nutritionForm.markAllAsTouched();
+      return;
+    }
     if (this.form.invalid || Object.keys(this.computeObjectiveErrors()).length > 0) {
       this.form.markAllAsTouched();
       return;
@@ -219,8 +233,23 @@ export class SessionFormComponent implements OnInit {
       title: value.title.trim() || undefined,
       description: value.description.trim() || undefined,
       ...(modules.length > 0 && { modules: [...modules] }),
+      ...nutritionOf(readSessionNutrition(this.nutritionForm)),
     });
   }
+}
+
+/** Champs de nutrition envoyés seulement quand ils sont renseignés : la création les attend facultatifs. */
+function nutritionOf(nutrition: SessionNutrition): Partial<CreateSessionRequestApi> {
+  return {
+    ...(nutrition.carbsGrams !== null &&
+      nutrition.carbsUnit !== null && {
+        carbsGrams: nutrition.carbsGrams,
+        carbsUnit: nutrition.carbsUnit,
+      }),
+    ...(nutrition.hydrationMilliliters !== null && {
+      hydrationMilliliters: nutrition.hydrationMilliliters,
+    }),
+  };
 }
 
 /** Écart en minutes entre deux horaires `HH:mm`, ou `null` s'il est absent ou hors des bornes d'une séance. */

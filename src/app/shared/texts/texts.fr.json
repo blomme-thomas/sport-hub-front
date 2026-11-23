@@ -905,6 +905,22 @@
       "zonesTotal": "les zones doivent totaliser 100 %",
       "required": "champ obligatoire",
       "unknownField": "champ absent du format plan-seances"
+    },
+    "sessionNutrition": {
+      "legend": "Nutrition",
+      "carbs": "Glucides (g)",
+      "carbsUnit": "Unité des glucides",
+      "carbsUnitNone": "Non renseignée",
+      "carbsUnits": {
+        "par_heure": "Par heure",
+        "pour_la_seance": "Pour la séance"
+      },
+      "carbsHint": "Cible de la séance, en grammes.",
+      "hydration": "Hydratation (ml)",
+      "hydrationHint": "Pour la séance entière.",
+      "carbsPair": "Renseignez les glucides et leur unité ensemble.",
+      "carbsRange": "Glucides : nombre entier de 1 à 1000 grammes.",
+      "hydrationRange": "Hydratation : nombre entier de 1 à 20000 millilitres."
     }
   }
 }

@@ -22,6 +22,12 @@ import type {
   PlanSeanceModule,
 } from '../../../../shared/plan-seances/plan-seances.model';
 import { PlanModulesEditorComponent } from '../../../../shared/ui/plan-modules-editor/plan-modules-editor.component';
+import {
+  createSessionNutritionForm,
+  patchSessionNutrition,
+  readSessionNutrition,
+} from '../../../../shared/nutrition/session-nutrition';
+import { SessionNutritionFieldsComponent } from '../../../../shared/ui/session-nutrition-fields/session-nutrition-fields.component';
 import { JsonFileInputComponent } from '../../../../shared/ui/json-file-input/json-file-input.component';
 import {
   MAX_SESSION_DURATION_MINUTES as MAX_DURATION_MINUTES,
@@ -69,6 +75,7 @@ export interface SessionDetailsSave {
     NzButtonComponent,
     JsonFileInputComponent,
     PlanModulesEditorComponent,
+    SessionNutritionFieldsComponent,
   ],
   templateUrl: './session-edit-form.component.html',
   styleUrl: './session-edit-form.component.scss',
@@ -111,6 +118,9 @@ export class SessionEditFormComponent implements OnInit {
     }),
     description: this.fb.control('', [Validators.maxLength(DESCRIPTION_MAX_LENGTH)]),
   });
+
+  /** Glucides et hydratation : groupe à part, relu à l'ouverture et à l'envoi. */
+  protected readonly nutritionForm = createSessionNutritionForm(inject(FormBuilder));
 
   protected readonly zoneFields = [
     { key: 'z1', label: TEXTS.seances.edit.zones.z1 },
@@ -165,6 +175,7 @@ export class SessionEditFormComponent implements OnInit {
 
   ngOnInit(): void {
     const session = this.session();
+    patchSessionNutrition(this.nutritionForm, session.nutrition);
     this.form.setValue({
       date: session.date,
       startTime: session.startTime,
@@ -217,6 +228,10 @@ export class SessionEditFormComponent implements OnInit {
   }
 
   protected submit(): void {
+    if (this.nutritionForm.invalid) {
+      this.nutritionForm.markAllAsTouched();
+      return;
+    }
     if (this.form.invalid || this.modulesInvalid() || this.zonesInvalid()) {
       this.form.markAllAsTouched();
       return;
@@ -239,6 +254,8 @@ export class SessionEditFormComponent implements OnInit {
           value.distanceKm === null ? null : Math.round(value.distanceKm * 1000),
         // Zones à 0 partout : répartition inchangée (le back n'accepte pas de la vider).
         ...(this.zoneTotal() === 100 && { targetHrZonePercentages: zones }),
+        // Champs vides : envoyés à null, ce qui efface la valeur enregistrée.
+        ...readSessionNutrition(this.nutritionForm),
       },
       modules: modules === null ? null : [...modules],
     });
