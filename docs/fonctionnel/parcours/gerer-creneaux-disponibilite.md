@@ -70,7 +70,7 @@ Génération de séances à partir des créneaux (story à venir), déplacement 
 
 La page `/creneaux`, intitulée « Calendrier », affiche aussi les séances de la semaine :
 
-- Chaque séance avec une heure apparaît dans la case de son jour, à son heure de début, sur la durée prévue. Les séances sans heure ne sont pas placées sur la grille.
+- Chaque séance apparaît dans la case de son jour, à son heure de début, sur la durée prévue. L'heure est obligatoire à la création, à l'import et dans la fiche de séance.
 - Une séance porte l'icône et la couleur de sa discipline (correspondance dans `models/discipline-style.ts`). Une discipline absente de la correspondance s'affiche avec une icône neutre. Les clés correspondent au référentiel alimenté par Garmin ; à confirmer sur les données réelles.
 - La légende liste les disciplines présentes sur la semaine, avec leur libellé.
 - Un clic sur une séance ouvre sa fiche, en modale. La création, le déplacement et la modification au clic des séances viennent avec les stories #47 à #49.

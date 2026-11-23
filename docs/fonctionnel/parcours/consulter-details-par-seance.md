@@ -9,6 +9,7 @@ Voir d'un coup d'œil les dernières séances réalisées, avec leur fréquence 
 ## Point d'entrée
 
 - Carte « Détails par activités » sur le tableau de bord (`features/dashboard/components/recent-activities-card/recent-activities-card.component.ts`).
+- Carte « Séances programmées » sur le tableau de bord (`features/dashboard/components/upcoming-sessions-card/upcoming-sessions-card.component.ts`) : un clic ouvre la fiche de la séance.
 
 ## Étapes
 
