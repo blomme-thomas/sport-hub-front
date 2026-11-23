@@ -35,7 +35,9 @@ export interface SessionApi {
   date: string;
   disciplineTypeKey: string;
   durationMinutes: number;
-  startTime: string | null;
+  startTime: string;
+  /** Récurrence de la série : `aucune` ou `hebdomadaire`. */
+  recurrence: string;
   status: SessionStatusApi;
   modifiedManually: boolean;
   description: string | null;
@@ -88,12 +90,12 @@ export interface DisciplineListResponseApi {
   items: DisciplineApi[];
 }
 
-/** Corps de `PATCH /api/sessions/:id` : seuls les champs envoyés sont modifiés ; `null` efface startTime ou description. */
+/** Corps de `PATCH /api/sessions/:id` : seuls les champs envoyés sont modifiés ; `null` efface la description (l’heure ne s’efface pas). */
 export interface UpdateSessionRequestApi {
   date?: string;
   disciplineTypeKey?: string;
   durationMinutes?: number;
-  startTime?: string | null;
+  startTime?: string;
   title?: string | null;
   description?: string | null;
   /** Distance cible en mètres ; `null` efface. */

@@ -265,15 +265,52 @@ describe('SessionState.saveDetails', () => {
     const modules = trackModulesReplace();
 
     const saved = await state.saveDetails(
-      { date: '2026-11-20', startTime: null, description: null },
+      { date: '2026-11-20', startTime: '18:00', description: null },
       null,
     );
 
     expect(saved).toBe(true);
-    expect(patches).toEqual([{ date: '2026-11-20', startTime: null, description: null }]);
+    expect(patches).toEqual([{ date: '2026-11-20', startTime: '18:00', description: null }]);
     expect(modules).toEqual([]);
     expect(state.session()?.date).toBe('2026-11-20');
-    expect(state.session()?.startTime).toBeNull();
+    expect(state.session()?.startTime).toBe('18:00');
+  });
+
+  it('supprime la séance et renvoie true', async () => {
+    const state = await loaded();
+    let deletedId: string | null = null;
+    server.use(
+      http.delete(`${SESSIONS_URL}/:id`, ({ params }) => {
+        deletedId = String(params['id']);
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+
+    expect(await state.delete()).toBe(true);
+    expect(deletedId).toBe(sessionApi.id);
+    expect(state.saveError()).toBeNull();
+  });
+
+  it('garde la séance et conserve l’erreur quand la suppression échoue', async () => {
+    const state = await loaded();
+    server.use(
+      http.delete(`${SESSIONS_URL}/:id`, () =>
+        HttpResponse.json(
+          {
+            type: 'urn:sport-hub:problem:internal',
+            title: 'Erreur',
+            status: 500,
+            detail: 'Erreur',
+            code: 'INTERNAL',
+          },
+          { status: 500, headers: { 'Content-Type': 'application/problem+json' } },
+        ),
+      ),
+    );
+
+    expect(await state.delete()).toBe(false);
+    expect(state.session()?.id).toBe(sessionApi.id);
+    expect(state.saveError()).not.toBeNull();
   });
 
   it('enregistre les champs puis remplace les modules par ceux du fichier', async () => {

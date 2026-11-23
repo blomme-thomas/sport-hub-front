@@ -1,11 +1,11 @@
 import type { DisciplineStyle } from '../../../shared/ui/discipline/discipline-style';
 import { TEXTS } from '@shared/texts/texts';
 
-/** Séance planifiée affichée dans le mini-calendrier. `startTime` est `null` si la séance n'a pas d'heure. */
+/** Séance planifiée affichée dans le mini-calendrier. `startTime` est toujours renseignée (`HH:mm`). */
 export interface WeekMiniSession {
   id: string;
   date: string;
-  startTime: string | null;
+  startTime: string;
   disciplineTypeKey: string;
   /** Libellé du référentiel pour le type de la séance, renseigné par l'état. */
   disciplineLabel?: string;

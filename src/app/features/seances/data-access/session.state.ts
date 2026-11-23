@@ -240,6 +240,25 @@ export class SessionState {
     }
   }
 
+  /** Supprime la séance (et sa série si elle est récurrente). `false` et erreur conservée en cas d'échec. */
+  async delete(): Promise<boolean> {
+    const session = this.sessionValue();
+    if (session === null || this.savingValue()) {
+      return false;
+    }
+    this.savingValue.set(true);
+    this.saveErrorValue.set(null);
+    try {
+      await firstValueFrom(this.sessionsApi.delete(session.id));
+      return true;
+    } catch (error) {
+      this.saveErrorValue.set(asAppError(error));
+      return false;
+    } finally {
+      this.savingValue.set(false);
+    }
+  }
+
   /**
    * Télécharge le JSON de la séance avec son activité réalisée. Sans activité liée, ne fait rien.
    * Une erreur (réseau, 404) est notifiée par l'intercepteur HTTP ; l'écran reste affiché.

@@ -35,7 +35,7 @@ describe('SessionOccurrencesApi', () => {
     expect(query?.get('to')).toBe('2026-11-15');
   });
 
-  it('écarte les séances sans heure, qui ne se placent pas sur la grille', async () => {
+  it('garde chaque séance avec son heure de début', async () => {
     server.use(
       http.get(SESSIONS_URL, () =>
         HttpResponse.json({
@@ -49,15 +49,6 @@ describe('SessionOccurrencesApi', () => {
               recurrence: 'aucune',
               status: 'planifiee',
             },
-            {
-              sessionId: 'session-sans-heure',
-              date: '2026-11-12',
-              startTime: null,
-              durationMinutes: 30,
-              disciplineTypeKey: 'running',
-              recurrence: 'aucune',
-              status: 'planifiee',
-            },
           ],
         }),
       ),
@@ -65,6 +56,8 @@ describe('SessionOccurrencesApi', () => {
 
     const occurrences = await firstValueFrom(setup().list('2026-11-09', '2026-11-15'));
 
-    expect(occurrences.map((occurrence) => occurrence.id)).toEqual(['session-avec-heure']);
+    expect(occurrences).toEqual([
+      expect.objectContaining({ id: 'session-avec-heure', startTime: '18:00' }),
+    ]);
   });
 });

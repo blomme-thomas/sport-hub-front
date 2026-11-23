@@ -47,11 +47,7 @@
   margin-bottom: var(--dashboard-gap);
 }
 
-.dashboard__recent {
-  width: 100%;
-}
-
-/* Détails par activités et mini-calendrier : même taille fixe sur ordinateur, quelle que soit la vue. */
+/* Détails par activités, séances programmées et mini-calendrier : même hauteur fixe sur ordinateur, quelle que soit la vue. */
 .dashboard__row {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -60,6 +56,7 @@
 }
 
 .dashboard__recent,
+.dashboard__upcoming,
 .dashboard__week {
   width: 100%;
   height: 100%;
@@ -68,7 +65,8 @@
 
 @media (min-width: 768px) {
   .dashboard__row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* Détails par activités et séances programmées : chacune la moitié du mini-calendrier, qui occupe la moitié de la rangée. */
+    grid-template-columns: minmax(0, 0.5fr) minmax(0, 0.5fr) minmax(0, 1fr);
     height: var(--dashboard-row-height);
   }
 }

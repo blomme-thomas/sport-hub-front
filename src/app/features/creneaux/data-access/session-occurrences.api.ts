@@ -9,8 +9,8 @@ import type {
 import type { SessionOccurrence } from '../models/session-occurrence.model';
 
 /**
- * Lecture des séances pour le calendrier : occurrences d'une période. Les séances sans heure sont écartées,
- * car elles ne peuvent pas être placées sur la grille.
+ * Lecture des séances pour le calendrier : occurrences d'une période. Chaque séance a une heure de début,
+ * obligatoire à la création ; elle se place donc toujours sur la grille.
  */
 @Injectable({ providedIn: 'root' })
 export class SessionOccurrencesApi {
@@ -21,24 +21,19 @@ export class SessionOccurrencesApi {
     const params = new HttpParams({ fromObject: { from, to } });
     return this.http
       .get<SessionOccurrencesResponseApi>(`${this.baseUrl}/sessions`, { params })
-      .pipe(map((response) => response.items.flatMap(toOccurrence)));
+      .pipe(map((response) => response.items.map(toOccurrence)));
   }
 }
 
-function toOccurrence(api: SessionOccurrenceApi): SessionOccurrence[] {
-  if (api.startTime === null) {
-    return [];
-  }
-  return [
-    {
-      id: api.sessionId,
-      title: api.title,
-      date: api.date,
-      startTime: api.startTime,
-      durationMinutes: api.durationMinutes,
-      disciplineTypeKey: api.disciplineTypeKey,
-      recurrence: api.recurrence,
-      status: api.status,
-    },
-  ];
+function toOccurrence(api: SessionOccurrenceApi): SessionOccurrence {
+  return {
+    id: api.sessionId,
+    title: api.title,
+    date: api.date,
+    startTime: api.startTime,
+    durationMinutes: api.durationMinutes,
+    disciplineTypeKey: api.disciplineTypeKey,
+    recurrence: api.recurrence,
+    status: api.status,
+  };
 }

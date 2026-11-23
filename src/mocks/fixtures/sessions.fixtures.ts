@@ -40,6 +40,7 @@ export const sessionApi: SessionApi = {
   disciplineTypeKey: 'course_a_pied',
   durationMinutes: 45,
   startTime: '18:00',
+  recurrence: 'aucune',
   status: 'planifiee',
   modifiedManually: false,
   description: null,

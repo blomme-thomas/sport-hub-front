@@ -154,7 +154,6 @@
       "realized": "Réalisé : {label}",
       "openDay": "Ouvrir le jour {date}",
       "session": "Séance {discipline}, {time}. Ouvrir la séance",
-      "noTime": "sans heure",
       "weekdays": ["Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim."],
       "title": "Ce mois"
     },
@@ -178,6 +177,12 @@
       "heartRateLabel": "Fréquence cardiaque, {type}",
       "list": "Séances récentes, défilables",
       "none": "Aucune séance récente"
+    },
+    "upcoming": {
+      "heading": "Séances programmées",
+      "detailLabel": "Séance {type} le {date} à {time}. Ouvrir la séance",
+      "list": "Séances programmées, défilables",
+      "none": "Aucune séance programmée à venir"
     },
     "chart": {
       "expand": "Agrandir le graphique : {title}",
@@ -217,7 +222,6 @@
       "calories": "Calories",
       "typeLabel": "Type",
       "perKm": "{value} /km",
-      "noSample": "Sans heure",
       "hoursMinutes": "{hours}h {minutes}"
     },
     "day": {
@@ -432,7 +436,8 @@
     "actions": {
       "edit": "Modifier la séance",
       "revert": "Annuler les modifications",
-      "save": "Enregistrer les modifications"
+      "save": "Enregistrer les modifications",
+      "delete": "Supprimer la séance"
     },
     "info": {
       "heading": "Informations",

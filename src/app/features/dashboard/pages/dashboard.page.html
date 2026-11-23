@@ -76,6 +76,15 @@
       <p class="dashboard__loading">{{ t.common.loading }}</p>
     }
 
+    <sh-upcoming-sessions-card
+      class="dashboard__upcoming"
+      [sessions]="upcoming.sessions()"
+      [error]="upcoming.error()"
+      [loading]="upcoming.isLoading()"
+      (retry)="upcoming.reload()"
+      (opened)="openSession($event)"
+    />
+
     <sh-week-mini-calendar
       class="dashboard__week"
       [days]="miniCalendar.days()"

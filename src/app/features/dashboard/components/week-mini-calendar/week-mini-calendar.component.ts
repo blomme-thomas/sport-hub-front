@@ -68,8 +68,7 @@ export class WeekMiniCalendarComponent {
   /** Libellé accessible d'une séance : discipline, heure, puis action. */
   protected labelOf(session: WeekMiniSession): string {
     const discipline = session.disciplineLabel ?? this.labelOfKey(session.disciplineTypeKey);
-    const time = session.startTime ?? TEXTS.dashboard.miniCalendar.noTime;
-    return fill(TEXTS.dashboard.miniCalendar.session, { discipline, time });
+    return fill(TEXTS.dashboard.miniCalendar.session, { discipline, time: session.startTime });
   }
 
   /** Libellé du référentiel pour une clé, ou la clé brute si la légende ne la connaît pas. */

@@ -50,13 +50,22 @@
             }}</span>
           }
         </div>
-        @if (!state.readOnly()) {
-          <div class="session__header-actions">
+        <div class="session__header-actions">
+          @if (!state.readOnly()) {
             <button nz-button type="button" (click)="openEdit()">
               {{ t.seances.actions.edit }}
             </button>
-          </div>
-        }
+          }
+          <button
+            nz-button
+            nzDanger
+            type="button"
+            [disabled]="state.saving()"
+            (click)="confirmDelete()"
+          >
+            {{ t.seances.actions.delete }}
+          </button>
+        </div>
       </header>
 
       <section class="session__section" aria-labelledby="session-info-heading">

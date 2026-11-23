@@ -3,8 +3,8 @@ export interface SessionOccurrenceApi {
   sessionId: string;
   title: string | null;
   date: string;
-  /** Heure `HH:mm`, `null` si la séance n'a pas d'heure (elle n'apparaît pas sur la grille). */
-  startTime: string | null;
+  /** Heure de début `HH:mm`, obligatoire. */
+  startTime: string;
   durationMinutes: number;
   disciplineTypeKey: string;
   recurrence: string;

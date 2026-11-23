@@ -1,0 +1,46 @@
+<section class="upcoming" aria-labelledby="upcoming-heading" [attr.aria-busy]="loading()">
+  <h2 id="upcoming-heading" class="upcoming__heading">
+    <sh-icon name="calendar" color="var(--sh-success)" />
+    <span>{{ t.dashboard.upcoming.heading }}</span>
+  </h2>
+
+  @if (error(); as failure) {
+    <div class="upcoming__error" role="alert">
+      <p>{{ failure.userMessage }}</p>
+      <button nz-button nzType="primary" type="button" (click)="retry.emit()">
+        {{ t.common.retry }}
+      </button>
+    </div>
+  } @else if (sessions() === undefined) {
+    <p class="upcoming__status">{{ t.common.loading }}</p>
+  } @else if (sessions(); as list) {
+    @if (list.length === 0) {
+      <p class="upcoming__status">{{ t.dashboard.upcoming.none }}</p>
+    } @else {
+      <ul class="upcoming__list" tabindex="0" [attr.aria-label]="t.dashboard.upcoming.list">
+        @for (session of list; track session.id) {
+          <li>
+            <button
+              type="button"
+              class="upcoming__item"
+              [attr.aria-label]="session.ariaLabel"
+              (click)="opened.emit(session.id)"
+            >
+              <span class="upcoming__when">
+                <span class="upcoming__date">{{ session.dateLabel }}</span>
+                <span class="upcoming__time">{{ session.timeLabel }}</span>
+              </span>
+              <span class="upcoming__main">
+                <span class="upcoming__type">{{ session.typeLabel }}</span>
+                @if (session.title; as title) {
+                  <span class="upcoming__title">{{ title }}</span>
+                }
+              </span>
+              <span class="upcoming__duration">{{ session.durationLabel }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

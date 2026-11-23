@@ -80,7 +80,7 @@ export class WeekMiniCalendarState {
       date,
       inPeriod: date >= start && date <= end,
       sessions: [...(byDate.get(date) ?? [])]
-        .sort((a, b) => (a.startTime ?? '').localeCompare(b.startTime ?? ''))
+        .sort((a, b) => a.startTime.localeCompare(b.startTime))
         .map((session) => ({
           ...session,
           disciplineLabel: this.disciplineLabelOf(session.disciplineTypeKey),

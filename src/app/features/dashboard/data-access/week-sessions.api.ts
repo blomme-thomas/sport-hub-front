@@ -7,7 +7,7 @@ import type { WeekMiniDiscipline, WeekMiniSession } from '../models/week-mini-ca
 interface SessionOccurrenceApi {
   sessionId: string;
   date: string;
-  startTime: string | null;
+  startTime: string;
   disciplineTypeKey: string;
   status: string;
 }

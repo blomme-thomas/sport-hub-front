@@ -24,6 +24,7 @@ export function toSession(api: SessionApi, labelOf: (typeKey: string) => string)
     disciplineLabel: labelOf(api.disciplineTypeKey),
     durationMinutes: api.durationMinutes,
     startTime: api.startTime,
+    recurrence: api.recurrence,
     status: api.status,
     modifiedManually: api.modifiedManually,
     description: api.description,

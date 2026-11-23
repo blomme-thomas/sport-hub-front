@@ -19,7 +19,7 @@ function settle(assertion: () => void): Promise<void> {
   });
 }
 
-function sessionOccurrence(sessionId: string, date: string, startTime: string | null) {
+function sessionOccurrence(sessionId: string, date: string, startTime: string) {
   return {
     sessionId,
     date,
@@ -75,7 +75,7 @@ describe('SlotsState (calendrier)', () => {
       HttpResponse.json({
         items: [
           sessionOccurrence('session-a', '2026-11-03', '18:00'),
-          sessionOccurrence('session-b', '2026-11-03', null),
+          sessionOccurrence('session-b', '2026-11-04', '09:00'),
         ],
       }),
     );
@@ -84,7 +84,9 @@ describe('SlotsState (calendrier)', () => {
 
     await settle(() => expect(state.isLoading()).toBe(false));
     const tuesday = state.days().find((day) => day.date === '2026-11-03');
+    const wednesday = state.days().find((day) => day.date === '2026-11-04');
     expect(tuesday?.sessions.map((session) => session.id)).toEqual(['session-a']);
+    expect(wednesday?.sessions.map((session) => session.id)).toEqual(['session-b']);
     expect(tuesday?.slots).toEqual([]);
     expect(state.days()).toHaveLength(7);
   });
