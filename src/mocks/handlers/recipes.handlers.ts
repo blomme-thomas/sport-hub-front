@@ -1,5 +1,15 @@
 import { http, HttpResponse } from 'msw';
+import type {
+  RecipeApi,
+  RecipeDetailApi,
+  RecipeRequestApi,
+} from '../../app/features/nutrition/models/recipe.api-model';
 import { recipeDetailFixtures, recipesFixtures } from '../fixtures/recipes.fixtures';
+
+let recipes: RecipeApi[] = structuredClone(recipesFixtures);
+let details: RecipeDetailApi[] = structuredClone(recipeDetailFixtures);
+
+const EMPTY_TOTALS = { calories: 0, proteins: 0, carbohydrates: 0, fats: 0, sugars: 0 };
 
 function recipeNotFound(): Response {
   return HttpResponse.json(
@@ -16,10 +26,37 @@ function recipeNotFound(): Response {
   );
 }
 
+/** Synthèse de test : les totaux réels sont calculés par le back ; le mock renvoie des zéros. */
+function toDetail(recipe: RecipeApi): RecipeDetailApi {
+  return {
+    ...recipe,
+    nutrition: { totals: EMPTY_TOTALS, byComponent: {}, ignored: [] },
+  };
+}
+
 export const recipesHandlers = [
-  http.get('*/api/recipes', () => HttpResponse.json(recipesFixtures)),
+  http.get('*/api/recipes', () => HttpResponse.json(recipes)),
   http.get('*/api/recipes/:id', ({ params }) => {
-    const detail = recipeDetailFixtures.find((recipe) => recipe.id === String(params['id']));
+    const detail = details.find((recipe) => recipe.id === String(params['id']));
     return detail ? HttpResponse.json(detail) : recipeNotFound();
+  }),
+  http.post('*/api/recipes', async ({ request }) => {
+    const body = (await request.json()) as RecipeRequestApi;
+    const created: RecipeApi = { id: crypto.randomUUID(), ...body };
+    recipes = [...recipes, created];
+    details = [...details, toDetail(created)];
+    return HttpResponse.json(created, { status: 201 });
+  }),
+  http.patch('*/api/recipes/:id', async ({ params, request }) => {
+    const id = String(params['id']);
+    const current = recipes.find((recipe) => recipe.id === id);
+    if (!current) {
+      return recipeNotFound();
+    }
+    const body = (await request.json()) as RecipeRequestApi;
+    const updated: RecipeApi = { ...current, ...body };
+    recipes = recipes.map((recipe) => (recipe.id === id ? updated : recipe));
+    details = details.map((recipe) => (recipe.id === id ? toDetail(updated) : recipe));
+    return HttpResponse.json(updated);
   }),
 ];

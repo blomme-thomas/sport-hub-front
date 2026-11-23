@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { API_BASE_URL } from '../../../core/config/api-base-url.token';
-import type { RecipeApi, RecipeDetailApi } from '../models/recipe.api-model';
+import type { RecipeApi, RecipeDetailApi, RecipeRequestApi } from '../models/recipe.api-model';
 import type { Recipe, RecipeDetail } from '../models/recipe.model';
 import { toRecipe, toRecipeDetail } from './recipe.mapper';
 
@@ -24,5 +24,15 @@ export class RecipesApi {
     return this.http
       .get<RecipeDetailApi>(`${this.baseUrl}/recipes/${encodeURIComponent(id)}`)
       .pipe(map(toRecipeDetail));
+  }
+
+  create(body: RecipeRequestApi): Observable<Recipe> {
+    return this.http.post<RecipeApi>(`${this.baseUrl}/recipes`, body).pipe(map(toRecipe));
+  }
+
+  update(id: string, body: RecipeRequestApi): Observable<Recipe> {
+    return this.http
+      .patch<RecipeApi>(`${this.baseUrl}/recipes/${encodeURIComponent(id)}`, body)
+      .pipe(map(toRecipe));
   }
 }

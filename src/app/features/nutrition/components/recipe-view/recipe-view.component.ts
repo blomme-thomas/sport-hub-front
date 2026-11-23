@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { TEXTS, fill } from '@shared/texts/texts';
 import { formatNutrient } from '@shared/utils/nutrient-format';
 import type { Food } from '../../models/food.model';
@@ -21,6 +22,7 @@ interface CompositionGroup {
 /** Consultation d'une recette : synthèse du back, composition par composant. Lecture seule. */
 @Component({
   selector: 'sh-recipe-view',
+  imports: [NzButtonComponent],
   templateUrl: './recipe-view.component.html',
   styleUrl: './recipe-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +31,8 @@ export class RecipeViewComponent {
   readonly recipe = input.required<RecipeDetail>();
   /** Aliments de la base, pour afficher leur nom ; un aliment inconnu est signalé. */
   readonly foods = input.required<ReadonlyMap<string, Food>>();
+  /** Demande de modification : l'écran ouvre le formulaire à la place de la consultation. */
+  readonly edit = output<RecipeDetail>();
 
   protected readonly t = TEXTS;
   protected readonly fill = fill;

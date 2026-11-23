@@ -34,3 +34,10 @@ export interface RecipeDetail extends Recipe {
   byComponent: Partial<Record<NutritionGroup, NutritionTotals>>;
   ignored: { foodId: string; reason: 'quantity-missing' | 'nutrition-missing' }[];
 }
+
+/** Saisie de création ou de modification ; la composition remplace l'existante. */
+export interface RecipeInput {
+  name: string;
+  mealTags: MealTag[];
+  items: RecipeItem[];
+}

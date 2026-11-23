@@ -85,6 +85,11 @@
   }
 }
 
+.recipe-view__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .recipe-view__quantity {
   color: var(--sh-text-muted);
   white-space: nowrap;

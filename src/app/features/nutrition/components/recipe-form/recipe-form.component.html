@@ -1,0 +1,153 @@
+@if (alertMessages().length > 0) {
+  <div class="recipe-form__alert" role="alert">
+    @for (message of alertMessages(); track $index) {
+      <p>{{ message }}</p>
+    }
+  </div>
+}
+
+<form class="recipe-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="recipe-form__columns">
+    <div class="recipe-form__compose">
+      <div class="recipe-form__field">
+        <label for="recipe-name">{{ t.nutrition.recipes.form.name }}</label>
+        <input
+          nz-input
+          id="recipe-name"
+          formControlName="name"
+          maxlength="200"
+          [attr.aria-describedby]="errorOf('name') ? 'recipe-name-error' : null"
+        />
+        @if (errorOf('name'); as message) {
+          <p id="recipe-name-error" class="recipe-form__error">{{ message }}</p>
+        }
+      </div>
+
+      <fieldset
+        class="recipe-form__fieldset"
+        [attr.aria-describedby]="errorOf('mealTags') ? 'recipe-tags-error' : null"
+      >
+        <legend>{{ t.nutrition.recipes.form.mealTags }}</legend>
+        <div class="recipe-form__checks">
+          @for (mealTag of mealTags; track mealTag) {
+            <label class="recipe-form__check">
+              <input
+                type="checkbox"
+                [checked]="hasMealTag(mealTag)"
+                (change)="toggleMealTag(mealTag, $any($event.target).checked)"
+              />
+              <span>{{ t.nutrition.recipes.mealTags[mealTag] }}</span>
+            </label>
+          }
+        </div>
+        @if (errorOf('mealTags'); as message) {
+          <p id="recipe-tags-error" class="recipe-form__error">{{ message }}</p>
+        }
+      </fieldset>
+
+      @for (group of groups; track group) {
+        <fieldset class="recipe-form__group" [class.recipe-form__group--free]="group === 'libre'">
+          <legend>{{ groupLabel(group) }}</legend>
+
+          @for (row of rows()[group]; track row.key) {
+            <div class="recipe-form__row">
+              <div class="recipe-form__select-wrap">
+                <select
+                  class="recipe-form__select"
+                  [attr.aria-label]="groupLabel(group) + ' : aliment'"
+                  [attr.aria-invalid]="foodErrorOf(row) !== null"
+                  (change)="setFood(group, row.key, $any($event.target).value)"
+                >
+                  <option value="" [selected]="row.foodId === null">
+                    {{ t.nutrition.recipes.form.pickFood }}
+                  </option>
+                  @for (food of optionsByGroup()[group]; track food.id) {
+                    <option [value]="food.id" [selected]="food.id === row.foodId">
+                      {{ food.name }}
+                    </option>
+                  }
+                </select>
+                @if (foodErrorOf(row); as message) {
+                  <p class="recipe-form__error">{{ message }}</p>
+                }
+              </div>
+
+              <div class="recipe-form__quantity-wrap">
+                <input
+                  class="recipe-form__quantity"
+                  type="number"
+                  min="0"
+                  step="any"
+                  [attr.aria-label]="
+                    t.nutrition.recipes.form.quantity + ' (' + (unitOf(row.foodId) || '—') + ')'
+                  "
+                  [value]="row.quantity ?? ''"
+                  (input)="setQuantity(group, row.key, $any($event.target).value)"
+                />
+                <span class="recipe-form__unit">{{ unitOf(row.foodId) }}</span>
+                @if (quantityErrorOf(row); as message) {
+                  <p class="recipe-form__error">{{ message }}</p>
+                }
+              </div>
+
+              <button
+                nz-button
+                type="button"
+                [attr.aria-label]="
+                  fill(t.nutrition.recipes.form.removeFood, {
+                    name: foodById().get(row.foodId ?? '')?.name ?? groupLabel(group),
+                  })
+                "
+                (click)="removeRow(group, row.key)"
+              >
+                ✕
+              </button>
+            </div>
+          }
+
+          <button nz-button type="button" class="recipe-form__add" (click)="addRow(group)">
+            {{ t.nutrition.recipes.form.addFood }}
+          </button>
+        </fieldset>
+      }
+    </div>
+
+    <aside class="recipe-form__summary" aria-labelledby="recipe-summary-heading">
+      <h3 id="recipe-summary-heading">{{ t.nutrition.recipes.form.summary }}</h3>
+      @if (summary(); as s) {
+        <div class="recipe-form__kcal">
+          <span class="recipe-form__kcal-value">{{ s.kcal }}</span>
+          <span>kcal</span>
+        </div>
+        <dl class="recipe-form__macros">
+          <div>
+            <dt>{{ t.nutrition.recipes.view.proteins }}</dt>
+            <dd>{{ s.proteins }}</dd>
+          </div>
+          <div>
+            <dt>{{ t.nutrition.recipes.view.carbohydrates }}</dt>
+            <dd>{{ s.carbohydrates }}</dd>
+          </div>
+          <div>
+            <dt>{{ t.nutrition.recipes.view.fats }}</dt>
+            <dd>{{ s.fats }}</dd>
+          </div>
+        </dl>
+        @if (s.ignored > 0) {
+          <p class="recipe-form__hint">
+            {{ fill(t.nutrition.recipes.view.ignored, { count: s.ignored }) }}
+          </p>
+        }
+      } @else {
+        <p class="recipe-form__hint">{{ t.nutrition.recipes.form.summaryEmpty }}</p>
+      }
+    </aside>
+  </div>
+
+  <div class="recipe-form__actions">
+    <button nz-button type="button" (click)="cancelled.emit()">{{ t.common.cancel }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="submitting()">
+      {{ t.common.save }}
+    </button>
+  </div>
+</form>
