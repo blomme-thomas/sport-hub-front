@@ -1,0 +1,37 @@
+<header class="nutrition__header">
+  <h1 class="nutrition__title">{{ t.nutrition.title }}</h1>
+  <p class="nutrition__subtitle">{{ t.nutrition.subtitle }}</p>
+</header>
+
+<div class="nutrition__tabs" role="tablist" [attr.aria-label]="t.nutrition.tabs.group">
+  @for (tab of tabs; track tab) {
+    <button
+      type="button"
+      role="tab"
+      class="nutrition__tab"
+      [id]="'nutrition-tab-' + tab"
+      [attr.aria-selected]="selected() === tab"
+      [attr.aria-controls]="'nutrition-panel-' + tab"
+      [attr.tabindex]="selected() === tab ? 0 : -1"
+      [class.nutrition__tab--active]="selected() === tab"
+      (click)="select(tab)"
+      (keydown)="onKeydown($event)"
+    >
+      {{ labelOf(tab) }}
+    </button>
+  }
+</div>
+
+@for (tab of tabs; track tab) {
+  @if (selected() === tab) {
+    <section
+      class="nutrition__panel"
+      role="tabpanel"
+      [id]="'nutrition-panel-' + tab"
+      [attr.aria-labelledby]="'nutrition-tab-' + tab"
+      tabindex="0"
+    >
+      <p class="nutrition__placeholder">{{ t.nutrition.placeholder }}</p>
+    </section>
+  }
+}
