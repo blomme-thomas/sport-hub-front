@@ -20,6 +20,7 @@
       "dashboard": "Tableau de bord",
       "goals": "Objectifs",
       "calendar": "Calendrier",
+      "nutrition": "Nutrition",
       "settings": "Paramètres"
     },
     "comingSoon": ["Entraînements", "Statistiques", "Conseils IA"],
@@ -544,9 +545,18 @@
     "new": "Nouvel objectif",
     "empty": "Aucun objectif pour l’instant. Créez votre premier objectif.",
     "sections": {
-      "upcoming": { "heading": "À venir", "empty": "Aucun objectif à venir." },
-      "past": { "heading": "Passés", "empty": "Aucun objectif passé." },
-      "undated": { "heading": "Sans date", "empty": "Aucun objectif sans date." }
+      "upcoming": {
+        "heading": "À venir",
+        "empty": "Aucun objectif à venir."
+      },
+      "past": {
+        "heading": "Passés",
+        "empty": "Aucun objectif passé."
+      },
+      "undated": {
+        "heading": "Sans date",
+        "empty": "Aucun objectif sans date."
+      }
     },
     "form": {
       "newTitle": "Nouvel objectif",
@@ -589,6 +599,16 @@
       "updated": "Objectif modifié.",
       "deleted": "Objectif supprimé."
     }
+  },
+  "nutrition": {
+    "title": "Nutrition",
+    "subtitle": "Gérez vos recettes et votre alimentation",
+    "tabs": {
+      "group": "Sections de la page Nutrition",
+      "recipes": "Mes recettes",
+      "foods": "Mes aliments"
+    },
+    "placeholder": "Contenu bientôt disponible."
   },
   "reglages": {
     "title": "Paramètres",

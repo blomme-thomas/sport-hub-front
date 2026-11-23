@@ -20,6 +20,11 @@ export const routes: Routes = [
       import('./features/creneaux/creneaux.routes').then((m) => m.CRENEAUX_ROUTES),
   },
   {
+    path: 'nutrition',
+    loadChildren: () =>
+      import('./features/nutrition/nutrition.routes').then((m) => m.NUTRITION_ROUTES),
+  },
+  {
     path: 'parametres',
     loadChildren: () =>
       import('./features/reglages/reglages.routes').then((m) => m.REGLAGES_ROUTES),

@@ -71,6 +71,17 @@
         <li>
           <a
             class="shell__link"
+            routerLink="/nutrition"
+            routerLinkActive="shell__link--active"
+            ariaCurrentWhenActive="page"
+            (click)="closeMenu()"
+          >
+            {{ t.shell.menu.nutrition }}
+          </a>
+        </li>
+        <li>
+          <a
+            class="shell__link"
             routerLink="/parametres"
             routerLinkActive="shell__link--active"
             ariaCurrentWhenActive="page"
