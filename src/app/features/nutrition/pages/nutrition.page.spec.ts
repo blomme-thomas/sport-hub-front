@@ -4,12 +4,16 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { apiTestProviders } from '../../../../mocks/api.testing';
 import { NutritionPage } from './nutrition.page';
 
 /** Monte la page via le routeur, comme l'app : l'onglet est lu dans l'URL de navigation. */
 async function setup(url = '/nutrition') {
   TestBed.configureTestingModule({
-    providers: [provideRouter([{ path: 'nutrition', component: NutritionPage }])],
+    providers: [
+      provideRouter([{ path: 'nutrition', component: NutritionPage }]),
+      ...apiTestProviders(),
+    ],
   });
   const harness = await RouterTestingHarness.create(url);
   return {

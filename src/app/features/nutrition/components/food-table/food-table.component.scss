@@ -1,0 +1,85 @@
+:host {
+  display: block;
+}
+
+.food-table__wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+}
+
+.food-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--sh-border);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  thead th {
+    color: var(--sh-text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.food-table__num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.food-table__name {
+  display: block;
+  font-weight: 500;
+}
+
+.food-table__unit {
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+}
+
+.food-table__tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.food-table__tag {
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background: var(--sh-surface-raised);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+
+  &--proteine {
+    color: var(--sh-danger);
+  }
+
+  &--legume {
+    color: var(--sh-success);
+  }
+
+  &--feculent {
+    color: var(--sh-warning);
+  }
+
+  &--autre {
+    color: var(--sh-violet);
+  }
+}
+
+.food-table__actions {
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}

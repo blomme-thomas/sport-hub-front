@@ -608,7 +608,57 @@
       "recipes": "Mes recettes",
       "foods": "Mes aliments"
     },
-    "placeholder": "Contenu bientôt disponible."
+    "placeholder": "Contenu bientôt disponible.",
+    "foods": {
+      "search": "Rechercher un aliment",
+      "searchLabel": "Rechercher un aliment par nom",
+      "add": "Ajouter un aliment",
+      "filters": "Filtrer par catégorie",
+      "all": "Tous",
+      "categories": {
+        "proteine": "Protéines",
+        "legume": "Légumes",
+        "feculent": "Féculents",
+        "autre": "Autres"
+      },
+      "loading": "Chargement des aliments…",
+      "empty": "Aucun aliment ne correspond à votre recherche.",
+      "emptyBase": "Votre base d’aliments est vide. Ajoutez votre premier aliment.",
+      "table": {
+        "caption": "Base d’aliments",
+        "name": "Aliment",
+        "category": "Catégorie",
+        "calories": "Calories",
+        "proteins": "Protéines",
+        "carbohydrates": "Glucides",
+        "fats": "Lipides",
+        "actions": "Actions",
+        "edit": "Modifier",
+        "editLabel": "Modifier {name}",
+        "noValue": "—"
+      },
+      "form": {
+        "newTitle": "Ajouter un aliment",
+        "editTitle": "Modifier l’aliment",
+        "name": "Nom",
+        "unit": "Unité",
+        "unitHint": "Par exemple g, ml ou pièce.",
+        "categories": "Catégories",
+        "nutrition": "Valeurs pour 100 g (facultatives)",
+        "calories": "Calories (kcal)",
+        "proteins": "Protéines (g)",
+        "carbohydrates": "Glucides (g)",
+        "fats": "Lipides (g)",
+        "sugars": "Sucres (g)",
+        "required": "Ce champ est obligatoire.",
+        "categoriesRequired": "Choisissez au moins une catégorie.",
+        "negative": "La valeur ne peut pas être négative."
+      },
+      "messages": {
+        "created": "Aliment ajouté.",
+        "updated": "Aliment modifié."
+      }
+    }
   },
   "reglages": {
     "title": "Paramètres",
