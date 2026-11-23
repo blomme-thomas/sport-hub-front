@@ -45,6 +45,12 @@ import { SessionModalService } from '@core/layout/session-modal.service';
 import { fill, TEXTS } from '@shared/texts/texts';
 import { isoWeekOf } from '@shared/utils/iso-week';
 import { MealDetailComponent } from '../components/meal-detail/meal-detail.component';
+import {
+  formatLongDay,
+  ShoppingListComponent,
+} from '../components/shopping-list/shopping-list.component';
+import { ShoppingListState } from '../data-access/shopping-list.state';
+import type { DateRange } from '../models/shopping-list.model';
 import { RecipeLibraryComponent } from '../components/recipe-library/recipe-library.component';
 import { MealPlanState } from '../data-access/meal-plan.state';
 import { RecipeLibraryState } from '../data-access/recipe-library.state';
@@ -83,11 +89,12 @@ const QUICK_DURATION_STEP = 5;
     MealDetailComponent,
     MealGridComponent,
     RecipeLibraryComponent,
+    ShoppingListComponent,
     WeekGridComponent,
   ],
   templateUrl: './creneaux.page.html',
   styleUrl: './creneaux.page.scss',
-  providers: [SlotsState, PausesState, MealPlanState, RecipeLibraryState],
+  providers: [SlotsState, PausesState, MealPlanState, RecipeLibraryState, ShoppingListState],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreneauxPage {
@@ -108,7 +115,10 @@ export class CreneauxPage {
         return;
       }
       const week = isoWeekOf(this.state.weekStart());
-      untracked(() => void this.mealPlan.load(week));
+      untracked(() => {
+        this.periodSelection.set(null);
+        void this.mealPlan.load(week);
+      });
     });
     effect(() => {
       if (this.mode() === 'alimentation') {
@@ -143,10 +153,49 @@ export class CreneauxPage {
   /** Totaux de la recette de la fiche : `undefined` pendant le chargement, `null` si indisponibles. */
   protected readonly selectedTotals = signal<RecipeTotals | null | undefined>(undefined);
   protected readonly removing = signal(false);
+  /** Liste de courses : période choisie sur la grille, et liste générée pour la modale. */
+  protected readonly shopping = inject(ShoppingListState);
+  protected readonly periodSelection = signal<DateRange | null>(null);
+  protected readonly shoppingOpen = signal(false);
+  protected readonly formatLongDay = formatLongDay;
 
   protected setMode(mode: CalendarMode): void {
     this.mode.set(mode);
     storeCalendarMode(mode);
+  }
+
+  protected onRangeSelected(range: DateRange): void {
+    this.periodSelection.set(range);
+  }
+
+  protected clearSelection(): void {
+    this.periodSelection.set(null);
+    this.shopping.clear();
+  }
+
+  /** Calcule la liste de courses de la période choisie, dans une modale. */
+  protected openShopping(): void {
+    const range = this.periodSelection();
+    if (range === null) {
+      return;
+    }
+    this.shoppingOpen.set(true);
+    void this.shopping.generate(range);
+  }
+
+  protected closeShopping(): void {
+    this.shoppingOpen.set(false);
+    this.shopping.clear();
+  }
+
+  /** Place la liste en texte brut dans le presse-papiers. */
+  protected async copyShopping(text: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text);
+      this.messages.success(this.t.creneaux.shopping.copied);
+    } catch {
+      this.messages.error(this.t.creneaux.shopping.copyFailed);
+    }
   }
 
   protected nameOf(recipeId: string): string {

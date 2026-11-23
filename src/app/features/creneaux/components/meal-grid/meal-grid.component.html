@@ -11,7 +11,15 @@
           <span class="visually-hidden">{{ t.creneaux.meals.corner }}</span>
         </th>
         @for (date of dates(); track date) {
-          <th scope="col" class="meal-grid__day">{{ dayLabel(date) }}</th>
+          <th
+            scope="col"
+            class="meal-grid__day"
+            [class.meal-grid__day--selected]="isInRange(date)"
+            (pointerdown)="startRange($event, date)"
+            (pointerenter)="extendRange(date)"
+          >
+            {{ dayLabel(date) }}
+          </th>
         }
       </tr>
     </thead>
@@ -23,6 +31,7 @@
             <td
               class="meal-grid__cell"
               [class.meal-grid__cell--hover]="isHovered(date, slot)"
+              [class.meal-grid__cell--selected]="isInRange(date)"
               (dragover)="onDragOver($event, date, slot)"
               (dragleave)="onDragLeave(date, slot)"
               (drop)="onDrop($event, date, slot)"

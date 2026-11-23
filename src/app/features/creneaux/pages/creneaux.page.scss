@@ -134,3 +134,31 @@
     outline-offset: 2px;
   }
 }
+
+/* Période choisie sur la grille alimentation, et son aide quand rien n'est choisi. */
+.creneaux__range {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--sh-accent-text);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface-raised);
+
+  p {
+    margin: 0;
+  }
+}
+
+.creneaux__range-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.creneaux__hint {
+  margin: 0;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+}

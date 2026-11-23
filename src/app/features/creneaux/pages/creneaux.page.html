@@ -98,9 +98,33 @@
       [recipeNames]="recipeNames()"
       [canDrop]="canDrop()"
       (placed)="onPlaced($event)"
+      [selectedRange]="periodSelection()"
       (mealSelected)="openMeal($event)"
+      (rangeSelected)="onRangeSelected($event)"
     />
   </div>
+  @if (periodSelection(); as range) {
+    <div class="creneaux__range">
+      <p>
+        {{
+          fill(t.creneaux.shopping.selection, {
+            from: formatLongDay(range.from),
+            to: formatLongDay(range.to),
+          })
+        }}
+      </p>
+      <div class="creneaux__range-actions">
+        <button nz-button type="button" (click)="clearSelection()">
+          {{ t.creneaux.shopping.clear }}
+        </button>
+        <button nz-button nzType="primary" type="button" (click)="openShopping()">
+          {{ t.creneaux.shopping.generate }}
+        </button>
+      </div>
+    </div>
+  } @else if (canDrop()) {
+    <p class="creneaux__hint">{{ t.creneaux.shopping.select }}</p>
+  }
   <sh-recipe-library [recipes]="library.recipes()" [canDrag]="canDrop()" />
 } @else {
   <div
@@ -266,6 +290,22 @@
         {{ t.creneaux.planning.generate }}
       </button>
     </div>
+  </sh-modal>
+}
+
+@if (shoppingOpen() && periodSelection(); as range) {
+  <sh-modal
+    [title]="t.creneaux.shopping.dialogTitle"
+    width="min(640px, 96vw)"
+    (closed)="closeShopping()"
+  >
+    <sh-shopping-list
+      [items]="shopping.items()"
+      [range]="range"
+      [loading]="shopping.isLoading()"
+      [errorMessage]="shopping.error()?.userMessage ?? null"
+      (copyRequested)="copyShopping($event)"
+    />
   </sh-modal>
 }
 
