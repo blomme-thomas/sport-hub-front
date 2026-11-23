@@ -8,6 +8,11 @@ import { mealPlanFixtures } from '../fixtures/meal-plan.fixtures';
 
 let meals: PlannedMealApi[] = structuredClone(mealPlanFixtures);
 
+/** Remet les repas planifiés de test à leur état initial (appelé avant chaque test). */
+export function resetMealPlanMock(): void {
+  meals = structuredClone(mealPlanFixtures);
+}
+
 export const mealPlanHandlers = [
   http.get('*/api/meal-plan', ({ request }) => {
     const week = new URL(request.url).searchParams.get('week') ?? '';

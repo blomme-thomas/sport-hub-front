@@ -9,6 +9,12 @@ import { recipeDetailFixtures, recipesFixtures } from '../fixtures/recipes.fixtu
 let recipes: RecipeApi[] = structuredClone(recipesFixtures);
 let details: RecipeDetailApi[] = structuredClone(recipeDetailFixtures);
 
+/** Remet les recettes de test à leur état initial (appelé avant chaque test). */
+export function resetRecipesMock(): void {
+  recipes = structuredClone(recipesFixtures);
+  details = structuredClone(recipeDetailFixtures);
+}
+
 const EMPTY_TOTALS = { calories: 0, proteins: 0, carbohydrates: 0, fats: 0, sugars: 0 };
 
 function recipeNotFound(): Response {
