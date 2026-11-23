@@ -3,6 +3,7 @@ import { activityCommentsHandlers } from './activity-comments.handlers';
 import { sessionExportsHandlers } from './session-exports.handlers';
 import { dashboardAdviceHandlers } from './dashboard-advice.handlers';
 import { dashboardKpisHandlers } from './dashboard-kpis.handlers';
+import { foodsHandlers } from './foods.handlers';
 import { goalsHandlers } from './goals.handlers';
 import { healthHandlers } from './health.handlers';
 import { heartRateZonesHandlers } from './heart-rate-zones.handlers';
@@ -18,6 +19,7 @@ export const handlers = [
   ...heartRateZonesHandlers,
   ...trainingStatsHandlers,
   ...goalsHandlers,
+  ...foodsHandlers,
   ...slotsHandlers,
   ...sessionsHandlers,
   ...weeklyReviewsHandlers,

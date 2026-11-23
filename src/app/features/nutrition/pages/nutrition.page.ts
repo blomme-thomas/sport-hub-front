@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TEXTS } from '@shared/texts/texts';
+import { FoodsPanelComponent } from '../components/foods-panel/foods-panel.component';
 
 /** Onglets de la page Nutrition. La clé `onglet` de l'URL restaure l'onglet choisi au rechargement. */
 export const NUTRITION_TABS = ['recettes', 'aliments'] as const;
@@ -15,9 +16,10 @@ function tabFromQuery(value: string | null): NutritionTab {
     : DEFAULT_TAB;
 }
 
-/** Page Nutrition : deux onglets, « Mes recettes » et « Mes aliments ». Le contenu des onglets viendra des stories suivantes. */
+/** Page Nutrition : deux onglets, « Mes recettes » et « Mes aliments ». Le contenu de « Mes recettes » viendra avec les stories suivantes. */
 @Component({
   selector: 'sh-nutrition-page',
+  imports: [FoodsPanelComponent],
   templateUrl: './nutrition.page.html',
   styleUrl: './nutrition.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,0 +1,55 @@
+<div class="food-table__wrapper">
+  <table class="food-table">
+    <caption class="visually-hidden">
+      {{
+        t.nutrition.foods.table.caption
+      }}
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">{{ t.nutrition.foods.table.name }}</th>
+        <th scope="col">{{ t.nutrition.foods.table.category }}</th>
+        <th scope="col" class="food-table__num">{{ t.nutrition.foods.table.calories }}</th>
+        <th scope="col" class="food-table__num">{{ t.nutrition.foods.table.proteins }}</th>
+        <th scope="col" class="food-table__num">{{ t.nutrition.foods.table.carbohydrates }}</th>
+        <th scope="col" class="food-table__num">{{ t.nutrition.foods.table.fats }}</th>
+        <th scope="col">
+          <span class="visually-hidden">{{ t.nutrition.foods.table.actions }}</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (food of foods(); track food.id) {
+        <tr>
+          <th scope="row">
+            <span class="food-table__name">{{ food.name }}</span>
+            <span class="food-table__unit">{{ food.unit }}</span>
+          </th>
+          <td>
+            <span class="food-table__tags">
+              @for (category of food.categories; track category) {
+                <span class="food-table__tag food-table__tag--{{ category }}">
+                  {{ categoryLabel(category) }}
+                </span>
+              }
+            </span>
+          </td>
+          <td class="food-table__num">{{ amount(food.calories) }}</td>
+          <td class="food-table__num">{{ amount(food.proteins, 'g') }}</td>
+          <td class="food-table__num">{{ amount(food.carbohydrates, 'g') }}</td>
+          <td class="food-table__num">{{ amount(food.fats, 'g') }}</td>
+          <td class="food-table__actions">
+            <button
+              nz-button
+              type="button"
+              [attr.aria-label]="fill(t.nutrition.foods.table.editLabel, { name: food.name })"
+              (click)="edit.emit(food)"
+            >
+              {{ t.nutrition.foods.table.edit }}
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

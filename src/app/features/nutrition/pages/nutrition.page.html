@@ -31,7 +31,11 @@
       [attr.aria-labelledby]="'nutrition-tab-' + tab"
       tabindex="0"
     >
-      <p class="nutrition__placeholder">{{ t.nutrition.placeholder }}</p>
+      @if (tab === 'aliments') {
+        <sh-foods-panel />
+      } @else {
+        <p class="nutrition__placeholder">{{ t.nutrition.placeholder }}</p>
+      }
     </section>
   }
 }

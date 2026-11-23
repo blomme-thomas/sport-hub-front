@@ -1,0 +1,65 @@
+<div class="foods-panel">
+  <div class="foods-panel__toolbar">
+    <label class="visually-hidden" for="foods-search">{{ t.nutrition.foods.searchLabel }}</label>
+    <input
+      nz-input
+      id="foods-search"
+      type="search"
+      class="foods-panel__search"
+      [placeholder]="t.nutrition.foods.search"
+      [value]="state.search()"
+      (input)="onSearch($event)"
+    />
+    <button nz-button nzType="primary" type="button" (click)="openForm('new')">
+      {{ t.nutrition.foods.add }}
+    </button>
+  </div>
+
+  <div class="foods-panel__filters" role="group" [attr.aria-label]="t.nutrition.foods.filters">
+    <button
+      type="button"
+      class="foods-panel__chip"
+      [attr.aria-pressed]="state.category() === null"
+      (click)="state.selectCategory(null)"
+    >
+      {{ t.nutrition.foods.all }} ({{ state.total() }})
+    </button>
+    @for (category of categories; track category) {
+      <button
+        type="button"
+        class="foods-panel__chip"
+        [attr.aria-pressed]="state.category() === category"
+        (click)="state.selectCategory(category)"
+      >
+        {{ categoryLabel(category) }} ({{ state.counts()[category] }})
+      </button>
+    }
+  </div>
+
+  @if (state.error(); as error) {
+    <div class="foods-panel__error" role="alert">
+      <p>{{ error.userMessage }}</p>
+      <button nz-button type="button" (click)="state.reload()">{{ t.common.retry }}</button>
+    </div>
+  } @else if (state.isLoading()) {
+    <p class="foods-panel__status" aria-live="polite">{{ t.nutrition.foods.loading }}</p>
+  } @else if (state.isEmpty()) {
+    <p class="foods-panel__status">{{ t.nutrition.foods.emptyBase }}</p>
+  } @else if (state.visible().length === 0) {
+    <p class="foods-panel__status">{{ t.nutrition.foods.empty }}</p>
+  } @else {
+    <sh-food-table [foods]="state.visible()" (edit)="openForm($event)" />
+  }
+</div>
+
+@if (editing() !== null) {
+  <sh-modal [title]="formTitle()" (closed)="closeForm()">
+    <sh-food-form
+      [food]="formFood()"
+      [submitting]="state.saving()"
+      [serverError]="formError()"
+      (saved)="onSaved($event)"
+      (cancelled)="closeForm()"
+    />
+  </sh-modal>
+}

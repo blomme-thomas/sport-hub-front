@@ -1,0 +1,89 @@
+@if (alertMessages().length > 0) {
+  <div class="food-form__alert" role="alert">
+    @for (message of alertMessages(); track $index) {
+      <p>{{ message }}</p>
+    }
+  </div>
+}
+
+<form class="food-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="food-form__field">
+    <label for="food-name">{{ t.nutrition.foods.form.name }}</label>
+    <input
+      nz-input
+      id="food-name"
+      formControlName="name"
+      maxlength="200"
+      [attr.aria-describedby]="errorOf('name') ? 'food-name-error' : null"
+    />
+    @if (errorOf('name'); as message) {
+      <p id="food-name-error" class="food-form__error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="food-form__field">
+    <label for="food-unit">{{ t.nutrition.foods.form.unit }}</label>
+    <input
+      nz-input
+      id="food-unit"
+      formControlName="unit"
+      maxlength="20"
+      [attr.aria-describedby]="
+        errorOf('unit') ? 'food-unit-hint food-unit-error' : 'food-unit-hint'
+      "
+    />
+    <p id="food-unit-hint" class="food-form__hint">{{ t.nutrition.foods.form.unitHint }}</p>
+    @if (errorOf('unit'); as message) {
+      <p id="food-unit-error" class="food-form__error">{{ message }}</p>
+    }
+  </div>
+
+  <fieldset
+    class="food-form__fieldset"
+    [attr.aria-describedby]="errorOf('categories') ? 'food-categories-error' : null"
+  >
+    <legend>{{ t.nutrition.foods.form.categories }}</legend>
+    <div class="food-form__checks">
+      @for (category of categories; track category) {
+        <label class="food-form__check">
+          <input
+            type="checkbox"
+            [checked]="hasCategory(category)"
+            (change)="toggleCategory(category, $any($event.target).checked)"
+          />
+          <span>{{ t.nutrition.foods.categories[category] }}</span>
+        </label>
+      }
+    </div>
+    @if (errorOf('categories'); as message) {
+      <p id="food-categories-error" class="food-form__error">{{ message }}</p>
+    }
+  </fieldset>
+
+  <fieldset class="food-form__fieldset">
+    <legend>{{ t.nutrition.foods.form.nutrition }}</legend>
+    <div class="food-form__grid">
+      @for (field of nutritionFields; track field) {
+        <div class="food-form__field">
+          <label [for]="'food-' + field">{{ t.nutrition.foods.form[field] }}</label>
+          <nz-input-number
+            [nzId]="'food-' + field"
+            [formControlName]="field"
+            nzMin="0"
+            [attr.aria-describedby]="errorOf(field) ? 'food-' + field + '-error' : null"
+          />
+          @if (errorOf(field); as message) {
+            <p [id]="'food-' + field + '-error'" class="food-form__error">{{ message }}</p>
+          }
+        </div>
+      }
+    </div>
+  </fieldset>
+
+  <div class="food-form__actions">
+    <button nz-button type="button" (click)="cancelled.emit()">{{ t.common.cancel }}</button>
+    <button nz-button nzType="primary" type="submit" [disabled]="submitting()">
+      {{ t.common.save }}
+    </button>
+  </div>
+</form>
