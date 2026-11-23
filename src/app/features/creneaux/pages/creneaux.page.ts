@@ -43,6 +43,17 @@ import type { Pause, PauseInput } from '../models/pause.model';
 import type { SlotDefaults } from '../models/slot.model';
 import { SessionModalService } from '@core/layout/session-modal.service';
 import { fill, TEXTS } from '@shared/texts/texts';
+import { isoWeekOf } from '@shared/utils/iso-week';
+import { MealDetailComponent } from '../components/meal-detail/meal-detail.component';
+import { RecipeLibraryComponent } from '../components/recipe-library/recipe-library.component';
+import { MealPlanState } from '../data-access/meal-plan.state';
+import { RecipeLibraryState } from '../data-access/recipe-library.state';
+import type { PlacementRequest } from '../components/meal-grid/meal-grid.component';
+import type { PlannedMeal } from '../models/planned-meal.model';
+import type { RecipeTotals } from '../models/library-recipe.model';
+
+/** Au-dessous de ce seuil (même point de rupture que la navigation), le placement des recettes est désactivé. */
+const MOBILE_QUERY = '(max-width: 768px)';
 
 const DEFAULT_START = '09:00';
 const DEFAULT_END = '10:00';
@@ -69,12 +80,14 @@ const QUICK_DURATION_STEP = 5;
     PauseFormComponent,
     SessionFormComponent,
     SessionImportComponent,
+    MealDetailComponent,
     MealGridComponent,
+    RecipeLibraryComponent,
     WeekGridComponent,
   ],
   templateUrl: './creneaux.page.html',
   styleUrl: './creneaux.page.scss',
-  providers: [SlotsState, PausesState],
+  providers: [SlotsState, PausesState, MealPlanState, RecipeLibraryState],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreneauxPage {
@@ -89,6 +102,19 @@ export class CreneauxPage {
       const from = this.state.weekStart();
       void this.pausesState.load(from, addIsoDays(from, WEEK_LAST_OFFSET_DAYS));
     });
+    // Mode alimentation : les repas planifiés suivent la semaine affichée (ISO, lundi à dimanche).
+    effect(() => {
+      if (this.mode() !== 'alimentation') {
+        return;
+      }
+      const week = isoWeekOf(this.state.weekStart());
+      untracked(() => void this.mealPlan.load(week));
+    });
+    effect(() => {
+      if (this.mode() === 'alimentation') {
+        untracked(() => this.library.reload());
+      }
+    });
     // Une séance supprimée depuis sa fiche disparaît de la semaine affichée.
     effect(() => {
       if (this.sessionModal.deletions() > 0) {
@@ -102,9 +128,81 @@ export class CreneauxPage {
   protected readonly modes = CALENDAR_MODES;
   protected readonly weekDates = computed(() => this.state.days().map((day) => day.date));
 
+  /** Repas planifiés et bibliothèque du mode alimentation. */
+  protected readonly mealPlan = inject(MealPlanState);
+  protected readonly library = inject(RecipeLibraryState);
+  protected readonly recipeNames = computed(
+    () => new Map(this.library.recipes().map((recipe) => [recipe.id, recipe.name])),
+  );
+  /** Placement par glisser-déposer : sur ordinateur seulement. */
+  protected readonly canDrop = signal(
+    typeof window.matchMedia === 'function' && !window.matchMedia(MOBILE_QUERY).matches,
+  );
+  /** Repas dont la fiche est ouverte, `null` quand elle est fermée. */
+  protected readonly selectedMeal = signal<PlannedMeal | null>(null);
+  /** Totaux de la recette de la fiche : `undefined` pendant le chargement, `null` si indisponibles. */
+  protected readonly selectedTotals = signal<RecipeTotals | null | undefined>(undefined);
+  protected readonly removing = signal(false);
+
   protected setMode(mode: CalendarMode): void {
     this.mode.set(mode);
     storeCalendarMode(mode);
+  }
+
+  protected nameOf(recipeId: string): string {
+    return this.recipeNames().get(recipeId) ?? this.t.creneaux.placed.unknownRecipe;
+  }
+
+  /** Recette déposée dans une case : enregistrée, puis confirmée. Une erreur est notifiée par l'intercepteur. */
+  protected async onPlaced(request: PlacementRequest): Promise<void> {
+    try {
+      await this.mealPlan.place(request.recipeId, request.date, request.mealTag);
+    } catch {
+      return;
+    }
+    this.messages.success(this.t.creneaux.placed.placed);
+  }
+
+  protected openMeal(meal: PlannedMeal): void {
+    this.selectedMeal.set(meal);
+    this.selectedTotals.set(undefined);
+    // Une réponse arrivée après la fermeture (ou l'ouverture d'une autre fiche) est ignorée.
+    const stillOpen = (): boolean => this.selectedMeal()?.id === meal.id;
+    void this.library.totalsOf(meal.recipeId).then(
+      (totals) => {
+        if (stillOpen()) {
+          this.selectedTotals.set(totals);
+        }
+      },
+      () => {
+        if (stillOpen()) {
+          this.selectedTotals.set(null);
+        }
+      },
+    );
+  }
+
+  protected closeMeal(): void {
+    this.selectedMeal.set(null);
+    this.selectedTotals.set(undefined);
+  }
+
+  /** Retire ce seul repas du planning ; les autres placements de la même recette ne bougent pas. */
+  protected async removeSelected(): Promise<void> {
+    const meal = this.selectedMeal();
+    if (meal === null) {
+      return;
+    }
+    this.removing.set(true);
+    try {
+      await this.mealPlan.remove(meal.id);
+    } catch {
+      return;
+    } finally {
+      this.removing.set(false);
+    }
+    this.closeMeal();
+    this.messages.success(this.t.creneaux.placed.removed);
   }
 
   /** Pause en cours de création (`pauseDraft`) ou de modification (`pauseEditing`), `null` quand la modale est fermée. */

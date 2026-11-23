@@ -435,6 +435,29 @@
       "midi": "Midi",
       "soir": "Soir",
       "cell": "{meal}, {date} : aucun repas"
+    },
+    "library": {
+      "heading": "Mes recettes",
+      "hint": "Glissez une recette dans une case du calendrier.",
+      "mobileHint": "Le placement se fait sur ordinateur. Vous pouvez consulter une recette placée.",
+      "empty": "Aucune recette. Créez-en une dans l’onglet Nutrition.",
+      "list": "Recettes à placer"
+    },
+    "placed": {
+      "open": "Ouvrir {name}",
+      "unknownRecipe": "Recette inconnue",
+      "when": "{date}, {meal}",
+      "totals": "Valeurs nutritionnelles",
+      "loading": "Chargement…",
+      "unavailable": "Valeurs nutritionnelles indisponibles.",
+      "calories": "Calories",
+      "proteins": "Protéines",
+      "carbohydrates": "Glucides",
+      "fats": "Lipides",
+      "noValue": "—",
+      "remove": "Retirer du planning",
+      "placed": "Recette placée.",
+      "removed": "Repas retiré."
     }
   },
   "seances": {
