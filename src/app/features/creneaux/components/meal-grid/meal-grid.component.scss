@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+.meal-grid__wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+}
+
+.meal-grid {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  th,
+  td {
+    border-bottom: 1px solid var(--sh-border);
+    border-left: 1px solid var(--sh-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th:first-child,
+  td:first-child {
+    border-left: none;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.meal-grid__corner {
+  width: 6rem;
+}
+
+.meal-grid__day {
+  padding: 0.75rem 0.5rem;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.meal-grid__meal {
+  padding: 0.75rem;
+  font-weight: 600;
+}
+
+.meal-grid__cell {
+  height: 5.5rem;
+  padding: 0.25rem;
+}

@@ -26,7 +26,14 @@ import {
   type SessionDefaults,
 } from '../components/session-form/session-form.component';
 import { SessionImportComponent } from '../components/session-import/session-import.component';
+import { MealGridComponent } from '../components/meal-grid/meal-grid.component';
 import { type GridMove, WeekGridComponent } from '../components/week-grid/week-grid.component';
+import {
+  CALENDAR_MODES,
+  readStoredCalendarMode,
+  storeCalendarMode,
+  type CalendarMode,
+} from '../models/calendar-mode';
 import { PausesState } from '../data-access/pauses.state';
 import { PlanningApi, type EventGoal } from '../data-access/planning.api';
 import { SessionsWriteApi, type CreateSessionRequestApi } from '../data-access/sessions-write.api';
@@ -62,6 +69,7 @@ const QUICK_DURATION_STEP = 5;
     PauseFormComponent,
     SessionFormComponent,
     SessionImportComponent,
+    MealGridComponent,
     WeekGridComponent,
   ],
   templateUrl: './creneaux.page.html',
@@ -87,6 +95,16 @@ export class CreneauxPage {
         untracked(() => this.state.reload());
       }
     });
+  }
+
+  /** Mode du calendrier : séances ou alimentation. Même URL ; le choix est mémorisé pour la session. */
+  protected readonly mode = signal<CalendarMode>(readStoredCalendarMode());
+  protected readonly modes = CALENDAR_MODES;
+  protected readonly weekDates = computed(() => this.state.days().map((day) => day.date));
+
+  protected setMode(mode: CalendarMode): void {
+    this.mode.set(mode);
+    storeCalendarMode(mode);
   }
 
   /** Pause en cours de création (`pauseDraft`) ou de modification (`pauseEditing`), `null` quand la modale est fermée. */
