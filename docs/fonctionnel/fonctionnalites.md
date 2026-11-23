@@ -7,6 +7,7 @@
 - **Disponibilités** (`creneaux`) : calendrier semaine des créneaux libres et occupés, ponctuels ou hebdomadaires ; création par sélection sur la grille ou par formulaire, modification et suppression (toute la série), navigation entre les semaines. Statut : implémentée (issue #8) ; tests unitaires et composants livrés, test e2e de la création écrit. Génération de séances à partir des créneaux : hors périmètre. Parcours : [Gérer les créneaux de disponibilité](parcours/gerer-creneaux-disponibilite.md).
 
 - **Fiche de séance** (`seances`) : modules dans l’ordre avec durée, consigne, zones cibles et effort visé ; édition des durées et consignes, réordonnancement, ajout et suppression de modules ; séance réalisée en lecture seule. Statut : implémentée (issue #10) ; tests unitaires et composants livrés, test e2e écrit. Parcours : [Consulter et modifier une séance](parcours/consulter-et-modifier-une-seance.md).
+- **Nutrition** (`nutrition`) : entrée « Nutrition » du menu et page à deux onglets, « Mes recettes » et « Mes aliments » ; l’onglet choisi est dans l’URL (`?onglet=aliments`) et survit au rechargement. Statut : menu et page livrés (issue #155) ; contenu des onglets à venir (issues #156 à #163). Tests unitaires et e2e de l’accès écrits.
 
 ## Domaines prévus (source : `CLAUDE.md`, `instructions/11`) :
 
@@ -17,4 +18,4 @@
 | Récupération (`recovery`) | Visualisation de la récupération                     | non démarré |
 | Séances (`workouts`)      | Gestion des entraînements planifiés / générés par IA | non démarré |
 
-Écrans : `/` (tableau de bord, voir le parcours), `/goals` (objectifs, voir le parcours), `/creneaux` (disponibilités, voir le parcours), fiche de séance, ouverte en modale depuis le calendrier et le tableau de bord (voir le parcours), `/parametres` (cible hebdomadaire de la semaine, voir le parcours du tableau de bord). Les autres écrans sont à compléter.
+Écrans : `/` (tableau de bord, voir le parcours), `/goals` (objectifs, voir le parcours), `/creneaux` (disponibilités, voir le parcours), `/nutrition` (nutrition : menu et page à deux onglets « Mes recettes » et « Mes aliments », contenu en cours de livraison), fiche de séance, ouverte en modale depuis le calendrier et le tableau de bord (voir le parcours), `/parametres` (cible hebdomadaire de la semaine, voir le parcours du tableau de bord). Les autres écrans sont à compléter.
