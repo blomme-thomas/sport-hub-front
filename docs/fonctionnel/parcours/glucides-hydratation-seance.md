@@ -24,3 +24,10 @@ Indiquer, pour une séance, la cible de glucides (et son unité) et l'hydratatio
 - Une valeur vide reste absente. En modification, vider un champ l'efface sur la séance.
 - Les glucides concernent la séance (pendant l'effort) ; pas de cible journalière.
 - Les autres nutriments ne sont pas saisis ici.
+
+## Import JSON (version 2 du format `plan-seances`)
+
+- Le format passe en version 2 : chaque séance peut porter `carbsGrams`, `carbsUnit` et `hydrationMilliliters`, avec les mêmes règles qu'à la saisie. Un fichier en version 1 reste accepté, sans ces champs.
+- Import d'une seule séance : le fichier pré-remplit la création ou la modification, champs de nutrition compris.
+- Import en lot : le fichier est envoyé tel quel au back, qui valide et crée les séances avec leurs champs de nutrition.
+- Une version 1 qui contient un champ de nutrition est refusée, comme le back le fait.

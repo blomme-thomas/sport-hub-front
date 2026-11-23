@@ -1,7 +1,12 @@
 import { TEXTS } from '@shared/texts/texts';
+import type { SessionCarbsUnit } from '../nutrition/session-nutrition';
 /** Format de fichier `plan-seances` (forme JSON, identique au modèle renvoyé par le back). */
 export const PLAN_SEANCES_KIND = 'plan-seances';
-export const PLAN_SEANCES_SCHEMA_VERSION = 1;
+/** Version écrite par le back ; la version 1 reste acceptée (sans champs de nutrition). */
+export const PLAN_SEANCES_SCHEMA_VERSION = 2;
+export const PLAN_SEANCES_SUPPORTED_VERSIONS: readonly number[] = [1, 2];
+/** Première version qui porte glucides et hydratation. */
+export const PLAN_SEANCES_NUTRITION_VERSION = 2;
 
 export const PLAN_MODULE_TYPES = [
   'echauffement',
@@ -46,6 +51,10 @@ export interface PlanSeance {
   targetDistanceMeters?: number | null;
   /** Répartition cible par zone de FC, Z1 à Z5, totalisant 100. */
   targetHrZonePercentages?: number[] | null;
+  /** Nutrition (version 2) : glucides en grammes avec leur unité, hydratation en millilitres. */
+  carbsGrams?: number | null;
+  carbsUnit?: SessionCarbsUnit | null;
+  hydrationMilliliters?: number | null;
   modules: PlanSeanceModule[];
 }
 

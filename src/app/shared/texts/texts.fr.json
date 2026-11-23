@@ -904,7 +904,8 @@
       "zoneRange": "chaque zone doit être entre 0 et 100 %",
       "zonesTotal": "les zones doivent totaliser 100 %",
       "required": "champ obligatoire",
-      "unknownField": "champ absent du format plan-seances"
+      "unknownField": "champ absent du format plan-seances",
+      "carbsPair": "Les glucides et leur unité vont ensemble."
     },
     "sessionNutrition": {
       "legend": "Nutrition",

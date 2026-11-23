@@ -36,6 +36,7 @@ import type { CreateSessionRequestApi } from '../../data-access/sessions-write.a
 import { SessionNutritionFieldsComponent } from '../../../../shared/ui/session-nutrition-fields/session-nutrition-fields.component';
 import {
   createSessionNutritionForm,
+  patchSessionNutrition,
   readSessionNutrition,
   type SessionNutrition,
 } from '../../../../shared/nutrition/session-nutrition';
@@ -190,6 +191,13 @@ export class SessionFormComponent implements OnInit {
         zones: zonesControls(prefill.targetHrZonePercentages),
       }),
     });
+    if (prefill.carbsGrams !== undefined || prefill.hydrationMilliliters !== undefined) {
+      patchSessionNutrition(this.nutritionForm, {
+        carbsGrams: prefill.carbsGrams ?? null,
+        carbsUnit: prefill.carbsUnit ?? null,
+        hydrationMilliliters: prefill.hydrationMilliliters ?? null,
+      });
+    }
     this.importedModules.set(prefill.modules);
     this.importSummary.set(
       fill(TEXTS.creneaux.session.prefilled, { count: prefill.modules.length }),

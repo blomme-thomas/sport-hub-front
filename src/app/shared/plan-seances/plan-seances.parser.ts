@@ -1,13 +1,15 @@
 import {
   PLAN_MODULE_TYPES,
   PLAN_SEANCES_KIND,
-  PLAN_SEANCES_SCHEMA_VERSION,
+  PLAN_SEANCES_NUTRITION_VERSION,
+  PLAN_SEANCES_SUPPORTED_VERSIONS,
   type PlanSeance,
   type PlanSeanceIssue,
   type PlanSeanceModule,
   type PlanTargetZones,
 } from './plan-seances.model';
 import { fill, TEXTS } from '@shared/texts/texts';
+import { SESSION_CARBS_UNITS, type SessionCarbsUnit } from '../nutrition/session-nutrition';
 
 /** Bornes identiques au back : durée 1 à 1440, 30 modules au plus, consignes de 2000 caractères au plus. */
 const DURATION_MAX = 1440;
@@ -31,6 +33,10 @@ const SEANCE_FIELDS = [
   'targetHrZonePercentages',
   'modules',
 ];
+/** Champs ajoutés en version 2 : refusés dans une version 1. */
+const NUTRITION_FIELDS = ['carbsGrams', 'carbsUnit', 'hydrationMilliliters'];
+const CARBS_GRAMS_MAX = 1000;
+const HYDRATION_MILLILITERS_MAX = 20000;
 const MODULE_FIELDS = ['type', 'durationMinutes', 'instruction', 'targetZones', 'perceivedEffort'];
 
 export type PlanParseResult =
@@ -51,6 +57,9 @@ export interface SessionPrefill {
   targetDistanceMeters?: number;
   /** Répartition Z1 à Z5, totalisant 100. */
   targetHrZonePercentages?: number[];
+  carbsGrams?: number | null;
+  carbsUnit?: SessionCarbsUnit | null;
+  hydrationMilliliters?: number | null;
   modules: PlanSeanceModule[];
 }
 
@@ -83,10 +92,13 @@ export function parseSingleSession(
       message: fill(TEXTS.shared.planSeances.mustBe, { value: PLAN_SEANCES_KIND }),
     });
   }
-  if (root['schemaVersion'] !== PLAN_SEANCES_SCHEMA_VERSION) {
+  const version = root['schemaVersion'];
+  if (typeof version !== 'number' || !PLAN_SEANCES_SUPPORTED_VERSIONS.includes(version)) {
     issues.push({
       path: 'schemaVersion',
-      message: fill(TEXTS.shared.planSeances.mustBe, { value: PLAN_SEANCES_SCHEMA_VERSION }),
+      message: fill(TEXTS.shared.planSeances.mustBe, {
+        value: PLAN_SEANCES_SUPPORTED_VERSIONS.join(' ou '),
+      }),
     });
   }
   const seances = root['seances'];
@@ -102,7 +114,14 @@ export function parseSingleSession(
     return { ok: false, issues };
   }
 
-  const seance = validateSeance(seances[0], 'seances[0]', knownDisciplineKeys, issues);
+  const schemaVersion = typeof version === 'number' ? version : PLAN_SEANCES_NUTRITION_VERSION - 1;
+  const seance = validateSeance(
+    seances[0],
+    'seances[0]',
+    knownDisciplineKeys,
+    issues,
+    schemaVersion,
+  );
   if (seance === null || issues.length > 0) {
     return { ok: false, issues };
   }
@@ -158,6 +177,14 @@ export function toPrefill(seance: PlanSeance): SessionPrefill {
   if (seance.targetHrZonePercentages) {
     prefill.targetHrZonePercentages = seance.targetHrZonePercentages;
   }
+  // Version 2 : les champs de nutrition sont repris, `null` compris, dès qu'ils figurent dans le fichier.
+  if (seance.carbsGrams !== undefined) {
+    prefill.carbsGrams = seance.carbsGrams;
+    prefill.carbsUnit = seance.carbsUnit ?? null;
+  }
+  if (seance.hydrationMilliliters !== undefined) {
+    prefill.hydrationMilliliters = seance.hydrationMilliliters;
+  }
   return prefill;
 }
 
@@ -176,13 +203,20 @@ function validateSeance(
   path: string,
   knownKeys: ReadonlySet<string> | undefined,
   issues: PlanSeanceIssue[],
+  schemaVersion: number,
 ): PlanSeance | null {
   if (!isRecord(raw)) {
     issues.push({ path, message: TEXTS.shared.planSeances.seanceNotObject });
     return null;
   }
   const before = issues.length;
-  rejectUnknownFields(raw, SEANCE_FIELDS, path, issues);
+  const nutritionAllowed = schemaVersion >= PLAN_SEANCES_NUTRITION_VERSION;
+  rejectUnknownFields(
+    raw,
+    nutritionAllowed ? [...SEANCE_FIELDS, ...NUTRITION_FIELDS] : SEANCE_FIELDS,
+    path,
+    issues,
+  );
 
   const date = readDate(raw, 'date', path, issues);
   const disciplineTypeKey = readText(raw, 'disciplineTypeKey', path, issues, {
@@ -211,6 +245,7 @@ function validateSeance(
     min: 1,
   });
   const targetHrZonePercentages = readZonePercentages(raw, path, issues);
+  const nutrition = nutritionAllowed ? readNutrition(raw, path, issues) : null;
 
   const modules = validateModules(raw['modules'], `${path}.modules`, issues);
 
@@ -231,8 +266,59 @@ function validateSeance(
     description,
     targetDistanceMeters,
     targetHrZonePercentages,
+    ...(nutrition ?? {}),
     modules,
   };
+}
+
+/** Glucides (1 à 1000 g), leur unité, et hydratation (1 à 20000 ml) : tous facultatifs, les glucides vont avec leur unité. */
+function readNutrition(
+  raw: Fields,
+  path: string,
+  issues: PlanSeanceIssue[],
+): {
+  carbsGrams: number | null;
+  carbsUnit: SessionCarbsUnit | null;
+  hydrationMilliliters: number | null;
+} {
+  const carbsGrams = readInteger(raw, 'carbsGrams', path, issues, {
+    required: false,
+    min: 1,
+    max: CARBS_GRAMS_MAX,
+  });
+  const carbsUnit = readOptionalEnum(raw, 'carbsUnit', path, issues, SESSION_CARBS_UNITS);
+  const hydrationMilliliters = readInteger(raw, 'hydrationMilliliters', path, issues, {
+    required: false,
+    min: 1,
+    max: HYDRATION_MILLILITERS_MAX,
+  });
+  const hasGrams = raw['carbsGrams'] !== undefined && raw['carbsGrams'] !== null;
+  const hasUnit = raw['carbsUnit'] !== undefined && raw['carbsUnit'] !== null;
+  if (hasGrams !== hasUnit) {
+    issues.push({ path: `${path}.carbsUnit`, message: TEXTS.shared.planSeances.carbsPair });
+  }
+  return { carbsGrams, carbsUnit, hydrationMilliliters };
+}
+
+function readOptionalEnum<T extends string>(
+  raw: Fields,
+  key: string,
+  path: string,
+  issues: PlanSeanceIssue[],
+  values: readonly T[],
+): T | null {
+  const value = raw[key];
+  if (value === undefined || value === null) {
+    return null;
+  }
+  if (typeof value !== 'string' || !(values as readonly string[]).includes(value)) {
+    issues.push({
+      path: `${path}.${key}`,
+      message: fill(TEXTS.shared.planSeances.oneOf, { values: values.join(', ') }),
+    });
+    return null;
+  }
+  return value as T;
 }
 
 function validateModules(
