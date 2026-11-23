@@ -1,3 +1,4 @@
+import type { SessionCarbsUnit } from '../../app/shared/nutrition/session-nutrition';
 import { http, HttpResponse } from 'msw';
 import type {
   ReplaceSessionModulesRequestApi,
@@ -64,6 +65,9 @@ function sessionFromBody(body: Record<string, unknown>): SessionApi {
     targetHrZonePercentages: (body['targetHrZonePercentages'] as number[] | undefined) ?? null,
     achievement: null,
     activity: null,
+    carbsGrams: (body['carbsGrams'] as number | undefined) ?? null,
+    carbsUnit: (body['carbsUnit'] as SessionCarbsUnit | undefined) ?? null,
+    hydrationMilliliters: (body['hydrationMilliliters'] as number | undefined) ?? null,
   };
 }
 

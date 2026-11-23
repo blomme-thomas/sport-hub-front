@@ -155,6 +155,9 @@ describe('SessionState', () => {
           index === 0 ? { ...module, durationMinutes: 12 } : module,
         ),
         modifiedManually: true,
+        carbsGrams: null,
+        carbsUnit: null,
+        hydrationMilliliters: null,
       }),
     );
     const [first] = state.draft();
@@ -321,6 +324,9 @@ describe('SessionState.saveDetails', () => {
         ...sessionApi,
         durationMinutes: 70,
         modifiedManually: true,
+        carbsGrams: null,
+        carbsUnit: null,
+        hydrationMilliliters: null,
         modules: [],
       }),
     );

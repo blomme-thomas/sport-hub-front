@@ -8,6 +8,8 @@ export interface ZoneRangeApi {
 }
 
 /** Zones cibles d'un module ; une zone absente n'est pas définie. */
+import type { SessionCarbsUnit } from '../../../shared/nutrition/session-nutrition';
+
 export interface TargetZonesApi {
   heartRate?: ZoneRangeApi;
   pace?: ZoneRangeApi;
@@ -52,6 +54,11 @@ export interface SessionApi {
   achievement: SessionAchievementApi | null;
   /** Activité liée (identifiant, origine et date du lien) ; `null` si aucune. */
   activity: SessionActivityLinkApi | null;
+  /** Cible de glucides en grammes et son unité, toutes deux `null` si absentes. */
+  carbsGrams: number | null;
+  carbsUnit: SessionCarbsUnit | null;
+  /** Hydratation visée pour la séance, en millilitres ; `null` si absente. */
+  hydrationMilliliters: number | null;
 }
 
 /** Taux de réalisation (`SessionAchievementResponseDto`) ; les écarts sont signés, en points, pour Z1 à Z5. */
@@ -102,4 +109,9 @@ export interface UpdateSessionRequestApi {
   targetDistanceMeters?: number | null;
   /** Répartition Z1 à Z5, totalisant 100 ; absente = inchangée. */
   targetHrZonePercentages?: number[];
+  /** Cible de glucides ; `null` efface (avec l’unité), absente = inchangée. */
+  carbsGrams?: number | null;
+  carbsUnit?: SessionCarbsUnit | null;
+  /** Hydratation en millilitres ; `null` efface, absente = inchangée. */
+  hydrationMilliliters?: number | null;
 }
