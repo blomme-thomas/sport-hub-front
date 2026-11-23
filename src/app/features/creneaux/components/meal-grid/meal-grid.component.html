@@ -1,0 +1,31 @@
+<div class="meal-grid__wrapper">
+  <table class="meal-grid">
+    <caption class="visually-hidden">
+      {{
+        t.creneaux.meals.caption
+      }}
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col" class="meal-grid__corner">
+          <span class="visually-hidden">{{ t.creneaux.meals.corner }}</span>
+        </th>
+        @for (date of dates(); track date) {
+          <th scope="col" class="meal-grid__day">{{ dayLabel(date) }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (meal of meals; track meal) {
+        <tr>
+          <th scope="row" class="meal-grid__meal">{{ mealLabel(meal) }}</th>
+          @for (date of dates(); track date) {
+            <td class="meal-grid__cell">
+              <span class="visually-hidden">{{ cellLabel(meal, date) }}</span>
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

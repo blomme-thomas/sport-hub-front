@@ -422,6 +422,19 @@
       "count": "{count} séance(s) détectée(s) dans le fichier.",
       "unusable": "Le fichier n’est pas utilisable : {message}",
       "submit": "Importer les séances"
+    },
+    "mode": {
+      "group": "Mode du calendrier",
+      "seances": "Séances",
+      "alimentation": "Alimentation"
+    },
+    "meals": {
+      "caption": "Repas de la semaine",
+      "corner": "Repas",
+      "matin": "Matin",
+      "midi": "Midi",
+      "soir": "Soir",
+      "cell": "{meal}, {date} : aucun repas"
     }
   },
   "seances": {
