@@ -223,6 +223,13 @@ export class SessionEditFormComponent implements OnInit {
         zones: zonesControls(prefill.targetHrZonePercentages),
       }),
     });
+    if (prefill.carbsGrams !== undefined || prefill.hydrationMilliliters !== undefined) {
+      patchSessionNutrition(this.nutritionForm, {
+        carbsGrams: prefill.carbsGrams ?? null,
+        carbsUnit: prefill.carbsUnit ?? null,
+        hydrationMilliliters: prefill.hydrationMilliliters ?? null,
+      });
+    }
     this.importedModules.set(prefill.modules);
     this.importSummary.set(fill(TEXTS.seances.edit.prefilled, { count: prefill.modules.length }));
   }
