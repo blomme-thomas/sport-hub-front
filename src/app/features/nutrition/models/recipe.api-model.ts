@@ -24,3 +24,10 @@ export interface RecipeDetailApi extends RecipeApi {
     ignored: { foodId: string; reason: 'quantity-missing' | 'nutrition-missing' }[];
   };
 }
+
+/** Corps de `POST /api/recipes` et `PATCH /api/recipes/:id` ; `items` remplace toute la composition. */
+export interface RecipeRequestApi {
+  name: string;
+  mealTags: MealTag[];
+  items: RecipeItemApi[];
+}

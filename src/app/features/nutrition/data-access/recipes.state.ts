@@ -4,8 +4,9 @@ import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import type { Food } from '../models/food.model';
 import type { MealTag } from '../models/meal-tag';
-import type { Recipe, RecipeDetail } from '../models/recipe.model';
+import type { Recipe, RecipeDetail, RecipeInput } from '../models/recipe.model';
 import { FoodsApi } from './foods.api';
+import { toRecipeRequest } from './recipe.mapper';
 import { countRecipesByMealTag, filterRecipes } from './recipe-filter';
 import { RecipesApi } from './recipes.api';
 
@@ -23,6 +24,7 @@ export class RecipesState {
   private readonly foodsValue = signal<ReadonlyMap<string, Food>>(new Map());
   private readonly loadingValue = signal(false);
   private readonly errorValue = signal<AppError | null>(null);
+  private readonly savingValue = signal(false);
   private readonly searchValue = signal('');
   private readonly mealTagValue = signal<MealTag | null>(null);
 
@@ -43,6 +45,13 @@ export class RecipesState {
     () => !this.loadingValue() && this.errorValue() === null && this.recipesValue().length === 0,
   );
   readonly foodsById = this.foodsValue.asReadonly();
+  /** Aliments triés par nom, pour les listes de choix du formulaire. */
+  readonly foods = computed(() =>
+    [...this.foodsValue().values()].sort((a, b) =>
+      a.name.localeCompare(b.name, 'fr-FR', { sensitivity: 'base' }),
+    ),
+  );
+  readonly saving = this.savingValue.asReadonly();
 
   constructor() {
     this.reload();
@@ -63,6 +72,29 @@ export class RecipesState {
   /** Synthèse nutritionnelle d'une recette, `undefined` tant qu'elle n'est pas chargée. */
   detailOf(id: string): RecipeDetail | undefined {
     return this.detailsValue().get(id);
+  }
+
+  /** @throws {AppError} quand l'API refuse la création ; la liste n'est pas rechargée */
+  create(input: RecipeInput): Promise<void> {
+    return this.write(() => firstValueFrom(this.api.create(toRecipeRequest(input))));
+  }
+
+  /** @throws {AppError} quand l'API refuse la modification ; la liste n'est pas rechargée */
+  update(id: string, input: RecipeInput): Promise<void> {
+    return this.write(() => firstValueFrom(this.api.update(id, toRecipeRequest(input))));
+  }
+
+  private async write(operation: () => Promise<unknown>): Promise<void> {
+    this.savingValue.set(true);
+    try {
+      await operation();
+    } catch (error) {
+      throw asAppError(error);
+    } finally {
+      this.savingValue.set(false);
+    }
+    // La liste est rechargée pour que les totaux des cartes reflètent la recette enregistrée.
+    await this.load();
   }
 
   private async load(): Promise<void> {

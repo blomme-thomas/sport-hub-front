@@ -694,7 +694,35 @@
           "libre": "Libre"
         },
         "unknownFood": "Aliment inconnu",
-        "noQuantity": "Quantité non renseignée"
+        "noQuantity": "Quantité non renseignée",
+        "edit": "Modifier la recette"
+      },
+      "form": {
+        "create": "Nouvelle recette",
+        "newTitle": "Nouvelle recette",
+        "editTitle": "Modifier la recette",
+        "name": "Nom de la recette",
+        "required": "Ce champ est obligatoire.",
+        "mealTags": "Repas",
+        "mealTagsRequired": "Choisissez au moins un repas.",
+        "components": {
+          "proteine": "Protéine",
+          "legume": "Légume",
+          "feculent": "Féculent",
+          "libre": "Autre (optionnel)"
+        },
+        "addFood": "Ajouter un aliment",
+        "removeFood": "Retirer {name}",
+        "pickFood": "Choisir un aliment",
+        "foodRequired": "Choisissez un aliment, ou retirez la ligne.",
+        "quantity": "Quantité",
+        "quantityPositive": "La quantité doit être supérieure à 0.",
+        "summary": "Valeurs nutritionnelles (pour la recette)",
+        "summaryEmpty": "Enregistrez la recette pour afficher sa synthèse.",
+        "messages": {
+          "created": "Recette ajoutée.",
+          "updated": "Recette modifiée."
+        }
       }
     }
   },

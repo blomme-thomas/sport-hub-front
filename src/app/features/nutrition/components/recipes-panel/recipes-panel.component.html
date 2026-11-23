@@ -12,6 +12,9 @@
       [value]="state.search()"
       (input)="onSearch($event)"
     />
+    <button nz-button nzType="primary" type="button" (click)="openForm('new')">
+      {{ t.nutrition.recipes.form.create }}
+    </button>
   </div>
 
   <div class="recipes-panel__filters" role="group" [attr.aria-label]="t.nutrition.recipes.filters">
@@ -63,6 +66,20 @@
 
 @if (viewing(); as recipe) {
   <sh-modal [title]="recipe.name" (closed)="close()">
-    <sh-recipe-view [recipe]="recipe" [foods]="state.foodsById()" />
+    <sh-recipe-view [recipe]="recipe" [foods]="state.foodsById()" (edit)="editFromView($event)" />
+  </sh-modal>
+}
+
+@if (editing() !== null) {
+  <sh-modal [title]="formTitle()" width="min(960px, 96vw)" (closed)="closeForm()">
+    <sh-recipe-form
+      [recipe]="formRecipe()"
+      [detail]="formDetail()"
+      [foods]="state.foods()"
+      [submitting]="state.saving()"
+      [serverError]="formError()"
+      (saved)="onSaved($event)"
+      (cancelled)="closeForm()"
+    />
   </sh-modal>
 }

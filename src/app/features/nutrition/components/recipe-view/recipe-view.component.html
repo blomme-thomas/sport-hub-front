@@ -52,4 +52,10 @@
       }
     }
   </section>
+
+  <div class="recipe-view__actions">
+    <button nz-button nzType="primary" type="button" (click)="edit.emit(recipe())">
+      {{ t.nutrition.recipes.view.edit }}
+    </button>
+  </div>
 </div>
