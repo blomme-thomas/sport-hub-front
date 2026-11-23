@@ -1,0 +1,39 @@
+<div class="shopping">
+  <p class="shopping__period">{{ period() }}</p>
+
+  @if (loading()) {
+    <p class="shopping__status" aria-live="polite">{{ t.creneaux.shopping.loading }}</p>
+  } @else if (errorMessage(); as message) {
+    <p class="shopping__error" role="alert">{{ message }}</p>
+  } @else if (items().length === 0) {
+    <p class="shopping__status">{{ t.creneaux.shopping.empty }}</p>
+  } @else {
+    @for (group of groups(); track group.category) {
+      <section class="shopping__group" [attr.aria-label]="group.label">
+        <h3>{{ group.label }}</h3>
+        <ul>
+          @for (line of group.lines; track line.key) {
+            <li>
+              <span class="shopping__name">{{ line.name }}</span>
+              <span class="shopping__quantity" [class.shopping__quantity--missing]="line.missing">
+                {{ line.quantity }}
+              </span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  }
+
+  <div class="shopping__actions">
+    <button
+      nz-button
+      nzType="primary"
+      type="button"
+      [disabled]="loading() || items().length === 0"
+      (click)="copy()"
+    >
+      {{ t.creneaux.shopping.copy }}
+    </button>
+  </div>
+</div>

@@ -458,6 +458,29 @@
       "remove": "Retirer du planning",
       "placed": "Recette placée.",
       "removed": "Repas retiré."
+    },
+    "shopping": {
+      "generate": "Générer une liste de courses",
+      "title": "Liste de courses",
+      "period": "Du {from} au {to}",
+      "categories": {
+        "proteine": "Protéines",
+        "legume": "Légumes",
+        "feculent": "Féculents",
+        "autre": "Autres"
+      },
+      "loading": "Calcul de la liste…",
+      "empty": "Aucun repas planifié sur cette période.",
+      "copy": "Copier",
+      "copied": "Liste copiée.",
+      "copyFailed": "Impossible de copier la liste.",
+      "missing": "quantité à compléter",
+      "noValue": "—",
+      "select": "Glissez sur les jours pour choisir une période.",
+      "selection": "Période choisie : du {from} au {to}.",
+      "clear": "Effacer la sélection",
+      "close": "Fermer",
+      "dialogTitle": "Liste de courses"
     }
   },
   "seances": {

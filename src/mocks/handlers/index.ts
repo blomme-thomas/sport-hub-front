@@ -5,6 +5,7 @@ import { dashboardAdviceHandlers } from './dashboard-advice.handlers';
 import { dashboardKpisHandlers } from './dashboard-kpis.handlers';
 import { foodsHandlers } from './foods.handlers';
 import { mealPlanHandlers } from './meal-plan.handlers';
+import { shoppingListHandlers } from './shopping-list.handlers';
 import { recipesHandlers } from './recipes.handlers';
 import { goalsHandlers } from './goals.handlers';
 import { healthHandlers } from './health.handlers';
@@ -24,6 +25,7 @@ export const handlers = [
   ...foodsHandlers,
   ...recipesHandlers,
   ...mealPlanHandlers,
+  ...shoppingListHandlers,
   ...slotsHandlers,
   ...sessionsHandlers,
   ...weeklyReviewsHandlers,
