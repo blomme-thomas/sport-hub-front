@@ -658,6 +658,44 @@
         "created": "Aliment ajouté.",
         "updated": "Aliment modifié."
       }
+    },
+    "recipes": {
+      "search": "Rechercher une recette",
+      "searchLabel": "Rechercher une recette par nom",
+      "filters": "Filtrer par repas",
+      "all": "Toutes",
+      "list": "Recettes",
+      "mealTags": {
+        "matin": "Matin",
+        "midi": "Midi",
+        "soir": "Soir"
+      },
+      "loading": "Chargement des recettes…",
+      "empty": "Aucune recette ne correspond à votre recherche.",
+      "emptyBase": "Vous n’avez pas encore de recette.",
+      "noValue": "—",
+      "card": {
+        "open": "Ouvrir la recette {name}",
+        "loadingTotals": "Synthèse en cours…"
+      },
+      "view": {
+        "totals": "Valeurs nutritionnelles",
+        "calories": "Calories",
+        "proteins": "Protéines",
+        "carbohydrates": "Glucides",
+        "fats": "Lipides",
+        "ignored": "{count} élément(s) exclu(s) du total : quantité ou valeur manquante.",
+        "composition": "Composition",
+        "noItems": "Aucun aliment dans cette recette.",
+        "groups": {
+          "proteine": "Protéine",
+          "legume": "Légume",
+          "feculent": "Féculent",
+          "libre": "Libre"
+        },
+        "unknownFood": "Aliment inconnu",
+        "noQuantity": "Quantité non renseignée"
+      }
     }
   },
   "reglages": {

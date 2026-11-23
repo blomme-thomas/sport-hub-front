@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { TEXTS, fill } from '@shared/texts/texts';
+import { formatNutrient } from '@shared/utils/nutrient-format';
 import type { FoodCategory } from '../../models/food-category';
 import type { Food } from '../../models/food.model';
-
-const NUMBER_FORMAT = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
 
 /** Tableau de la base d'aliments : valeurs pour 100 g, vides affichées « — », bouton « Modifier » par ligne. */
 @Component({
@@ -27,9 +26,6 @@ export class FoodTableComponent {
 
   /** Valeur nutritionnelle affichée, unité en grammes pour les macros. */
   protected amount(value: number | null, unit = ''): string {
-    if (value === null) {
-      return this.t.nutrition.foods.table.noValue;
-    }
-    return unit === '' ? NUMBER_FORMAT.format(value) : `${NUMBER_FORMAT.format(value)} ${unit}`;
+    return formatNutrient(value, this.t.nutrition.foods.table.noValue, unit);
   }
 }

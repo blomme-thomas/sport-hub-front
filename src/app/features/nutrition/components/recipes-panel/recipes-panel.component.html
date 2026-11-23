@@ -1,0 +1,68 @@
+<div class="recipes-panel">
+  <div class="recipes-panel__toolbar">
+    <label class="visually-hidden" for="recipes-search">{{
+      t.nutrition.recipes.searchLabel
+    }}</label>
+    <input
+      nz-input
+      id="recipes-search"
+      type="search"
+      class="recipes-panel__search"
+      [placeholder]="t.nutrition.recipes.search"
+      [value]="state.search()"
+      (input)="onSearch($event)"
+    />
+  </div>
+
+  <div class="recipes-panel__filters" role="group" [attr.aria-label]="t.nutrition.recipes.filters">
+    <button
+      type="button"
+      class="recipes-panel__chip"
+      [attr.aria-pressed]="state.mealTag() === null"
+      (click)="state.selectMealTag(null)"
+    >
+      {{ t.nutrition.recipes.all }} ({{ state.total() }})
+    </button>
+    @for (mealTag of mealTags; track mealTag) {
+      <button
+        type="button"
+        class="recipes-panel__chip"
+        [attr.aria-pressed]="state.mealTag() === mealTag"
+        (click)="state.selectMealTag(mealTag)"
+      >
+        {{ mealLabel(mealTag) }} ({{ state.counts()[mealTag] }})
+      </button>
+    }
+  </div>
+
+  @if (state.error(); as error) {
+    <div class="recipes-panel__error" role="alert">
+      <p>{{ error.userMessage }}</p>
+      <button nz-button type="button" (click)="state.reload()">{{ t.common.retry }}</button>
+    </div>
+  } @else if (state.isLoading()) {
+    <p class="recipes-panel__status" aria-live="polite">{{ t.nutrition.recipes.loading }}</p>
+  } @else if (state.isEmpty()) {
+    <p class="recipes-panel__status">{{ t.nutrition.recipes.emptyBase }}</p>
+  } @else if (state.visible().length === 0) {
+    <p class="recipes-panel__status">{{ t.nutrition.recipes.empty }}</p>
+  } @else {
+    <ul class="recipes-panel__grid" [attr.aria-label]="t.nutrition.recipes.list">
+      @for (recipe of state.visible(); track recipe.id) {
+        <li>
+          <sh-recipe-card
+            [recipe]="recipe"
+            [detail]="state.detailOf(recipe.id)"
+            (open)="open($event)"
+          />
+        </li>
+      }
+    </ul>
+  }
+</div>
+
+@if (viewing(); as recipe) {
+  <sh-modal [title]="recipe.name" (closed)="close()">
+    <sh-recipe-view [recipe]="recipe" [foods]="state.foodsById()" />
+  </sh-modal>
+}

@@ -1,0 +1,55 @@
+<div class="recipe-view">
+  <div class="recipe-view__tags">
+    @for (mealTag of recipe().mealTags; track mealTag) {
+      <span class="recipe-view__tag">{{ mealLabel(mealTag) }}</span>
+    }
+  </div>
+
+  <section class="recipe-view__section" aria-labelledby="recipe-view-totals">
+    <h3 id="recipe-view-totals">{{ t.nutrition.recipes.view.totals }}</h3>
+    <dl class="recipe-view__totals">
+      <div>
+        <dt>{{ t.nutrition.recipes.view.calories }}</dt>
+        <dd>{{ totals().kcal }}</dd>
+      </div>
+      <div>
+        <dt>{{ t.nutrition.recipes.view.proteins }}</dt>
+        <dd>{{ totals().proteins }}</dd>
+      </div>
+      <div>
+        <dt>{{ t.nutrition.recipes.view.carbohydrates }}</dt>
+        <dd>{{ totals().carbohydrates }}</dd>
+      </div>
+      <div>
+        <dt>{{ t.nutrition.recipes.view.fats }}</dt>
+        <dd>{{ totals().fats }}</dd>
+      </div>
+    </dl>
+    @if (recipe().ignored.length > 0) {
+      <p class="recipe-view__ignored">
+        {{ fill(t.nutrition.recipes.view.ignored, { count: recipe().ignored.length }) }}
+      </p>
+    }
+  </section>
+
+  <section class="recipe-view__section" aria-labelledby="recipe-view-composition">
+    <h3 id="recipe-view-composition">{{ t.nutrition.recipes.view.composition }}</h3>
+    @if (groups().length === 0) {
+      <p class="recipe-view__empty">{{ t.nutrition.recipes.view.noItems }}</p>
+    } @else {
+      @for (group of groups(); track group.key) {
+        <div class="recipe-view__group">
+          <h4>{{ group.label }}</h4>
+          <ul>
+            @for (line of group.lines; track $index) {
+              <li>
+                <span>{{ line.name }}</span>
+                <span class="recipe-view__quantity">{{ line.quantity }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    }
+  </section>
+</div>
