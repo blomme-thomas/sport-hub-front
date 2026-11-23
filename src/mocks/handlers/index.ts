@@ -1,12 +1,12 @@
+import { resetFoodsMock, foodsHandlers } from './foods.handlers';
+import { resetRecipesMock, recipesHandlers } from './recipes.handlers';
+import { resetMealPlanMock, mealPlanHandlers } from './meal-plan.handlers';
 import { activitiesHandlers } from './activities.handlers';
 import { activityCommentsHandlers } from './activity-comments.handlers';
 import { sessionExportsHandlers } from './session-exports.handlers';
 import { dashboardAdviceHandlers } from './dashboard-advice.handlers';
 import { dashboardKpisHandlers } from './dashboard-kpis.handlers';
-import { foodsHandlers } from './foods.handlers';
-import { mealPlanHandlers } from './meal-plan.handlers';
 import { shoppingListHandlers } from './shopping-list.handlers';
-import { recipesHandlers } from './recipes.handlers';
 import { goalsHandlers } from './goals.handlers';
 import { healthHandlers } from './health.handlers';
 import { heartRateZonesHandlers } from './heart-rate-zones.handlers';
@@ -37,3 +37,10 @@ export const handlers = [
   ...weeklyGoalHandlers,
   ...userSettingsHandlers,
 ];
+
+/** Remet à zéro l'état mutable des mocks ajoutés pour l'alimentation, pour qu'un test ne voie pas les écritures d'un autre. */
+export function resetMockData(): void {
+  resetFoodsMock();
+  resetRecipesMock();
+  resetMealPlanMock();
+}

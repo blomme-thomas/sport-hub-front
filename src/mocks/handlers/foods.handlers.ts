@@ -4,6 +4,11 @@ import { foodsFixtures } from '../fixtures/foods.fixtures';
 
 let foods: FoodApi[] = structuredClone(foodsFixtures);
 
+/** Remet la base d'aliments de test à son état initial (appelé avant chaque test). */
+export function resetFoodsMock(): void {
+  foods = structuredClone(foodsFixtures);
+}
+
 function foodNotFound(): Response {
   return HttpResponse.json(
     {
