@@ -118,9 +118,9 @@ export class DayDetailModalComponent {
     return this.state.legend().find((entry) => entry.typeKey === typeKey)?.label ?? typeKey;
   }
 
-  /** Heure de début de la séance, ou « Sans heure ». */
+  /** Heure de début de la séance. */
   protected timeOf(session: WeekMiniSession): string {
-    return session.startTime ?? TEXTS.dashboard.detail.noSample;
+    return session.startTime;
   }
 
   protected openSession(id: string): void {

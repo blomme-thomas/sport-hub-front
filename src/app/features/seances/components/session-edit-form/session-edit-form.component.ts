@@ -93,7 +93,7 @@ export class SessionEditFormComponent implements OnInit {
 
   protected readonly form = this.fb.group({
     date: this.fb.control('', [Validators.required]),
-    startTime: this.fb.control(''),
+    startTime: this.fb.control('', [Validators.required]),
     durationMinutes: this.fb.control(MIN_DURATION_MINUTES, [
       Validators.required,
       Validators.min(MIN_DURATION_MINUTES),
@@ -167,7 +167,7 @@ export class SessionEditFormComponent implements OnInit {
     const session = this.session();
     this.form.setValue({
       date: session.date,
-      startTime: session.startTime ?? '',
+      startTime: session.startTime,
       durationMinutes: session.durationMinutes,
       disciplineTypeKey: session.disciplineTypeKey,
       description: session.description ?? '',
@@ -230,7 +230,7 @@ export class SessionEditFormComponent implements OnInit {
     this.saved.emit({
       details: {
         date: value.date,
-        startTime: startTime === '' ? null : startTime,
+        startTime,
         durationMinutes: Number(value.durationMinutes),
         disciplineTypeKey: value.disciplineTypeKey,
         title: title === '' ? null : title,

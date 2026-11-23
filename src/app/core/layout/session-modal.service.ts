@@ -11,6 +11,8 @@ export class SessionModalService {
   readonly sessionId = signal<string | null>(null);
   readonly title = signal<string | null>(null);
   readonly backToDay = signal(false);
+  /** Nombre de séances supprimées depuis le chargement : les listes qui affichent des séances se rechargent à chaque changement. */
+  readonly deletions = signal(0);
 
   open(sessionId: string, options: { backToDay?: boolean } = {}): void {
     this.title.set(null);
@@ -22,5 +24,11 @@ export class SessionModalService {
     this.sessionId.set(null);
     this.title.set(null);
     this.backToDay.set(false);
+  }
+
+  /** Ferme la fiche après la suppression de la séance et signale aux listes qu'elles doivent se recharger. */
+  markDeleted(): void {
+    this.deletions.update((count) => count + 1);
+    this.close();
   }
 }

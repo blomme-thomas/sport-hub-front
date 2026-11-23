@@ -23,6 +23,11 @@ export class SessionsApi {
     return this.http.patch<SessionApi>(`${this.baseUrl}/sessions/${encodeURIComponent(id)}`, body);
   }
 
+  /** Supprime la séance, réalisée ou non ; une série récurrente est supprimée en entier. */
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/sessions/${encodeURIComponent(id)}`);
+  }
+
   /** Remplace la liste ordonnée des modules ; renvoie la séance mise à jour. */
   replaceModules(id: string, body: ReplaceSessionModulesRequestApi): Observable<SessionApi> {
     return this.http.put<SessionApi>(

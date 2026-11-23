@@ -20,6 +20,7 @@ const SESSION: Session = {
   disciplineLabel: 'Course à pied',
   durationMinutes: 45,
   startTime: '18:00',
+  recurrence: 'aucune',
   status: 'planifiee',
   modifiedManually: false,
   description: 'Fond',

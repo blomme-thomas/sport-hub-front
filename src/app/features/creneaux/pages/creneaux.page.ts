@@ -5,6 +5,7 @@ import {
   effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IconComponent } from '@shared/ui/icon/icon.component';
@@ -79,6 +80,12 @@ export class CreneauxPage {
     effect(() => {
       const from = this.state.weekStart();
       void this.pausesState.load(from, addIsoDays(from, WEEK_LAST_OFFSET_DAYS));
+    });
+    // Une séance supprimée depuis sa fiche disparaît de la semaine affichée.
+    effect(() => {
+      if (this.sessionModal.deletions() > 0) {
+        untracked(() => this.state.reload());
+      }
     });
   }
 

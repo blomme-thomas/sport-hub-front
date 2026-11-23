@@ -11,6 +11,7 @@ import {
 import { SessionModalService } from '@core/layout/session-modal.service';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { ActivityCommentComponent } from '../components/activity-comment/activity-comment.component';
 import {
@@ -59,6 +60,7 @@ export class SessionPage implements OnInit {
   protected readonly state = inject(SessionState);
   protected readonly comments = inject(ActivityCommentState);
   private readonly messages = inject(NzMessageService);
+  private readonly modal = inject(NzModalService);
   private readonly sessionModal = inject(SessionModalService);
 
   protected readonly dateLabel = computed(() => {
@@ -134,6 +136,31 @@ export class SessionPage implements OnInit {
 
   protected closeEdit(): void {
     this.editOpen.set(false);
+  }
+
+  /** Demande confirmation puis supprime la séance ; une série hebdomadaire est supprimée en entier. */
+  protected confirmDelete(): void {
+    const session = this.state.session();
+    if (session === null) {
+      return;
+    }
+    this.modal.confirm({
+      nzClassName: 'sh-modal',
+      nzTitle: TEXTS.creneaux.session.deleteTitle,
+      nzContent:
+        session.recurrence === 'hebdomadaire'
+          ? TEXTS.creneaux.session.deleteSeries
+          : TEXTS.creneaux.session.deleteOne,
+      nzOkText: TEXTS.common.delete,
+      nzOkDanger: true,
+      nzCancelText: TEXTS.common.cancel,
+      nzOnOk: async () => {
+        if (await this.state.delete()) {
+          this.sessionModal.markDeleted();
+          this.messages.success(TEXTS.creneaux.session.deleted);
+        }
+      },
+    });
   }
 
   protected async saveDetails(event: SessionDetailsSave): Promise<void> {

@@ -51,7 +51,12 @@ const course = {
   disciplineTypeKey: 'running',
 };
 const velo = { id: 'session-velo', date: MONDAY, startTime: '07:00', disciplineTypeKey: 'cycling' };
-const inconnue = { id: 'session-golf', date: MONDAY, startTime: null, disciplineTypeKey: 'golf' };
+const inconnue = {
+  id: 'session-golf',
+  date: MONDAY,
+  startTime: '10:00',
+  disciplineTypeKey: 'golf',
+};
 
 const legend = [
   { typeKey: 'running', label: 'Course à pied' },
@@ -108,7 +113,7 @@ describe('WeekMiniCalendarComponent', () => {
     });
 
     expect(
-      screen.getByRole('button', { name: 'Séance golf, sans heure. Ouvrir la séance' }),
+      screen.getByRole('button', { name: 'Séance golf, 10:00. Ouvrir la séance' }),
     ).toBeTruthy();
     expect(screen.queryByRole('alert')).toBeNull();
   });

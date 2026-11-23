@@ -24,7 +24,9 @@ export interface Session {
   disciplineTypeKey: string;
   disciplineLabel: string;
   durationMinutes: number;
-  startTime: string | null;
+  startTime: string;
+  /** Récurrence de la série : une suppression efface toute la série si elle est hebdomadaire. */
+  recurrence: string;
   status: SessionStatus;
   modifiedManually: boolean;
   description: string | null;

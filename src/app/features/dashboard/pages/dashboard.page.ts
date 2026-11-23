@@ -4,7 +4,9 @@ import {
   TemplateRef,
   ViewContainerRef,
   computed,
+  effect,
   inject,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { IconComponent } from '@shared/ui/icon/icon.component';
@@ -27,6 +29,7 @@ import { NextEventCardComponent } from '../components/next-event-card/next-event
 import { KpiCardComponent } from '../components/kpi-card/kpi-card.component';
 import { PerformanceCardComponent } from '../components/performance-card/performance-card.component';
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card/recent-activities-card.component';
+import { UpcomingSessionsCardComponent } from '../components/upcoming-sessions-card/upcoming-sessions-card.component';
 import { SportSplitCardComponent } from '../components/sport-split-card/sport-split-card.component';
 import { ZonesCardComponent } from '../components/zones-card/zones-card.component';
 import {
@@ -47,6 +50,7 @@ import { HeartRateZonesState } from '../data-access/heart-rate-zones.state';
 import { PerformanceState } from '../data-access/performance.state';
 import { WeeklyReviewState } from '../data-access/weekly-review.state';
 import { RecentActivitiesState } from '../data-access/recent-activities.state';
+import { UpcomingSessionsState } from '../data-access/upcoming-sessions.state';
 import { WeekMiniCalendarState } from '../data-access/week-mini-calendar.state';
 import type { DashboardPeriod } from '../models/training-stats.model';
 import { SessionModalService } from '@core/layout/session-modal.service';
@@ -74,6 +78,7 @@ const AXIS_UNITS: Partial<Record<DashboardKpi['id'], string>> = {
     NextEventCardComponent,
     PerformanceCardComponent,
     RecentActivitiesCardComponent,
+    UpcomingSessionsCardComponent,
     SportSplitCardComponent,
     ZonesCardComponent,
     WeekMiniCalendarComponent,
@@ -88,6 +93,7 @@ const AXIS_UNITS: Partial<Record<DashboardKpi['id'], string>> = {
     DashboardKpisState,
     NextEventState,
     RecentActivitiesState,
+    UpcomingSessionsState,
     PerformanceState,
     WeeklyReviewState,
     HeartRateZonesState,
@@ -111,6 +117,7 @@ export class DashboardPage {
   protected readonly kpis = inject(DashboardKpisState);
   protected readonly nextEvent = inject(NextEventState);
   protected readonly recent = inject(RecentActivitiesState);
+  protected readonly upcoming = inject(UpcomingSessionsState);
   protected readonly advice = inject(DashboardAdviceState);
   protected readonly weeklyGoal = inject(WeeklyGoalState);
   protected readonly heartZones = inject(HeartRateZonesState);
@@ -121,6 +128,18 @@ export class DashboardPage {
 
   private readonly modal = inject(NzModalService);
   private readonly viewContainer = inject(ViewContainerRef);
+
+  constructor() {
+    // Une séance supprimée depuis sa fiche disparaît des séances à venir et du mini-calendrier.
+    effect(() => {
+      if (this.sessionModal.deletions() > 0) {
+        untracked(() => {
+          this.miniCalendar.reload();
+          this.upcoming.reload();
+        });
+      }
+    });
+  }
 
   protected readonly statusMessage = computed(() => {
     if (this.state.isLoading()) {

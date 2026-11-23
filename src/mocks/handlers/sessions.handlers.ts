@@ -52,7 +52,8 @@ function sessionFromBody(body: Record<string, unknown>): SessionApi {
     date: String(body['date']),
     disciplineTypeKey: String(body['disciplineTypeKey']),
     durationMinutes: Number(body['durationMinutes']),
-    startTime: (body['startTime'] as string | null | undefined) ?? null,
+    startTime: String(body['startTime']),
+    recurrence: String(body['recurrence'] ?? 'aucune'),
     status: 'planifiee',
     modifiedManually: false,
     description: (body['description'] as string | null | undefined) ?? null,
@@ -100,6 +101,14 @@ export const sessionsHandlers = [
       },
       { status: 201 },
     );
+  }),
+  http.delete('*/api/sessions/:id', ({ params }) => {
+    const id = String(params['id']);
+    if (!sessions.some((item) => item.id === id)) {
+      return problem(404, 'SESSION_NOT_FOUND', 'Séance introuvable.');
+    }
+    sessions = sessions.filter((item) => item.id !== id);
+    return new HttpResponse(null, { status: 204 });
   }),
   http.patch('*/api/sessions/:id', async ({ params, request }) => {
     const id = String(params['id']);

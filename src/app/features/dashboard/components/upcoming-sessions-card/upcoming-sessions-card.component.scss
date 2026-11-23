@@ -1,0 +1,138 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.upcoming {
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-3);
+  padding: var(--sh-space-4);
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius);
+  background: var(--sh-surface);
+  box-shadow: var(--sh-shadow);
+}
+
+.upcoming__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-2);
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.upcoming__heading sh-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.upcoming__status {
+  margin: 0;
+  color: var(--sh-text-muted);
+}
+
+.upcoming__error {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-2);
+  align-items: flex-start;
+}
+
+.upcoming__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* Quatre lignes visibles ; au-delà, la liste défile. */
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 22rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.upcoming__list::-webkit-scrollbar {
+  display: none;
+}
+
+.upcoming__list:focus-visible {
+  outline: var(--sh-focus-ring);
+  outline-offset: 2px;
+}
+
+.upcoming__item {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--sh-space-3);
+  padding: var(--sh-space-2) var(--sh-space-3);
+  border: 0;
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-surface-raised);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.upcoming__item:focus-visible {
+  outline: var(--sh-focus-ring);
+  outline-offset: 2px;
+}
+
+.upcoming__when {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  min-width: 4.5rem;
+}
+
+.upcoming__date {
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+  text-transform: capitalize;
+}
+
+.upcoming__time {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.upcoming__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.upcoming__type {
+  font-weight: 600;
+}
+
+.upcoming__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+}
+
+.upcoming__duration {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 768px) {
+  /* Sur ordinateur, la liste remplit la hauteur commune de la rangée et défile au-delà. */
+  .upcoming__list {
+    max-height: none;
+  }
+}
