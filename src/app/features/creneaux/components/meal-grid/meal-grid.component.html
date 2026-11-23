@@ -16,12 +16,30 @@
       </tr>
     </thead>
     <tbody>
-      @for (meal of meals; track meal) {
+      @for (slot of meals; track slot) {
         <tr>
-          <th scope="row" class="meal-grid__meal">{{ mealLabel(meal) }}</th>
+          <th scope="row" class="meal-grid__meal">{{ mealLabel(slot) }}</th>
           @for (date of dates(); track date) {
-            <td class="meal-grid__cell">
-              <span class="visually-hidden">{{ cellLabel(meal, date) }}</span>
+            <td
+              class="meal-grid__cell"
+              [class.meal-grid__cell--hover]="isHovered(date, slot)"
+              (dragover)="onDragOver($event, date, slot)"
+              (dragleave)="onDragLeave(date, slot)"
+              (drop)="onDrop($event, date, slot)"
+            >
+              <span class="visually-hidden">{{ cellLabel(slot, date) }}</span>
+              @for (placedMeal of mealsIn(date, slot); track placedMeal.id) {
+                <button
+                  type="button"
+                  class="meal-grid__placed"
+                  [attr.aria-label]="
+                    fill(t.creneaux.placed.open, { name: nameOf(placedMeal.recipeId) })
+                  "
+                  (click)="mealSelected.emit(placedMeal)"
+                >
+                  {{ nameOf(placedMeal.recipeId) }}
+                </button>
+              }
             </td>
           }
         </tr>

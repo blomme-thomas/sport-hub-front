@@ -1,0 +1,27 @@
+<section class="recipe-library" aria-labelledby="recipe-library-heading">
+  <h2 id="recipe-library-heading" class="recipe-library__heading">
+    {{ t.creneaux.library.heading }}
+  </h2>
+  <p class="recipe-library__hint">
+    {{ canDrag() ? t.creneaux.library.hint : t.creneaux.library.mobileHint }}
+  </p>
+
+  @if (recipes().length === 0) {
+    <p class="recipe-library__empty">{{ t.creneaux.library.empty }}</p>
+  } @else {
+    <ul class="recipe-library__list" [attr.aria-label]="t.creneaux.library.list">
+      @for (recipe of recipes(); track recipe.id) {
+        <li>
+          <span
+            class="recipe-library__chip"
+            [class.recipe-library__chip--draggable]="canDrag()"
+            [draggable]="canDrag()"
+            (dragstart)="onDragStart($event, recipe)"
+          >
+            {{ recipe.name }}
+          </span>
+        </li>
+      }
+    </ul>
+  }
+</section>

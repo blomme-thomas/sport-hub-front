@@ -86,9 +86,22 @@
     <button nz-button type="button" (click)="state.reload()">{{ t.common.retry }}</button>
   </div>
 } @else if (mode() === 'alimentation') {
-  <div class="creneaux__content" [attr.aria-busy]="state.isLoading()">
-    <sh-meal-grid [dates]="weekDates()" />
+  @if (mealPlan.error(); as error) {
+    <div class="creneaux__error" role="alert">
+      <p>{{ error.userMessage }}</p>
+    </div>
+  }
+  <div class="creneaux__content" [attr.aria-busy]="state.isLoading() || mealPlan.isLoading()">
+    <sh-meal-grid
+      [dates]="weekDates()"
+      [plannedMeals]="mealPlan.meals()"
+      [recipeNames]="recipeNames()"
+      [canDrop]="canDrop()"
+      (placed)="onPlaced($event)"
+      (mealSelected)="openMeal($event)"
+    />
   </div>
+  <sh-recipe-library [recipes]="library.recipes()" [canDrag]="canDrop()" />
 } @else {
   <div
     class="creneaux__content"
@@ -253,6 +266,17 @@
         {{ t.creneaux.planning.generate }}
       </button>
     </div>
+  </sh-modal>
+}
+
+@if (selectedMeal(); as meal) {
+  <sh-modal [title]="nameOf(meal.recipeId)" width="min(640px, 96vw)" (closed)="closeMeal()">
+    <sh-meal-detail
+      [plannedMeal]="meal"
+      [totals]="selectedTotals()"
+      [removing]="removing()"
+      (removeRequested)="removeSelected()"
+    />
   </sh-modal>
 }
 
