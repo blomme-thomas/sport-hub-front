@@ -31,3 +31,14 @@ export interface RecipeRequestApi {
   mealTags: MealTag[];
   items: RecipeItemApi[];
 }
+
+/** Corps de `POST /api/recipes/preview` : composition à évaluer, rien n'est enregistré. */
+export interface RecipePreviewRequestApi {
+  items: RecipeItemApi[];
+}
+
+/** Réponse de `POST /api/recipes/preview`. */
+export interface RecipePreviewApi {
+  totals: NutritionTotals;
+  ignored: { foodId: string; reason: 'quantity-missing' | 'nutrition-missing' }[];
+}

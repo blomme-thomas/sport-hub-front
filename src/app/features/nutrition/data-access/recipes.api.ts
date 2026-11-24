@@ -2,9 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { API_BASE_URL } from '../../../core/config/api-base-url.token';
-import type { RecipeApi, RecipeDetailApi, RecipeRequestApi } from '../models/recipe.api-model';
-import type { Recipe, RecipeDetail } from '../models/recipe.model';
-import { toRecipe, toRecipeDetail } from './recipe.mapper';
+import type {
+  RecipeApi,
+  RecipeDetailApi,
+  RecipePreviewApi,
+  RecipePreviewRequestApi,
+  RecipeRequestApi,
+} from '../models/recipe.api-model';
+import type { Recipe, RecipeDetail, RecipePreview } from '../models/recipe.model';
+import { toRecipe, toRecipeDetail, toRecipePreview } from './recipe.mapper';
 
 /** Accès HTTP aux recettes ; les réponses sont mappées en modèle UI, les erreurs remontent telles quelles. */
 @Injectable({ providedIn: 'root' })
@@ -34,5 +40,19 @@ export class RecipesApi {
     return this.http
       .patch<RecipeApi>(`${this.baseUrl}/recipes/${encodeURIComponent(id)}`, body)
       .pipe(map(toRecipe));
+  }
+
+  /** Synthèse d'une composition non enregistrée, calculée par le back (aperçu en direct). */
+  preview(body: RecipePreviewRequestApi): Observable<RecipePreview> {
+    return this.http
+      .post<RecipePreviewApi>(`${this.baseUrl}/recipes/preview`, body)
+      .pipe(map(toRecipePreview));
+  }
+
+  /** Supprime une recette. Sans `confirm`, le back refuse (409 `RECIPE_IN_USE`) une recette planifiée. */
+  delete(id: string, confirm: boolean): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/recipes/${encodeURIComponent(id)}`, {
+      params: confirm ? { confirm: 'true' } : {},
+    });
   }
 }

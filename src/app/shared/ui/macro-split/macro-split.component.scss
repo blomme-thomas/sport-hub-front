@@ -1,0 +1,101 @@
+:host {
+  display: block;
+}
+
+/* Anneau à gauche, légende à droite ; l'ensemble passe sur plusieurs lignes en cas de manque de place. */
+.macro-split__body {
+  display: flex;
+  flex-wrap: var(--macro-split-wrap, wrap);
+  justify-content: var(--macro-split-justify, flex-start);
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
+/* Anneau : le fond en conic-gradient porte les secteurs, le centre masque l'intérieur.
+   Taille réglable par l'écran appelant via --macro-split-size (10 rem par défaut). */
+.macro-split__donut {
+  --size: var(--macro-split-size, 10rem);
+
+  position: relative;
+  flex: 0 0 var(--size);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+}
+
+.macro-split__center {
+  position: absolute;
+  inset: 16%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--macro-split-center, var(--sh-surface));
+  text-align: center;
+}
+
+.macro-split__kcal {
+  font-size: var(--macro-split-kcal-size, 1.5rem);
+  font-weight: 700;
+  color: var(--sh-text);
+}
+
+.macro-split__unit {
+  color: var(--sh-text-muted);
+  font-size: 0.75rem;
+}
+
+.macro-split__legend {
+  display: flex;
+  flex: 1 1 12rem;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+.macro-split__swatch {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 2px;
+}
+
+.macro-split__swatch--proteins {
+  background: var(--sh-accent-text);
+}
+
+.macro-split__swatch--carbohydrates {
+  background: var(--sh-orange);
+}
+
+.macro-split__swatch--fats {
+  background: var(--sh-warning);
+}
+
+.macro-split__grams {
+  margin-left: 0.25rem;
+  color: var(--sh-text-muted);
+  white-space: nowrap;
+}
+
+.macro-split__percent {
+  font-weight: 600;
+}
+
+.macro-split__empty {
+  margin: 0;
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}

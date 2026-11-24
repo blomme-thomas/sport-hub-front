@@ -1,0 +1,35 @@
+<div class="recipe-summary">
+  <section class="recipe-summary__section" aria-labelledby="recipe-summary-totals">
+    <h3 id="recipe-summary-totals">{{ t.creneaux.placed.totals }}</h3>
+    @if (detail() === undefined) {
+      <p class="recipe-summary__status" aria-live="polite">{{ t.creneaux.placed.loading }}</p>
+    } @else if (detail(); as d) {
+      <sh-macro-split
+        [calories]="d.totals.calories"
+        [proteins]="d.totals.proteins"
+        [carbohydrates]="d.totals.carbohydrates"
+        [fats]="d.totals.fats"
+      />
+    } @else {
+      <p class="recipe-summary__status">{{ t.creneaux.placed.unavailable }}</p>
+    }
+  </section>
+
+  @if (detail(); as d) {
+    <section class="recipe-summary__section" aria-labelledby="recipe-summary-foods">
+      <h3 id="recipe-summary-foods">{{ t.creneaux.placed.foods }}</h3>
+      @if (d.foods.length === 0) {
+        <p class="recipe-summary__status">{{ t.creneaux.placed.foodsEmpty }}</p>
+      } @else {
+        <ul class="recipe-summary__foods">
+          @for (food of d.foods; track $index) {
+            <li>
+              <span>{{ food.name }}</span>
+              <span class="recipe-summary__quantity">{{ quantityOf(food) }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</div>

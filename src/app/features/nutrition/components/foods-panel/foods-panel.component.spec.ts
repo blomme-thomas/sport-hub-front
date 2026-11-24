@@ -40,7 +40,7 @@ describe('FoodsPanelComponent', () => {
     );
     const rows = screen.getAllByRole('row').slice(1);
     expect(rows).toHaveLength(1);
-    expect(rows[0]).toHaveTextContent('Lentilles cuites');
+    expect(rows[0]).toHaveTextContent('Lentilles');
   });
 
   it('affiche un message quand la recherche ne trouve rien', async () => {

@@ -1,6 +1,11 @@
 <header class="creneaux__header">
   <h1 class="creneaux__title">{{ t.creneaux.title }}</h1>
   <div class="creneaux__mode" role="group" [attr.aria-label]="t.creneaux.mode.group">
+    <span
+      class="creneaux__mode-indicator"
+      [class.creneaux__mode-indicator--right]="mode() === modes[1]"
+      aria-hidden="true"
+    ></span>
     @for (option of modes; track option) {
       <button
         type="button"
@@ -62,14 +67,6 @@
   </div>
 
   <p class="creneaux__week" aria-live="polite">{{ weekLabel() }}</p>
-
-  @if (mode() === 'seances') {
-    <ul class="creneaux__legend" [attr.aria-label]="t.creneaux.legend">
-      @for (entry of state.legend(); track entry.typeKey) {
-        <li><sh-icon [name]="entry.style.icon" [color]="entry.style.color" />{{ entry.label }}</li>
-      }
-    </ul>
-  }
 </div>
 
 @if (mode() === 'seances') {
@@ -98,8 +95,10 @@
       [recipeNames]="recipeNames()"
       [canDrop]="canDrop()"
       (placed)="onPlaced($event)"
+      [draggedMealTags]="draggedRecipe()?.mealTags ?? null"
       [selectedRange]="periodSelection()"
       (mealSelected)="openMeal($event)"
+      (mealRemoveRequested)="removeFromGrid($event)"
       (rangeSelected)="onRangeSelected($event)"
     />
   </div>
@@ -122,10 +121,14 @@
         </button>
       </div>
     </div>
-  } @else if (canDrop()) {
-    <p class="creneaux__hint">{{ t.creneaux.shopping.select }}</p>
   }
-  <sh-recipe-library [recipes]="library.recipes()" [canDrag]="canDrop()" />
+  <sh-recipe-library
+    [recipes]="library.recipes()"
+    [canDrag]="canDrop()"
+    (recipeSelected)="openLibraryRecipe($event)"
+    (dragStarted)="draggedRecipe.set($event)"
+    (dragEnded)="draggedRecipe.set(null)"
+  />
 } @else {
   <div
     class="creneaux__content"
@@ -138,7 +141,6 @@
       (sessionSelected)="openSession($event)"
       (rangeSelected)="chooseRange($event)"
       (moved)="onMoved($event)"
-      (durationRequested)="openDuration($event)"
       (sessionDeleteRequested)="confirmDeleteSession($event)"
       (occurrenceToggled)="toggleOccurrence($event)"
     />
@@ -311,46 +313,12 @@
 
 @if (selectedMeal(); as meal) {
   <sh-modal [title]="nameOf(meal.recipeId)" width="min(640px, 96vw)" (closed)="closeMeal()">
-    <sh-meal-detail
-      [plannedMeal]="meal"
-      [totals]="selectedTotals()"
-      [removing]="removing()"
-      (removeRequested)="removeSelected()"
-    />
+    <sh-meal-detail [plannedMeal]="meal" [detail]="selectedDetail()" />
   </sh-modal>
 }
 
-@if (durationTarget(); as session) {
-  <sh-modal title="{{ t.creneaux.modals.duration }}" (closed)="closeDuration()">
-    <p class="creneaux__choice-text">
-      {{
-        fill(t.creneaux.duration.summary, {
-          discipline: disciplineLabel(session.disciplineTypeKey),
-          date: session.date,
-          time: session.startTime,
-        })
-      }}
-      @if (session.recurrence === 'hebdomadaire') {
-        {{ t.creneaux.duration.series }}
-      }
-    </p>
-    <label class="creneaux__choice-text" for="duration-minutes">{{
-      t.creneaux.duration.minutes
-    }}</label>
-    <nz-input-number
-      nzId="duration-minutes"
-      [ngModel]="durationValue()"
-      (ngModelChange)="durationValue.set($event)"
-      [nzMin]="durationMin"
-      [nzMax]="durationMax"
-      [nzStep]="durationStep"
-      [nzPrecision]="0"
-    />
-    <div class="creneaux__choice">
-      <button nz-button type="button" (click)="closeDuration()">{{ t.common.cancel }}</button>
-      <button nz-button nzType="primary" type="button" (click)="saveDuration()">
-        {{ t.common.save }}
-      </button>
-    </div>
+@if (libraryRecipe(); as recipe) {
+  <sh-modal [title]="recipe.name" width="min(640px, 96vw)" (closed)="closeLibraryRecipe()">
+    <sh-recipe-summary [detail]="libraryDetail()" />
   </sh-modal>
 }

@@ -9,22 +9,12 @@ function setup() {
 }
 
 describe('ShellComponent', () => {
-  it('affiche les liens actifs « Tableau de bord » et « Objectifs »', async () => {
+  it('affiche les liens de la navigation principale', async () => {
     await setup();
 
     expect(screen.getByRole('link', { name: 'Tableau de bord' })).toHaveAttribute('href', '/');
-    expect(screen.getByRole('link', { name: 'Objectifs' })).toHaveAttribute('href', '/goals');
     expect(screen.getByRole('link', { name: 'Calendrier' })).toHaveAttribute('href', '/creneaux');
     expect(screen.getByRole('link', { name: 'Nutrition' })).toHaveAttribute('href', '/nutrition');
-  });
-
-  it('affiche les entrées à venir désactivées, sans lien', async () => {
-    await setup();
-
-    const comingSoon = screen.getByText('Statistiques');
-    expect(comingSoon).toHaveAttribute('aria-disabled', 'true');
-    expect(comingSoon).toHaveAttribute('title', 'Bientôt disponible');
-    expect(screen.queryByRole('link', { name: 'Statistiques' })).not.toBeInTheDocument();
   });
 
   // Le bouton est masqué en CSS au-delà de 768px. jsdom applique désormais ces media queries : il
@@ -45,7 +35,7 @@ describe('ShellComponent', () => {
     const user = userEvent.setup();
     await setup();
     await user.click(screen.getByRole('button', { hidden: true }));
-    screen.getByRole('link', { name: 'Objectifs' }).focus();
+    screen.getByRole('link', { name: 'Calendrier' }).focus();
 
     await user.keyboard('{Escape}');
 

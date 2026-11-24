@@ -1,10 +1,17 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { firstValueFrom, forkJoin } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, catchError, debounceTime, firstValueFrom, forkJoin, of, switchMap } from 'rxjs';
 import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
 import type { Food } from '../models/food.model';
 import type { MealTag } from '../models/meal-tag';
-import type { Recipe, RecipeDetail, RecipeInput } from '../models/recipe.model';
+import type {
+  Recipe,
+  RecipeDetail,
+  RecipeInput,
+  RecipeItem,
+  RecipePreview,
+} from '../models/recipe.model';
 import { FoodsApi } from './foods.api';
 import { toRecipeRequest } from './recipe.mapper';
 import { countRecipesByMealTag, filterRecipes } from './recipe-filter';
@@ -15,6 +22,9 @@ import { RecipesApi } from './recipes.api';
  * appliqués localement. La synthèse de chaque recette vient du back (`GET /api/recipes/:id`) : la liste seule
  * n'en porte pas. Les noms d'aliments de la consultation viennent de la base d'aliments.
  */
+/** Délai après la dernière modification avant de demander un aperçu au back. */
+const PREVIEW_DEBOUNCE_MS = 250;
+
 @Injectable()
 export class RecipesState {
   private readonly api = inject(RecipesApi);
@@ -53,8 +63,43 @@ export class RecipesState {
   );
   readonly saving = this.savingValue.asReadonly();
 
+  /** Dernier aperçu reçu du back pour la composition en cours de saisie ; `null` tant qu'il n'y en a pas. */
+  private readonly previewValue = signal<RecipePreview | null>(null);
+  readonly preview = this.previewValue.asReadonly();
+  private readonly previewRequests = new Subject<readonly RecipeItem[] | null>();
+
   constructor() {
     this.reload();
+    this.previewRequests
+      .pipe(
+        debounceTime(PREVIEW_DEBOUNCE_MS),
+        switchMap((items) =>
+          items === null
+            ? of(null)
+            : this.api
+                .preview({
+                  items: items.map((item) => ({
+                    foodId: item.foodId,
+                    component: item.component,
+                    quantity: item.quantity,
+                  })),
+                })
+                .pipe(catchError(() => of(null))),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((preview) => this.previewValue.set(preview));
+  }
+
+  /** Demande l'aperçu de la composition saisie ; les appels rapprochés ne déclenchent qu'un seul calcul. */
+  previewComposition(items: readonly RecipeItem[]): void {
+    this.previewRequests.next(items);
+  }
+
+  /** Efface l'aperçu, à la fermeture du formulaire. */
+  clearPreview(): void {
+    this.previewValue.set(null);
+    this.previewRequests.next(null);
   }
 
   reload(): void {
@@ -82,6 +127,14 @@ export class RecipesState {
   /** @throws {AppError} quand l'API refuse la modification ; la liste n'est pas rechargée */
   update(id: string, input: RecipeInput): Promise<void> {
     return this.write(() => firstValueFrom(this.api.update(id, toRecipeRequest(input))));
+  }
+
+  /**
+   * @param confirm `true` retire aussi les repas planifiés de la recette ; sans lui, l'API refuse une recette planifiée.
+   * @throws {AppError} quand l'API refuse la suppression (`RECIPE_IN_USE` si la recette est planifiée)
+   */
+  remove(id: string, confirm: boolean): Promise<void> {
+    return this.write(() => firstValueFrom(this.api.delete(id, confirm)));
   }
 
   private async write(operation: () => Promise<unknown>): Promise<void> {

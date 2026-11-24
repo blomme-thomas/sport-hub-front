@@ -41,3 +41,9 @@ export interface RecipeInput {
   mealTags: MealTag[];
   items: RecipeItem[];
 }
+
+/** Synthèse d'une composition non enregistrée (aperçu en direct), même forme que la synthèse d'une recette. */
+export interface RecipePreview {
+  totals: NutritionTotals;
+  ignored: RecipeDetail['ignored'];
+}

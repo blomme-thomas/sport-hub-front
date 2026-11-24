@@ -18,7 +18,7 @@ import {
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzInputDirective } from 'ng-zorro-antd/input';
 import { TEXTS, fill } from '@shared/texts/texts';
-import { formatNutrient } from '@shared/utils/nutrient-format';
+import { MacroSplitComponent } from '@shared/ui/macro-split/macro-split.component';
 import { AppError } from '../../../../core/http/app-error';
 import type { FoodCategory } from '../../models/food-category';
 import type { Food } from '../../models/food.model';
@@ -29,6 +29,8 @@ import type {
   RecipeComponent,
   RecipeDetail,
   RecipeInput,
+  RecipeItem,
+  RecipePreview,
 } from '../../models/recipe.model';
 
 /** Composants d'une recette, dans l'ordre d'affichage. Chacun n'accepte que des aliments de sa famille. */
@@ -64,7 +66,7 @@ const atLeastOneMealTag = (control: AbstractControl): ValidationErrors | null =>
  */
 @Component({
   selector: 'sh-recipe-form',
-  imports: [ReactiveFormsModule, NzButtonComponent, NzInputDirective],
+  imports: [ReactiveFormsModule, NzButtonComponent, NzInputDirective, MacroSplitComponent],
   templateUrl: './recipe-form.component.html',
   styleUrl: './recipe-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -78,8 +80,13 @@ export class RecipeFormComponent implements OnInit {
   readonly submitting = input(false);
   readonly serverError = input<AppError | null>(null);
 
+  /** Aperçu du back pour la composition saisie, mis à jour à chaque modification. */
+  readonly preview = input<RecipePreview | null>(null);
+
   readonly saved = output<RecipeInput>();
   readonly cancelled = output<void>();
+  /** Composition saisie, émise à l'ouverture puis à chaque ajout, retrait ou changement d'aliment ou de quantité. */
+  readonly compositionChange = output<readonly RecipeItem[]>();
 
   private readonly fb = inject(FormBuilder).nonNullable;
 
@@ -124,18 +131,15 @@ export class RecipeFormComponent implements OnInit {
     };
   });
 
+  /** Aperçu du back s'il existe, sinon synthèse enregistrée de la recette. */
   protected readonly summary = computed(() => {
-    const totals = this.detail()?.totals;
-    if (totals === undefined) {
+    const current = this.preview() ?? this.detail();
+    if (current === null || current === undefined) {
       return null;
     }
-    const empty = this.t.nutrition.recipes.noValue;
     return {
-      kcal: formatNutrient(totals.calories, empty),
-      proteins: formatNutrient(totals.proteins, empty, 'g'),
-      carbohydrates: formatNutrient(totals.carbohydrates, empty, 'g'),
-      fats: formatNutrient(totals.fats, empty, 'g'),
-      ignored: this.detail()?.ignored.length ?? 0,
+      totals: current.totals,
+      ignored: current.ignored.length,
     };
   });
 
@@ -184,6 +188,7 @@ export class RecipeFormComponent implements OnInit {
       }
       this.rows.set(rows);
     }
+    this.emitComposition();
   }
 
   protected groupLabel(group: NutritionGroup): string {
@@ -204,6 +209,7 @@ export class RecipeFormComponent implements OnInit {
   protected addRow(group: NutritionGroup): void {
     const row: ItemRow = { key: this.nextKey++, foodId: null, quantity: null };
     this.rows.update((current) => ({ ...current, [group]: [...current[group], row] }));
+    this.emitComposition();
   }
 
   protected removeRow(group: NutritionGroup, key: number): void {
@@ -211,14 +217,35 @@ export class RecipeFormComponent implements OnInit {
       ...current,
       [group]: current[group].filter((row) => row.key !== key),
     }));
+    this.emitComposition();
   }
 
   protected setFood(group: NutritionGroup, key: number, value: string): void {
     this.updateRow(group, key, { foodId: value === '' ? null : value });
   }
 
-  protected setQuantity(group: NutritionGroup, key: number, value: string): void {
-    const quantity = value.trim() === '' ? null : Number(value);
+  /** Seuls les chiffres et un séparateur décimal (`.` ou `,`) sont acceptés dans la quantité. */
+  protected onQuantityKeydown(event: KeyboardEvent): void {
+    if (event.ctrlKey || event.metaKey || event.altKey || event.key.length !== 1) {
+      return;
+    }
+    if (!/[0-9.,]/.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+
+  protected onQuantityInput(group: NutritionGroup, key: number, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const clean = input.value.replace(/[^0-9.,]/g, '');
+    if (clean !== input.value) {
+      input.value = clean;
+    }
+    this.setQuantity(group, key, clean);
+  }
+
+  private setQuantity(group: NutritionGroup, key: number, value: string): void {
+    const normalized = value.trim().replace(',', '.');
+    const quantity = normalized === '' ? null : Number(normalized);
     this.updateRow(group, key, {
       quantity: quantity === null || Number.isNaN(quantity) ? null : quantity,
     });
@@ -268,6 +295,14 @@ export class RecipeFormComponent implements OnInit {
       ...current,
       [group]: current[group].map((row) => (row.key === key ? { ...row, ...patch } : row)),
     }));
+    this.emitComposition();
+  }
+
+  /** Émet la composition pour l'aperçu. Une quantité nulle ou négative n'est pas envoyée au back : elle est signalée dans le formulaire. */
+  private emitComposition(): void {
+    this.compositionChange.emit(
+      this.toItems().filter((item) => item.quantity === null || item.quantity > 0),
+    );
   }
 
   private hasInvalidRow(): boolean {
@@ -280,7 +315,12 @@ export class RecipeFormComponent implements OnInit {
 
   private toRecipeInput(): RecipeInput {
     const value = this.form.getRawValue();
-    const items = GROUPS.flatMap((group) =>
+    return { name: value.name, mealTags: [...value.mealTags], items: this.toItems() };
+  }
+
+  /** Lignes avec un aliment choisi, dans l'ordre d'affichage. */
+  private toItems(): RecipeItem[] {
+    return GROUPS.flatMap((group) =>
       this.rows()[group].flatMap((row) =>
         row.foodId === null
           ? []
@@ -293,7 +333,6 @@ export class RecipeFormComponent implements OnInit {
             ],
       ),
     );
-    return { name: value.name, mealTags: [...value.mealTags], items };
   }
 }
 

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzInputDirective } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { TEXTS } from '@shared/texts/texts';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { AppError } from '../../../../core/http/app-error';
@@ -33,6 +34,7 @@ export class FoodsPanelComponent {
   protected readonly categories = FOOD_CATEGORIES;
 
   private readonly messages = inject(NzMessageService);
+  private readonly modal = inject(NzModalService);
 
   /** Aliment en cours de modification, `'new'` pour une création, `null` quand la modale est fermée. */
   protected readonly editing = signal<Food | 'new' | null>(null);
@@ -67,6 +69,31 @@ export class FoodsPanelComponent {
 
   protected onSaved(input: FoodInput): void {
     void this.save(input);
+  }
+
+  /** Demande de suppression depuis une ligne du tableau : confirmation avant d'appeler l'API. */
+  protected confirmDelete(food: Food): void {
+    this.modal.confirm({
+      nzClassName: 'sh-modal',
+      nzTitle: TEXTS.nutrition.foods.confirmDelete.title,
+      nzContent: TEXTS.nutrition.foods.confirmDelete.content,
+      nzOkText: TEXTS.common.delete,
+      nzOkDanger: true,
+      nzCancelText: TEXTS.common.cancel,
+      nzOnOk: () => this.remove(food),
+    });
+  }
+
+  /** Un aliment utilisé dans une recette est refusé par l'API : le message du back est affiché. */
+  private async remove(food: Food): Promise<void> {
+    try {
+      await this.state.remove(food.id);
+    } catch (error) {
+      const appError = error instanceof AppError ? error : toAppError(error);
+      this.messages.error(appError.userMessage);
+      return;
+    }
+    this.messages.success(TEXTS.nutrition.foods.messages.deleted);
   }
 
   private async save(input: FoodInput): Promise<void> {

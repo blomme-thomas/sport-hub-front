@@ -75,18 +75,6 @@
                   <span class="week-grid__slot-tag">{{ t.creneaux.session.realized }}</span>
                 }
               </button>
-              @if (block.editable) {
-                <button
-                  type="button"
-                  class="week-grid__duration"
-                  [attr.aria-label]="
-                    fill(t.creneaux.session.editDuration, { time: block.timeRange })
-                  "
-                  (click)="onDurationClick(block)"
-                >
-                  {{ t.creneaux.session.duration }}
-                </button>
-              }
               @if (block.session; as session) {
                 <div class="week-grid__actions">
                   @if (session.recurrence === 'hebdomadaire') {
@@ -127,7 +115,7 @@
             </div>
           }
 
-          @if (preview(); as draft) {
+          @if (ghost(); as draft) {
             @if (draft.date === column.date) {
               <div
                 class="week-grid__preview"

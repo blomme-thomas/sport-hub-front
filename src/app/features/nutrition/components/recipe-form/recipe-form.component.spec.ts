@@ -62,7 +62,7 @@ describe('RecipeFormComponent', () => {
       .getAllByRole('option')
       .map((option) => option.textContent?.trim());
     expect(options).toContain('Poulet (blanc)');
-    expect(options).toContain('Lentilles cuites');
+    expect(options).toContain('Lentilles');
     expect(options).not.toContain('Riz cuit');
   });
 
@@ -71,7 +71,7 @@ describe('RecipeFormComponent', () => {
 
     const select = await addRow(user, 'Autre (optionnel)');
 
-    expect(within(select).getAllByRole('option')).toHaveLength(foods.length + 1);
+    expect(within(select).getAllByRole('option')).toHaveLength(foods.length);
   });
 
   it('signale une ligne sans aliment et bloque l’enregistrement', async () => {
@@ -95,7 +95,7 @@ describe('RecipeFormComponent', () => {
     const protein = await addRow(user, 'Protéine');
     await user.selectOptions(protein, CHICKEN.id);
     await user.type(
-      within(screen.getByRole('group', { name: 'Protéine' })).getByRole('spinbutton'),
+      within(screen.getByRole('group', { name: 'Protéine' })).getByRole('textbox'),
       '150',
     );
 
@@ -120,9 +120,7 @@ describe('RecipeFormComponent', () => {
     await user.click(screen.getByRole('checkbox', { name: 'Midi' }));
     const feculent = await addRow(user, 'Féculent');
     await user.selectOptions(feculent, RICE.id);
-    const quantity = within(screen.getByRole('group', { name: 'Féculent' })).getByRole(
-      'spinbutton',
-    );
+    const quantity = within(screen.getByRole('group', { name: 'Féculent' })).getByRole('textbox');
 
     await user.type(quantity, '0');
     await user.click(screen.getByRole('button', { name: 'Enregistrer' }));
@@ -141,17 +139,15 @@ describe('RecipeFormComponent', () => {
     expect(screen.getByRole('checkbox', { name: 'Matin' })).not.toBeChecked();
     expect(screen.getByRole('combobox', { name: 'Protéine : aliment' })).toHaveValue(CHICKEN.id);
     expect(
-      within(screen.getByRole('group', { name: 'Féculent' })).getByRole('spinbutton'),
-    ).toHaveValue(120);
+      within(screen.getByRole('group', { name: 'Féculent' })).getByRole('textbox'),
+    ).toHaveValue('120');
     expect(screen.getByText('437,5')).toBeInTheDocument();
   });
 
   it('indique qu’une création n’a pas encore de synthèse', async () => {
     await setup();
 
-    expect(
-      screen.getByText('Enregistrez la recette pour afficher sa synthèse.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Ajoutez des aliments pour voir la synthèse.')).toBeInTheDocument();
   });
 
   it('annule sans émettre de recette', async () => {

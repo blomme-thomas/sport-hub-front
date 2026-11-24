@@ -38,16 +38,29 @@
             >
               <span class="visually-hidden">{{ cellLabel(slot, date) }}</span>
               @for (placedMeal of mealsIn(date, slot); track placedMeal.id) {
-                <button
-                  type="button"
-                  class="meal-grid__placed"
-                  [attr.aria-label]="
-                    fill(t.creneaux.placed.open, { name: nameOf(placedMeal.recipeId) })
-                  "
-                  (click)="mealSelected.emit(placedMeal)"
-                >
-                  {{ nameOf(placedMeal.recipeId) }}
-                </button>
+                <div class="meal-grid__placed">
+                  <button
+                    type="button"
+                    class="meal-grid__open"
+                    [attr.aria-label]="
+                      fill(t.creneaux.placed.open, { name: nameOf(placedMeal.recipeId) })
+                    "
+                    (click)="mealSelected.emit(placedMeal)"
+                  >
+                    {{ nameOf(placedMeal.recipeId) }}
+                  </button>
+                  <button
+                    type="button"
+                    class="meal-grid__remove"
+                    [attr.aria-label]="
+                      fill(t.creneaux.placed.removeLabel, { name: nameOf(placedMeal.recipeId) })
+                    "
+                    [attr.title]="t.creneaux.placed.remove"
+                    (click)="mealRemoveRequested.emit(placedMeal)"
+                  >
+                    ✕
+                  </button>
+                </div>
               }
             </td>
           }

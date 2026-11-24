@@ -65,10 +65,13 @@ describe('WeekGridComponent', () => {
   beforeAll(() => {
     globalThis.PointerEvent = PointerEventPolyfill as unknown as typeof PointerEvent;
     Element.prototype.setPointerCapture = vi.fn();
+    // 1160 px de haut : la grille mesure 72 px par heure, comme les positions attendues ci-dessous.
+    vi.stubGlobal('innerHeight', 1160);
   });
 
   afterAll(() => {
     globalThis.PointerEvent = originalPointerEvent;
+    vi.unstubAllGlobals();
   });
 
   it('affiche une colonne par jour, nommée par sa date complète', async () => {

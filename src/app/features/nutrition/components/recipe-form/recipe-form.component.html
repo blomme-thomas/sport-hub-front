@@ -54,11 +54,12 @@
               <div class="recipe-form__select-wrap">
                 <select
                   class="recipe-form__select"
+                  [class.recipe-form__select--empty]="row.foodId === null"
                   [attr.aria-label]="groupLabel(group) + ' : aliment'"
                   [attr.aria-invalid]="foodErrorOf(row) !== null"
                   (change)="setFood(group, row.key, $any($event.target).value)"
                 >
-                  <option value="" [selected]="row.foodId === null">
+                  <option value="" disabled hidden [selected]="row.foodId === null">
                     {{ t.nutrition.recipes.form.pickFood }}
                   </option>
                   @for (food of optionsByGroup()[group]; track food.id) {
@@ -75,14 +76,15 @@
               <div class="recipe-form__quantity-wrap">
                 <input
                   class="recipe-form__quantity"
-                  type="number"
-                  min="0"
-                  step="any"
+                  type="text"
+                  inputmode="decimal"
+                  autocomplete="off"
                   [attr.aria-label]="
                     t.nutrition.recipes.form.quantity + ' (' + (unitOf(row.foodId) || '—') + ')'
                   "
                   [value]="row.quantity ?? ''"
-                  (input)="setQuantity(group, row.key, $any($event.target).value)"
+                  (keydown)="onQuantityKeydown($event)"
+                  (input)="onQuantityInput(group, row.key, $event)"
                 />
                 <span class="recipe-form__unit">{{ unitOf(row.foodId) }}</span>
                 @if (quantityErrorOf(row); as message) {
@@ -93,6 +95,7 @@
               <button
                 nz-button
                 type="button"
+                class="recipe-form__remove"
                 [attr.aria-label]="
                   fill(t.nutrition.recipes.form.removeFood, {
                     name: foodById().get(row.foodId ?? '')?.name ?? groupLabel(group),
@@ -115,24 +118,12 @@
     <aside class="recipe-form__summary" aria-labelledby="recipe-summary-heading">
       <h3 id="recipe-summary-heading">{{ t.nutrition.recipes.form.summary }}</h3>
       @if (summary(); as s) {
-        <div class="recipe-form__kcal">
-          <span class="recipe-form__kcal-value">{{ s.kcal }}</span>
-          <span>kcal</span>
-        </div>
-        <dl class="recipe-form__macros">
-          <div>
-            <dt>{{ t.nutrition.recipes.view.proteins }}</dt>
-            <dd>{{ s.proteins }}</dd>
-          </div>
-          <div>
-            <dt>{{ t.nutrition.recipes.view.carbohydrates }}</dt>
-            <dd>{{ s.carbohydrates }}</dd>
-          </div>
-          <div>
-            <dt>{{ t.nutrition.recipes.view.fats }}</dt>
-            <dd>{{ s.fats }}</dd>
-          </div>
-        </dl>
+        <sh-macro-split
+          [calories]="s.totals.calories"
+          [proteins]="s.totals.proteins"
+          [carbohydrates]="s.totals.carbohydrates"
+          [fats]="s.totals.fats"
+        />
         @if (s.ignored > 0) {
           <p class="recipe-form__hint">
             {{ fill(t.nutrition.recipes.view.ignored, { count: s.ignored }) }}

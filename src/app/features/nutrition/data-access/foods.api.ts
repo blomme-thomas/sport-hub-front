@@ -28,4 +28,9 @@ export class FoodsApi {
       .patch<FoodApi>(`${this.baseUrl}/foods/${encodeURIComponent(id)}`, body)
       .pipe(map(toFood));
   }
+
+  /** Supprime un aliment. Le back refuse (409 `FOOD_IN_USE`) un aliment utilisé dans une recette. */
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/foods/${encodeURIComponent(id)}`);
+  }
 }

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzInputDirective } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { TEXTS } from '@shared/texts/texts';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { AppError } from '../../../../core/http/app-error';
@@ -35,6 +36,7 @@ export class RecipesPanelComponent {
   protected readonly mealTags = MEAL_TAGS;
 
   private readonly messages = inject(NzMessageService);
+  private readonly modal = inject(NzModalService);
 
   /** Recette consultée dans la modale, `null` quand elle est fermée. */
   protected readonly viewing = signal<RecipeDetail | null>(null);
@@ -89,10 +91,54 @@ export class RecipesPanelComponent {
   protected closeForm(): void {
     this.editing.set(null);
     this.formError.set(null);
+    this.state.clearPreview();
   }
 
   protected onSaved(input: RecipeInput): void {
     void this.save(input);
+  }
+
+  /** Demande de suppression depuis la consultation : confirmation avant d'appeler l'API. */
+  protected confirmDelete(recipe: RecipeDetail): void {
+    this.modal.confirm({
+      nzClassName: 'sh-modal',
+      nzTitle: TEXTS.nutrition.recipes.deleteConfirm.title,
+      nzContent: TEXTS.nutrition.recipes.deleteConfirm.content,
+      nzOkText: TEXTS.common.delete,
+      nzOkDanger: true,
+      nzCancelText: TEXTS.common.cancel,
+      nzOnOk: () => this.remove(recipe, false),
+    });
+  }
+
+  /** Recette planifiée : l'API refuse sans confirmation, on demande alors de retirer aussi ses repas. */
+  private confirmDeleteInUse(recipe: RecipeDetail): void {
+    this.modal.confirm({
+      nzClassName: 'sh-modal',
+      nzTitle: TEXTS.nutrition.recipes.deleteConfirm.inUseTitle,
+      nzContent: TEXTS.nutrition.recipes.deleteConfirm.inUseContent,
+      nzOkText: TEXTS.common.delete,
+      nzOkDanger: true,
+      nzCancelText: TEXTS.common.cancel,
+      nzOnOk: () => this.remove(recipe, true),
+    });
+  }
+
+  private async remove(recipe: RecipeDetail, confirm: boolean): Promise<void> {
+    try {
+      await this.state.remove(recipe.id, confirm);
+    } catch (error) {
+      const appError = error instanceof AppError ? error : toAppError(error);
+      if (appError.code === 'RECIPE_IN_USE' && !confirm) {
+        this.confirmDeleteInUse(recipe);
+        return;
+      }
+      this.messages.error(appError.userMessage);
+      return;
+    }
+
+    this.viewing.set(null);
+    this.messages.success(TEXTS.nutrition.recipes.deleteConfirm.messages.deleted);
   }
 
   private async save(input: RecipeInput): Promise<void> {

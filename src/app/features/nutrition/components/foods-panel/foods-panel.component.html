@@ -48,7 +48,11 @@
   } @else if (state.visible().length === 0) {
     <p class="foods-panel__status">{{ t.nutrition.foods.empty }}</p>
   } @else {
-    <sh-food-table [foods]="state.visible()" (edit)="openForm($event)" />
+    <sh-food-table
+      [foods]="state.visible()"
+      (edit)="openForm($event)"
+      (delete)="confirmDelete($event)"
+    />
   }
 </div>
 

@@ -1,5 +1,10 @@
-import type { RecipeApi, RecipeDetailApi, RecipeRequestApi } from '../models/recipe.api-model';
-import type { Recipe, RecipeDetail, RecipeInput } from '../models/recipe.model';
+import type {
+  RecipeApi,
+  RecipeDetailApi,
+  RecipePreviewApi,
+  RecipeRequestApi,
+} from '../models/recipe.api-model';
+import type { Recipe, RecipeDetail, RecipeInput, RecipePreview } from '../models/recipe.model';
 
 export function toRecipe(api: RecipeApi): Recipe {
   return {
@@ -33,5 +38,13 @@ export function toRecipeRequest(input: RecipeInput): RecipeRequestApi {
       component: item.component,
       quantity: item.quantity,
     })),
+  };
+}
+
+/** Synthèse d'aperçu telle que renvoyée par le back : aucun total n'est recalculé ici. */
+export function toRecipePreview(api: RecipePreviewApi): RecipePreview {
+  return {
+    totals: { ...api.totals },
+    ignored: api.ignored.map((line) => ({ ...line })),
   };
 }

@@ -1,10 +1,36 @@
+/* Titre à gauche, sélecteur Séances / Alimentation au centre de la ligne quel que soit le mode. */
 .creneaux__header {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: var(--sh-space-3);
   margin-bottom: var(--sh-space-4);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+}
+
+.creneaux__header > .creneaux__mode {
+  grid-column: 2;
+  justify-self: center;
+
+  @media (max-width: 768px) {
+    grid-column: 1;
+    justify-self: start;
+  }
+}
+
+/* Actions du mode Séances : à droite, sur la même ligne que le sélecteur (qui reste au centre). */
+.creneaux__header > .creneaux__actions {
+  grid-column: 3;
+  justify-self: end;
+
+  @media (max-width: 768px) {
+    grid-column: 1;
+    justify-self: start;
+  }
 }
 
 .creneaux__title {
@@ -30,22 +56,6 @@
   margin: 0;
   font-weight: 600;
   color: var(--sh-text);
-}
-
-.creneaux__legend {
-  display: flex;
-  gap: var(--sh-space-4);
-  margin: 0 0 0 auto;
-  padding: 0;
-  list-style: none;
-  color: var(--sh-text-muted);
-  font-size: 0.875rem;
-}
-
-.creneaux__legend li {
-  display: flex;
-  align-items: center;
-  gap: var(--sh-space-2);
 }
 
 .creneaux__swatch {
@@ -105,16 +115,35 @@
   opacity: 0.6;
 }
 
-/* Bascule Séances / Alimentation : deux boutons, le mode actif est marqué par aria-pressed. */
+/* Bascule Séances / Alimentation : deux boutons égaux ; une pastille glisse derrière le mode actif (aria-pressed).
+   La transition est désactivée par la préférence « réduire les animations » (règle globale). */
 .creneaux__mode {
-  display: inline-flex;
-  gap: 0.25rem;
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
   padding: 0.25rem;
   border: 1px solid var(--sh-border);
   border-radius: var(--sh-radius-sm);
 }
 
+.creneaux__mode-indicator {
+  position: absolute;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: calc((100% - 0.5rem) / 2);
+  border-radius: var(--sh-radius-sm);
+  background: var(--sh-accent);
+  transition: transform 0.2s ease;
+
+  &--right {
+    transform: translateX(100%);
+  }
+}
+
 .creneaux__mode-button {
+  position: relative;
+  z-index: 1;
   padding: 0.375rem 0.875rem;
   border: none;
   border-radius: var(--sh-radius-sm);
@@ -124,8 +153,8 @@
   font-weight: 500;
   cursor: pointer;
 
+  /* Le fond du mode actif est fourni par la pastille glissante, dessous. */
   &[aria-pressed='true'] {
-    background: var(--sh-accent);
     color: var(--sh-text-on-accent);
   }
 

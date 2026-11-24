@@ -20,38 +20,6 @@ function sessionOccurrence(status: 'planifiee' | 'realisee') {
 }
 
 test.describe('Calendrier : modifier la durée d’une séance', () => {
-  test('change la durée depuis la vignette et enregistre la nouvelle durée', async ({ page }) => {
-    let patched: Record<string, unknown> | undefined;
-    await page.route(SLOTS_URL, (route) =>
-      route.fulfill({ json: { from: '', to: '', items: [] } }),
-    );
-    await page.route(DISCIPLINES_URL, (route) =>
-      route.fulfill({ json: { items: [{ typeKey: 'running', label: 'Course à pied' }] } }),
-    );
-    await page.route(SESSIONS_URL, (route) =>
-      route.fulfill({ json: { items: [sessionOccurrence('planifiee')] } }),
-    );
-    await page.route(SESSION_URL, (route) => {
-      if (route.request().method() === 'PATCH') {
-        patched = route.request().postDataJSON() as Record<string, unknown>;
-        return route.fulfill({ json: { id: 'session-course' } });
-      }
-      return route.fulfill({ status: 404, json: { code: 'SESSION_NOT_FOUND', status: 404 } });
-    });
-
-    const calendrier = new CreneauxPage(page);
-    await calendrier.goto();
-
-    await page.getByRole('button', { name: /Modifier la durée de la séance 18:00/ }).click();
-    const dialog = page.getByRole('dialog').filter({ hasText: 'Durée en minutes' });
-    await expect(dialog).toBeVisible();
-    await dialog.getByRole('spinbutton').fill('60');
-    await dialog.getByRole('button', { name: 'Enregistrer', exact: true }).click();
-
-    await expect.poll(() => patched).toEqual({ durationMinutes: 60 });
-    await expect(page.getByText('Durée modifiée.')).toBeVisible();
-  });
-
   test('une séance réalisée n’a pas de bouton de durée et ne se glisse pas', async ({ page }) => {
     let patchCalls = 0;
     await page.route(SLOTS_URL, (route) =>

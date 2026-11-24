@@ -16,11 +16,11 @@ describe('RecipeCardComponent', () => {
   it('affiche le repas et les totaux fournis par le back', async () => {
     await render(RecipeCardComponent, { inputs: { recipe, detail } });
 
-    expect(screen.getByRole('button', { name: OPEN_NAME })).toHaveTextContent('Midi');
-    expect(screen.getByText('437,5 kcal')).toBeInTheDocument();
-    expect(screen.getByText('52,5 g P')).toBeInTheDocument();
-    expect(screen.getByText('40,2 g G')).toBeInTheDocument();
-    expect(screen.getByText('6,2 g L')).toBeInTheDocument();
+    expect(screen.getByText('Midi')).toBeInTheDocument();
+    expect(screen.getByText('437,5')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', { name: /Répartition des calories : Protéines 49 %/ }),
+    ).toBeInTheDocument();
   });
 
   it('affiche un message tant que la synthèse n’est pas chargée', async () => {

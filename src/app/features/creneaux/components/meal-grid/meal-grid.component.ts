@@ -66,9 +66,13 @@ export class MealGridComponent {
   readonly canDrop = input(false);
   /** Période déjà choisie, affichée en surbrillance. */
   readonly selectedRange = input<DateRange | null>(null);
+  /** Repas prévus pour la recette en cours de glissement ; `null` hors glissement. Une case hors de ces repas n'accepte pas le dépôt. */
+  readonly draggedMealTags = input<readonly MealSlot[] | null>(null);
 
   readonly placed = output<PlacementRequest>();
   readonly mealSelected = output<PlannedMeal>();
+  /** Retrait direct d'un repas depuis sa carte, sans ouvrir la fiche. */
+  readonly mealRemoveRequested = output<PlannedMeal>();
   readonly rangeSelected = output<DateRange>();
 
   protected readonly t = TEXTS;
@@ -131,8 +135,14 @@ export class MealGridComponent {
     return range !== null && date >= range.from && date <= range.to;
   }
 
+  /** Vrai si la case accepte la recette en cours de glissement (toutes, hors glissement). */
+  private acceptsDragged(meal: MealSlot): boolean {
+    const allowed = this.draggedMealTags();
+    return allowed === null || allowed.includes(meal);
+  }
+
   protected onDragOver(event: DragEvent, date: string, meal: MealSlot): void {
-    if (!this.canDrop()) {
+    if (!this.canDrop() || !this.acceptsDragged(meal)) {
       return;
     }
     event.preventDefault();
@@ -150,7 +160,7 @@ export class MealGridComponent {
 
   protected onDrop(event: DragEvent, date: string, meal: MealSlot): void {
     this.hoveredCell.set(null);
-    if (!this.canDrop()) {
+    if (!this.canDrop() || !this.acceptsDragged(meal)) {
       return;
     }
     event.preventDefault();

@@ -1,8 +1,13 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, forkJoin } from 'rxjs';
+import { TEXTS } from '@shared/texts/texts';
 import { AppError } from '../../../core/http/app-error';
 import { toAppError } from '../../../core/http/problem-details.mapper';
-import type { LibraryRecipe, RecipeTotals } from '../models/library-recipe.model';
+import type {
+  LibraryRecipe,
+  MealRecipeDetail,
+  RecipeFoodLine,
+} from '../models/library-recipe.model';
 import { RecipeLibraryApi } from './recipe-library.api';
 
 /** Bibliothèque de recettes à placer dans le calendrier. Chargée quand le mode alimentation est affiché. */
@@ -22,10 +27,25 @@ export class RecipeLibraryState {
     void this.load();
   }
 
-  /** Totaux d'une recette, calculés par le back. @throws {AppError} si la recette est refusée */
-  async totalsOf(id: string): Promise<RecipeTotals> {
+  /**
+   * Totaux et composition d'une recette (noms et unités des aliments inclus).
+   * @throws {AppError} si la recette ou la liste des aliments est refusée
+   */
+  async detailOf(id: string): Promise<MealRecipeDetail> {
     try {
-      return await firstValueFrom(this.api.totals(id));
+      const { composition, foods } = await firstValueFrom(
+        forkJoin({ composition: this.api.composition(id), foods: this.api.foods() }),
+      );
+      const foodsById = new Map(foods.map((food) => [food.id, food]));
+      const lines: RecipeFoodLine[] = composition.items.map((item) => {
+        const food = foodsById.get(item.foodId);
+        return {
+          name: food?.name ?? TEXTS.creneaux.placed.unknownFood,
+          quantity: item.quantity,
+          unit: food?.unit ?? '',
+        };
+      });
+      return { totals: composition.totals, foods: lines };
     } catch (error) {
       throw error instanceof AppError ? error : toAppError(error);
     }

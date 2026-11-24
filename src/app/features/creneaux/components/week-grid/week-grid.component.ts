@@ -3,10 +3,13 @@ import {
   Component,
   ElementRef,
   computed,
+  effect,
   inject,
   input,
   output,
   signal,
+  afterNextRender,
+  untracked,
 } from '@angular/core';
 import { IconComponent, type IconName } from '@shared/ui/icon/icon.component';
 import { layoutDaySlots, minutesToTime, timeToMinutes } from '../../data-access/slot.mapper';
@@ -17,8 +20,12 @@ import type { Slot, SlotDefaults } from '../../models/slot.model';
 import type { WeekDay } from '../../models/week-day.model';
 import { fill, TEXTS } from '@shared/texts/texts';
 
-/** Hauteur d'une heure dans la grille, en pixels. */
-const PX_PER_HOUR = 72;
+/** Hauteur d'une heure dans la grille, en pixels : au maximum, et au minimum sur un petit écran. */
+const PX_PER_HOUR_MAX = 72;
+const PX_PER_HOUR_MIN = 30;
+/** Espace laissé sous la grille et hauteur de la ligne des jours : la grille prend le reste de la fenêtre. */
+const BOTTOM_MARGIN_PX = 48;
+const DAY_HEADER_PX = 32;
 /** Fin de la grille : la dernière case est 21:00–22:00 (la plage 22:00–24:00 n'est pas utilisée). */
 const HOURS = 22;
 const MINUTES_PER_HOUR = 60;
@@ -34,6 +41,8 @@ const BLOCK_GAP_PX = 2;
 const DEFAULT_FIRST_HOUR = 7;
 /** Distance à partir de laquelle un appui devient un déplacement (et non un clic). */
 const MOVE_THRESHOLD_PX = 5;
+/** Délai au-delà duquel la carte lâchée reprend sa position, même si les données n'ont pas changé. */
+const HOLD_TIMEOUT_MS = 3000;
 
 /** Élément placé sur la grille : un créneau ou une séance. */
 type GridItem =
@@ -86,6 +95,14 @@ interface PositionedBlock {
   color: string;
 }
 
+/** Zone dessinée dans une colonne : emplacement d'un déplacement, ou plage sélectionnée. */
+interface PlacementPreview {
+  date: string;
+  top: number;
+  height: number;
+  label: string;
+}
+
 interface GridColumn {
   date: string;
   shortLabel: string;
@@ -107,6 +124,7 @@ interface GridColumn {
   templateUrl: './week-grid.component.html',
   styleUrl: './week-grid.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(window:resize)': 'onResize()' },
 })
 export class WeekGridComponent {
   protected readonly t = TEXTS;
@@ -119,8 +137,6 @@ export class WeekGridComponent {
   readonly sessionSelected = output<SessionOccurrence>();
   readonly rangeSelected = output<SlotDefaults>();
   readonly moved = output<GridMove>();
-  /** Demande de modification rapide de la durée, depuis la vignette d'une séance planifiée. */
-  readonly durationRequested = output<SessionOccurrence>();
   /** Demande de suppression depuis la corbeille de la vignette. */
   readonly sessionDeleteRequested = output<SessionOccurrence>();
   /** Annulation de cette occurrence, ou restauration si elle est déjà annulée (séances récurrentes). */
@@ -128,15 +144,46 @@ export class WeekGridComponent {
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  protected readonly hourHeight = PX_PER_HOUR;
+  /** Hauteur de la fenêtre, pour adapter la hauteur des heures au lieu de faire défiler la page. */
+  /** Hauteur disponible sous le haut de la grille, mesurée dans la page. */
+  private readonly availableHeight = signal(
+    typeof window === 'undefined' ? 900 : window.innerHeight,
+  );
+  protected readonly measured = afterNextRender(() => this.measure());
+
   /** Première heure affichée : 06:00, ou plus tôt si une séance commence avant. */
   protected readonly firstHour = computed(() => firstHourOf(this.days()));
+  /** Hauteur d'une heure en pixels : la grille tient dans la fenêtre, entre le minimum et le maximum. */
+  protected readonly hourPx = computed(() =>
+    Math.min(
+      PX_PER_HOUR_MAX,
+      Math.max(
+        PX_PER_HOUR_MIN,
+        Math.floor(
+          (this.availableHeight() - DAY_HEADER_PX - BOTTOM_MARGIN_PX) / (HOURS - this.firstHour()),
+        ),
+      ),
+    ),
+  );
+  /** Hauteur d'un quart d'heure : le pas du déplacement vertical. */
+  private readonly snapPx = computed(() => (this.hourPx() * SNAP_MINUTES) / MINUTES_PER_HOUR);
   /** Décalage de la grille en minutes depuis minuit (la première heure affichée). */
   private readonly offsetMinutes = computed(() => this.firstHour() * MINUTES_PER_HOUR);
-  protected readonly gridHeight = computed(() => (HOURS - this.firstHour()) * PX_PER_HOUR);
+
+  onResize(): void {
+    this.measure();
+  }
+
+  /** Mesure l'espace entre le haut de la grille et le bas de la fenêtre : la grille le remplit. */
+  private measure(): void {
+    const top = this.host.nativeElement.getBoundingClientRect().top;
+    this.availableHeight.set(window.innerHeight - top);
+  }
+
+  protected readonly gridHeight = computed(() => (HOURS - this.firstHour()) * this.hourPx());
   protected readonly hours = computed(() =>
     Array.from({ length: HOURS - this.firstHour() }, (_, index) => ({
-      top: index * PX_PER_HOUR,
+      top: index * this.hourPx(),
       label: `${String(this.firstHour() + index).padStart(2, '0')}:00`,
     })),
   );
@@ -144,6 +191,13 @@ export class WeekGridComponent {
   private readonly drag = signal<DragState | null>(null);
   private move: MoveState | null = null;
   private suppressClick = false;
+  /** Carte lâchée, gardée à sa position le temps que la grille se mette à jour. */
+  private heldCard: HTMLElement | null = null;
+  /** Dès que les données de la semaine changent, la carte lâchée reprend sa position normale (elle est alors à la bonne place). */
+  protected readonly releaseOnNewData = effect(() => {
+    this.days();
+    untracked(() => this.releaseCard());
+  });
 
   protected readonly columns = computed<GridColumn[]>(() =>
     this.days().map((day) => ({
@@ -154,9 +208,10 @@ export class WeekGridComponent {
         const item = positioned.slot;
         const timeRange = `${minutesToTime(positioned.startMinutes)} – ${minutesToTime(positioned.endMinutes)}`;
         const geometry = {
-          top: ((positioned.startMinutes - this.offsetMinutes()) * PX_PER_HOUR) / MINUTES_PER_HOUR,
+          top:
+            ((positioned.startMinutes - this.offsetMinutes()) * this.hourPx()) / MINUTES_PER_HOUR,
           height: Math.max(
-            ((positioned.endMinutes - positioned.startMinutes) * PX_PER_HOUR) / MINUTES_PER_HOUR -
+            ((positioned.endMinutes - positioned.startMinutes) * this.hourPx()) / MINUTES_PER_HOUR -
               BLOCK_GAP_PX,
             MIN_BLOCK_HEIGHT_PX,
           ),
@@ -212,8 +267,16 @@ export class WeekGridComponent {
     })),
   );
 
+  /** Emplacement où l'élément déplacé va se poser (jour, position, fin), pendant le glissement. */
+  protected readonly movePreview = signal<PlacementPreview | null>(null);
+
+  /** Ce qui est dessiné dans la colonne : l'emplacement d'un déplacement, sinon la plage en cours de sélection. */
+  protected readonly ghost = computed<PlacementPreview | null>(
+    () => this.movePreview() ?? this.preview(),
+  );
+
   /** Plage en cours de sélection, dessinée dans la colonne concernée. */
-  protected readonly preview = computed(() => {
+  protected readonly preview = computed<PlacementPreview | null>(() => {
     const current = this.drag();
     if (current === null) {
       return null;
@@ -221,8 +284,8 @@ export class WeekGridComponent {
     const { start, end } = rangeOf(current);
     return {
       date: current.date,
-      top: ((start - this.offsetMinutes()) * PX_PER_HOUR) / MINUTES_PER_HOUR,
-      height: ((end - start) * PX_PER_HOUR) / MINUTES_PER_HOUR,
+      top: ((start - this.offsetMinutes()) * this.hourPx()) / MINUTES_PER_HOUR,
+      height: ((end - start) * this.hourPx()) / MINUTES_PER_HOUR,
       label: `${minutesToTime(start)} – ${minutesToTime(end)}`,
     };
   });
@@ -244,8 +307,10 @@ export class WeekGridComponent {
     if (event.button !== 0 || !block.movable) {
       return;
     }
-    const element = event.currentTarget as HTMLElement;
-    element.setPointerCapture(event.pointerId);
+    const slot = event.currentTarget as HTMLElement;
+    slot.setPointerCapture(event.pointerId);
+    // La carte entière (vignette et actions) suit le glissement : on déplace l'élément parent.
+    const element = slot.closest<HTMLElement>('.week-grid__item') ?? slot;
     this.move = {
       block,
       element,
@@ -268,9 +333,44 @@ export class WeekGridComponent {
       return;
     }
     move.moved = true;
-    move.deltaY = deltaY;
-    move.element.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+    // Le déplacement vertical avance par quart d'heure : la carte et son emplacement restent alignés.
+    const snappedY = Math.round(deltaY / this.snapPx()) * this.snapPx();
+    move.deltaY = snappedY;
+    move.element.style.transform = `translate(${deltaX}px, ${snappedY}px)`;
     move.element.style.zIndex = '2';
+    this.movePreview.set(this.placementOf(move.block, event.clientX, snappedY));
+  }
+
+  /** Emplacement où la carte se poserait : jour sous le pointeur, heure de début décalée et fin calculée. */
+  /** Garde la carte lâchée à sa place visuelle ; elle est libérée quand les données de la semaine changent (ou après un délai). */
+  private holdCard(element: HTMLElement): void {
+    this.releaseCard();
+    this.heldCard = element;
+    setTimeout(() => {
+      if (this.heldCard === element) {
+        this.releaseCard();
+      }
+    }, HOLD_TIMEOUT_MS);
+  }
+
+  private releaseCard(): void {
+    if (this.heldCard !== null) {
+      this.heldCard.style.transform = '';
+      this.heldCard.style.zIndex = '';
+      this.heldCard = null;
+    }
+  }
+
+  private placementOf(block: PositionedBlock, clientX: number, deltaY: number): PlacementPreview {
+    const duration = block.endMinutes - block.startMinutes;
+    const deltaMinutes = Math.round(deltaY / this.snapPx()) * SNAP_MINUTES;
+    const start = Math.min(Math.max(block.startMinutes + deltaMinutes, 0), DAY_MINUTES - duration);
+    return {
+      date: this.columnAt(clientX) ?? block.date,
+      top: ((start - this.offsetMinutes()) * this.hourPx()) / MINUTES_PER_HOUR,
+      height: (duration * this.hourPx()) / MINUTES_PER_HOUR - BLOCK_GAP_PX,
+      label: `${minutesToTime(start)} – ${minutesToTime(start + duration)}`,
+    };
   }
 
   protected onBlockPointerUp(event: PointerEvent): void {
@@ -279,9 +379,10 @@ export class WeekGridComponent {
       return;
     }
     this.move = null;
-    move.element.style.transform = '';
-    move.element.style.zIndex = '';
+    this.movePreview.set(null);
     if (!move.moved) {
+      move.element.style.transform = '';
+      move.element.style.zIndex = '';
       return;
     }
     this.suppressClick = true;
@@ -290,11 +391,15 @@ export class WeekGridComponent {
     const date = this.columnAt(event.clientX) ?? block.date;
     const duration = block.endMinutes - block.startMinutes;
     const deltaMinutes =
-      Math.round((move.deltaY * MINUTES_PER_HOUR) / PX_PER_HOUR / SNAP_MINUTES) * SNAP_MINUTES;
+      Math.round((move.deltaY * MINUTES_PER_HOUR) / this.hourPx() / SNAP_MINUTES) * SNAP_MINUTES;
     const start = Math.min(Math.max(block.startMinutes + deltaMinutes, 0), DAY_MINUTES - duration);
     if (date === block.date && start === block.startMinutes) {
+      move.element.style.transform = '';
+      move.element.style.zIndex = '';
       return;
     }
+    // La carte reste là où elle a été lâchée, jusqu'à ce que la grille soit mise à jour avec le nouvel emplacement.
+    this.holdCard(move.element);
     const startTime = minutesToTime(start);
     if (block.kind === 'slot' && block.slot !== null) {
       this.moved.emit({
@@ -306,12 +411,6 @@ export class WeekGridComponent {
       });
     } else if (block.session !== null) {
       this.moved.emit({ kind: 'session', session: block.session, date, startTime });
-    }
-  }
-
-  protected onDurationClick(block: PositionedBlock): void {
-    if (block.session !== null && block.editable) {
-      this.durationRequested.emit(block.session);
     }
   }
 
@@ -333,7 +432,7 @@ export class WeekGridComponent {
     }
     const column = event.currentTarget as HTMLElement;
     column.setPointerCapture(event.pointerId);
-    const minutes = minutesAt(event, column, this.offsetMinutes());
+    const minutes = minutesAt(event, column, this.offsetMinutes(), this.hourPx());
     this.drag.set({
       date,
       pointerId: event.pointerId,
@@ -347,7 +446,12 @@ export class WeekGridComponent {
     if (current === null || current.pointerId !== event.pointerId) {
       return;
     }
-    const minutes = minutesAt(event, event.currentTarget as HTMLElement, this.offsetMinutes());
+    const minutes = minutesAt(
+      event,
+      event.currentTarget as HTMLElement,
+      this.offsetMinutes(),
+      this.hourPx(),
+    );
     this.drag.set({ ...current, currentMinutes: minutes });
   }
 
@@ -419,9 +523,14 @@ function rangeOf(drag: DragState): { start: number; end: number } {
 }
 
 /** Minutes depuis minuit sous le pointeur, arrondies au pas et bornées à la journée. */
-function minutesAt(event: PointerEvent, column: HTMLElement, offset: number): number {
+function minutesAt(
+  event: PointerEvent,
+  column: HTMLElement,
+  offset: number,
+  pxPerHour: number,
+): number {
   const rect = column.getBoundingClientRect();
-  const minutes = ((event.clientY - rect.top) * MINUTES_PER_HOUR) / PX_PER_HOUR + offset;
+  const minutes = ((event.clientY - rect.top) * MINUTES_PER_HOUR) / pxPerHour + offset;
   const snapped = Math.round(minutes / SNAP_MINUTES) * SNAP_MINUTES;
   return Math.min(Math.max(snapped, 0), DAY_MINUTES);
 }

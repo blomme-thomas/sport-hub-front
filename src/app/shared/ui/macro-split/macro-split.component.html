@@ -1,0 +1,35 @@
+<div class="macro-split__body">
+  <div
+    class="macro-split__donut"
+    role="img"
+    [attr.aria-label]="ariaLabel()"
+    [style.background]="ring()"
+  >
+    <div class="macro-split__center">
+      <span class="macro-split__kcal">{{ kcalValue() }}</span>
+      <span class="macro-split__unit">{{ t.macros.kcal }}</span>
+    </div>
+  </div>
+
+  @if (shares(); as list) {
+    @if (legend()) {
+      <ul class="macro-split__legend">
+        @for (share of list; track share.key) {
+          <li>
+            <span
+              class="macro-split__swatch macro-split__swatch--{{ share.key }}"
+              aria-hidden="true"
+            ></span>
+            <span class="macro-split__label">
+              {{ labelOf(share.key) }}
+              <span class="macro-split__grams">{{ gramsOf(share.grams) }}</span>
+            </span>
+            <span class="macro-split__percent">{{ share.percent }} %</span>
+          </li>
+        }
+      </ul>
+    }
+  } @else {
+    <p class="macro-split__empty">{{ t.macros.empty }}</p>
+  }
+</div>
