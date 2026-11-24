@@ -12,7 +12,7 @@ Le back renvoie toute erreur en `application/problem+json` avec un `code` stable
 
 - Un seul point d'entrée : `errorInterceptor` (`core/http/error.interceptor.ts`) appelle `toAppError` (`core/http/problem-details.mapper.ts`), qui produit une `AppError` (`core/http/app-error.ts`). Aucun écran ne parse une erreur HTTP.
 - L'intercepteur notifie toujours `userMessage` (`NzMessageService`), puis relance l'`AppError`.
-- Les erreurs de validation sont aussi rattachées aux champs par `applyFieldErrors` (`core/http/apply-field-errors.ts`) : double notification assumée (toast et message sous le champ).
+- Les erreurs de validation sont aussi rattachées aux champs par chaque formulaire (`fieldErrors` de l'`AppError`) : double notification assumée (toast et message sous le champ).
 
 ## Conséquences
 

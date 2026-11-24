@@ -53,12 +53,6 @@ Ouvrir une séance planifiée pour voir tout ce qu'il faut faire pendant la séa
 - La mention de lecture seule est un `role="status"`. Les erreurs d'enregistrement sont un `role="alert"`.
 - Le numéro de rang est masqué aux lecteurs d'écran : la position est donnée par l'ordre de la liste.
 
-## Modifier la durée depuis le calendrier (story #11)
-
-Sur la grille du calendrier (`/creneaux`), une séance planifiée porte un bouton « Durée » dans l'angle de sa vignette. Il ouvre la modale « Modifier la durée » (minutes, de 1 à 1440). « Enregistrer » envoie `PATCH /api/sessions/:id` avec `{ durationMinutes }` et affiche « Durée modifiée. ». Pour une séance hebdomadaire, la nouvelle durée s'applique à toute la série. En cas d'erreur, le message du back s'affiche et la semaine est rechargée : la durée d'origine revient à l'écran.
-
-Une séance réalisée n'a pas ce bouton : sa vignette porte la mention « Réalisée, déplacement impossible » et ne se glisse pas. Le back refuse aussi la modification d'une séance réalisée.
-
 ## Objectifs et activité réalisée (story #62)
 
 **Création** : le formulaire de création (`/creneaux`) comporte une section « Objectifs ». La distance cible est facultative (en km). La répartition cible par zone de FC (Z1 à Z5, en %) est obligatoire et doit totaliser exactement 100 % ; le total est affiché sous les champs. Les erreurs ne s'affichent qu'après une tentative de création. Les valeurs partent dans `targetDistanceMeters` et `targetHrZonePercentages`.
