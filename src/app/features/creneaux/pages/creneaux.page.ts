@@ -7,10 +7,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { IconComponent } from '@shared/ui/icon/icon.component';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
-import { NzInputNumberComponent } from 'ng-zorro-antd/input-number';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
@@ -56,7 +53,8 @@ import { MealPlanState } from '../data-access/meal-plan.state';
 import { RecipeLibraryState } from '../data-access/recipe-library.state';
 import type { PlacementRequest } from '../components/meal-grid/meal-grid.component';
 import type { PlannedMeal } from '../models/planned-meal.model';
-import type { RecipeTotals } from '../models/library-recipe.model';
+import type { LibraryRecipe, MealRecipeDetail } from '../models/library-recipe.model';
+import { RecipeSummaryComponent } from '../components/recipe-summary/recipe-summary.component';
 
 /** Au-dessous de ce seuil (même point de rupture que la navigation), le placement des recettes est désactivé. */
 const MOBILE_QUERY = '(max-width: 768px)';
@@ -64,10 +62,6 @@ const MOBILE_QUERY = '(max-width: 768px)';
 const DEFAULT_START = '09:00';
 const DEFAULT_END = '10:00';
 const WEEK_LAST_OFFSET_DAYS = 6;
-/** Bornes de la durée proposée à la modification rapide, en minutes (le back accepte 1 à 1440). */
-const QUICK_DURATION_MIN = 1;
-const QUICK_DURATION_MAX = 1440;
-const QUICK_DURATION_STEP = 5;
 
 /**
  * Calendrier de la semaine : séances créées à la main. Un clic ou une sélection sur
@@ -77,10 +71,7 @@ const QUICK_DURATION_STEP = 5;
 @Component({
   selector: 'sh-creneaux-page',
   imports: [
-    FormsModule,
-    IconComponent,
     NzButtonComponent,
-    NzInputNumberComponent,
     ModalComponent,
     PauseBannersComponent,
     PauseFormComponent,
@@ -89,6 +80,7 @@ const QUICK_DURATION_STEP = 5;
     MealDetailComponent,
     MealGridComponent,
     RecipeLibraryComponent,
+    RecipeSummaryComponent,
     ShoppingListComponent,
     WeekGridComponent,
   ],
@@ -150,9 +142,13 @@ export class CreneauxPage {
   );
   /** Repas dont la fiche est ouverte, `null` quand elle est fermée. */
   protected readonly selectedMeal = signal<PlannedMeal | null>(null);
-  /** Totaux de la recette de la fiche : `undefined` pendant le chargement, `null` si indisponibles. */
-  protected readonly selectedTotals = signal<RecipeTotals | null | undefined>(undefined);
-  protected readonly removing = signal(false);
+  /** Totaux et composition de la recette de la fiche : `undefined` pendant le chargement, `null` si indisponibles. */
+  protected readonly selectedDetail = signal<MealRecipeDetail | null | undefined>(undefined);
+  /** Recette de la bibliothèque dont la fiche est ouverte, `null` quand elle est fermée, et sa synthèse. */
+  protected readonly libraryRecipe = signal<LibraryRecipe | null>(null);
+  protected readonly libraryDetail = signal<MealRecipeDetail | null | undefined>(undefined);
+  /** Recette en cours de glissement depuis la bibliothèque, `null` hors glissement. */
+  protected readonly draggedRecipe = signal<LibraryRecipe | null>(null);
   /** Liste de courses : période choisie sur la grille, et liste générée pour la modale. */
   protected readonly shopping = inject(ShoppingListState);
   protected readonly periodSelection = signal<DateRange | null>(null);
@@ -204,28 +200,32 @@ export class CreneauxPage {
 
   /** Recette déposée dans une case : enregistrée, puis confirmée. Une erreur est notifiée par l'intercepteur. */
   protected async onPlaced(request: PlacementRequest): Promise<void> {
+    const recipe = this.library.recipes().find((item) => item.id === request.recipeId);
+    if (recipe !== undefined && !recipe.mealTags.includes(request.mealTag)) {
+      this.messages.warning(this.t.creneaux.placed.notForMeal);
+      return;
+    }
     try {
       await this.mealPlan.place(request.recipeId, request.date, request.mealTag);
     } catch {
       return;
     }
-    this.messages.success(this.t.creneaux.placed.placed);
   }
 
   protected openMeal(meal: PlannedMeal): void {
     this.selectedMeal.set(meal);
-    this.selectedTotals.set(undefined);
+    this.selectedDetail.set(undefined);
     // Une réponse arrivée après la fermeture (ou l'ouverture d'une autre fiche) est ignorée.
     const stillOpen = (): boolean => this.selectedMeal()?.id === meal.id;
-    void this.library.totalsOf(meal.recipeId).then(
-      (totals) => {
+    void this.library.detailOf(meal.recipeId).then(
+      (detail) => {
         if (stillOpen()) {
-          this.selectedTotals.set(totals);
+          this.selectedDetail.set(detail);
         }
       },
       () => {
         if (stillOpen()) {
-          this.selectedTotals.set(null);
+          this.selectedDetail.set(null);
         }
       },
     );
@@ -233,25 +233,43 @@ export class CreneauxPage {
 
   protected closeMeal(): void {
     this.selectedMeal.set(null);
-    this.selectedTotals.set(undefined);
+    this.selectedDetail.set(undefined);
+  }
+
+  /** Ouvre la fiche d'une recette de la bibliothèque : sa synthèse est chargée puis affichée. */
+  protected openLibraryRecipe(recipe: LibraryRecipe): void {
+    this.libraryRecipe.set(recipe);
+    this.libraryDetail.set(undefined);
+    const stillOpen = (): boolean => this.libraryRecipe()?.id === recipe.id;
+    void this.library.detailOf(recipe.id).then(
+      (detail) => {
+        if (stillOpen()) {
+          this.libraryDetail.set(detail);
+        }
+      },
+      () => {
+        if (stillOpen()) {
+          this.libraryDetail.set(null);
+        }
+      },
+    );
+  }
+
+  protected closeLibraryRecipe(): void {
+    this.libraryRecipe.set(null);
+    this.libraryDetail.set(undefined);
   }
 
   /** Retire ce seul repas du planning ; les autres placements de la même recette ne bougent pas. */
-  protected async removeSelected(): Promise<void> {
-    const meal = this.selectedMeal();
-    if (meal === null) {
-      return;
-    }
-    this.removing.set(true);
+  protected async removeFromGrid(meal: PlannedMeal): Promise<void> {
     try {
       await this.mealPlan.remove(meal.id);
     } catch {
       return;
-    } finally {
-      this.removing.set(false);
     }
-    this.closeMeal();
-    this.messages.success(this.t.creneaux.placed.removed);
+    if (this.selectedMeal()?.id === meal.id) {
+      this.closeMeal();
+    }
   }
 
   /** Pause en cours de création (`pauseDraft`) ou de modification (`pauseEditing`), `null` quand la modale est fermée. */
@@ -285,13 +303,6 @@ export class CreneauxPage {
   protected readonly sessionSaving = signal(false);
   /** Déplacement d'une séance hebdomadaire en attente : cette occurrence seulement, ou toute la série. */
   protected readonly pendingMove = signal<(GridMove & { kind: 'session' }) | null>(null);
-  /** Séance dont la durée est modifiée depuis sa vignette, `null` quand la modale est fermée. */
-  protected readonly durationTarget = signal<SessionOccurrence | null>(null);
-  /** Durée saisie dans la modale de modification rapide, en minutes. */
-  protected readonly durationValue = signal(0);
-  protected readonly durationStep = QUICK_DURATION_STEP;
-  protected readonly durationMin = QUICK_DURATION_MIN;
-  protected readonly durationMax = QUICK_DURATION_MAX;
   protected readonly disciplines = computed(() =>
     [...this.state.labels()].map(([typeKey, label]) => ({ typeKey, label })),
   );
@@ -385,7 +396,7 @@ export class CreneauxPage {
         firstValueFrom(
           this.sessionsWrite.move(move.session.id, { date: move.date, startTime: move.startTime }),
         ),
-      TEXTS.creneaux.session.moved,
+      null,
     );
   }
 
@@ -404,7 +415,7 @@ export class CreneauxPage {
             startTime: move.startTime,
           }),
         ),
-      TEXTS.creneaux.session.movedOccurrence,
+      null,
     );
   }
 
@@ -513,11 +524,6 @@ export class CreneauxPage {
     }
   }
 
-  /** Libellé du référentiel pour une clé de discipline, ou la clé brute si le référentiel ne la connaît pas. */
-  protected disciplineLabel(typeKey: string): string {
-    return this.state.labels().get(typeKey) ?? typeKey;
-  }
-
   /** Demande confirmation avant de supprimer une pause. Les séances existantes sont conservées. */
   protected confirmDeletePause(pause: Pause): void {
     this.modal.confirm({
@@ -611,46 +617,22 @@ export class CreneauxPage {
     }
   }
 
-  /** Ouvre la modale de durée, pré-remplie avec la durée actuelle de la séance. */
-  protected openDuration(session: SessionOccurrence): void {
-    this.durationValue.set(session.durationMinutes);
-    this.durationTarget.set(session);
-  }
-
-  protected closeDuration(): void {
-    this.durationTarget.set(null);
-  }
-
-  /**
-   * Enregistre la nouvelle durée (pour une série, celle de toute la série). En cas d'erreur, l'intercepteur notifie
-   * le message et la semaine est rechargée : la durée d'origine revient à l'écran.
-   */
-  protected async saveDuration(): Promise<void> {
-    const session = this.durationTarget();
-    const minutes = this.durationValue();
-    this.durationTarget.set(null);
-    if (session === null || minutes === session.durationMinutes) {
-      return;
-    }
-    await this.runOccurrenceAction(
-      () => firstValueFrom(this.sessionsWrite.updateDuration(session.id, minutes)),
-      TEXTS.creneaux.duration.saved,
-    );
-  }
-
   /** Un clic sur une séance ouvre sa fiche dans une modale (sortie nommée « modal », affichée par le shell). */
   protected openSession(session: SessionOccurrence): void {
     this.sessionModal.open(session.id);
   }
 
   /** Exécute une action, puis recharge la semaine. L'erreur est notifiée par l'intercepteur. */
+  /** `success` : message affiché après réussite, `null` pour une action sans confirmation (déplacement). */
   private async runOccurrenceAction(
     action: () => Promise<unknown>,
-    success: string,
+    success: string | null,
   ): Promise<void> {
     try {
       await action();
-      this.messages.success(success);
+      if (success !== null) {
+        this.messages.success(success);
+      }
     } catch {
       // Message déjà affiché par l'intercepteur d'erreurs.
     } finally {

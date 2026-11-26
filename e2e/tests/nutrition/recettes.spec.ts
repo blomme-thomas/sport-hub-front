@@ -61,8 +61,8 @@ test.describe('Mes recettes', () => {
     await page.goto('/nutrition');
 
     const chicken = page.getByRole('button', { name: 'Ouvrir la recette Poulet riz' });
-    await expect(chicken).toContainText('437,5 kcal');
-    await expect(chicken).toContainText('52,5 g P');
+    await expect(page.getByText('437,5', { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole('img', { name: /Répartition des calories/ }).first()).toBeVisible();
     await expect(page.getByRole('button', { name: 'Matin (1)' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Soir (1)' }).click();

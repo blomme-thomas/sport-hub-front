@@ -2,26 +2,78 @@
   <h2 id="recipe-library-heading" class="recipe-library__heading">
     {{ t.creneaux.library.heading }}
   </h2>
-  <p class="recipe-library__hint">
-    {{ canDrag() ? t.creneaux.library.hint : t.creneaux.library.mobileHint }}
-  </p>
+  @if (!canDrag()) {
+    <p class="recipe-library__hint">{{ t.creneaux.library.mobileHint }}</p>
+  }
 
   @if (recipes().length === 0) {
     <p class="recipe-library__empty">{{ t.creneaux.library.empty }}</p>
   } @else {
-    <ul class="recipe-library__list" [attr.aria-label]="t.creneaux.library.list">
-      @for (recipe of recipes(); track recipe.id) {
-        <li>
-          <span
-            class="recipe-library__chip"
-            [class.recipe-library__chip--draggable]="canDrag()"
+    <div class="recipe-library__filters">
+      <label class="visually-hidden" for="recipe-library-search">
+        {{ t.creneaux.library.searchLabel }}
+      </label>
+      <input
+        id="recipe-library-search"
+        class="recipe-library__search"
+        type="search"
+        [placeholder]="t.creneaux.library.search"
+        [value]="search()"
+        (input)="onSearch($event)"
+      />
+
+      <div
+        class="recipe-library__meals"
+        role="group"
+        [attr.aria-label]="t.creneaux.library.filters"
+      >
+        <button
+          type="button"
+          class="recipe-library__meal"
+          [attr.aria-pressed]="mealFilter() === null"
+          (click)="selectMeal(null)"
+        >
+          {{ t.creneaux.library.all }} ({{ recipes().length }})
+        </button>
+        @for (meal of mealSlots; track meal) {
+          <button
+            type="button"
+            class="recipe-library__meal"
+            [attr.aria-pressed]="mealFilter() === meal"
+            (click)="selectMeal(meal)"
+          >
+            {{ mealLabel(meal) }} ({{ counts()[meal] }})
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (visible().length === 0) {
+      <p class="recipe-library__empty">{{ t.creneaux.library.noMatch }}</p>
+    } @else {
+      <ul class="recipe-library__list" [attr.aria-label]="t.creneaux.library.list">
+        @for (recipe of visible(); track recipe.id) {
+          <li
+            class="recipe-library__card"
+            [class.recipe-library__card--draggable]="canDrag()"
             [draggable]="canDrag()"
             (dragstart)="onDragStart($event, recipe)"
+            (dragend)="dragEnded.emit()"
           >
-            {{ recipe.name }}
-          </span>
-        </li>
-      }
-    </ul>
+            <button
+              type="button"
+              class="recipe-library__name"
+              [attr.aria-label]="fill(t.creneaux.placed.open, { name: recipe.name })"
+              (click)="recipeSelected.emit(recipe)"
+            >
+              {{ recipe.name }}
+            </button>
+            @if (recipe.mealTags.length > 0) {
+              <span class="recipe-library__tags">{{ tagsOf(recipe) }}</span>
+            }
+          </li>
+        }
+      </ul>
+    }
   }
 </section>

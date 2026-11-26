@@ -7,15 +7,6 @@
 
 <p class="visually-hidden" aria-live="polite">{{ statusMessage() }}</p>
 
-<sh-next-event-card
-  class="dashboard__next-event"
-  [event]="nextEvent.event()"
-  [today]="nextEvent.today()"
-  [error]="nextEvent.error()"
-  [loading]="nextEvent.isLoading()"
-  (retry)="nextEvent.reload()"
-/>
-
 <section
   class="dashboard__kpis"
   [attr.aria-label]="t.dashboard.kpisLabel"

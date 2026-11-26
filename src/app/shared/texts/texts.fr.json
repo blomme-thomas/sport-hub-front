@@ -15,15 +15,12 @@
     "menuClose": "Fermer le menu",
     "navigation": "Navigation principale",
     "brand": "Sport Hub",
-    "soon": "Bientôt disponible",
     "menu": {
       "dashboard": "Tableau de bord",
-      "goals": "Objectifs",
       "calendar": "Calendrier",
       "nutrition": "Nutrition",
       "settings": "Paramètres"
     },
-    "comingSoon": ["Entraînements", "Statistiques", "Conseils IA"],
     "notFound": {
       "title": "Page introuvable",
       "home": "Retour à l'accueil"
@@ -54,25 +51,6 @@
       "group": "Granularité",
       "week": "Semaine",
       "month": "Mois"
-    },
-    "nextEvent": {
-      "heading": "Prochain événement",
-      "format": "Format",
-      "targetTime": "Temps cible",
-      "noFormat": "Format non défini",
-      "noTargetTime": "Temps cible non défini",
-      "none": "Aucun événement à venir.",
-      "create": "Créer un événement",
-      "dayLeft": "1 jour restant",
-      "daysLeft": "{days} jours restants",
-      "time": "{hours} h {minutes} min {seconds} s",
-      "formats": {
-        "half": "Half (semi-distance)",
-        "full": "Full (distance complète)",
-        "sprint": "Sprint",
-        "olympique": "Olympique",
-        "autre": "Autre"
-      }
     },
     "kpi": {
       "expand": "Agrandir : {label}",
@@ -232,9 +210,7 @@
       "duration": "Durée réalisée",
       "distance": "Distance",
       "heartRate": "FC moyenne",
-      "plannedHeading": "Séances planifiées",
       "noPlanned": "Aucune séance planifiée",
-      "activitiesHeading": "Activités réalisées",
       "noActivities": "Aucune activité réalisée",
       "zonesHeading": "Zones de fréquence cardiaque",
       "noHeartRate": "Pas de fréquence cardiaque sur ce jour",
@@ -299,8 +275,7 @@
       "move": "Déplacer la séance",
       "pauseCreate": "Nouvelle pause",
       "pauseEdit": "Modifier la pause",
-      "planning": "Générer le planning",
-      "duration": "Modifier la durée"
+      "planning": "Générer le planning"
     },
     "move": {
       "text": "Cette séance se répète chaque semaine. Déplacer au {date} à {time} :",
@@ -320,16 +295,9 @@
       "none": "Aucune séance générée : pas de créneau libre sur la période.",
       "created": "{count} séance(s) générée(s)."
     },
-    "duration": {
-      "minutes": "Durée en minutes",
-      "summary": "{discipline}, {date} à {time}.",
-      "series": "La nouvelle durée s’applique à toute la série.",
-      "saved": "Durée modifiée."
-    },
     "session": {
       "created": "Séance créée.",
       "moved": "Séance déplacée.",
-      "movedOccurrence": "Cette occurrence a été déplacée.",
       "movedSeries": "La série a été déplacée.",
       "restored": "Cette occurrence est restaurée.",
       "cancelled": "Cette occurrence est annulée.",
@@ -343,7 +311,6 @@
       "realized": "Réalisée, déplacement impossible",
       "realizedLabel": "Séance {discipline}, {time}, réalisée. Ouvrir la séance",
       "label": "Séance {discipline}, {time}. Ouvrir la séance",
-      "editDuration": "Modifier la durée de la séance {time}",
       "duration": "Durée",
       "cancelWeek": "Annuler cette semaine",
       "restoreWeek": "Restaurer cette semaine",
@@ -376,7 +343,6 @@
       "label": "Grille de la semaine",
       "slotEdit": "{type}, {range}{recurrence}. Modifier",
       "recurrenceSuffix": ", chaque semaine",
-      "slotLabel": "{type}, {range}",
       "range": "{start} – {end}"
     },
     "slot": {
@@ -390,9 +356,7 @@
       "end": "Fin",
       "recurrence": "Récurrence",
       "series": "Toute modification ou suppression vaut pour toute la série.",
-      "endAfterStart": "L’heure de fin doit être postérieure à l’heure de début.",
-      "heading": "Plage",
-      "weeklyHint": "Le créneau se répète chaque semaine, à partir de cette date, sans date de fin."
+      "heading": "Plage"
     },
     "sessionForm": {
       "importHeading": "Pré-remplir depuis un fichier JSON",
@@ -438,10 +402,14 @@
     },
     "library": {
       "heading": "Mes recettes",
-      "hint": "Glissez une recette dans une case du calendrier.",
       "mobileHint": "Le placement se fait sur ordinateur. Vous pouvez consulter une recette placée.",
       "empty": "Aucune recette. Créez-en une dans l’onglet Nutrition.",
-      "list": "Recettes à placer"
+      "list": "Recettes à placer",
+      "searchLabel": "Rechercher une recette par nom",
+      "search": "Rechercher une recette",
+      "filters": "Filtrer par repas",
+      "all": "Toutes",
+      "noMatch": "Aucune recette ne correspond à votre recherche."
     },
     "placed": {
       "open": "Ouvrir {name}",
@@ -456,8 +424,12 @@
       "fats": "Lipides",
       "noValue": "—",
       "remove": "Retirer du planning",
-      "placed": "Recette placée.",
-      "removed": "Repas retiré."
+      "removeLabel": "Retirer {name} du planning",
+      "notForMeal": "Cette recette n'est pas prévue pour ce repas.",
+      "foods": "Aliments",
+      "foodsEmpty": "Aucun aliment dans cette recette.",
+      "unknownFood": "Aliment inconnu",
+      "noQuantity": "Quantité non renseignée"
     },
     "shopping": {
       "generate": "Générer une liste de courses",
@@ -476,7 +448,6 @@
       "copyFailed": "Impossible de copier la liste.",
       "missing": "quantité à compléter",
       "noValue": "—",
-      "select": "Glissez sur les jours pour choisir une période.",
       "selection": "Période choisie : du {from} au {to}.",
       "clear": "Effacer la sélection",
       "close": "Fermer",
@@ -659,6 +630,15 @@
       "deleted": "Objectif supprimé."
     }
   },
+  "macros": {
+    "proteins": "Protéines",
+    "carbohydrates": "Glucides",
+    "fats": "Lipides",
+    "kcal": "kcal",
+    "summaryItem": "{label} {percent} %",
+    "ariaLabel": "Répartition des calories : {summary}.",
+    "empty": "Répartition indisponible."
+  },
   "nutrition": {
     "title": "Nutrition",
     "subtitle": "Gérez vos recettes et votre alimentation",
@@ -683,6 +663,10 @@
       "loading": "Chargement des aliments…",
       "empty": "Aucun aliment ne correspond à votre recherche.",
       "emptyBase": "Votre base d’aliments est vide. Ajoutez votre premier aliment.",
+      "confirmDelete": {
+        "title": "Supprimer cet aliment ?",
+        "content": "Cette action est définitive. Un aliment utilisé dans une recette ne peut pas être supprimé."
+      },
       "table": {
         "caption": "Base d’aliments",
         "name": "Aliment",
@@ -694,6 +678,8 @@
         "actions": "Actions",
         "edit": "Modifier",
         "editLabel": "Modifier {name}",
+        "delete": "Supprimer",
+        "deleteLabel": "Supprimer {name}",
         "noValue": "—"
       },
       "form": {
@@ -715,7 +701,8 @@
       },
       "messages": {
         "created": "Aliment ajouté.",
-        "updated": "Aliment modifié."
+        "updated": "Aliment modifié.",
+        "deleted": "Aliment supprimé."
       }
     },
     "recipes": {
@@ -754,7 +741,17 @@
         },
         "unknownFood": "Aliment inconnu",
         "noQuantity": "Quantité non renseignée",
-        "edit": "Modifier la recette"
+        "edit": "Modifier la recette",
+        "delete": "Supprimer la recette"
+      },
+      "deleteConfirm": {
+        "title": "Supprimer cette recette ?",
+        "content": "Cette action est définitive.",
+        "inUseTitle": "Recette placée au planning",
+        "inUseContent": "Cette recette est placée dans le calendrier. La supprimer retire aussi ces repas du planning. Continuer ?",
+        "messages": {
+          "deleted": "Recette supprimée."
+        }
       },
       "form": {
         "create": "Nouvelle recette",
@@ -772,12 +769,12 @@
         },
         "addFood": "Ajouter un aliment",
         "removeFood": "Retirer {name}",
-        "pickFood": "Choisir un aliment",
+        "pickFood": "Aliment",
         "foodRequired": "Choisissez un aliment, ou retirez la ligne.",
         "quantity": "Quantité",
         "quantityPositive": "La quantité doit être supérieure à 0.",
         "summary": "Valeurs nutritionnelles (pour la recette)",
-        "summaryEmpty": "Enregistrez la recette pour afficher sa synthèse.",
+        "summaryEmpty": "Ajoutez des aliments pour voir la synthèse.",
         "messages": {
           "created": "Recette ajoutée.",
           "updated": "Recette modifiée."
@@ -806,6 +803,7 @@
     "messages": {
       "VALIDATION_FAILED": "Certaines informations saisies sont invalides.",
       "BAD_REQUEST": "La requête est invalide.",
+      "FOOD_IN_USE": "Cet aliment est utilisé dans une recette : retirez-le des recettes avant de le supprimer.",
       "MALFORMED_REQUEST_BODY": "Les données envoyées sont mal formées.",
       "NOT_FOUND": "Élément introuvable.",
       "PAYLOAD_TOO_LARGE": "Les données envoyées sont trop volumineuses.",

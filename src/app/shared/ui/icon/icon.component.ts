@@ -13,6 +13,7 @@ export type IconName =
   | 'flag'
   | 'check'
   | 'trash'
+  | 'pencil'
   | 'ban'
   | 'arrow-left'
   | 'undo'
@@ -60,6 +61,10 @@ export type IconName =
         }
         @case ('arrow-left') {
           <path d="M19 12H5M11 6l-6 6 6 6" />
+        }
+        @case ('pencil') {
+          <path d="M4 20h4L19 9l-4-4L4 16v4z" />
+          <path d="M13.5 6.5l4 4" />
         }
         @case ('ban') {
           <circle cx="12" cy="12" r="9" />

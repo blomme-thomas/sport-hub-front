@@ -2,35 +2,55 @@
   display: block;
 }
 
+/* Toute la carte est cliquable : le bouton du nom s'étend à la carte entière (::after). */
 .recipe-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
   width: 100%;
-  height: 100%;
-  padding: 1rem;
+  box-sizing: border-box;
+  padding: 0.75rem;
   border: 1px solid var(--sh-border);
   border-radius: var(--sh-radius);
   background: var(--sh-surface-raised);
   color: var(--sh-text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
   transition: border-color 0.15s;
 
   &:hover {
     border-color: var(--sh-accent-text);
   }
 
-  &:focus-visible {
+  &:has(.recipe-card__open:focus-visible) {
     outline: var(--sh-focus-ring);
     outline-offset: 2px;
   }
 }
 
-.recipe-card__name {
+.recipe-card__open {
+  position: static;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
   font-weight: 600;
+  text-align: left;
   overflow-wrap: anywhere;
+  cursor: pointer;
+
+  /* z-index : la zone cliquable passe au-dessus de l'anneau (ses positions absolues viennent après dans le DOM). */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+  }
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .recipe-card__tags {
@@ -59,15 +79,17 @@
   }
 }
 
-.recipe-card__totals {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.75rem;
-  color: var(--sh-text-muted);
-  font-size: 0.875rem;
+.recipe-card__split {
+  --macro-split-size: 5.5rem;
+  --macro-split-center: var(--sh-surface-raised);
+  --macro-split-wrap: nowrap;
+  --macro-split-kcal-size: 1rem;
+  --macro-split-justify: center;
+
+  font-size: 0.8125rem;
 }
 
-.recipe-card__kcal {
-  color: var(--sh-text);
-  font-weight: 600;
+.recipe-card__loading {
+  color: var(--sh-text-muted);
+  font-size: 0.875rem;
 }

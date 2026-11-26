@@ -53,6 +53,9 @@ export const recipesHandlers = [
     details = [...details, toDetail(created)];
     return HttpResponse.json(created, { status: 201 });
   }),
+  http.post('*/api/recipes/preview', () =>
+    HttpResponse.json({ totals: EMPTY_TOTALS, ignored: [] }),
+  ),
   http.patch('*/api/recipes/:id', async ({ params, request }) => {
     const id = String(params['id']);
     const current = recipes.find((recipe) => recipe.id === id);
@@ -64,5 +67,14 @@ export const recipesHandlers = [
     recipes = recipes.map((recipe) => (recipe.id === id ? updated : recipe));
     details = details.map((recipe) => (recipe.id === id ? toDetail(updated) : recipe));
     return HttpResponse.json(updated);
+  }),
+  http.delete('*/api/recipes/:id', ({ params }) => {
+    const id = String(params['id']);
+    if (!recipes.some((recipe) => recipe.id === id)) {
+      return recipeNotFound();
+    }
+    recipes = recipes.filter((recipe) => recipe.id !== id);
+    details = details.filter((recipe) => recipe.id !== id);
+    return new HttpResponse(null, { status: 204 });
   }),
 ];

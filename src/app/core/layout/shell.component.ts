@@ -2,9 +2,6 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TEXTS } from '@shared/texts/texts';
 
-/** Entrées du menu pas encore disponibles : affichées, non cliquables. */
-const COMING_SOON = TEXTS.shell.comingSoon;
-
 /** Coque de l'application : sidebar de navigation et zone de contenu routée. */
 @Component({
   selector: 'sh-shell',
@@ -16,7 +13,6 @@ const COMING_SOON = TEXTS.shell.comingSoon;
 })
 export class ShellComponent {
   protected readonly t = TEXTS;
-  protected readonly comingSoon = COMING_SOON;
   /** Ouverture du menu sur petit écran (tiroir). Sans effet au-dessus de 768 px. */
   protected readonly menuOpen = signal(false);
 

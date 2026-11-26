@@ -1,10 +1,12 @@
-<button
-  type="button"
-  class="recipe-card"
-  [attr.aria-label]="fill(t.nutrition.recipes.card.open, { name: recipe().name })"
-  (click)="open.emit(recipe())"
->
-  <span class="recipe-card__name">{{ recipe().name }}</span>
+<div class="recipe-card">
+  <button
+    type="button"
+    class="recipe-card__open"
+    [attr.aria-label]="fill(t.nutrition.recipes.card.open, { name: recipe().name })"
+    (click)="open.emit(recipe())"
+  >
+    {{ recipe().name }}
+  </button>
 
   <span class="recipe-card__tags">
     @for (mealTag of recipe().mealTags; track mealTag) {
@@ -12,14 +14,17 @@
     }
   </span>
 
-  @if (summary(); as s) {
-    <span class="recipe-card__totals">
-      <span class="recipe-card__kcal">{{ s.kcal }} kcal</span>
-      <span>{{ s.proteins }} P</span>
-      <span>{{ s.carbohydrates }} G</span>
-      <span>{{ s.fats }} L</span>
-    </span>
+  @if (detail(); as d) {
+    <div class="recipe-card__split">
+      <sh-macro-split
+        [legend]="false"
+        [calories]="d.totals.calories"
+        [proteins]="d.totals.proteins"
+        [carbohydrates]="d.totals.carbohydrates"
+        [fats]="d.totals.fats"
+      />
+    </div>
   } @else {
-    <span class="recipe-card__totals">{{ t.nutrition.recipes.card.loadingTotals }}</span>
+    <span class="recipe-card__loading">{{ t.nutrition.recipes.card.loadingTotals }}</span>
   }
-</button>
+</div>

@@ -64,6 +64,11 @@ export class FoodsState {
     return this.write(() => firstValueFrom(this.api.update(id, toFoodRequest(input))));
   }
 
+  /** @throws {AppError} quand l'API refuse la suppression (`FOOD_IN_USE` si une recette contient l'aliment) */
+  remove(id: string): Promise<void> {
+    return this.write(() => firstValueFrom(this.api.delete(id)));
+  }
+
   private async load(): Promise<void> {
     this.loadingValue.set(true);
     this.errorValue.set(null);

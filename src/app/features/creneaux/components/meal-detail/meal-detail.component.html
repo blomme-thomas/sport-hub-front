@@ -1,43 +1,4 @@
 <div class="meal-detail">
   <p class="meal-detail__when">{{ when() }}</p>
-
-  <section class="meal-detail__section" aria-labelledby="meal-detail-totals">
-    <h3 id="meal-detail-totals">{{ t.creneaux.placed.totals }}</h3>
-    @if (totals() === undefined) {
-      <p class="meal-detail__status" aria-live="polite">{{ t.creneaux.placed.loading }}</p>
-    } @else if (values(); as v) {
-      <dl class="meal-detail__totals">
-        <div>
-          <dt>{{ t.creneaux.placed.calories }}</dt>
-          <dd>{{ v.kcal }}</dd>
-        </div>
-        <div>
-          <dt>{{ t.creneaux.placed.proteins }}</dt>
-          <dd>{{ v.proteins }}</dd>
-        </div>
-        <div>
-          <dt>{{ t.creneaux.placed.carbohydrates }}</dt>
-          <dd>{{ v.carbohydrates }}</dd>
-        </div>
-        <div>
-          <dt>{{ t.creneaux.placed.fats }}</dt>
-          <dd>{{ v.fats }}</dd>
-        </div>
-      </dl>
-    } @else {
-      <p class="meal-detail__status">{{ t.creneaux.placed.unavailable }}</p>
-    }
-  </section>
-
-  <div class="meal-detail__actions">
-    <button
-      nz-button
-      nzDanger
-      type="button"
-      [disabled]="removing()"
-      (click)="removeRequested.emit()"
-    >
-      {{ t.creneaux.placed.remove }}
-    </button>
-  </div>
+  <sh-recipe-summary [detail]="detail()" />
 </div>

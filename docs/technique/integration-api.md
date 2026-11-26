@@ -21,7 +21,7 @@ Flux :
 1. `HttpClient` échoue ; `errorInterceptor` (enregistré dans `app.config.ts`) appelle `toAppError(err)` (`core/http/problem-details.mapper.ts`).
 2. `toAppError` produit une `AppError` (`core/http/app-error.ts`) : `code`, `status`, `detail`, `fieldErrors`, `correlationId`, `userMessage`. Il ne lève jamais d'exception. Un corps qui n'est pas `application/problem+json` valide (HTML d'un proxy, corps vide) donne `INVALID_RESPONSE`.
 3. L'intercepteur affiche toujours `userMessage` (`NzMessageService`), puis relance l'`AppError`.
-4. Un formulaire rattache les erreurs de validation à ses champs avec `applyFieldErrors(form, error)` (`core/http/apply-field-errors.ts`).
+4. Chaque formulaire lit `fieldErrors` de l'`AppError` et l'affiche sous son champ (pas de helper partagé).
 
 Une erreur de validation est donc notifiée deux fois, assumé : un toast (`userMessage`, par exemple « Certaines informations saisies sont invalides. ») et un message sous chaque champ fautif.
 
@@ -36,31 +36,6 @@ Cas hors contrat (codes internes, `status` 0 pour le réseau) :
 
 Message utilisateur : celui du code (`ERROR_MESSAGES`), ou `DEFAULT_ERROR_MESSAGE` si le code est inconnu. Pour un 5xx ou un code inconnu, le message se termine par `Référence : <correlationId>` quand un identifiant est disponible, afin de faciliter le diagnostic. Le `detail` renvoyé par le back n'est jamais affiché.
 
-### Erreurs de champ
-
-`applyFieldErrors` pose l'erreur `server` sur chaque contrôle visé (chemins `address.street` et `items[0].name` acceptés) et le marque `touched`. Plusieurs messages pour un même champ sont joints par un espace. Le motif d'affichage :
-
-```html
-<input
-  id="street"
-  formControlName="street"
-  [attr.aria-describedby]="form.controls.street.errors?.['server'] ? 'street-error' : null"
-/>
-@if (form.controls.street.errors?.['server']; as message) {
-<p id="street-error" role="alert">{{ message }}</p>
-}
-```
-
-L'erreur serveur disparaît à la prochaine modification du champ. `applyFieldErrors` renvoie les messages des erreurs sans champ correspondant : l'écran doit les afficher à part, car ils ne peuvent pas être rattachés à un champ.
-
-### Ajouter un message pour un code
-
-1. Ajouter une entrée dans `ERROR_MESSAGES` (`core/http/error-messages.ts`), clé = `code` exact renvoyé par le back, valeur = message français destiné à l'utilisateur.
-2. Ajouter un test dans `problem-details.mapper.spec.ts` si le code a un comportement particulier.
-3. Ne pas mettre de détail technique dans le message : il est affiché tel quel.
-
-Un code absent de `ERROR_MESSAGES` affiche `DEFAULT_ERROR_MESSAGE` sans erreur ; un code ajouté au back doit donc être ajouté ici pour un message précis.
-
 ## Endpoints consommés par feature
 
 ### `dashboard`
@@ -68,7 +43,6 @@ Un code absent de `ERROR_MESSAGES` affiche `DEFAULT_ERROR_MESSAGE` sans erreur ;
 | Méthode | Chemin       | Appelé par                                                                      | Rôle                                          |
 | ------- | ------------ | ------------------------------------------------------------------------------- | --------------------------------------------- |
 | GET     | `/api/stats` | `TrainingStatsApi.get` (`features/dashboard/data-access/training-stats.api.ts`) | Volume d'entraînement par semaine ou par mois |
-| GET     | `/api/goals` | `NextEventApi.list` (`features/dashboard/data-access/next-event.api.ts`)        | Bloc « Prochain événement »                   |
 
 - Paramètres envoyés : `granularity` (`week` ou `month`), `from` et `to` (`YYYY-MM-DD`, UTC), calculés par `DashboardState` sur une plage glissante de 8 semaines ou 6 mois. Le tableau de bord n'envoie pas `type`.
 - Chargement : une `resource` dans `DashboardState`, relancée à chaque changement de granularité. `toDashboardView` (`training-stats.mapper.ts`) convertit la réponse en vue d'affichage : conversions seulement (secondes en heures, libellés, texte signé, `null` en « n/a »).
@@ -89,7 +63,7 @@ Un code absent de `ERROR_MESSAGES` affiche `DEFAULT_ERROR_MESSAGE` sans erreur ;
 - Mapping : `GoalApi` → `Goal` (`toGoal`), le temps cible devient `{ hours, minutes, seconds }`. Les types API sont dans `goal.api-model.ts`.
 - Chargement : `GoalsState` (fourni au niveau de la page) appelle `list()` à sa création et après chaque écriture réussie. Il convertit les observables en promesses avec `firstValueFrom`, et ne suit pas le principe « `resource` » ci-dessus : écart assumé pour des écritures impératives avec retour du formulaire (à revoir si la feature évolue).
 - Erreurs : `AppError` produite par `toAppError`, comme pour le reste de l'application. Les codes `GOAL_INVALID` (400, sans `errors[]`), `GOAL_NOT_FOUND` (404) et `GOAL_TARGET_TIME_INVALID` (400) ont un message dans `ERROR_MESSAGES`. Côté back, `GOAL_TARGET_TIME_INVALID` n'est pas renvoyé par les routes à ce jour (la validation de transport répond `VALIDATION_FAILED` avant) ; son message n'est donc qu'une garde.
-- Erreurs de champ : `VALIDATION_FAILED` avec `errors[]` sur `title`, `type`, `targetDate`, `eventFormat`, `targetTimeSeconds`. Le groupe `targetTimeSeconds` du formulaire reçoit les erreurs de ce champ, via `applyFieldErrors`. Les erreurs sans champ sont listées en alerte dans le formulaire.
+- Erreurs de champ : `VALIDATION_FAILED` avec `errors[]` sur `title`, `type`, `targetDate`, `eventFormat`, `targetTimeSeconds`. Le groupe `targetTimeSeconds` du formulaire reçoit les erreurs de ce champ, via le formulaire (`fieldErrors`). Les erreurs sans champ sont listées en alerte dans le formulaire.
 - Contrat : règles et codes dans `sport-hub-back/docs/technique/contextes/objectifs.md` et `sport-hub-back/docs/technique/erreurs-api.md`. Non recopiés ici.
 - Mock MSW : `src/mocks/handlers/goals.handlers.ts` (état en mémoire, `*/api/goals`). Fixtures : `src/mocks/fixtures/goals.fixtures.ts`.
 

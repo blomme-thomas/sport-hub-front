@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { TEXTS, fill } from '@shared/texts/texts';
+import { MacroSplitComponent } from '@shared/ui/macro-split/macro-split.component';
 import { formatNutrient } from '@shared/utils/nutrient-format';
 import type { Food } from '../../models/food.model';
 import type { MealTag } from '../../models/meal-tag';
@@ -22,7 +23,7 @@ interface CompositionGroup {
 /** Consultation d'une recette : synthèse du back, composition par composant. Lecture seule. */
 @Component({
   selector: 'sh-recipe-view',
-  imports: [NzButtonComponent],
+  imports: [NzButtonComponent, MacroSplitComponent],
   templateUrl: './recipe-view.component.html',
   styleUrl: './recipe-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,20 +34,11 @@ export class RecipeViewComponent {
   readonly foods = input.required<ReadonlyMap<string, Food>>();
   /** Demande de modification : l'écran ouvre le formulaire à la place de la consultation. */
   readonly edit = output<RecipeDetail>();
+  /** Demande de suppression : l'écran demande confirmation avant de supprimer. */
+  readonly delete = output<RecipeDetail>();
 
   protected readonly t = TEXTS;
   protected readonly fill = fill;
-
-  protected readonly totals = computed(() => {
-    const totals = this.recipe().totals;
-    const empty = this.t.nutrition.recipes.noValue;
-    return {
-      kcal: formatNutrient(totals.calories, empty),
-      proteins: formatNutrient(totals.proteins, empty, 'g'),
-      carbohydrates: formatNutrient(totals.carbohydrates, empty, 'g'),
-      fats: formatNutrient(totals.fats, empty, 'g'),
-    };
-  });
 
   protected readonly groups = computed<CompositionGroup[]>(() => {
     const recipe = this.recipe();

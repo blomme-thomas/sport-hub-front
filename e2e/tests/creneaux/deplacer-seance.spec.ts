@@ -55,13 +55,21 @@ test.describe('Calendrier : déplacer une séance', () => {
       throw new Error('bloc de séance introuvable');
     }
 
-    // Une heure dans la grille = 72 px ; on glisse d'une heure vers le bas.
+    // Une heure dans la grille : on la mesure entre deux libellés d'heure (la hauteur s'adapte à la fenêtre).
+    const [firstHour, secondHour] = await Promise.all([
+      page.locator('.week-grid__hour').nth(0).boundingBox(),
+      page.locator('.week-grid__hour').nth(1).boundingBox(),
+    ]);
+    if (firstHour === null || secondHour === null) {
+      throw new Error('libellés d’heures introuvables');
+    }
+    const hourPx = secondHour.y - firstHour.y;
     const startX = box.x + box.width / 2;
     const startY = box.y + box.height / 2;
     await page.mouse.move(startX, startY);
     await page.mouse.down();
-    await page.mouse.move(startX, startY + 24, { steps: 4 });
-    await page.mouse.move(startX, startY + 72, { steps: 4 });
+    await page.mouse.move(startX, startY + hourPx / 3, { steps: 4 });
+    await page.mouse.move(startX, startY + hourPx, { steps: 4 });
     await page.mouse.up();
 
     await expect.poll(() => patched).toMatchObject({ startTime: '19:00' });

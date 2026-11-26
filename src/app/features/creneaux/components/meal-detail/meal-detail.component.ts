@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { TEXTS, fill } from '@shared/texts/texts';
-import { formatNutrient } from '@shared/utils/nutrient-format';
 import type { MealSlot } from '../../models/meal-slot';
 import type { PlannedMeal } from '../../models/planned-meal.model';
-import type { RecipeTotals } from '../../models/library-recipe.model';
+import type { MealRecipeDetail } from '../../models/library-recipe.model';
+import { RecipeSummaryComponent } from '../recipe-summary/recipe-summary.component';
 
 function formatLongDay(iso: string): string {
   return new Intl.DateTimeFormat('fr-FR', {
@@ -16,22 +15,20 @@ function formatLongDay(iso: string): string {
 }
 
 /**
- * Fiche d'une recette placée : quand et à quel repas, sa synthèse du back, et le retrait de ce seul repas.
- * `totals` vaut `undefined` pendant le chargement, `null` si le back ne les a pas renvoyés.
+ * Fiche d'une recette placée : quand et à quel repas, puis la synthèse de la recette.
+ * `detail` vaut `undefined` pendant le chargement, `null` si le back ne l'a pas renvoyée.
+ * Le retrait d'un repas se fait depuis sa carte dans le calendrier.
  */
 @Component({
   selector: 'sh-meal-detail',
-  imports: [NzButtonComponent],
+  imports: [RecipeSummaryComponent],
   templateUrl: './meal-detail.component.html',
   styleUrl: './meal-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MealDetailComponent {
   readonly plannedMeal = input.required<PlannedMeal>();
-  readonly totals = input<RecipeTotals | null | undefined>(undefined);
-  readonly removing = input(false);
-
-  readonly removeRequested = output<void>();
+  readonly detail = input<MealRecipeDetail | null | undefined>(undefined);
 
   protected readonly t = TEXTS;
   protected readonly fill = fill;
@@ -42,20 +39,6 @@ export class MealDetailComponent {
       meal: this.mealLabel(this.plannedMeal().mealTag),
     }),
   );
-
-  protected readonly values = computed(() => {
-    const totals = this.totals();
-    if (totals === undefined || totals === null) {
-      return null;
-    }
-    const empty = this.t.creneaux.placed.noValue;
-    return {
-      kcal: formatNutrient(totals.calories, empty),
-      proteins: formatNutrient(totals.proteins, empty, 'g'),
-      carbohydrates: formatNutrient(totals.carbohydrates, empty, 'g'),
-      fats: formatNutrient(totals.fats, empty, 'g'),
-    };
-  });
 
   private mealLabel(meal: MealSlot): string {
     return this.t.creneaux.meals[meal];

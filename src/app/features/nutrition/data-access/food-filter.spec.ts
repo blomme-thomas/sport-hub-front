@@ -21,16 +21,14 @@ describe('filterFoods', () => {
   it('filtre par catégorie, un aliment à plusieurs catégories apparaît dans chacune', () => {
     expect(names(filterFoods(foods, { search: '', category: 'feculent' }))).toEqual([
       'Riz cuit',
-      'Lentilles cuites',
+      'Lentilles',
     ]);
-    expect(names(filterFoods(foods, { search: '', category: 'proteine' }))).toContain(
-      'Lentilles cuites',
-    );
+    expect(names(filterFoods(foods, { search: '', category: 'proteine' }))).toContain('Lentilles');
   });
 
   it('combine recherche et catégorie (ET logique)', () => {
     expect(names(filterFoods(foods, { search: 'lent', category: 'proteine' }))).toEqual([
-      'Lentilles cuites',
+      'Lentilles',
     ]);
     expect(filterFoods(foods, { search: 'poulet', category: 'legume' })).toEqual([]);
   });

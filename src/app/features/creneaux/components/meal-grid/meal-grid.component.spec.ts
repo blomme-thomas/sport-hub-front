@@ -74,7 +74,7 @@ describe('MealGridComponent', () => {
   it('accepte plusieurs recettes dans la même case', async () => {
     await setup({ plannedMeals: [PLACED, { ...PLACED, id: 'meal-2' }] });
 
-    expect(within(cell('Midi', 1)).getAllByRole('button')).toHaveLength(2);
+    expect(within(cell('Midi', 1)).getAllByRole('button', { name: /^Ouvrir / })).toHaveLength(2);
   });
 
   it('signale la recette déposée dans une case, avec sa date et son repas', async () => {

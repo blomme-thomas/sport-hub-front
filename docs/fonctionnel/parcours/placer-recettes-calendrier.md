@@ -1,6 +1,6 @@
 # Placer des recettes dans le calendrier alimentaire
 
-> Statut : implémenté (issue #160). Tests unitaires et composants livrés (grille, bibliothèque, fiche, état des repas). Tests e2e du glisser-déposer, de la consultation, du retrait et du mobile écrits (`e2e/tests/creneaux/placer-recettes.spec.ts`). Génération automatique du planning : hors périmètre.
+> Statut : implémenté (issue #160). Tests unitaires et composants livrés (grille, bibliothèque, fiche, état des repas). Tests e2e du glisser-déposer, de la consultation, du retrait et du mobile écrits (`e2e/tests/creneaux/placer-recettes.spec.ts`). Le retrait se fait par la croix de la carte, sans confirmation ni message. Génération automatique du planning : hors périmètre.
 
 ## But
 
@@ -13,10 +13,10 @@ Composer la semaine alimentaire en plaçant des recettes dans les cases du calen
 
 ## Étapes
 
-1. Sur ordinateur, glisser une recette de la bibliothèque dans une case (jour, repas). La recette est placée : elle apparaît dans la case, « Recette placée. » s'affiche.
+1. Sur ordinateur, glisser une recette de la bibliothèque dans une case (jour, repas). La recette est placée : elle apparaît dans la case. Une recette n'est pas acceptée dans un repas qui n'est pas prévu pour elle (une recette « midi et soir » ne va pas le matin) : la case ne se colore pas et le dépôt est refusé.
 2. Plusieurs recettes peuvent être placées dans la même case, et une même recette peut être placée plusieurs fois, indépendamment.
-3. Cliquer sur une recette placée ouvre sa fiche : le jour et le repas, les valeurs nutritionnelles de la recette (calculées par le back), et le bouton « Retirer du planning ».
-4. « Retirer du planning » supprime ce seul repas planifié ; les autres placements de la même recette ne bougent pas. « Repas retiré. » s'affiche.
+3. Cliquer sur le nom d'une recette placée ouvre sa fiche : le jour et le repas, les valeurs nutritionnelles de la recette (calculées par le back), et la liste des aliments.
+4. La croix à droite de la carte retire ce seul repas planifié ; les autres placements de la même recette ne bougent pas.
 5. Sur mobile, le glisser-déposer est désactivé : la bibliothèque affiche « Le placement se fait sur ordinateur. Vous pouvez consulter une recette placée. ». La consultation et le retrait restent possibles.
 
 ## Règles

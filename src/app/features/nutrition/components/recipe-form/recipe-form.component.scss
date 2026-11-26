@@ -75,11 +75,28 @@
   }
 }
 
+/* Hauteur commune du select, de la quantité et du bouton de suppression d'une ligne. */
 .recipe-form__row {
+  --recipe-row-control-height: 2.25rem;
+
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(6rem, 8rem) auto;
   gap: 0.5rem;
   align-items: start;
+}
+
+.recipe-form__select,
+.recipe-form__quantity {
+  box-sizing: border-box;
+  height: var(--recipe-row-control-height);
+  width: 100%;
+}
+
+.recipe-form__remove {
+  box-sizing: border-box;
+  width: var(--recipe-row-control-height);
+  height: var(--recipe-row-control-height);
+  padding: 0;
 }
 
 .recipe-form__select-wrap,
@@ -88,6 +105,10 @@
   flex-direction: column;
   gap: 0.25rem;
   min-width: 0;
+}
+
+.recipe-form__select--empty {
+  color: var(--sh-text-muted);
 }
 
 .recipe-form__quantity-wrap {
@@ -106,51 +127,6 @@
 
 .recipe-form__add {
   align-self: flex-start;
-}
-
-.recipe-form__kcal {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  justify-content: center;
-  width: 9rem;
-  aspect-ratio: 1;
-  margin: 0 auto;
-  border: 6px solid var(--sh-accent);
-  border-radius: 50%;
-  flex-direction: column;
-  align-self: center;
-  text-align: center;
-  color: var(--sh-text-muted);
-}
-
-.recipe-form__kcal-value {
-  color: var(--sh-text);
-  font-size: 1.75rem;
-  font-weight: 700;
-}
-
-.recipe-form__macros {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
-  margin: 0;
-
-  div {
-    padding: 0.5rem;
-    border: 1px solid var(--sh-border);
-    border-radius: var(--sh-radius-sm);
-  }
-
-  dt {
-    color: var(--sh-text-muted);
-    font-size: 0.75rem;
-  }
-
-  dd {
-    margin: 0;
-    font-weight: 600;
-  }
 }
 
 .recipe-form__hint {

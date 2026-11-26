@@ -49,17 +49,6 @@
         <li>
           <a
             class="shell__link"
-            routerLink="/goals"
-            routerLinkActive="shell__link--active"
-            ariaCurrentWhenActive="page"
-            (click)="closeMenu()"
-          >
-            {{ t.shell.menu.goals }}
-          </a>
-        </li>
-        <li>
-          <a
-            class="shell__link"
             routerLink="/creneaux"
             routerLinkActive="shell__link--active"
             ariaCurrentWhenActive="page"
@@ -90,17 +79,6 @@
             {{ t.shell.menu.settings }}
           </a>
         </li>
-        @for (label of comingSoon; track label) {
-          <li>
-            <span
-              class="shell__link shell__link--disabled"
-              aria-disabled="true"
-              [attr.title]="t.shell.soon"
-            >
-              {{ label }}
-            </span>
-          </li>
-        }
       </ul>
     </nav>
   </aside>

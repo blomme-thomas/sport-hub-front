@@ -66,7 +66,12 @@
 
 @if (viewing(); as recipe) {
   <sh-modal [title]="recipe.name" (closed)="close()">
-    <sh-recipe-view [recipe]="recipe" [foods]="state.foodsById()" (edit)="editFromView($event)" />
+    <sh-recipe-view
+      [recipe]="recipe"
+      [foods]="state.foodsById()"
+      (edit)="editFromView($event)"
+      (delete)="confirmDelete($event)"
+    />
   </sh-modal>
 }
 
@@ -78,6 +83,8 @@
       [foods]="state.foods()"
       [submitting]="state.saving()"
       [serverError]="formError()"
+      [preview]="state.preview()"
+      (compositionChange)="state.previewComposition($event)"
       (saved)="onSaved($event)"
       (cancelled)="closeForm()"
     />

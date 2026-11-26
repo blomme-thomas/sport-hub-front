@@ -40,12 +40,22 @@
           <td class="food-table__num">{{ amount(food.fats, 'g') }}</td>
           <td class="food-table__actions">
             <button
-              nz-button
               type="button"
+              class="food-table__icon"
               [attr.aria-label]="fill(t.nutrition.foods.table.editLabel, { name: food.name })"
+              [attr.title]="t.nutrition.foods.table.edit"
               (click)="edit.emit(food)"
             >
-              {{ t.nutrition.foods.table.edit }}
+              <sh-icon name="pencil" />
+            </button>
+            <button
+              type="button"
+              class="food-table__icon food-table__icon--danger"
+              [attr.aria-label]="fill(t.nutrition.foods.table.deleteLabel, { name: food.name })"
+              [attr.title]="t.nutrition.foods.table.delete"
+              (click)="delete.emit(food)"
+            >
+              <sh-icon name="trash" />
             </button>
           </td>
         </tr>

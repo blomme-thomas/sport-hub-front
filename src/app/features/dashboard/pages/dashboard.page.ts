@@ -25,7 +25,6 @@ import {
   type ActivityDetailModalData,
 } from '../components/activity-detail-modal/activity-detail-modal.component';
 import { PeriodSelectorComponent } from '../components/period-selector/period-selector.component';
-import { NextEventCardComponent } from '../components/next-event-card/next-event-card.component';
 import { KpiCardComponent } from '../components/kpi-card/kpi-card.component';
 import { PerformanceCardComponent } from '../components/performance-card/performance-card.component';
 import { RecentActivitiesCardComponent } from '../components/recent-activities-card/recent-activities-card.component';
@@ -45,7 +44,6 @@ import { WeeklyGoalState } from '../data-access/weekly-goal.state';
 import { WeekMiniCalendarComponent } from '../components/week-mini-calendar/week-mini-calendar.component';
 import { DashboardKpisState } from '../data-access/dashboard-kpis.state';
 import { DashboardState } from '../data-access/dashboard.state';
-import { NextEventState } from '../data-access/next-event.state';
 import { HeartRateZonesState } from '../data-access/heart-rate-zones.state';
 import { PerformanceState } from '../data-access/performance.state';
 import { WeeklyReviewState } from '../data-access/weekly-review.state';
@@ -75,7 +73,6 @@ const AXIS_UNITS: Partial<Record<DashboardKpi['id'], string>> = {
     IconComponent,
     PeriodSelectorComponent,
     KpiCardComponent,
-    NextEventCardComponent,
     PerformanceCardComponent,
     RecentActivitiesCardComponent,
     UpcomingSessionsCardComponent,
@@ -91,7 +88,6 @@ const AXIS_UNITS: Partial<Record<DashboardKpi['id'], string>> = {
   providers: [
     DashboardState,
     DashboardKpisState,
-    NextEventState,
     RecentActivitiesState,
     UpcomingSessionsState,
     PerformanceState,
@@ -115,7 +111,6 @@ export class DashboardPage {
     viewChild.required<TemplateRef<object>>('activityDetailTitle');
   protected readonly state = inject(DashboardState);
   protected readonly kpis = inject(DashboardKpisState);
-  protected readonly nextEvent = inject(NextEventState);
   protected readonly recent = inject(RecentActivitiesState);
   protected readonly upcoming = inject(UpcomingSessionsState);
   protected readonly advice = inject(DashboardAdviceState);

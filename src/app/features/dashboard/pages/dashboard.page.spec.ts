@@ -2,16 +2,11 @@ import { provideRouter } from '@angular/router';
 import { render, screen, waitFor, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   emptyStatsResponse,
   normalStatsResponse,
 } from '../../../../mocks/fixtures/training-stats.fixtures';
-import { semiPastApi, volumeUndatedApi } from '../../../../mocks/fixtures/goals.fixtures';
-import {
-  problemResponse as goalsProblemResponse,
-  trackGoalsList,
-} from '../../../../mocks/goals.testing';
 import { server } from '../../../../mocks/server';
 import {
   STATS_URL,
@@ -161,59 +156,5 @@ describe('DashboardPage', () => {
     await screen.findByRole('alert');
     expect(screen.getByRole('heading', { level: 1, name: 'Tableau de bord' })).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Indicateurs de la période' })).toBeInTheDocument();
-  });
-
-  describe('bloc Prochain événement', () => {
-    beforeEach(() => {
-      vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-11-30T10:00:00Z') });
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it('affiche le prochain événement en tête de page, avant les chiffres clés', async () => {
-      trackStats();
-      trackGoalsList();
-
-      await render(DashboardPage, { providers: pageProviders() });
-
-      expect(await screen.findByText('6 jours restants')).toBeInTheDocument();
-      expect(
-        screen.getByRole('heading', { level: 3, name: 'Triathlon de Paris' }),
-      ).toBeInTheDocument();
-      expect(screen.getByText('Olympique')).toBeInTheDocument();
-      expect(screen.getByText('2 h 30 min 0 s')).toBeInTheDocument();
-
-      const nextEventHeading = screen.getByRole('heading', { name: 'Prochain événement' });
-      const figureHeading = await screen.findByRole('heading', { name: 'Séances' });
-      expect(
-        nextEventHeading.compareDocumentPosition(figureHeading) & Node.DOCUMENT_POSITION_FOLLOWING,
-      ).toBeTruthy();
-    });
-
-    it('invite à créer un événement sans alerte quand aucun événement n est à venir', async () => {
-      trackStats();
-      trackGoalsList(() => HttpResponse.json({ items: [semiPastApi, volumeUndatedApi] }));
-
-      await render(DashboardPage, { providers: pageProviders() });
-
-      expect(await screen.findByRole('link', { name: 'Créer un événement' })).toHaveAttribute(
-        'href',
-        '/goals',
-      );
-      expect(await screen.findByRole('heading', { name: LOADED_HEADING })).toBeInTheDocument();
-      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    });
-
-    it('affiche l erreur des objectifs sans masquer les statistiques', async () => {
-      trackStats();
-      trackGoalsList(() => goalsProblemResponse(500, 'INTERNAL_ERROR'));
-
-      await render(DashboardPage, { providers: pageProviders() });
-
-      expect(await screen.findByRole('alert')).toHaveTextContent(ERROR_MESSAGES['INTERNAL_ERROR']);
-      expect(await screen.findByRole('heading', { name: LOADED_HEADING })).toBeInTheDocument();
-    });
   });
 });

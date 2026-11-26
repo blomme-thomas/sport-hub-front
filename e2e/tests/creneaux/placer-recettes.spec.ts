@@ -10,6 +10,7 @@ const MEAL_PLAN_URL = /\/api\/meal-plan(\?.*)?$/;
 const MEAL_PLAN_ITEM_URL = /\/api\/meal-plan\/([^/?]+)$/;
 const RECIPES_URL = /\/api\/recipes$/;
 const RECIPE_URL = /\/api\/recipes\/[^/]+$/;
+const FOODS_URL = /\/api\/foods$/;
 
 const CHICKEN = {
   id: '9b1d2c3e-4f5a-4b6c-8d7e-0f1a2b3c4d01',
@@ -33,6 +34,7 @@ async function mockApi(page: Page, meals: Record<string, unknown>[]): Promise<vo
   await page.route(DISCIPLINES_URL, (route) => route.fulfill({ json: { items: [] } }));
   await page.route(RECIPES_URL, (route) => route.fulfill({ json: [CHICKEN] }));
   await page.route(RECIPE_URL, (route) => route.fulfill({ json: { ...CHICKEN, ...TOTALS } }));
+  await page.route(FOODS_URL, (route) => route.fulfill({ json: [] }));
   await page.route(MEAL_PLAN_ITEM_URL, (route) => {
     const id = MEAL_PLAN_ITEM_URL.exec(route.request().url())?.[1];
     const index = meals.findIndex((meal) => meal['id'] === id);
@@ -87,9 +89,13 @@ test.describe('Calendrier alimentation : placer des recettes', () => {
     await placed.click();
     const dialog = page.getByRole('dialog');
     await expect(dialog.getByText('437,5')).toBeVisible();
-    await dialog.getByRole('button', { name: 'Retirer du planning' }).click();
+    await expect(dialog.getByRole('heading', { name: 'Aliments' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
 
-    await expect(page.getByText('Repas retiré.')).toBeVisible();
+    await monday.getByRole('button', { name: 'Retirer Poulet riz légumes du planning' }).click();
+
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     await expect(monday.getByRole('button', { name: 'Ouvrir Poulet riz légumes' })).toHaveCount(0);
   });
 });
@@ -109,9 +115,8 @@ test.describe('Calendrier alimentation sur mobile', () => {
         'Le placement se fait sur ordinateur. Vous pouvez consulter une recette placée.',
       ),
     ).toBeVisible();
-    await expect(page.getByText('Poulet riz légumes', { exact: true })).toHaveAttribute(
-      'draggable',
-      'false',
-    );
+    await expect(
+      page.locator('li.recipe-library__card', { hasText: 'Poulet riz légumes' }),
+    ).toHaveAttribute('draggable', 'false');
   });
 });

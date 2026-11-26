@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { TEXTS, fill } from '@shared/texts/texts';
+import { IconComponent } from '@shared/ui/icon/icon.component';
 import { formatNutrient } from '@shared/utils/nutrient-format';
 import type { FoodCategory } from '../../models/food-category';
 import type { Food } from '../../models/food.model';
 
-/** Tableau de la base d'aliments : valeurs pour 100 g, vides affichées « — », bouton « Modifier » par ligne. */
+/** Tableau de la base d'aliments : valeurs pour 100 g, vides affichées « — », icônes modifier et supprimer par ligne. */
 @Component({
   selector: 'sh-food-table',
-  imports: [NzButtonComponent],
+  imports: [IconComponent],
   templateUrl: './food-table.component.html',
   styleUrl: './food-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,6 +16,7 @@ import type { Food } from '../../models/food.model';
 export class FoodTableComponent {
   readonly foods = input.required<readonly Food[]>();
   readonly edit = output<Food>();
+  readonly delete = output<Food>();
 
   protected readonly t = TEXTS;
   protected readonly fill = fill;

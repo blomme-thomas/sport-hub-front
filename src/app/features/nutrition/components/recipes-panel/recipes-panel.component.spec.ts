@@ -27,7 +27,7 @@ describe('RecipesPanelComponent', () => {
       'true',
     );
     expect(screen.getByRole('button', { name: 'Midi (2)' })).toBeInTheDocument();
-    expect(await screen.findByText('437,5 kcal')).toBeInTheDocument();
+    expect(await screen.findByText('437,5')).toBeInTheDocument();
   });
 
   it('combine la recherche et le filtre par repas', async () => {
@@ -47,7 +47,7 @@ describe('RecipesPanelComponent', () => {
   it('ouvre la consultation dans une modale, avec un bouton Modifier', async () => {
     const user = userEvent.setup();
     await setup();
-    await screen.findByText('437,5 kcal');
+    await screen.findByText('437,5');
 
     await user.click(screen.getByRole('button', { name: 'Ouvrir la recette Poulet riz légumes' }));
 
@@ -68,7 +68,7 @@ describe('RecipesPanelComponent', () => {
   it('modifie une recette depuis sa consultation puis confirme', async () => {
     const user = userEvent.setup();
     await setup();
-    await screen.findByText('437,5 kcal');
+    await screen.findByText('437,5');
 
     await user.click(screen.getByRole('button', { name: 'Ouvrir la recette Saumon riz' }));
     const view = await screen.findByRole('dialog');
