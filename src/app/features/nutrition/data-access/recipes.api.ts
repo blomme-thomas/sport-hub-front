@@ -9,6 +9,7 @@ import type {
   RecipePreviewRequestApi,
   RecipeRequestApi,
 } from '../models/recipe.api-model';
+import type { PlanImportResultApi } from '../models/plan-import.api-model';
 import type { Recipe, RecipeDetail, RecipePreview } from '../models/recipe.model';
 import { toRecipe, toRecipeDetail, toRecipePreview } from './recipe.mapper';
 
@@ -54,5 +55,10 @@ export class RecipesApi {
     return this.http.delete<void>(`${this.baseUrl}/recipes/${encodeURIComponent(id)}`, {
       params: confirm ? { confirm: 'true' } : {},
     });
+  }
+
+  /** Importe un fichier `plan-recettes` (ou un tableau brut) : toutes les recettes sont créées, ou aucune. */
+  importRecipes(content: unknown): Observable<PlanImportResultApi> {
+    return this.http.post<PlanImportResultApi>(`${this.baseUrl}/recipes/import`, content);
   }
 }

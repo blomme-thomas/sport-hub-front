@@ -12,6 +12,9 @@
       [value]="state.search()"
       (input)="onSearch($event)"
     />
+    <button nz-button type="button" (click)="openImport()">
+      {{ t.nutrition.planImport.open }}
+    </button>
     <button nz-button nzType="primary" type="button" (click)="openForm('new')">
       {{ t.nutrition.recipes.form.create }}
     </button>
@@ -87,6 +90,18 @@
       (compositionChange)="state.previewComposition($event)"
       (saved)="onSaved($event)"
       (cancelled)="closeForm()"
+    />
+  </sh-modal>
+}
+
+@if (importing()) {
+  <sh-modal [title]="t.nutrition.planImport.titles.recettes" (closed)="closeImport()">
+    <sh-plan-import
+      [kind]="'recettes'"
+      [submitting]="state.saving()"
+      [serverError]="importError()"
+      (saved)="onImportSaved($event)"
+      (cancelled)="closeImport()"
     />
   </sh-modal>
 }

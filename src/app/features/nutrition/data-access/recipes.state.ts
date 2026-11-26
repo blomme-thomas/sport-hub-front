@@ -120,27 +120,38 @@ export class RecipesState {
   }
 
   /** @throws {AppError} quand l'API refuse la création ; la liste n'est pas rechargée */
-  create(input: RecipeInput): Promise<void> {
-    return this.write(() => firstValueFrom(this.api.create(toRecipeRequest(input))));
+  async create(input: RecipeInput): Promise<void> {
+    await this.write(() => firstValueFrom(this.api.create(toRecipeRequest(input))));
   }
 
   /** @throws {AppError} quand l'API refuse la modification ; la liste n'est pas rechargée */
-  update(id: string, input: RecipeInput): Promise<void> {
-    return this.write(() => firstValueFrom(this.api.update(id, toRecipeRequest(input))));
+  async update(id: string, input: RecipeInput): Promise<void> {
+    await this.write(() => firstValueFrom(this.api.update(id, toRecipeRequest(input))));
   }
 
   /**
    * @param confirm `true` retire aussi les repas planifiés de la recette ; sans lui, l'API refuse une recette planifiée.
    * @throws {AppError} quand l'API refuse la suppression (`RECIPE_IN_USE` si la recette est planifiée)
    */
-  remove(id: string, confirm: boolean): Promise<void> {
-    return this.write(() => firstValueFrom(this.api.delete(id, confirm)));
+  async remove(id: string, confirm: boolean): Promise<void> {
+    await this.write(() => firstValueFrom(this.api.delete(id, confirm)));
   }
 
-  private async write(operation: () => Promise<unknown>): Promise<void> {
+  /**
+   * Importe un fichier `plan-recettes`. Renvoie le nombre de recettes créées ; la liste est rechargée.
+   * @throws {AppError} quand l'API refuse le fichier (`RECIPE_IMPORT_INVALID` 400, `RECIPE_IMPORT_DUPLICATE` 409)
+   */
+  importFile(content: unknown): Promise<number> {
+    return this.write(() => firstValueFrom(this.api.importRecipes(content))).then(
+      (result) => result.createdCount,
+    );
+  }
+
+  private async write<T>(operation: () => Promise<T>): Promise<T> {
     this.savingValue.set(true);
+    let result: T;
     try {
-      await operation();
+      result = await operation();
     } catch (error) {
       throw asAppError(error);
     } finally {
@@ -148,6 +159,7 @@ export class RecipesState {
     }
     // La liste est rechargée pour que les totaux des cartes reflètent la recette enregistrée.
     await this.load();
+    return result;
   }
 
   private async load(): Promise<void> {
