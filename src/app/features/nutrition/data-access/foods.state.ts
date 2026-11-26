@@ -55,18 +55,28 @@ export class FoodsState {
   }
 
   /** @throws {AppError} quand l'API refuse la création ; la base n'est pas rechargée */
-  create(input: FoodInput): Promise<void> {
-    return this.write(() => firstValueFrom(this.api.create(toFoodRequest(input))));
+  async create(input: FoodInput): Promise<void> {
+    await this.write(() => firstValueFrom(this.api.create(toFoodRequest(input))));
   }
 
   /** @throws {AppError} quand l'API refuse la modification ; la base n'est pas rechargée */
-  update(id: string, input: FoodInput): Promise<void> {
-    return this.write(() => firstValueFrom(this.api.update(id, toFoodRequest(input))));
+  async update(id: string, input: FoodInput): Promise<void> {
+    await this.write(() => firstValueFrom(this.api.update(id, toFoodRequest(input))));
   }
 
   /** @throws {AppError} quand l'API refuse la suppression (`FOOD_IN_USE` si une recette contient l'aliment) */
-  remove(id: string): Promise<void> {
-    return this.write(() => firstValueFrom(this.api.delete(id)));
+  async remove(id: string): Promise<void> {
+    await this.write(() => firstValueFrom(this.api.delete(id)));
+  }
+
+  /**
+   * Importe un fichier `plan-aliments`. Renvoie le nombre d'aliments créés ; la base est rechargée.
+   * @throws {AppError} quand l'API refuse le fichier (`FOOD_IMPORT_INVALID` 400, `FOOD_IMPORT_DUPLICATE` 409)
+   */
+  importFile(content: unknown): Promise<number> {
+    return this.write(() => firstValueFrom(this.api.importFoods(content))).then(
+      (result) => result.createdCount,
+    );
   }
 
   private async load(): Promise<void> {
@@ -82,16 +92,18 @@ export class FoodsState {
     }
   }
 
-  private async write(operation: () => Promise<unknown>): Promise<void> {
+  private async write<T>(operation: () => Promise<T>): Promise<T> {
     this.savingValue.set(true);
+    let result: T;
     try {
-      await operation();
+      result = await operation();
     } catch (error) {
       throw asAppError(error);
     } finally {
       this.savingValue.set(false);
     }
     await this.load();
+    return result;
   }
 }
 

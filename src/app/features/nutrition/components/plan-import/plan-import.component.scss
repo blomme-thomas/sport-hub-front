@@ -1,0 +1,44 @@
+.plan-import {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sh-space-4);
+}
+
+.plan-import__intro {
+  margin: 0;
+  color: var(--sh-text-muted);
+}
+
+.plan-import__count {
+  margin: 0;
+  font-weight: 600;
+  color: var(--sh-text);
+}
+
+.plan-import__alert {
+  margin: 0;
+  padding: var(--sh-space-3);
+  border: 1px solid var(--sh-error);
+  border-radius: var(--sh-radius-sm);
+  color: var(--sh-error);
+
+  p {
+    margin: 0;
+  }
+}
+
+.plan-import__issues {
+  margin: var(--sh-space-1) 0 0;
+  padding-left: var(--sh-space-4);
+  color: var(--sh-text);
+
+  code {
+    font-size: 0.875rem;
+  }
+}
+
+.plan-import__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sh-space-2);
+}

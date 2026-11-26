@@ -24,7 +24,45 @@ function foodNotFound(): Response {
   );
 }
 
+function foodImportDuplicate(): Response {
+  return HttpResponse.json(
+    {
+      type: 'urn:sport-hub:problem:food-import-duplicate',
+      title: 'Conflict',
+      status: 409,
+      detail: 'Import refusé : un aliment porte déjà ce nom.',
+      instance: '/api/foods/import',
+      code: 'FOOD_IMPORT_DUPLICATE',
+      correlationId: '7d4e2b1a-3c5f-4e9a-8b2d-1f6a9c0e4b73',
+      errors: [
+        {
+          field: 'aliments[0].name',
+          code: 'FOOD_IMPORT_DUPLICATE',
+          message: 'un aliment porte déjà ce nom',
+        },
+      ],
+    },
+    { status: 409, headers: { 'content-type': 'application/problem+json' } },
+  );
+}
+
 export const foodsHandlers = [
+  http.post('*/api/foods/import', async ({ request }) => {
+    const body = (await request.json()) as unknown;
+    const items = (
+      Array.isArray(body) ? body : ((body as { aliments?: FoodRequestApi[] }).aliments ?? [])
+    ) as FoodRequestApi[];
+    const names = new Set(foods.map((food) => food.name.trim().toLowerCase()));
+    if (items.some((item) => names.has(item.name.trim().toLowerCase()))) {
+      return foodImportDuplicate();
+    }
+    const created = items.map((item): FoodApi => ({ id: crypto.randomUUID(), ...item }));
+    foods = [...foods, ...created];
+    return HttpResponse.json(
+      { createdCount: created.length, ids: created.map((food) => food.id) },
+      { status: 201 },
+    );
+  }),
   http.get('*/api/foods', () => HttpResponse.json(foods)),
   http.post('*/api/foods', async ({ request }) => {
     const body = (await request.json()) as FoodRequestApi;

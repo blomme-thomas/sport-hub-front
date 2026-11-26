@@ -3,7 +3,7 @@ import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzInputDirective } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { TEXTS } from '@shared/texts/texts';
+import { fill, TEXTS } from '@shared/texts/texts';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { AppError } from '../../../../core/http/app-error';
 import { toAppError } from '../../../../core/http/problem-details.mapper';
@@ -12,6 +12,7 @@ import { MEAL_TAGS, type MealTag } from '../../models/meal-tag';
 import type { Recipe, RecipeDetail, RecipeInput } from '../../models/recipe.model';
 import { RecipeCardComponent } from '../recipe-card/recipe-card.component';
 import { RecipeFormComponent } from '../recipe-form/recipe-form.component';
+import { PlanImportComponent } from '../plan-import/plan-import.component';
 import { RecipeViewComponent } from '../recipe-view/recipe-view.component';
 
 /** Onglet « Mes recettes » : recherche, filtre par repas, cartes, consultation, et création ou modification dans une modale. */
@@ -24,6 +25,7 @@ import { RecipeViewComponent } from '../recipe-view/recipe-view.component';
     RecipeCardComponent,
     RecipeFormComponent,
     RecipeViewComponent,
+    PlanImportComponent,
   ],
   templateUrl: './recipes-panel.component.html',
   styleUrl: './recipes-panel.component.scss',
@@ -57,6 +59,10 @@ export class RecipesPanelComponent {
       : TEXTS.nutrition.recipes.form.editTitle,
   );
   protected readonly formError = signal<AppError | null>(null);
+
+  /** Modale d'import d'un fichier `plan-recettes`, et l'erreur renvoyée par le back pour ce fichier. */
+  protected readonly importing = signal(false);
+  protected readonly importError = signal<AppError | null>(null);
 
   protected mealLabel(mealTag: MealTag): string {
     return this.t.nutrition.recipes.mealTags[mealTag];
@@ -96,6 +102,28 @@ export class RecipesPanelComponent {
 
   protected onSaved(input: RecipeInput): void {
     void this.save(input);
+  }
+
+  protected openImport(): void {
+    this.importError.set(null);
+    this.importing.set(true);
+  }
+
+  protected closeImport(): void {
+    this.importing.set(false);
+    this.importError.set(null);
+  }
+
+  /** Le fichier est refusé en entier par le back : son erreur reste dans la modale, sinon elle se ferme. */
+  protected async onImportSaved(content: unknown): Promise<void> {
+    this.importError.set(null);
+    try {
+      const created = await this.state.importFile(content);
+      this.closeImport();
+      this.messages.success(fill(TEXTS.nutrition.planImport.imported.recettes, { count: created }));
+    } catch (error) {
+      this.importError.set(error instanceof AppError ? error : toAppError(error));
+    }
   }
 
   /** Demande de suppression depuis la consultation : confirmation avant d'appeler l'API. */

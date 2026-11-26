@@ -648,6 +648,26 @@
       "foods": "Mes aliments"
     },
     "placeholder": "Contenu bientôt disponible.",
+    "planImport": {
+      "open": "Importer (JSON)",
+      "titles": {
+        "aliments": "Importer des aliments",
+        "recettes": "Importer des recettes"
+      },
+      "helpBefore": "Le fichier doit être au format",
+      "helpAfter": "Tous les éléments sont créés, ou aucun en cas d’erreur. Un nom déjà existant est refusé.",
+      "fileLabel": "Fichier (.json)",
+      "count": "{count} élément(s) détecté(s) dans le fichier.",
+      "unusable": "Le fichier n’est pas utilisable : {message}",
+      "malformed": "le contenu n’est pas du JSON valide",
+      "noList": "la liste « {list} » est absente du fichier",
+      "empty": "le fichier ne contient aucun élément",
+      "submit": "Importer",
+      "imported": {
+        "aliments": "{count} aliment(s) importé(s).",
+        "recettes": "{count} recette(s) importée(s)."
+      }
+    },
     "foods": {
       "search": "Rechercher un aliment",
       "searchLabel": "Rechercher un aliment par nom",

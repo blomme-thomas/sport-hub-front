@@ -32,6 +32,28 @@ function recipeNotFound(): Response {
   );
 }
 
+function recipeImportDuplicate(): Response {
+  return HttpResponse.json(
+    {
+      type: 'urn:sport-hub:problem:recipe-import-duplicate',
+      title: 'Conflict',
+      status: 409,
+      detail: 'Import refusé : une recette porte déjà ce nom.',
+      instance: '/api/recipes/import',
+      code: 'RECIPE_IMPORT_DUPLICATE',
+      correlationId: '7d4e2b1a-3c5f-4e9a-8b2d-1f6a9c0e4b73',
+      errors: [
+        {
+          field: 'recettes[0].name',
+          code: 'RECIPE_IMPORT_DUPLICATE',
+          message: 'une recette porte déjà ce nom',
+        },
+      ],
+    },
+    { status: 409, headers: { 'content-type': 'application/problem+json' } },
+  );
+}
+
 /** Synthèse de test : les totaux réels sont calculés par le back ; le mock renvoie des zéros. */
 function toDetail(recipe: RecipeApi): RecipeDetailApi {
   return {
@@ -52,6 +74,23 @@ export const recipesHandlers = [
     recipes = [...recipes, created];
     details = [...details, toDetail(created)];
     return HttpResponse.json(created, { status: 201 });
+  }),
+  http.post('*/api/recipes/import', async ({ request }) => {
+    const body = (await request.json()) as unknown;
+    const items = (
+      Array.isArray(body) ? body : ((body as { recettes?: RecipeRequestApi[] }).recettes ?? [])
+    ) as RecipeRequestApi[];
+    const names = new Set(recipes.map((recipe) => recipe.name.trim().toLowerCase()));
+    if (items.some((item) => names.has(item.name.trim().toLowerCase()))) {
+      return recipeImportDuplicate();
+    }
+    const created = items.map((item): RecipeApi => ({ id: crypto.randomUUID(), ...item }));
+    recipes = [...recipes, ...created];
+    details = [...details, ...created.map(toDetail)];
+    return HttpResponse.json(
+      { createdCount: created.length, ids: created.map((recipe) => recipe.id) },
+      { status: 201 },
+    );
   }),
   http.post('*/api/recipes/preview', () =>
     HttpResponse.json({ totals: EMPTY_TOTALS, ignored: [] }),

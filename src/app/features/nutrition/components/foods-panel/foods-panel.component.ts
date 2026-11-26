@@ -3,7 +3,7 @@ import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzInputDirective } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { TEXTS } from '@shared/texts/texts';
+import { fill, TEXTS } from '@shared/texts/texts';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { AppError } from '../../../../core/http/app-error';
 import { toAppError } from '../../../../core/http/problem-details.mapper';
@@ -12,6 +12,7 @@ import { FOOD_CATEGORIES, type FoodCategory } from '../../models/food-category';
 import type { Food, FoodInput } from '../../models/food.model';
 import { FoodFormComponent } from '../food-form/food-form.component';
 import { FoodTableComponent } from '../food-table/food-table.component';
+import { PlanImportComponent } from '../plan-import/plan-import.component';
 
 /** Onglet « Mes aliments » : recherche, filtre par catégorie avec compteurs, tableau et création ou modification dans une modale. */
 @Component({
@@ -22,6 +23,7 @@ import { FoodTableComponent } from '../food-table/food-table.component';
     ModalComponent,
     FoodFormComponent,
     FoodTableComponent,
+    PlanImportComponent,
   ],
   templateUrl: './foods-panel.component.html',
   styleUrl: './foods-panel.component.scss',
@@ -49,6 +51,10 @@ export class FoodsPanelComponent {
   );
   protected readonly formError = signal<AppError | null>(null);
 
+  /** Modale d'import d'un fichier `plan-aliments`, et l'erreur renvoyée par le back pour ce fichier. */
+  protected readonly importing = signal(false);
+  protected readonly importError = signal<AppError | null>(null);
+
   protected categoryLabel(category: FoodCategory): string {
     return this.t.nutrition.foods.categories[category];
   }
@@ -69,6 +75,28 @@ export class FoodsPanelComponent {
 
   protected onSaved(input: FoodInput): void {
     void this.save(input);
+  }
+
+  protected openImport(): void {
+    this.importError.set(null);
+    this.importing.set(true);
+  }
+
+  protected closeImport(): void {
+    this.importing.set(false);
+    this.importError.set(null);
+  }
+
+  /** Le fichier est refusé en entier par le back : son erreur reste dans la modale, sinon elle se ferme. */
+  protected async onImportSaved(content: unknown): Promise<void> {
+    this.importError.set(null);
+    try {
+      const created = await this.state.importFile(content);
+      this.closeImport();
+      this.messages.success(fill(TEXTS.nutrition.planImport.imported.aliments, { count: created }));
+    } catch (error) {
+      this.importError.set(error instanceof AppError ? error : toAppError(error));
+    }
   }
 
   /** Demande de suppression depuis une ligne du tableau : confirmation avant d'appeler l'API. */
