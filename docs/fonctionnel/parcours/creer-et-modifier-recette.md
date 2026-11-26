@@ -20,6 +20,7 @@ Composer une recette dans une grande modale : son nom, ses repas, ses aliments p
    - La section « Autre » propose tous les aliments, sans composant (ex. petit-déjeuner).
 4. « Enregistrer » crée la recette. La modale se ferme, « Recette ajoutée. » s'affiche et la liste est rechargée : les cartes montrent les totaux calculés par le back.
 5. Modifier : depuis la consultation, « Modifier la recette » ouvre la même modale pré-remplie. La composition enregistrée remplace l'ancienne ; « Recette modifiée. » s'affiche.
+6. Importer : « Importer (JSON) » dans l'onglet « Mes recettes » ouvre une modale. Déposer un fichier `plan-recettes` (ou un tableau brut de recettes). Chaque item désigne son aliment par son nom, qui doit correspondre à un seul aliment de la base. Le contenu part tel quel à `POST /api/recipes/import` ; en cas de succès, « N recette(s) importée(s). » s'affiche et la liste se recharge. Un fichier refusé (aliment introuvable, nom déjà existant) reste dans la modale avec les erreurs du back.
 
 ## Règles
 
